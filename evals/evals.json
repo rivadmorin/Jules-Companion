@@ -1,0 +1,100 @@
+{
+  "test_cases": [
+    {
+      "id": "TC_001_OS_SETUP_SELF_COPY",
+      "prompt": "initialize jules-companion in this new project with Windows operating system",
+      "expected_triggers": [
+        "jules-companion"
+      ],
+      "assertions": [
+        "Assistant detects Windows OS and configures backslash path separator.",
+        "Assistant performs path checks using where command.",
+        "Assistant copies jules-cli.md, jules-api.md, and prompt-templates.md into .jules-companion/references/ locally."
+      ]
+    },
+    {
+      "id": "TC_002_SELF_HEALING_INTEGRITY",
+      "prompt": "one of the reference files jules-cli.md was accidentally deleted from .jules-companion/references/",
+      "expected_triggers": [
+        "jules-companion"
+      ],
+      "assertions": [
+        "Assistant audits local reference files during initialization.",
+        "Assistant autonomously detects missing jules-cli.md.",
+        "Assistant copies jules-cli.md from global folder to restore local integrity."
+      ]
+    },
+    {
+      "id": "TC_003_UNIFIED_SYNC_MERGE",
+      "prompt": "synchronize all project sessions and merge parallel sessions sess_abc and sess_def",
+      "expected_triggers": [
+        "jules-companion"
+      ],
+      "assertions": [
+        "Assistant executes jules remote list --session to retrieve cloud sessions.",
+        "Assistant merges cloud sessions data into sessions.json cache.",
+        "Assistant pulls sess_abc and sess_def to isolated branches and guides a consolidated multi-merge."
+      ]
+    },
+    {
+      "id": "TC_004_DOCTOR_CHECK",
+      "prompt": "run /jules-companion doctor command to check the skill health",
+      "expected_triggers": [
+        "jules-companion"
+      ],
+      "assertions": [
+        "Assistant audits global customization folders.",
+        "Assistant audits local staging directories and .gitignore settings.",
+        "Assistant checks CLI version, login status, and key validities and outputs status table."
+      ]
+    },
+    {
+      "id": "TC_005_PARTISAN_DECENTRAL",
+      "prompt": "help me design and refactor this backend to be decentralized, P2P, and censorship-resistant",
+      "expected_triggers": [
+        "jules-companion"
+      ],
+      "assertions": [
+        "Assistant suggests delegating to Partisan 🛰️ agent.",
+        "Assistant describes P2P overlay networks (IPFS/Tor) in suggested prompt.",
+        "Assistant enforces boundaries of Coding group for Partisan."
+      ]
+    },
+    {
+      "id": "TC_006_NETRUNNER_SETUP",
+      "prompt": "configure Nginx reverse proxy for our web server to use SSL and port forwarding",
+      "expected_triggers": [
+        "jules-companion"
+      ],
+      "assertions": [
+        "Assistant suggests delegating to Netrunner 🌐 agent.",
+        "Assistant configures reverse proxy and web-networking protocols in suggested prompt.",
+        "Assistant places Netrunner 🌐 in Coding Group."
+      ]
+    },
+    {
+      "id": "TC_007_ADAPTER_CROSSPLATFORM",
+      "prompt": "write an automated build script that runs seamlessly on Windows (.bat) and Linux (.sh) without path mismatch issues",
+      "expected_triggers": [
+        "jules-companion"
+      ],
+      "assertions": [
+        "Assistant suggests delegating to Adapter 🔌 agent.",
+        "Assistant ensures path separator normalization and cross-OS script compatibility.",
+        "Assistant places Adapter 🔌 in Coding Group."
+      ]
+    },
+    {
+      "id": "TC_008_CRITIC_REVIEW",
+      "prompt": "provide a critical code quality audit and anti-pattern review for index.js file",
+      "expected_triggers": [
+        "jules-companion"
+      ],
+      "assertions": [
+        "Assistant suggests Critic 🗣️ agent from Group B.",
+        "Assistant strictly enforces that Critic 🗣️ must not write or modify codebase files.",
+        "Assistant directs output only to Markdown files or console reports."
+      ]
+    }
+  ]
+}

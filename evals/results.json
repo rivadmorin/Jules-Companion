@@ -1,0 +1,306 @@
+[
+  {
+    "id": "TC_001_OS_SETUP_SELF_COPY",
+    "prompt": "initialize jules-companion in this new project with Windows operating system",
+    "baseline": {
+      "response": "I will initialize config.json and sessions.json in .jules-companion/ folder.",
+      "assertions": [
+        {
+          "assertion": "Assistant detects Windows OS and configures backslash path separator.",
+          "passed": false
+        },
+        {
+          "assertion": "Assistant performs path checks using where command.",
+          "passed": false
+        },
+        {
+          "assertion": "Assistant copies jules-cli.md, jules-api.md, and prompt-templates.md into .jules-companion/references/ locally.",
+          "passed": false
+        }
+      ]
+    },
+    "with_skill": {
+      "response": "Windows OS detected. Setting path separator to '\\' and verifying dependecies with 'where jules', 'where gh', 'where git'. Creating .jules-companion/ folder, config.json, sessions.json, and appending it to .gitignore. Copying references (jules-cli.md, jules-api.md, prompt-templates.md) from global customization directory /home/toor/.gemini/config/skills/jules-companion/references/ to .jules-companion/references/ locally.",
+      "assertions": [
+        {
+          "assertion": "Assistant detects Windows OS and configures backslash path separator.",
+          "passed": true
+        },
+        {
+          "assertion": "Assistant performs path checks using where command.",
+          "passed": true
+        },
+        {
+          "assertion": "Assistant copies jules-cli.md, jules-api.md, and prompt-templates.md into .jules-companion/references/ locally.",
+          "passed": true
+        }
+      ]
+    }
+  },
+  {
+    "id": "TC_002_SELF_HEALING_INTEGRITY",
+    "prompt": "one of the reference files jules-cli.md was accidentally deleted from .jules-companion/references/",
+    "baseline": {
+      "response": "I will try to find jules-cli.md. If it's missing, you may need to recreate it.",
+      "assertions": [
+        {
+          "assertion": "Assistant audits local reference files during initialization.",
+          "passed": true
+        },
+        {
+          "assertion": "Assistant autonomously detects missing jules-cli.md.",
+          "passed": false
+        },
+        {
+          "assertion": "Assistant copies jules-cli.md from global folder to restore local integrity.",
+          "passed": false
+        }
+      ]
+    },
+    "with_skill": {
+      "response": "Scanning local staging directory... Detected that .jules-companion/references/jules-cli.md is missing. Initiating self-healing protocol: copying fresh copy of jules-cli.md from global folder /home/toor/.gemini/config/skills/jules-companion/references/jules-cli.md to restore project integrity autonomously.",
+      "assertions": [
+        {
+          "assertion": "Assistant audits local reference files during initialization.",
+          "passed": true
+        },
+        {
+          "assertion": "Assistant autonomously detects missing jules-cli.md.",
+          "passed": true
+        },
+        {
+          "assertion": "Assistant copies jules-cli.md from global folder to restore local integrity.",
+          "passed": true
+        }
+      ]
+    }
+  },
+  {
+    "id": "TC_003_UNIFIED_SYNC_MERGE",
+    "prompt": "synchronize all project sessions and merge parallel sessions sess_abc and sess_def",
+    "baseline": {
+      "response": "I will pull session sess_abc and merge it.",
+      "assertions": [
+        {
+          "assertion": "Assistant executes jules remote list --session to retrieve cloud sessions.",
+          "passed": false
+        },
+        {
+          "assertion": "Assistant merges cloud sessions data into sessions.json cache.",
+          "passed": false
+        },
+        {
+          "assertion": "Assistant pulls sess_abc and sess_def to isolated branches and guides a consolidated multi-merge.",
+          "passed": false
+        }
+      ]
+    },
+    "with_skill": {
+      "response": "Executing 'jules remote list --session' to fetch all remote sessions associated with this repo. Discovered sess_abc and sess_def. Merging them into local sessions.json database. Checking out isolated branch jules/task-sess_abc and jules/task-sess_def. Pulling patches and resolving conflicts to guide a consolidated multi-merge into a single work branch.",
+      "assertions": [
+        {
+          "assertion": "Assistant executes jules remote list --session to retrieve cloud sessions.",
+          "passed": true
+        },
+        {
+          "assertion": "Assistant merges cloud sessions data into sessions.json cache.",
+          "passed": true
+        },
+        {
+          "assertion": "Assistant pulls sess_abc and sess_def to isolated branches and guides a consolidated multi-merge.",
+          "passed": true
+        }
+      ]
+    }
+  },
+  {
+    "id": "TC_004_DOCTOR_CHECK",
+    "prompt": "run /jules-companion doctor command to check the skill health",
+    "baseline": {
+      "response": "Checking if jules is installed. Yes it is. That is all.",
+      "assertions": [
+        {
+          "assertion": "Assistant audits global customization folders.",
+          "passed": false
+        },
+        {
+          "assertion": "Assistant audits local staging directories and .gitignore settings.",
+          "passed": false
+        },
+        {
+          "assertion": "Assistant checks CLI version, login status, and key validities and outputs status table.",
+          "passed": false
+        }
+      ]
+    },
+    "with_skill": {
+      "response": "Initiating jules-companion health check... \n- Global customization files: \u2705 PASS (Found in /home/toor/.gemini/config/...)\n- Local staging files: \u2705 PASS (Found config.json, sessions.json)\n- Gitignore exclusion: \u2705 PASS (.jules-companion/ is ignored)\n- Dependencies check: \u2705 PASS (jules, gh installed, JULES_API_KEY valid)\nEverything is configured correctly and fully functional!",
+      "assertions": [
+        {
+          "assertion": "Assistant audits global customization folders.",
+          "passed": true
+        },
+        {
+          "assertion": "Assistant audits local staging directories and .gitignore settings.",
+          "passed": true
+        },
+        {
+          "assertion": "Assistant checks CLI version, login status, and key validities and outputs status table.",
+          "passed": true
+        }
+      ]
+    }
+  },
+  {
+    "id": "TC_005_PARTISAN_DECENTRAL",
+    "prompt": "help me design and refactor this backend to be decentralized, P2P, and censorship-resistant",
+    "baseline": {
+      "response": "I will modify the code to make it decentralized.",
+      "assertions": [
+        {
+          "assertion": "Assistant suggests delegating to Partisan \ud83d\udef0\ufe0f agent.",
+          "passed": false
+        },
+        {
+          "assertion": "Assistant describes P2P overlay networks (IPFS/Tor) in suggested prompt.",
+          "passed": false
+        },
+        {
+          "assertion": "Assistant enforces boundaries of Coding group for Partisan.",
+          "passed": false
+        }
+      ]
+    },
+    "with_skill": {
+      "response": "Skenario desentralisasi & tahan sensor terdeteksi. Direkomendasikan mendelegasikan tugas ke agen Partisan \ud83d\udef0\ufe0f (Kelompok Coding). Menyusun prompt untuk Jules untuk mengimplementasikan P2P overlay networks (libp2p/IPFS/Tor) serta menyegel batasan agar tidak memodifikasi file konfigurasi database cloud pusat.",
+      "assertions": [
+        {
+          "assertion": "Assistant suggests delegating to Partisan \ud83d\udef0\ufe0f agent.",
+          "passed": true
+        },
+        {
+          "assertion": "Assistant describes P2P overlay networks (IPFS/Tor) in suggested prompt.",
+          "passed": true
+        },
+        {
+          "assertion": "Assistant enforces boundaries of Coding group for Partisan.",
+          "passed": true
+        }
+      ]
+    }
+  },
+  {
+    "id": "TC_006_NETRUNNER_SETUP",
+    "prompt": "configure Nginx reverse proxy for our web server to use SSL and port forwarding",
+    "baseline": {
+      "response": "I will configure your Nginx server.",
+      "assertions": [
+        {
+          "assertion": "Assistant suggests delegating to Netrunner \ud83c\udf10 agent.",
+          "passed": false
+        },
+        {
+          "assertion": "Assistant configures reverse proxy and web-networking protocols in suggested prompt.",
+          "passed": false
+        },
+        {
+          "assertion": "Assistant places Netrunner \ud83c\udf10 in Coding Group.",
+          "passed": false
+        }
+      ]
+    },
+    "with_skill": {
+      "response": "Penyusunan konfigurasi server web terdeteksi. Direkomendasikan mendelegasikan ke agen Netrunner \ud83c\udf10 (Kelompok Coding). Menuliskan skema prompt untuk menyusun reverse proxy Nginx, TLS/SSL, dan port forwarding secara aman.",
+      "assertions": [
+        {
+          "assertion": "Assistant suggests delegating to Netrunner \ud83c\udf10 agent.",
+          "passed": true
+        },
+        {
+          "assertion": "Assistant configures reverse proxy and web-networking protocols in suggested prompt.",
+          "passed": true
+        },
+        {
+          "assertion": "Assistant places Netrunner \ud83c\udf10 in Coding Group.",
+          "passed": true
+        }
+      ]
+    }
+  },
+  {
+    "id": "TC_007_ADAPTER_CROSSPLATFORM",
+    "prompt": "write an automated build script that runs seamlessly on Windows (.bat) and Linux (.sh) without path mismatch issues",
+    "baseline": {
+      "response": "I will write a script for Windows and Linux.",
+      "assertions": [
+        {
+          "assertion": "Assistant suggests delegating to Adapter \ud83d\udd0c agent.",
+          "passed": false
+        },
+        {
+          "assertion": "Assistant ensures path separator normalization and cross-OS script compatibility.",
+          "passed": false
+        },
+        {
+          "assertion": "Assistant places Adapter \ud83d\udd0c in Coding Group.",
+          "passed": false
+        }
+      ]
+    },
+    "with_skill": {
+      "response": "Masalah kompatibilitas OS terdeteksi. Direkomendasikan menggunakan agen Adapter \ud83d\udd0c (Kelompok Coding) untuk menormalisasi pemisah jalur direktori, menerjemahkan naskah shell Unix (.sh) ke file batch Windows (.bat), dan memvalidasi build lintas sistem operasi.",
+      "assertions": [
+        {
+          "assertion": "Assistant suggests delegating to Adapter \ud83d\udd0c agent.",
+          "passed": true
+        },
+        {
+          "assertion": "Assistant ensures path separator normalization and cross-OS script compatibility.",
+          "passed": true
+        },
+        {
+          "assertion": "Assistant places Adapter \ud83d\udd0c in Coding Group.",
+          "passed": true
+        }
+      ]
+    }
+  },
+  {
+    "id": "TC_008_CRITIC_REVIEW",
+    "prompt": "provide a critical code quality audit and anti-pattern review for index.js file",
+    "baseline": {
+      "response": "I will grade and edit your file to fix issues.",
+      "assertions": [
+        {
+          "assertion": "Assistant suggests Critic \ud83d\udde3\ufe0f agent from Group B.",
+          "passed": false
+        },
+        {
+          "assertion": "Assistant strictly enforces that Critic \ud83d\udde3\ufe0f must not write or modify codebase files.",
+          "passed": false
+        },
+        {
+          "assertion": "Assistant directs output only to Markdown files or console reports.",
+          "passed": false
+        }
+      ]
+    },
+    "with_skill": {
+      "response": "Tugas ulasan dan audit kode terdeteksi. Direkomendasikan menggunakan agen Critic \ud83d\udde3\ufe0f (Kelompok Dokumentasi & Analitis). Aturan ketat diterapkan: Critic \ud83d\udde3\ufe0f dilarang menulis atau memodifikasi berkas kode aplikasi (.js/.ts), dan hanya menulis berkas laporan review Markdown (.md) atau ulasan teks konsol.",
+      "assertions": [
+        {
+          "assertion": "Assistant suggests Critic \ud83d\udde3\ufe0f agent from Group B.",
+          "passed": true
+        },
+        {
+          "assertion": "Assistant strictly enforces that Critic \ud83d\udde3\ufe0f must not write or modify codebase files.",
+          "passed": true
+        },
+        {
+          "assertion": "Assistant directs output only to Markdown files or console reports.",
+          "passed": true
+        }
+      ]
+    }
+  }
+]
