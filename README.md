@@ -24,6 +24,36 @@ Sebelum memasang skill ini, pastikan perkakas berikut telah terinstal dan terkon
 
 ---
 
+## ⚡ Otomatisasi TypeScript & Registri Agen Cepat
+
+Skill ini dilengkapi dengan skrip otomatisasi berbasis **TypeScript** (`tsx`) untuk performa tinggi dan nol kebingungan bagi Agent AI:
+
+* **Inisialisasi Lingkungan Kerja Otomatis (`setup.ts`)**:
+  ```bash
+  npx tsx scripts/setup.ts
+  ```
+  Mendeteksi OS, memeriksa dependensi, membuat struktur folder `.jules-companion/`, menyalin file referensi global ke lokal, dan memperbarui `.gitignore`.
+
+* **Registri Metadata Agen Cepat (`registry.json`)**:
+  Agent AI dapat membaca metadata ke-30 agen secara instan tanpa memuat 30 file markdown:
+  ```bash
+  npx tsx scripts/generate_registry.ts
+  ```
+  Berkas registri tersimpan di `references/agents/registry.json`.
+
+* **Deploy Sesi Cloud Otonom (`deploy_session.ts`)**:
+  ```bash
+  npx tsx scripts/deploy_session.ts --type review --agents bolt,sentinel --task "Optimasi memori dan perbaiki sanitasi input"
+  ```
+
+* **Penggabungan Patch Safe-Git (`merge_session.ts`)**:
+  ```bash
+  npx tsx scripts/merge_session.ts --session <session_id> --target main
+  ```
+  Mendownload patch unidiff, membuat branch isolasi, melakukan verifikasi patch, dan menggabungkan kode dengan rollback otomatis jika terjadi masalah.
+
+---
+
 ## Cara Instalasi Global (Installation)
 
 Untuk mengaktifkan skill ini secara **global** di komputer Anda agar dapat dipicu dari proyek mana saja yang Anda buka:

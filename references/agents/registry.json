@@ -1,0 +1,246 @@
+{
+  "generatedAt": "2026-07-19T01:29:46.481Z",
+  "totalAgents": 30,
+  "agents": {
+    "adapter": {
+      "id": "adapter",
+      "name": "Adapter",
+      "emoji": "🔌",
+      "description": "a Cross-Platform Compatibility (Windows/Linux/macOS) agent who ensure the application executes cleanly across Windows, Linux, and macOS without path resolution or shell script failures.",
+      "group": "advisory",
+      "file": "references/agents/adapter.md"
+    },
+    "alchemist": {
+      "id": "alchemist",
+      "name": "Alchemist",
+      "emoji": "🧪",
+      "description": "a Database Migrations & SQL Optimization agent who design database migrations, model relationships, index lookup columns, and optimize slow SQL/NoSQL queries.",
+      "group": "coding",
+      "file": "references/agents/alchemist.md"
+    },
+    "benchmarker": {
+      "id": "benchmarker",
+      "name": "Benchmarker",
+      "emoji": "⏱️",
+      "description": "a Stress-Testing & Latency Audits agent who write stress testing scripts, simulate concurrent traffic, profile memory utilization, and analyze latencies under load.",
+      "group": "coding",
+      "file": "references/agents/benchmarker.md"
+    },
+    "bolt": {
+      "id": "bolt",
+      "name": "Bolt",
+      "emoji": "⚡",
+      "description": "a Performance, Memoization & Caching agent who identify and implement one performance improvement to make the application measurably faster, memory-efficient, or optimized.",
+      "group": "coding",
+      "file": "references/agents/bolt.md"
+    },
+    "bridge": {
+      "id": "bridge",
+      "name": "Bridge",
+      "emoji": "🧲",
+      "description": "a Third-Party API Integration agent who build secure integrations with third-party API providers and write mock mock-servers/stubs for unit testing.",
+      "group": "advisory",
+      "file": "references/agents/bridge.md"
+    },
+    "builder": {
+      "id": "builder",
+      "name": "Builder",
+      "emoji": "🧱",
+      "description": "a Frontend Component Scaffolding agent who build clean, modular, reusable, and responsive frontend UI components following established visual structures.",
+      "group": "coding",
+      "file": "references/agents/builder.md"
+    },
+    "cartographer": {
+      "id": "cartographer",
+      "name": "Cartographer",
+      "emoji": "🗺️",
+      "description": "a Codebase Structures & ASCII Layout Mapping agent who analyze codebase directory structures, map out component dependencies, and design flowcharts in Mermaid and ASCII layouts.",
+      "group": "advisory",
+      "file": "references/agents/cartographer.md"
+    },
+    "chameleon": {
+      "id": "chameleon",
+      "name": "Chameleon",
+      "emoji": "🦎",
+      "description": "a Language & Stack Porting agent who translate, restyle, and port modules or code blocks between programming languages or frameworks idiomatic to the target environment.",
+      "group": "advisory",
+      "file": "references/agents/chameleon.md"
+    },
+    "conduit": {
+      "id": "conduit",
+      "name": "Conduit",
+      "emoji": "🔌",
+      "description": "a Backend API Routing & Middleware agent who build secure backend RESTful, GraphQL, or RPC API endpoints, validate input parameters, and standardize response models.",
+      "group": "advisory",
+      "file": "references/agents/conduit.md"
+    },
+    "consultant": {
+      "id": "consultant",
+      "name": "Consultant",
+      "emoji": "🧠",
+      "description": "a Framework Recommendations & ADRs agent who evaluate project feature needs and author Architectural Decision Records (ADRs) suggesting framework or library choices.",
+      "group": "advisory",
+      "file": "references/agents/consultant.md"
+    },
+    "critic": {
+      "id": "critic",
+      "name": "Critic",
+      "emoji": "🗣️",
+      "description": "a Senior Code Review agent who review code changes (diffs) thoroughly, critiquing readability, design anti-patterns, and logic efficiency.",
+      "group": "advisory",
+      "file": "references/agents/critic.md"
+    },
+    "dockerist": {
+      "id": "dockerist",
+      "name": "Dockerist",
+      "emoji": "🐳",
+      "description": "a Containerization & CI/CD Pipelines agent who write optimized Dockerfiles, design modular docker-compose setups, and automate test/build execution in CI/CD pipeline files.",
+      "group": "coding",
+      "file": "references/agents/dockerist.md"
+    },
+    "exterminator": {
+      "id": "exterminator",
+      "name": "Exterminator",
+      "emoji": "🐛",
+      "description": "a Bug Hunting & Error Log Resolution agent who inspect crash logs, analyze compilation or runtime exceptions, investigate system failures, and patch bugs cleanly without regressions.",
+      "group": "coding",
+      "file": "references/agents/exterminator.md"
+    },
+    "gatekeeper": {
+      "id": "gatekeeper",
+      "name": "Gatekeeper",
+      "emoji": "🔑",
+      "description": "a Authentication & RBAC Authorization agent who configure user authentication mechanisms, secure token handling, and enforce role-based access control (RBAC) across endpoints.",
+      "group": "advisory",
+      "file": "references/agents/gatekeeper.md"
+    },
+    "grader": {
+      "id": "grader",
+      "name": "Grader",
+      "emoji": "📊",
+      "description": "a Codebase Quality & Technical Debt Audits agent who audit code health metrics, check coding conventions, calculate cognitive complexity, and prioritize technical debt refactoring targets.",
+      "group": "advisory",
+      "file": "references/agents/grader.md"
+    },
+    "innovator": {
+      "id": "innovator",
+      "name": "Innovator",
+      "emoji": "💡",
+      "description": "a New Feature Implementation agent who design, implement, and integrate new functional features into the codebase following established architectural patterns.",
+      "group": "advisory",
+      "file": "references/agents/innovator.md"
+    },
+    "inspector": {
+      "id": "inspector",
+      "name": "Inspector",
+      "emoji": "🔎",
+      "description": "a Unit & Integration Testing agent who write unit, integration, and end-to-end (E2E) tests across codebase modules to maintain application reliability.",
+      "group": "advisory",
+      "file": "references/agents/inspector.md"
+    },
+    "janitor": {
+      "id": "janitor",
+      "name": "Janitor",
+      "emoji": "🧹",
+      "description": "a Code Cleanup & Linting agent who clean up dead code, resolve compiler warnings, fix linter issues, and simplify import paths.",
+      "group": "coding",
+      "file": "references/agents/janitor.md"
+    },
+    "logger": {
+      "id": "logger",
+      "name": "Logger",
+      "emoji": "🪵",
+      "description": "a Structured Logging & Telemetry agent who integrate structured logging patterns, error tracking configurations, observability metrics, and trace request contexts.",
+      "group": "advisory",
+      "file": "references/agents/logger.md"
+    },
+    "materialist": {
+      "id": "materialist",
+      "name": "Materialist",
+      "emoji": "🎴",
+      "description": "a Google Material Design 3 Styling agent who arrange, modify, and style UI designs to strictly follow Google Material Design 3 guidelines.",
+      "group": "coding",
+      "file": "references/agents/materialist.md"
+    },
+    "modernizer": {
+      "id": "modernizer",
+      "name": "Modernizer",
+      "emoji": "⚙️",
+      "description": "a Legacy Code Refactoring & Upgrades agent who refactor legacy syntaxes, replace deprecated functions, upgrade outdated packages, and migrate JS code to TypeScript.",
+      "group": "coding",
+      "file": "references/agents/modernizer.md"
+    },
+    "netrunner": {
+      "id": "netrunner",
+      "name": "Netrunner",
+      "emoji": "🌐",
+      "description": "a Network & Web-Server Configurations agent who configure web servers, reverse proxies, port routings, SSL/TLS certifications, and REST/gRPC networking scopes.",
+      "group": "coding",
+      "file": "references/agents/netrunner.md"
+    },
+    "nomad": {
+      "id": "nomad",
+      "name": "Nomad",
+      "emoji": "🎒",
+      "description": "a Local & Offline Portability agent who ensure the application can be installed, run 100% locally and offline without internet, and is ready for distribution on USB drives.",
+      "group": "advisory",
+      "file": "references/agents/nomad.md"
+    },
+    "packager": {
+      "id": "packager",
+      "name": "Packager",
+      "emoji": "💿",
+      "description": "a Installer, Uninstaller & Setup Scripts agent who design clean setup scripts, uninstallation routines, portable bundler configurations, and automate initial project installations.",
+      "group": "coding",
+      "file": "references/agents/packager.md"
+    },
+    "palette": {
+      "id": "palette",
+      "name": "Palette",
+      "emoji": "🎨",
+      "description": "a UX & Frontend Accessibility agent who identify and implement one micro-UX and accessibility (WCAG/ARIA) improvement on the user interface to make it more intuitive, accessible, and delightful.",
+      "group": "coding",
+      "file": "references/agents/palette.md"
+    },
+    "partisan": {
+      "id": "partisan",
+      "name": "Partisan",
+      "emoji": "🛰️",
+      "description": "a Decentralized & P2P Architectures agent who design decentralized architectures, integrate peer-to-peer (P2P) communications, and enforce censor-resistance rules to keep services active.",
+      "group": "advisory",
+      "file": "references/agents/partisan.md"
+    },
+    "proteus": {
+      "id": "proteus",
+      "name": "Proteus",
+      "emoji": "🎭",
+      "description": "a Custom Analysis & Advisory agent who deliver custom analyses and checklists based on specific user requests outside standard roles.",
+      "group": "coding",
+      "file": "references/agents/proteus.md"
+    },
+    "scribe": {
+      "id": "scribe",
+      "name": "Scribe",
+      "emoji": "📝",
+      "description": "a README.md & Technical Documentation agent who author detailed READMEs, API specifications, and developer guides in clean, organized Markdown layouts.",
+      "group": "advisory",
+      "file": "references/agents/scribe.md"
+    },
+    "sentinel": {
+      "id": "sentinel",
+      "name": "Sentinel",
+      "emoji": "🛡️",
+      "description": "a Code Security & Input Sanitization agent who identify and patch one security vulnerability or implement one security enhancement to protect the codebase from security risks.",
+      "group": "coding",
+      "file": "references/agents/sentinel.md"
+    },
+    "watcher": {
+      "id": "watcher",
+      "name": "Watcher",
+      "emoji": "👁️",
+      "description": "a Data Integrity & Schema Validation agent who validate incoming/outgoing data structures, sanitize request parameters, check serializations, and enforce type safety constraints.",
+      "group": "coding",
+      "file": "references/agents/watcher.md"
+    }
+  }
+}

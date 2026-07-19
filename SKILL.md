@@ -84,47 +84,48 @@ Example prompt format:
 
 Due to limitations or deprecated commands in the local `jules` CLI (e.g. lack of `reply` or `sendMessage` commands), the skill prioritizes interacting with Google Jules sessions using the **Google REST API** (endpoints defined under `https://jules.googleapis.com/v1alpha/sessions/`).
 
-All local session operations should be handled via the Node client helper located at `.jules-companion/scripts/jules_client.js`.
+All local session operations should be handled via TypeScript automation scripts powered by `tsx`.
 
-### 1. REST API Configuration
+### 1. REST API Configuration & Agent Registry
 Store your Google Jules REST API key in the `.jules-companion/.env` file:
 ```env
 JULES_API_KEY=your_google_jules_api_key_here
 ```
+For ultra-fast agent lookup without reading 30 markdown files, read the single compiled registry file:
+`references/agents/registry.json`.
 
-### 2. Session CLI Helpers (REST-powered)
-Use the local script wrappers for non-blocking monitoring and control:
-*   **Check Session Statuses**: 
+### 2. Session CLI Helpers (TypeScript & REST-powered)
+Use the TypeScript script wrappers for high-performance, non-blocking monitoring and control:
+*   **Automated Environment Setup & Self-Healing**:
     ```bash
-    .jules-companion/scripts/check_sessions.sh
+    npx tsx scripts/setup.ts
     ```
-*   **Auto-Approve Awaiting Plans**:
+*   **Direct REST commands via TypeScript client**:
     ```bash
-    .jules-companion/scripts/auto_process.sh
-    ```
-*   **Direct REST commands via Node client**:
-    ```bash
+    # List connected Google Jules repositories/sources
+    npx tsx scripts/jules_client.ts sources
+
     # Get details of a session
-    node .jules-companion/scripts/jules_client.js status <session_id>
+    npx tsx scripts/jules_client.ts status <session_id>
     
     # Get session list in raw JSON format (ideal for downstream tools/agents)
-    node .jules-companion/scripts/jules_client.js list --json
+    npx tsx scripts/jules_client.ts list --json
     
     # Send a reply or manual instruction to a session
-    node .jules-companion/scripts/jules_client.js reply <session_id> "your message"
+    npx tsx scripts/jules_client.ts reply <session_id> "your message"
     
     # Pull the latest completed patch to a local file
-    node .jules-companion/scripts/jules_client.js pull <session_id> scratch/patch_name.diff
+    npx tsx scripts/jules_client.ts pull <session_id> scratch/patch_name.diff
     ```
 *   **Auto-deploy customized agent sessions**:
     ```bash
-    # Deploys Bolt and Watcher agents, using their templates combined with user instructions
-    node .jules-companion/scripts/deploy_session.js --type review --agents bolt,watcher --task "Optimize TUI render path"
+    # Deploys Bolt and Watcher agents, combining templates with task instructions
+    npx tsx scripts/deploy_session.ts --type review --agents bolt,watcher --task "Optimize TUI render path"
     ```
-*   **Consolidated Merge Pipeline**:
+*   **Consolidated Patch Merge Pipeline**:
     ```bash
-    # Automatically pulls all COMPLETED sessions, merges them via isolated branches, and runs tests
-    node .jules-companion/scripts/merge_pipeline.js
+    # Automatically pulls completed session patch, creates isolated branch, checks diff, and merges
+    npx tsx scripts/merge_session.ts --session <session_id> --target main
     ```
 
 ---
