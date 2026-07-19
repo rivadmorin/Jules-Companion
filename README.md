@@ -54,23 +54,15 @@ Skill ini dilengkapi dengan skrip otomatisasi berbasis **TypeScript** (`tsx`) un
 
 ---
 
-## Cara Instalasi Global (Installation)
+## Cara Instalasi Global (One-Line Install)
 
-Untuk mengaktifkan skill ini secara **global** di komputer Anda agar dapat dipicu dari proyek mana saja yang Anda buka:
+Cukup jalankan satu baris perintah ini di terminal Anda untuk menginstal skill secara **global**:
 
-1. Buat direktori kustomisasi global gemini di sistem Linux Anda:
-   ```bash
-   mkdir -p /home/toor/.gemini/config/skills/jules-companion/references/agents
-   ```
-2. Tempatkan berkas utama dan referensi berikut ke dalamnya:
-   - File `SKILL.md` ke `/home/toor/.gemini/config/skills/jules-companion/SKILL.md`.
-   - File di sub-folder `references/` global:
-     - `jules-cli.md` -> `/home/toor/.gemini/config/skills/jules-companion/references/jules-cli.md`
-     - `jules-api.md` -> `/home/toor/.gemini/config/skills/jules-companion/references/jules-api.md`
-     - `prompt-templates.md` (Manifest Induk) -> `/home/toor/.gemini/config/skills/jules-companion/references/prompt-templates.md`
-     - 30 Berkas agen spesifikasi modular di `/home/toor/.gemini/config/skills/jules-companion/references/agents/` (misal: `palette.md`, `sentinel.md`, `bolt.md`, dst.).
+```bash
+curl -sSL https://raw.githubusercontent.com/rivadmorin/Jules-Companion/main/install.sh | bash
+```
 
-Setelah diletakkan di direktori global tersebut, asisten Antigravity akan mendeteksi skill `jules-companion` secara otomatis dari proyek mana pun di workspace Anda.
+Perintah di atas akan otomatis mengkloning repositori ke `~/.gemini/config/skills/jules-companion`, menginstal dependensi, dan menggenerasi registri agen secara otomatis. Skill `jules-companion` siap digunakan di seluruh workspace Anda.
 
 ---
 
@@ -78,10 +70,9 @@ Setelah diletakkan di direktori global tersebut, asisten Antigravity akan mendet
 
 Untuk menghapus skill global ini secara bersih:
 
-1. Hapus direktori kustomisasi global:
-   ```bash
-   rm -rf /home/toor/.gemini/config/skills/jules-companion
-   ```
+```bash
+rm -rf ~/.gemini/config/skills/jules-companion
+```
 2. Jika Anda ingin melakukan pembersihan penuh di suatu proyek tertentu, tanyakan asisten untuk membersihkan staging area proyek Anda. Asisten akan menghapus `.jules-companion/` serta membersihkan entri pengabaian di berkas `.gitignore` secara otomatis.
 
 ---
