@@ -66,6 +66,31 @@ Perintah di atas akan otomatis mengkloning repositori ke `~/.gemini/config/skill
 
 ---
 
+## 🤖 Prompt Siap Tempel untuk AI Agent (Copy & Paste)
+
+Cukup salin dan tempelkan salah satu prompt di bawah ini langsung ke chat AI Agent Anda (**Antigravity**, **Claude Code**, **Gemini CLI**, **Cursor**, dll.):
+
+### 1. Prompt Instalasi Global & Inisialisasi Proyek
+```text
+Tolong pasang dan aktifkan skill jules-companion secara global di sistem saya dengan menjalankan perintah berikut di terminal:
+curl -sSL https://raw.githubusercontent.com/rivadmorin/Jules-Companion/main/install.sh | bash
+Setelah instalasi selesai, jalankan setup.ts di proyek ini untuk menyiapkan folder staging .jules-companion/.
+```
+
+### 2. Prompt Peluncuran Agen Spesialis (Deploy Session)
+```text
+Gunakan skill jules-companion untuk mendeploy agen 'bolt' dan 'sentinel' guna menganalisis dan mengoptimasi performa serta keamanan codebase ini. Jalankan skrip:
+npx tsx scripts/deploy_session.ts --type review --agents bolt,sentinel --task "Audit keamanan dan optimasi alokasi memori"
+```
+
+### 3. Prompt Penarikan & Penggabungan Patch (Merge Session)
+```text
+Tarik hasil patch dari sesi cloud Google Jules <session_id> dan gabungkan ke branch utama proyek ini dengan aman menggunakan perintah:
+npx tsx scripts/merge_session.ts --session <session_id> --target main
+```
+
+---
+
 ## Cara Uninstall (Uninstallation)
 
 Untuk menghapus skill global ini secara bersih:
