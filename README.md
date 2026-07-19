@@ -26,29 +26,29 @@ Sebelum memasang skill ini, pastikan perkakas berikut telah terinstal dan terkon
 
 ## ⚡ Otomatisasi TypeScript & Registri Agen Cepat
 
-Skill ini dilengkapi dengan skrip otomatisasi berbasis **TypeScript** (`tsx`) untuk performa tinggi dan nol kebingungan bagi Agent AI:
+Skill ini dilengkapi dengan skrip otomatisasi berbasis **TypeScript** yang dikompilasi ke JavaScript (`dist/`) untuk performa tinggi dan nol kebingungan bagi Agent AI:
 
-* **Inisialisasi Lingkungan Kerja Otomatis (`setup.ts`)**:
+* **Inisialisasi Lingkungan Kerja Otomatis (`setup.js`)**:
   ```bash
-  npx tsx scripts/setup.ts
+  node dist/setup.js
   ```
   Mendeteksi OS, memeriksa dependensi, membuat struktur folder `.jules-companion/`, menyalin file referensi global ke lokal, dan memperbarui `.gitignore`.
 
 * **Registri Metadata Agen Cepat (`registry.json`)**:
   Agent AI dapat membaca metadata ke-30 agen secara instan tanpa memuat 30 file markdown:
   ```bash
-  npx tsx scripts/generate_registry.ts
+  node dist/generate_registry.js
   ```
   Berkas registri tersimpan di `references/agents/registry.json`.
 
-* **Deploy Sesi Cloud Otonom (`deploy_session.ts`)**:
+* **Deploy Sesi Cloud Otonom (`deploy_session.js`)**:
   ```bash
-  npx tsx scripts/deploy_session.ts --type review --agents bolt,sentinel --task "Optimasi memori dan perbaiki sanitasi input"
+  node dist/deploy_session.js --type review --agents bolt,sentinel --task "Optimasi memori dan perbaiki sanitasi input"
   ```
 
-* **Penggabungan Patch Safe-Git (`merge_session.ts`)**:
+* **Penggabungan Patch Safe-Git (`merge_session.js`)**:
   ```bash
-  npx tsx scripts/merge_session.ts --session <session_id> --target main
+  node dist/merge_session.js --session <session_id> --target main
   ```
   Mendownload patch unidiff, membuat branch isolasi, melakukan verifikasi patch, dan menggabungkan kode dengan rollback otomatis jika terjadi masalah.
 
@@ -74,19 +74,19 @@ Cukup salin dan tempelkan salah satu prompt di bawah ini langsung ke chat AI Age
 ```text
 Tolong pasang dan aktifkan skill jules-companion secara global di sistem saya dengan menjalankan perintah berikut di terminal:
 curl -sSL https://raw.githubusercontent.com/rivadmorin/Jules-Companion/main/install.sh | bash
-Setelah instalasi selesai, jalankan setup.ts di proyek ini untuk menyiapkan folder staging .jules-companion/.
+Setelah instalasi selesai, jalankan setup.js di proyek ini untuk menyiapkan folder staging .jules-companion/.
 ```
 
 ### 2. Prompt Peluncuran Agen Spesialis (Deploy Session)
 ```text
 Gunakan skill jules-companion untuk mendeploy agen 'bolt' dan 'sentinel' guna menganalisis dan mengoptimasi performa serta keamanan codebase ini. Jalankan skrip:
-npx tsx scripts/deploy_session.ts --type review --agents bolt,sentinel --task "Audit keamanan dan optimasi alokasi memori"
+node dist/deploy_session.js --type review --agents bolt,sentinel --task "Audit keamanan dan optimasi alokasi memori"
 ```
 
 ### 3. Prompt Penarikan & Penggabungan Patch (Merge Session)
 ```text
 Tarik hasil patch dari sesi cloud Google Jules <session_id> dan gabungkan ke branch utama proyek ini dengan aman menggunakan perintah:
-npx tsx scripts/merge_session.ts --session <session_id> --target main
+node dist/merge_session.js --session <session_id> --target main
 ```
 
 ### 4. Prompt Uninstallation Skill Global & Pembersihan Proyek

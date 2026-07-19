@@ -36,6 +36,18 @@ function getGitRemoteRepo(): string | null {
   return null;
 }
 
+function validateAgents(agentsStr: string, registryPath: string): string[] {
+  if (!fs.existsSync(registryPath)) return [];
+  try {
+    const registry = JSON.parse(fs.readFileSync(registryPath, 'utf8'));
+    const inputAgents = agentsStr.split(',').map(a => a.trim().toLowerCase());
+    const invalidAgents = inputAgents.filter(a => !registry.agents[a]);
+    return invalidAgents;
+  } catch {
+    return [];
+  }
+}
+
 export async function deploySession() {
   const params = parseArgs(process.argv.slice(2));
 
@@ -44,7 +56,7 @@ export async function deploySession() {
 Jules Session Deployment Helper (TypeScript)
 
 Usage:
-  npx tsx scripts/deploy_session.ts --type <interactive|review|start> --agents <agent1,agent2> --task "<task description>" [--branch <branch>]
+  node dist/deploy_session.js --type <interactive|review|start> --agents <agent1,agent2> --task "<task description>" [--branch <branch>]
 
 Options:
   --type      Session type: 'interactive' (interactive plan), 'review' (require plan approval), 'start' (auto-approve plan and execute)
@@ -52,6 +64,28 @@ Options:
   --task      Specific task instructions for the agents
   --branch    Repository branch to start from (defaults to current git branch)
 `);
+    process.exit(1);
+  }
+
+  // 1. Local Agent Name Validation
+  const registryPath = path.join(__dirname, '..', 'references', 'agents', 'registry.json');
+  const invalidAgents = validateAgents(String(params.agents), registryPath);
+  if (invalidAgents.length > 0) {
+    console.error(`Error: Invalid agent name(s) specified: ${invalidAgents.join(', ')}`);
+    if (fs.existsSync(registryPath)) {
+      try {
+        const registry = JSON.parse(fs.readFileSync(registryPath, 'utf8'));
+        console.log('Available valid agents:', Object.keys(registry.agents).join(', '));
+      } catch (_) {}
+    }
+    process.exit(1);
+  }
+
+  // 2. Git Remote Check
+  const gitRepo = getGitRemoteRepo();
+  if (!gitRepo) {
+    console.error('Error: No git remote origin url configured.');
+    console.error('Jules-Companion requires that this repository is pushed to GitHub before deploying cloud sessions.');
     process.exit(1);
   }
 
@@ -63,21 +97,17 @@ Options:
 
   const headers = { 'X-Goog-Api-Key': apiKey };
   const startingBranch = String(params.branch || getCurrentBranch());
-  const gitRepo = getGitRemoteRepo();
 
   try {
-    console.log('Matching repository with Jules sources...');
+    console.log(`Matching repository '${gitRepo}' with Jules sources...`);
     const sourcesData = await request('https://jules.googleapis.com/v1alpha/sources', { headers });
     const sources: JulesSource[] = sourcesData.sources || [];
 
     let matchedSource: JulesSource | null = null;
-    if (gitRepo) {
-      const searchStr = gitRepo.toLowerCase();
-      matchedSource = sources.find(s => s.name.toLowerCase().includes(searchStr)) || null;
-    }
+    const searchStr = gitRepo.toLowerCase();
+    matchedSource = sources.find(s => s.name.toLowerCase().includes(searchStr)) || null;
 
     if (!matchedSource && sources.length > 0) {
-      // Fallback to first available source if exact git origin match fails
       matchedSource = sources[0];
       console.warn(`Warning: Exact origin '${gitRepo}' not matched. Falling back to source: ${matchedSource.name}`);
     }
@@ -121,10 +151,6 @@ Options:
           templateContent = fs.readFileSync(tp, 'utf8');
           break;
         }
-      }
-
-      if (!templateContent) {
-        console.warn(`Warning: Template for agent "${agent}" not found. Deploying with raw task description.`);
       }
 
       const combinedPrompt = templateContent

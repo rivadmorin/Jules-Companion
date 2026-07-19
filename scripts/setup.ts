@@ -6,6 +6,8 @@ import { spawnSync } from 'child_process';
 interface SetupResult {
   os: string;
   dependencies: Record<string, boolean>;
+  ghAuth: boolean;
+  gitIdentityOk: boolean;
   copiedFiles: string[];
   gitignoreUpdated: boolean;
   status: 'SUCCESS' | 'WARNING' | 'ERROR';
@@ -13,8 +15,47 @@ interface SetupResult {
 
 function checkCommand(cmd: string, osType: string): boolean {
   const checkCmd = osType === 'win32' ? 'where' : 'which';
-  const res = spawnSync(checkCmd, [cmd], { encoding: 'utf8' });
-  return res.status === 0;
+  try {
+    const res = spawnSync(checkCmd, [cmd], { encoding: 'utf8' });
+    return res.status === 0;
+  } catch {
+    return false;
+  }
+}
+
+function checkGhAuth(): boolean {
+  try {
+    const res = spawnSync('gh', ['auth', 'status'], { encoding: 'utf8' });
+    return res.status === 0;
+  } catch {
+    return false;
+  }
+}
+
+function ensureGitIdentity(): boolean {
+  try {
+    const gitCheck = spawnSync('git', ['rev-parse', '--is-inside-work-tree'], { encoding: 'utf8' });
+    if (gitCheck.status !== 0) {
+      console.log('  - Git Identity: Skipped (Not inside a Git repository)');
+      return true;
+    }
+
+    const nameRes = spawnSync('git', ['config', 'user.name'], { encoding: 'utf8' });
+    const emailRes = spawnSync('git', ['config', 'user.email'], { encoding: 'utf8' });
+
+    if (nameRes.status !== 0 || !nameRes.stdout.trim() || emailRes.status !== 0 || !emailRes.stdout.trim()) {
+      console.log('  - Git Identity: Configuring local fallback identity...');
+      const setLocalName = spawnSync('git', ['config', '--local', 'user.name', 'Jules Companion'], { encoding: 'utf8' });
+      const setLocalEmail = spawnSync('git', ['config', '--local', 'user.email', 'agent@jules.local'], { encoding: 'utf8' });
+      return setLocalName.status === 0 && setLocalEmail.status === 0;
+    }
+    
+    console.log('  - Git Identity: Verified ✓');
+    return true;
+  } catch (err: any) {
+    console.warn(`  - Git Identity: Failed to check/set: ${err.message}`);
+    return false;
+  }
 }
 
 export function runSetup(targetDir: string = process.cwd()): SetupResult {
@@ -33,7 +74,14 @@ export function runSetup(targetDir: string = process.cwd()): SetupResult {
     console.log(`  - ${dep.padEnd(10)}: ${icon}`);
   }
 
-  // 2. Directory structure creation
+  // 2. Auth & Identity checks
+  console.log('Checking Autentikasi & Git Identity...');
+  const ghAuth = checkGhAuth();
+  console.log(`  - GitHub Auth : ${ghAuth ? 'Logged In ✓' : '⚠️ Not Logged In'}`);
+  
+  const gitIdentityOk = ensureGitIdentity();
+
+  // 3. Directory structure creation
   const julesLocalDir = path.join(targetDir, '.jules-companion');
   const refLocalDir = path.join(julesLocalDir, 'references');
   const agentsLocalDir = path.join(refLocalDir, 'agents');
@@ -45,7 +93,7 @@ export function runSetup(targetDir: string = process.cwd()): SetupResult {
     }
   });
 
-  // 3. Dynamic home dir lookup (cross-platform, zero hardcoded username)
+  // 4. Find source references directory (Global or Local Package root)
   const homeDir = os.homedir();
   const candidateGlobalRoots = [
     path.join(homeDir, '.gemini', 'config', 'skills', 'jules-companion'),
@@ -64,7 +112,7 @@ export function runSetup(targetDir: string = process.cwd()): SetupResult {
   const copiedFiles: string[] = [];
 
   if (sourceRefDir) {
-    // Copy top-level reference files (e.g. jules-cli.md, jules-api.md, prompt-templates.md)
+    // Copy top-level reference files
     const filesToCopy = ['jules-cli.md', 'jules-api.md', 'prompt-templates.md'];
     for (const file of filesToCopy) {
       const src = path.join(sourceRefDir, file);
@@ -93,7 +141,7 @@ export function runSetup(targetDir: string = process.cwd()): SetupResult {
     console.warn('Warning: Global reference templates not found for self-healing copy.');
   }
 
-  // 4. Update .gitignore
+  // 5. Update .gitignore
   let gitignoreUpdated = false;
   const gitignorePath = path.join(targetDir, '.gitignore');
   const entry = '.jules-companion/';
@@ -112,7 +160,7 @@ export function runSetup(targetDir: string = process.cwd()): SetupResult {
     console.log('.jules-companion/ is already present in .gitignore.');
   }
 
-  // 5. Initialize config.json & sessions.json if missing
+  // 6. Initialize config.json & sessions.json if missing
   const configPath = path.join(julesLocalDir, 'config.json');
   if (!fs.existsSync(configPath)) {
     fs.writeFileSync(configPath, JSON.stringify({
@@ -127,13 +175,15 @@ export function runSetup(targetDir: string = process.cwd()): SetupResult {
     fs.writeFileSync(sessionsPath, JSON.stringify([], null, 2), 'utf8');
   }
 
-  const allCriticalDepsOk = depStatus['git'] && depStatus['gh'];
+  const allCriticalDepsOk = depStatus['git'] && depStatus['gh'] && gitIdentityOk;
   const status: SetupResult['status'] = allCriticalDepsOk ? 'SUCCESS' : 'WARNING';
 
   console.log(`\nSetup completed with status: [${status}]`);
   return {
     os: osType,
     dependencies: depStatus,
+    ghAuth,
+    gitIdentityOk,
     copiedFiles,
     gitignoreUpdated,
     status

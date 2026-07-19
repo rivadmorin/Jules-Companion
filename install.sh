@@ -24,9 +24,12 @@ fi
 echo "⚙️ Installing dependencies..."
 npm install --silent
 
+echo "🔧 Compiling TypeScript to JavaScript..."
+npm run build --silent
+
 echo "⚡ Generating Agent Registry & verifying setup..."
-npx tsx scripts/generate_registry.ts
-npx tsx scripts/setup.ts
+node dist/generate_registry.js
+node dist/setup.js
 
 echo ""
 echo "✅ Jules-Companion skill successfully installed globally!"

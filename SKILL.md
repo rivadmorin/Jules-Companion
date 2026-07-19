@@ -84,7 +84,7 @@ Example prompt format:
 
 Due to limitations or deprecated commands in the local `jules` CLI (e.g. lack of `reply` or `sendMessage` commands), the skill prioritizes interacting with Google Jules sessions using the **Google REST API** (endpoints defined under `https://jules.googleapis.com/v1alpha/sessions/`).
 
-All local session operations should be handled via TypeScript automation scripts powered by `tsx`.
+All local session operations should be handled via TypeScript automation scripts compiled in `dist/`.
 
 ### 1. REST API Configuration & Agent Registry
 Store your Google Jules REST API key in the `.jules-companion/.env` file:
@@ -98,34 +98,34 @@ For ultra-fast agent lookup without reading 30 markdown files, read the single c
 Use the TypeScript script wrappers for high-performance, non-blocking monitoring and control:
 *   **Automated Environment Setup & Self-Healing**:
     ```bash
-    npx tsx scripts/setup.ts
+    node dist/setup.js
     ```
 *   **Direct REST commands via TypeScript client**:
     ```bash
     # List connected Google Jules repositories/sources
-    npx tsx scripts/jules_client.ts sources
+    node dist/jules_client.js sources
 
     # Get details of a session
-    npx tsx scripts/jules_client.ts status <session_id>
+    node dist/jules_client.js status <session_id>
     
     # Get session list in raw JSON format (ideal for downstream tools/agents)
-    npx tsx scripts/jules_client.ts list --json
+    node dist/jules_client.js list --json
     
     # Send a reply or manual instruction to a session
-    npx tsx scripts/jules_client.ts reply <session_id> "your message"
+    node dist/jules_client.js reply <session_id> "your message"
     
     # Pull the latest completed patch to a local file
-    npx tsx scripts/jules_client.ts pull <session_id> scratch/patch_name.diff
+    node dist/jules_client.js pull <session_id> scratch/patch_name.diff
     ```
 *   **Auto-deploy customized agent sessions**:
     ```bash
     # Deploys Bolt and Watcher agents, combining templates with task instructions
-    npx tsx scripts/deploy_session.ts --type review --agents bolt,watcher --task "Optimize TUI render path"
+    node dist/deploy_session.js --type review --agents bolt,watcher --task "Optimize TUI render path"
     ```
 *   **Consolidated Patch Merge Pipeline**:
     ```bash
     # Automatically pulls completed session patch, creates isolated branch, checks diff, and merges
-    npx tsx scripts/merge_session.ts --session <session_id> --target main
+    node dist/merge_session.js --session <session_id> --target main
     ```
 
 ---

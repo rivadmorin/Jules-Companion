@@ -1,1 +1,3 @@
 .jules-companion/
+node_modules/
+dist/

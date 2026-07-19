@@ -2,13 +2,14 @@
   "name": "jules-companion",
   "version": "1.0.0",
   "description": "Google Jules CLI & REST API companion skill with 30 specialized agents",
-  "main": "scripts/setup.ts",
+  "main": "dist/setup.js",
   "scripts": {
-    "setup": "tsx scripts/setup.ts",
-    "registry": "tsx scripts/generate_registry.ts",
-    "deploy": "tsx scripts/deploy_session.ts",
-    "merge": "tsx scripts/merge_session.ts",
-    "client": "tsx scripts/jules_client.ts"
+    "build": "tsc",
+    "setup": "node dist/setup.js",
+    "registry": "node dist/generate_registry.js",
+    "deploy": "node dist/deploy_session.js",
+    "merge": "node dist/merge_session.js",
+    "client": "node dist/jules_client.js"
   },
   "keywords": [
     "jules",
