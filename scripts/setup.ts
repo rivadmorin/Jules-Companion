@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import * as os from 'os';
 import { spawnSync } from 'child_process';
 
 interface SetupResult {
@@ -44,9 +45,10 @@ export function runSetup(targetDir: string = process.cwd()): SetupResult {
     }
   });
 
-  // 3. Find source references directory (Global or Local Package root)
+  // 3. Dynamic home dir lookup (cross-platform, zero hardcoded username)
+  const homeDir = os.homedir();
   const candidateGlobalRoots = [
-    '/home/toor/.gemini/config/skills/jules-companion',
+    path.join(homeDir, '.gemini', 'config', 'skills', 'jules-companion'),
     path.join(__dirname, '..')
   ];
 
