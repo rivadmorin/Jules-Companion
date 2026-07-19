@@ -89,6 +89,13 @@ Tarik hasil patch dari sesi cloud Google Jules <session_id> dan gabungkan ke bra
 npx tsx scripts/merge_session.ts --session <session_id> --target main
 ```
 
+### 4. Prompt Uninstallation Skill Global & Pembersihan Proyek
+```text
+Tolong hapus skill jules-companion secara bersih dari sistem saya dengan menjalankan perintah:
+rm -rf ~/.gemini/config/skills/jules-companion
+Jika proyek ini memiliki folder staging .jules-companion/, hapus folder tersebut dan bersihkan entri .jules-companion/ dari file .gitignore.
+```
+
 ---
 
 ## Cara Uninstall (Uninstallation)
