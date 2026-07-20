@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as readline from 'readline';
-import { getProjectDirs, loadSessions, saveSessions, runGit, SessionRecord } from './utils';
+import { getProjectDirs, loadSessions, saveSessions, runGit } from './utils';
 import { runSetup } from './setup';
 import { deploySession } from './deploy_session';
 import { autoProcess } from './auto_process';
@@ -13,42 +13,82 @@ const rl = readline.createInterface({
   output: process.stdout
 });
 
+const PURPLE = '\x1b[1;35m';
+const CYAN = '\x1b[1;36m';
+const RESET = '\x1b[0m';
+const GREEN = '\x1b[1;32m';
+const YELLOW = '\x1b[1;33m';
+const RED = '\x1b[1;31m';
+
+const SPECIALIST_AGENTS = [
+  { id: 1, name: 'palette', emoji: '🎨', desc: 'UI/UX & Tailwind CSS styling implementation.' },
+  { id: 2, name: 'sentinel', emoji: '🛡️', desc: 'Security auditing, validation, crash prevention.' },
+  { id: 3, name: 'bolt', emoji: '⚡', desc: 'Speed optimizations, CPU profiling, efficient loops.' },
+  { id: 4, name: 'nomad', emoji: '🎒', desc: 'API endpoints routing, migration, integrations.' },
+  { id: 5, name: 'packager', emoji: '💿', desc: 'NPM dependencies management and library upgrades.' },
+  { id: 6, name: 'exterminator', emoji: '🐛', desc: 'Debugging logic bugs and syntax issues.' },
+  { id: 7, name: 'builder', emoji: '🧱', desc: 'Automated build fixes and compiler issues resolution.' },
+  { id: 8, name: 'conduit', emoji: '🔌', desc: 'REST API clients, networking protocols, WebSockets.' },
+  { id: 9, name: 'alchemist', emoji: '🧪', desc: 'High-order functions, complex algorithms, data mapping.' },
+  { id: 10, name: 'gatekeeper', emoji: '🔑', desc: 'Authentication systems (OAuth, JWT, session cookies).' },
+  { id: 11, name: 'bridge', emoji: '🧲', desc: 'Database schema design, SQL/NoSQL ORM integrations.' },
+  { id: 12, name: 'dockerist', emoji: '🐳', desc: 'Container settings, Dockerfiles, docker-compose configuration.' },
+  { id: 13, name: 'modernizer', emoji: '⚙️', desc: 'Upgrades legacy APIs and deprecated syntax structures.' },
+  { id: 14, name: 'inspector', emoji: '🔎', desc: 'Automated logs monitoring and error stack trace checking.' },
+  { id: 15, name: 'janitor', emoji: '🧹', desc: 'Dead code cleanup, refactoring, code formatting.' },
+  { id: 16, name: 'logger', emoji: '🪵', desc: 'Integrating custom loggers and metrics instrumentation.' },
+  { id: 17, name: 'benchmarker', emoji: '⏱️', desc: 'Performance profiling and latency micro-benchmarks.' },
+  { id: 18, name: 'watcher', emoji: '👁️', desc: 'Memory leak checking and memory footprint profiles.' },
+  { id: 19, name: 'chameleon', emoji: '🦎', desc: 'Responsive design layouts (mobile/desktop).' },
+  { id: 20, name: 'innovator', emoji: '💡', desc: 'Experimental algorithm prototyping and features.' },
+  { id: 21, name: 'materialist', emoji: '🎴', desc: 'Material 3 Design component integration.' },
+  { id: 22, name: 'partisan', emoji: '🛰️', desc: 'Cloud serverless API handler code deployment.' },
+  { id: 23, name: 'netrunner', emoji: '🌐', desc: 'Web scraping, HTML extraction, and network client.' },
+  { id: 24, name: 'adapter', emoji: '🔌', desc: 'Wrapper classes, design pattern interface adapters.' },
+  { id: 25, name: 'scribe', emoji: '📝', desc: 'Creating API docs and project documentation guides.' },
+  { id: 26, name: 'cartographer', emoji: '🗺️', desc: 'Drawing visual ASCII charts and workflow structures.' },
+  { id: 27, name: 'grader', emoji: '📊', desc: 'Static code analyzer reports and score assessments.' },
+  { id: 28, name: 'consultant', emoji: '🧠', desc: 'High-level design consultation and architectural suggestions.' },
+  { id: 29, name: 'critic', emoji: '🗣️', desc: 'Code review comments and PR reviews.' },
+  { id: 30, name: 'proteus', emoji: '🎭', desc: 'Multi-format file conversions and exports.' }
+];
+
 function question(query: string): Promise<string> {
-  return new Promise((resolve) => rl.question(query, resolve));
+  return new Promise((resolve) => rl.question(`${PURPLE}${query}${RESET}`, resolve));
 }
 
 async function ensureApiKey(): Promise<string | null> {
   let key = getApiKey();
   if (key) return key;
 
-  console.log('\n🔑 Jules API Key is missing!');
-  console.log('To deploy or monitor cloud sessions, you need a Google Jules API Key.');
+  console.log(`${PURPLE}\n🔑 Jules API Key is missing!${RESET}`);
+  console.log(`${PURPLE}To deploy or monitor cloud sessions, you need a Google Jules API Key.${RESET}`);
   const inputKey = await question('Please paste your JULES_API_KEY (or press Enter to skip):\n> ');
 
   if (inputKey.trim()) {
     const dirs = getProjectDirs();
     const envPath = path.join(dirs.julesDir, '.env');
     fs.writeFileSync(envPath, `JULES_API_KEY=${inputKey.trim()}\n`, 'utf8');
-    console.log(`✓ API Key saved to: ${envPath}`);
+    console.log(`${PURPLE}✓ API Key saved to: ${envPath}${RESET}`);
     process.env.JULES_API_KEY = inputKey.trim();
     return inputKey.trim();
   }
 
-  console.log('⚠️ Skipping API Key setup. Cloud deployments will be unavailable.');
+  console.log(`${PURPLE}⚠️ Skipping API Key setup. Cloud deployments will be unavailable.${RESET}`);
   return null;
 }
 
 async function handleUpdateApiKey() {
-  console.log('\n🔑 Configure / Update Jules API Key');
+  console.log(`${PURPLE}\n🔑 Configure / Update Jules API Key${RESET}`);
   const inputKey = await question('Please enter new JULES_API_KEY:\n> ');
   if (inputKey.trim()) {
     const dirs = getProjectDirs();
     const envPath = path.join(dirs.julesDir, '.env');
     fs.writeFileSync(envPath, `JULES_API_KEY=${inputKey.trim()}\n`, 'utf8');
-    console.log(`✓ API Key updated successfully at: ${envPath}`);
+    console.log(`${PURPLE}✓ API Key updated successfully at: ${envPath}${RESET}`);
     process.env.JULES_API_KEY = inputKey.trim();
   } else {
-    console.log('No key entered. API Key unchanged.');
+    console.log(`${PURPLE}No key entered. API Key unchanged.${RESET}`);
   }
 }
 
@@ -103,24 +143,18 @@ async function showActiveSessions() {
   const sessions = loadSessions();
   const active = sessions.filter(s => s.status !== 'merged' && s.status !== 'failed');
 
-  console.log(`\n📊 === Active Sessions Status (${active.length} active) ===`);
+  console.log(`${PURPLE}\n📊 === Active Sessions Status (${active.length} active) ===${RESET}`);
   if (active.length === 0) {
-    console.log('No active cloud sessions found.');
+    console.log(`${PURPLE}No active cloud sessions found.${RESET}`);
     return;
   }
 
   const apiKey = getApiKey();
   const headers = apiKey ? { 'X-Goog-Api-Key': apiKey } : {};
 
-  console.log('------------------------------------------------------------------------------------------');
-  console.log('[Agent]'.padEnd(12) + ' | ' + '[Session ID]'.padEnd(20) + ' | ' + '[Mode]'.padEnd(10) + ' | ' + '[Local Status]'.padEnd(15) + ' | ' + '[Live State]');
-  console.log('------------------------------------------------------------------------------------------');
-
-  const GREEN = '\x1b[1;32m';
-  const YELLOW = '\x1b[1;33m';
-  const RED = '\x1b[1;31m';
-  const CYAN = '\x1b[1;36m';
-  const RESET = '\x1b[0m';
+  console.log(`${PURPLE}------------------------------------------------------------------------------------------${RESET}`);
+  console.log(`${PURPLE}[Agent]`.padEnd(12) + ' | ' + '[Session ID]'.padEnd(20) + ' | ' + '[Mode]'.padEnd(10) + ' | ' + '[Local Status]'.padEnd(15) + ' | ' + '[Live State]' + RESET);
+  console.log(`${PURPLE}------------------------------------------------------------------------------------------${RESET}`);
 
   for (const s of active) {
     let liveState = 'UNKNOWN';
@@ -143,7 +177,7 @@ async function showActiveSessions() {
 
     console.log(`${s.agent.padEnd(12)} | ${s.id.slice(0, 18).padEnd(20)} | ${s.mode.toUpperCase().padEnd(10)} | ${s.status.padEnd(15)} | ${coloredState}`);
   }
-  console.log('------------------------------------------------------------------------------------------');
+  console.log(`${PURPLE}------------------------------------------------------------------------------------------${RESET}`);
   saveSessions(sessions);
 }
 
@@ -169,26 +203,26 @@ async function handleSmartLaunch() {
   const dirs = getProjectDirs();
   const registryPath = path.join(dirs.agentsDir, 'registry.json');
 
-  console.log('\n🤖 Smart Launch: Auto-Interpret Intent');
+  console.log(`${PURPLE}\n🤖 Smart Launch: Auto-Interpret Intent${RESET}`);
   const taskGoal = await question('Describe what you want to achieve in natural language:\n> ');
   if (!taskGoal.trim()) {
-    console.log('Task goal cannot be empty.');
+    console.log(`${PURPLE}Task goal cannot be empty.${RESET}`);
     return;
   }
 
   const { agents, mode } = inferAgentAndMode(taskGoal, registryPath);
-  console.log('\n--------------------------------------------------');
-  console.log(`Suggested Agent(s) : ${agents.join(', ')}`);
-  console.log(`Suggested Mode     : ${mode.toUpperCase()}`);
-  console.log('--------------------------------------------------');
+  console.log(`${PURPLE}\n--------------------------------------------------${RESET}`);
+  console.log(`${PURPLE}Suggested Agent(s) : ${agents.join(', ')}${RESET}`);
+  console.log(`${PURPLE}Suggested Mode     : ${mode.toUpperCase()}${RESET}`);
+  console.log(`${PURPLE}--------------------------------------------------${RESET}`);
 
   const confirm = await question('Deploy session now? (Y/n): ');
   if (confirm.toLowerCase() === 'n') {
-    console.log('Launch aborted.');
+    console.log(`${PURPLE}Launch aborted.${RESET}`);
     return;
   }
 
-  console.log(`Deploying session for ${agents.join(', ')} in ${mode.toUpperCase()} mode...`);
+  console.log(`${PURPLE}Deploying session for ${agents.join(', ')} in ${mode.toUpperCase()} mode...${RESET}`);
   
   process.argv = [
     process.argv[0],
@@ -202,32 +236,59 @@ async function handleSmartLaunch() {
   try {
     await deploySession();
   } catch (err: any) {
-    console.error(`Launch failed: ${err.message}`);
+    console.error(`${RED}Launch failed: ${err.message}${RESET}`);
   }
 }
 
 async function handleManualDeploy() {
-  console.log('\n🚀 Manual Sesi Deployment');
+  console.log(`${PURPLE}\n🚀 [ JULES ] Manual Session Deployment${RESET}`);
   const modeChoice = await question('Select Mode:\n[1] Code Mode (Direct Implementation)\n[2] Review Mode (Audit Only)\nChoice (1-2): ');
   const mode = modeChoice === '2' ? 'review' : 'code';
 
-  const agents = await question('Enter Agent Name(s) (comma-separated, e.g. bolt,sentinel):\n> ');
-  if (!agents.trim()) {
-    console.log('Agent names cannot be empty.');
+  console.log(`${PURPLE}\n=== Available Specialized Agents ===${RESET}`);
+  console.log(`${PURPLE}Coding Group (Permitted to write/modify code):${RESET}`);
+  SPECIALIST_AGENTS.filter(a => a.id <= 24).forEach(a => {
+    console.log(`  [${String(a.id).padStart(2)}] ${a.emoji} ${a.name.padEnd(15)} - ${a.desc}`);
+  });
+  console.log(`${PURPLE}\nDocumentation & Advisory Group (Markdown/Audits only):${RESET}`);
+  SPECIALIST_AGENTS.filter(a => a.id > 24).forEach(a => {
+    console.log(`  [${String(a.id).padStart(2)}] ${a.emoji} ${a.name.padEnd(15)} - ${a.desc}`);
+  });
+
+  const selection = await question('\nSelect Agent(s) by numbers separated by commas (e.g. 1,2,4):\n> ');
+  if (!selection.trim()) {
+    console.log(`${PURPLE}Selection cannot be empty.${RESET}`);
     return;
   }
 
-  const task = await question('Enter task description:\n> ');
-  if (!task.trim()) {
-    console.log('Task description cannot be empty.');
+  const selectedAgents: string[] = [];
+  const parts = selection.split(',');
+  for (const part of parts) {
+    const num = parseInt(part.trim());
+    const matched = SPECIALIST_AGENTS.find(a => a.id === num);
+    if (matched) {
+      selectedAgents.push(matched.name);
+    }
+  }
+
+  if (selectedAgents.length === 0) {
+    console.log(`${PURPLE}No valid agents selected.${RESET}`);
     return;
   }
+
+  const task = await question('\nEnter task description:\n> ');
+  if (!task.trim()) {
+    console.log(`${PURPLE}Task description cannot be empty.${RESET}`);
+    return;
+  }
+
+  console.log(`${PURPLE}\nDeploying session for: ${selectedAgents.join(', ')}...${RESET}`);
 
   process.argv = [
     process.argv[0],
     process.argv[1],
     '--type', 'review',
-    '--agents', agents,
+    '--agents', selectedAgents.join(','),
     '--task', task,
     '--mode', mode
   ];
@@ -235,17 +296,17 @@ async function handleManualDeploy() {
   try {
     await deploySession();
   } catch (err: any) {
-    console.error(`Deployment failed: ${err.message}`);
+    console.error(`${RED}Deployment failed: ${err.message}${RESET}`);
   }
 }
 
 async function handleAutoProcess() {
-  console.log('\n⚡ Auto-Processing Active Sessions...');
+  console.log(`${PURPLE}\n⚡ [ JULES ] Auto-Processing Active Sessions...${RESET}`);
   process.argv = [process.argv[0], process.argv[1], '--all'];
   try {
     await autoProcess();
   } catch (err: any) {
-    console.error(`Auto-processing failed: ${err.message}`);
+    console.error(`${RED}Auto-processing failed: ${err.message}${RESET}`);
   }
 }
 
@@ -254,13 +315,13 @@ async function handleInspect() {
   const completed = sessions.filter(s => s.status === 'completed' || s.status === 'launched' || s.status === 'plan_approved');
   
   if (completed.length === 0) {
-    console.log('\nNo completed sessions available for inspection.');
+    console.log(`${PURPLE}\nNo completed sessions available for inspection.${RESET}`);
     return;
   }
 
-  console.log('\n🔍 Available Completed Sessions to Inspect:');
+  console.log(`${PURPLE}\n🔍 Available Completed Sessions to Inspect:${RESET}`);
   completed.forEach((s, idx) => {
-    console.log(`[${idx + 1}] ${s.agent} (${s.id.slice(0, 12)}...)`);
+    console.log(`  [${idx + 1}] ${s.agent} (${s.id.slice(0, 12)}...)`);
   });
 
   const choice = await question('Select Session Number to Inspect (or enter to cancel):\n> ');
@@ -273,21 +334,21 @@ async function handleInspect() {
 
   const apiKey = getApiKey();
   if (!apiKey) {
-    console.error('Error: JULES_API_KEY not found.');
+    console.error(`${RED}Error: JULES_API_KEY not found.${RESET}`);
     return;
   }
 
   try {
     const ok = await checkSafetyGate({ 'X-Goog-Api-Key': apiKey });
     if (!ok) {
-      console.error('\n❌ Execution Blocked: Some active sessions are still in progress.');
-      console.error('Wait until ALL active sessions are COMPLETED to prevent code conflicts.');
+      console.error(`${RED}\n❌ Execution Blocked: Some active sessions are still in progress.${RESET}`);
+      console.error(`${RED}Wait until ALL active sessions are COMPLETED to prevent code conflicts.${RESET}`);
       return;
     }
 
     await inspectSession(target.id, targetBranch, { 'X-Goog-Api-Key': apiKey }, targetBranch);
   } catch (err: any) {
-    console.error(`Inspection failed: ${err.message}`);
+    console.error(`${RED}Inspection failed: ${err.message}${RESET}`);
   }
 }
 
@@ -296,14 +357,14 @@ async function handleApproveMerge() {
   const inspected = sessions.filter(s => s.status === 'inspected');
 
   if (inspected.length === 0) {
-    console.log('\nNo inspected sessions ready for final merge.');
-    console.log('Run Option 5 (Inspect Completed Sessions) first.');
+    console.log(`${PURPLE}\nNo inspected sessions ready for final merge.${RESET}`);
+    console.log(`${PURPLE}Run Option 5 (Inspect Completed Sessions) first.${RESET}`);
     return;
   }
 
-  console.log('\n🌿 Inspected Sessions Ready for Final Merge:');
+  console.log(`${PURPLE}\n🌿 Inspected Sessions Ready for Final Merge:${RESET}`);
   inspected.forEach((s, idx) => {
-    console.log(`[${idx + 1}] ${s.agent} (${s.id.slice(0, 12)}...)`);
+    console.log(`  [${idx + 1}] ${s.agent} (${s.id.slice(0, 12)}...)`);
   });
 
   const choice = await question('Select Session Number to Merge (or enter to cancel):\n> ');
@@ -316,28 +377,24 @@ async function handleApproveMerge() {
 
   const apiKey = getApiKey();
   if (!apiKey) {
-    console.error('Error: JULES_API_KEY not found.');
+    console.error(`${RED}Error: JULES_API_KEY not found.${RESET}`);
     return;
   }
 
   try {
     const ok = await checkSafetyGate({ 'X-Goog-Api-Key': apiKey });
     if (!ok) {
-      console.error('\n❌ Execution Blocked: Active sessions are in progress.');
+      console.error(`${RED}\n❌ Execution Blocked: Active sessions are in progress.${RESET}`);
       return;
     }
 
     await approveMerge(target.id, targetBranch, targetBranch);
   } catch (err: any) {
-    console.error(`Merge failed: ${err.message}`);
+    console.error(`${RED}Merge failed: ${err.message}${RESET}`);
   }
 }
 
 export async function main() {
-  const PURPLE = '\x1b[1;35m';
-  const CYAN = '\x1b[1;36m';
-  const RESET = '\x1b[0m';
-
   // 1. Output Bold Purple JULES COMPANION Block ASCII Art Banner
   console.log(`${PURPLE}
  ██████  ██    ██  ██      ███████  ███████ 
@@ -366,20 +423,20 @@ ${RESET}`);
   await ensureApiKey();
 
   while (true) {
-    console.log(`
- ╔═════════════════════════════════════════════════════════╗
- ║                SELECT INTERACTIVE ACTION                ║
- ╠═════════════════════════════════════════════════════════╣
- ║  [ 1 ] 🚀 Deploy Specialist Session (Manual)            ║
- ║  [ 2 ] 🤖 Auto-Interpret Intent & Deploy (Smart Launch) ║
- ║  [ 3 ] 📊 Check Active Sessions Status (Single-Shot)    ║
- ║  [ 4 ] ⚡ Auto-Process Active Sessions (Approve & Reply) ║
- ║  [ 5 ] 🔍 Inspect Completed Sessions (Generate Reports) ║
- ║  [ 6 ] ✅ Approve & Finalize Merge (Integrate Patch)     ║
- ║  [ 7 ] 🔑 Configure / Update API Key                    ║
- ║  [ 8 ] ⚙️  Workspace Setup / Self-Healing                ║
- ║  [ 9 ] 🚪 Exit                                          ║
- ╚═════════════════════════════════════════════════════════╝`);
+    console.log(`${PURPLE}
+ ╔═════════════════════════════════════════════════════════════════════════╗
+ ║                        SELECT INTERACTIVE ACTION                        ║
+ ╠═════════════════════════════════════════════════════════════════════════╣
+ ║  [ 1 ] 🚀 Deploy Specialist Session (Manual Selection List)             ║
+ ║  [ 2 ] 🤖 Auto-Interpret Intent & Deploy (Smart Launch)                 ║
+ ║  [ 3 ] 📊 Check Active Sessions Status (Single-Shot)                    ║
+ ║  [ 4 ] ⚡ Auto-Process Active Sessions (Approve & Reply)                ║
+ ║  [ 5 ] 🔍 Inspect Completed Sessions (Generate Reports)                 ║
+ ║  [ 6 ] ✅ Approve & Finalize Merge (Integrate Patch)                    ║
+ ║  [ 7 ] 🔑 Configure / Update API Key                                    ║
+ ║  [ 8 ] ⚙️  Workspace Setup / Self-Healing                               ║
+ ║  [ 9 ] 🚪 Exit                                                          ║
+ ╚═════════════════════════════════════════════════════════════════════════╝${RESET}`);
 
     const choice = await question('Enter Option (1-9): ');
     if (choice === '1') {
@@ -397,14 +454,14 @@ ${RESET}`);
     } else if (choice === '7') {
       await handleUpdateApiKey();
     } else if (choice === '8') {
-      console.log('\nRunning Setup...');
+      console.log(`${PURPLE}\nRunning Setup...${RESET}`);
       runSetup();
     } else if (choice === '9') {
-      console.log('Goodbye!');
+      console.log(`${PURPLE}Goodbye!${RESET}`);
       rl.close();
       process.exit(0);
     } else {
-      console.log('Invalid option. Please choose 1-9.');
+      console.log(`${PURPLE}Invalid option. Please choose 1-9.${RESET}`);
     }
   }
 }
