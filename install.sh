@@ -36,7 +36,13 @@ echo "🔗 Creating global command shortcut alias..."
 mkdir -p "$HOME/.local/bin"
 cat << 'EOF' > "$HOME/.local/bin/jules-companion"
 #!/usr/bin/env bash
-node "$HOME/.gemini/config/skills/jules-companion/dist/jules_menu.js" "$@"
+if command -v bun &> /dev/null; then
+  bun "$HOME/.gemini/config/skills/jules-companion/dist/jules_menu.js" "$@"
+elif [ -f "$HOME/.bun/bin/bun" ]; then
+  "$HOME/.bun/bin/bun" "$HOME/.gemini/config/skills/jules-companion/dist/jules_menu.js" "$@"
+else
+  node "$HOME/.gemini/config/skills/jules-companion/dist/jules_menu.js" "$@"
+fi
 EOF
 chmod +x "$HOME/.local/bin/jules-companion"
 
