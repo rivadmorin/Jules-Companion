@@ -92,50 +92,50 @@ Skill ini dilengkapi dengan skrip otomatisasi berbasis **TypeScript** yang dikom
   ```bash
   node dist/setup.js
   ```
-  Mendeteksi OS, memeriksa dependensi, membuat struktur folder `.jules-companion/`, menyalin file referensi global ke lokal, dan memperbarui `.gitignore`.
+  Mendeteksi OS, memeriksa dependensi, membuat struktur folder `.jules-companion/`, folder tinjauan `docs/jules-reviews/`, folder laporan `docs/jules-reports/`, dan memperbarui `.gitignore`.
 
-* **Registri Metadata Agen Cepat (`registry.json`)**:
-  Agent AI dapat membaca metadata ke-30 agen secara instan tanpa memuat 30 file markdown:
+* **Konsol Menu Interaktif & Smart Launch (`jules_menu.js`)**:
   ```bash
-  node dist/generate_registry.js
+  # Buka konsol menu terpadu dari direktori proyek mana saja
+  jules-companion
   ```
-  Berkas registri tersimpan di `references/agents/registry.json`.
+  Menyediakan alur interaktif berbasis angka (1-8) mulai dari Deployment, Smart Launch (Auto-Interpret Intent), Polling Sesi Aktif, Inspeksi Patch + Markdown Report, hingga Merge Akhir.
 
 * **Deploy Sesi Cloud Otonom (`deploy_session.js`)**:
   ```bash
   # Mode 'code' (default): Penulisan kode fungsional biasa
   node dist/deploy_session.js --type start --agents bolt --task "Optimasi memori loop" --mode code
 
-  # Mode 'review': Audit non-destruktif, menulis laporan markdown ke docs/jules-reviews/
+  # Mode 'review': Audit non-destruktif, menulis laporan ke docs/jules-reviews/
   node dist/deploy_session.js --type review --agents sentinel --task "Audit keamanan" --mode review
   ```
 
 * **Auto-Approval & Auto-Reply Engine (`auto_process.js`)**:
   ```bash
-  # Polling otomatis dan persetujuan rencana/pesan balasan sesi yang tertunda
+  # Polling otomatis dan persetujuan rencana / balasan sesi cloud yang tertunda
   node dist/auto_process.js --all
   ```
 
-* **Penggabungan Patch Safe-Git & Diff Code Report (`merge_session.js`)**:
+* **Inspeksi & Penggabungan Patch Dua-Tahap (`merge_session.js`)**:
   ```bash
-  # Penggabungan sesi spesifik dengan laporan diff visual (📊)
-  node dist/merge_session.js --session <session_id> --target main
+  # Tahap 1: Tarik patch ke branch isolasi & buat Laporan Markdown lokal
+  node dist/merge_session.js --inspect <session_id>
 
-  # Penggabungan batch seluruh sesi selesai secara otomatis
-  node dist/merge_session.js --all --target main
+  # Tahap 2: Merge branch isolasi ke branch utama setelah laporan disetujui
+  node dist/merge_session.js --approve <session_id>
   ```
 
 ---
 
-## Cara Instalasi Global (One-Line Install)
+## Cara Inisiasi Inisialisasi Global (One-Line Install)
 
-Cukup jalankan satu baris perintah ini di terminal Anda untuk menginstal skill secara **global**:
+Cukup jalankan satu baris perintah ini di terminal Anda untuk menginstal skill secara **global** beserta perintah pintasnya:
 
 ```bash
 curl -sSL https://raw.githubusercontent.com/rivadmorin/Jules-Companion/main/install.sh | bash
 ```
 
-Perintah di atas akan otomatis mengkloning repositori ke `~/.gemini/config/skills/jules-companion`, menginstal dependensi, dan menggenerasi registri agen secara otomatis. Skill `jules-companion` siap digunakan di seluruh workspace Anda.
+Perintah di atas akan otomatis mengkloning repositori ke `~/.gemini/config/skills/jules-companion`, menginstal dependensi, membuat shortcut global `jules-companion` di `~/.local/bin/`, dan menggenerasi registri agen secara otomatis.
 
 ---
 
@@ -143,36 +143,54 @@ Perintah di atas akan otomatis mengkloning repositori ke `~/.gemini/config/skill
 
 Copy and paste any of the prompts below directly into your AI Agent chat (**Antigravity**, **Claude Code**, **Gemini CLI**, **Cursor**, etc.):
 
-### 1. Global Installation & Project Initialization Prompt
+### 1. Global Project Initialization Prompt
 ```text
-Please install and activate the jules-companion skill globally on my system by running the following command in the terminal:
+Please install and activate the jules-companion skill globally on my system:
 curl -sSL https://raw.githubusercontent.com/rivadmorin/Jules-Companion/main/install.sh | bash
-After installation completes, run node dist/setup.js in this project to initialize the .jules-companion/ staging folder and docs/jules-reviews/ directory.
+After installation completes, run jules-companion option 7 (or node dist/setup.js) in this project to initialize the staging directory, docs/jules-reviews/, and docs/jules-reports/ folders.
 ```
 
-### 2. Deploy Specialist Agent (Code Mode) Prompt
+### 2. Launch Interactive Companion Console Prompt
 ```text
-Use the jules-companion skill to deploy the 'bolt' agent in code mode to optimize application performance. Run:
-node dist/deploy_session.js --type start --agents bolt --task "Optimize memory allocations" --mode code
+Launch the interactive Jules Companion menu to manage the Google Jules session lifecycle:
+jules-companion
 ```
 
-### 3. Deploy Specialist Agent (Audit-Only Review Mode) Prompt
+### 3. Smart Launch Agent (Auto-Interpret Intent) Prompt
 ```text
-Use the jules-companion skill to deploy the 'sentinel' agent in review mode for a non-destructive security audit. Run:
-node dist/deploy_session.js --type review --agents sentinel --task "Security vulnerability audit" --mode review
+Use the Smart Launch Option 2 in jules-companion to automatically map the required specialist agents and execution mode (code or review) based on my goal:
+Type Option 2 inside jules-companion, then input: "clean up memory leaks in jules_client and optimize loop allocations"
 ```
 
-### 4. Fetch & Batch Merge Patches Prompt
+### 4. Check Active Session Status (Single-Shot Token-Saver) Prompt
 ```text
-Fetch completed Jules cloud session patches, display the visual code diff report (📊), detect review documents (📄), and merge into main:
-node dist/merge_session.js --all --target main
+Verify the current live state of all active cloud sessions without loop polling:
+Type Option 3 inside jules-companion
 ```
 
-### 5. Skill Uninstallation & Cleanup Prompt
+### 5. Auto-Process Pending Approvals & Replies Prompt
 ```text
-Please cleanly remove the jules-companion skill from my system:
+Automatically approve pending plans and send confirmation replies to the cloud sessions:
+Type Option 4 inside jules-companion
+```
+
+### 6. Inspect Patch & Generate Markdown Report Prompt
+```text
+Run Option 5 in jules-companion to enforce the All-Sessions-Completed Safety Gate, pull the patch into an isolated review branch, and generate the universal Markdown summary report under docs/jules-reports/ for inspection.
+```
+
+### 7. Approve & Finalize Git Merge Prompt
+```text
+Review the generated report under docs/jules-reports/ and merge the approved patch into the main branch:
+Type Option 6 inside jules-companion to finalize the git merge and delete temporary branches.
+```
+
+### 8. Skill Uninstallation & Cleanup Prompt
+```text
+Please cleanly remove the jules-companion skill:
 rm -rf ~/.gemini/config/skills/jules-companion
-If this project has a .jules-companion/ staging directory, remove it and clean up .gitignore.
+rm -f ~/.local/bin/jules-companion
+If this project has staging folders, remove .jules-companion/, docs/jules-reviews/, and docs/jules-reports/ directories.
 ```
 
 ---

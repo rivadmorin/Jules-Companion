@@ -85,7 +85,8 @@ export function runSetup(targetDir: string = process.cwd()): SetupResult {
 
   // 3. Project directories setup via utils
   const dirs = getProjectDirs(targetDir);
-  [dirs.julesDir, dirs.refDir, dirs.agentsDir, dirs.scratchDir, dirs.docsReviewsDir].forEach(dir => {
+  const docsReportsDir = path.join(targetDir, 'docs', 'jules-reports');
+  [dirs.julesDir, dirs.refDir, dirs.agentsDir, dirs.scratchDir, dirs.docsReviewsDir, docsReportsDir].forEach(dir => {
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
