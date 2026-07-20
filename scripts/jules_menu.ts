@@ -6,7 +6,7 @@ import { runSetup } from './setup';
 import { deploySession } from './deploy_session';
 import { autoProcess } from './auto_process';
 import { inspectSession, approveMerge, checkSafetyGate } from './merge_session';
-import { getApiKey } from './jules_client';
+import { getApiKey, request } from './jules_client';
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -150,7 +150,7 @@ async function showActiveSessions() {
   }
 
   const apiKey = getApiKey();
-  const headers = apiKey ? { 'X-Goog-Api-Key': apiKey } : {};
+  const headers: Record<string, string> = apiKey ? { 'X-Goog-Api-Key': apiKey } : {};
 
   console.log(`${PURPLE}------------------------------------------------------------------------------------------${RESET}`);
   console.log(`${PURPLE}[Agent]`.padEnd(12) + ' | ' + '[Session ID]'.padEnd(20) + ' | ' + '[Mode]'.padEnd(10) + ' | ' + '[Local Status]'.padEnd(15) + ' | ' + '[Live State]' + RESET);
@@ -181,23 +181,7 @@ async function showActiveSessions() {
   saveSessions(sessions);
 }
 
-// Request wrapper helper
-async function request(url: string, options: any): Promise<any> {
-  const fetch = require('node-fetch');
-  const res = await fetch(url, {
-    method: options.method || 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers
-    },
-    body: options.body ? JSON.stringify(options.body) : undefined
-  });
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`HTTP ${res.status}: ${text}`);
-  }
-  return res.json();
-}
+
 
 async function handleSmartLaunch() {
   const dirs = getProjectDirs();
