@@ -17,6 +17,41 @@ function question(query: string): Promise<string> {
   return new Promise((resolve) => rl.question(query, resolve));
 }
 
+async function ensureApiKey(): Promise<string | null> {
+  let key = getApiKey();
+  if (key) return key;
+
+  console.log('\n🔑 Jules API Key is missing!');
+  console.log('To deploy or monitor cloud sessions, you need a Google Jules API Key.');
+  const inputKey = await question('Please paste your JULES_API_KEY (or press Enter to skip):\n> ');
+
+  if (inputKey.trim()) {
+    const dirs = getProjectDirs();
+    const envPath = path.join(dirs.julesDir, '.env');
+    fs.writeFileSync(envPath, `JULES_API_KEY=${inputKey.trim()}\n`, 'utf8');
+    console.log(`✓ API Key saved to: ${envPath}`);
+    process.env.JULES_API_KEY = inputKey.trim();
+    return inputKey.trim();
+  }
+
+  console.log('⚠️ Skipping API Key setup. Cloud deployments will be unavailable.');
+  return null;
+}
+
+async function handleUpdateApiKey() {
+  console.log('\n🔑 Configure / Update Jules API Key');
+  const inputKey = await question('Please enter new JULES_API_KEY:\n> ');
+  if (inputKey.trim()) {
+    const dirs = getProjectDirs();
+    const envPath = path.join(dirs.julesDir, '.env');
+    fs.writeFileSync(envPath, `JULES_API_KEY=${inputKey.trim()}\n`, 'utf8');
+    console.log(`✓ API Key updated successfully at: ${envPath}`);
+    process.env.JULES_API_KEY = inputKey.trim();
+  } else {
+    console.log('No key entered. API Key unchanged.');
+  }
+}
+
 function inferAgentAndMode(text: string, registryPath: string): { agents: string[], mode: 'code' | 'review' } {
   const normalized = text.toLowerCase();
   let mode: 'code' | 'review' = 'code';
@@ -81,6 +116,12 @@ async function showActiveSessions() {
   console.log('[Agent]'.padEnd(12) + ' | ' + '[Session ID]'.padEnd(20) + ' | ' + '[Mode]'.padEnd(10) + ' | ' + '[Local Status]'.padEnd(15) + ' | ' + '[Live State]');
   console.log('------------------------------------------------------------------------------------------');
 
+  const GREEN = '\x1b[1;32m';
+  const YELLOW = '\x1b[1;33m';
+  const RED = '\x1b[1;31m';
+  const CYAN = '\x1b[1;36m';
+  const RESET = '\x1b[0m';
+
   for (const s of active) {
     let liveState = 'UNKNOWN';
     if (apiKey) {
@@ -93,13 +134,20 @@ async function showActiveSessions() {
         liveState = 'FETCH_FAILED';
       }
     }
-    console.log(`${s.agent.padEnd(12)} | ${s.id.slice(0, 18).padEnd(20)} | ${s.mode.toUpperCase().padEnd(10)} | ${s.status.padEnd(15)} | ${liveState}`);
+
+    let coloredState = liveState;
+    if (liveState === 'COMPLETED') coloredState = `${GREEN}COMPLETED${RESET}`;
+    else if (liveState === 'RUNNING') coloredState = `${YELLOW}RUNNING${RESET}`;
+    else if (liveState === 'FAILED') coloredState = `${RED}FAILED${RESET}`;
+    else if (liveState.includes('AWAITING')) coloredState = `${CYAN}${liveState}${RESET}`;
+
+    console.log(`${s.agent.padEnd(12)} | ${s.id.slice(0, 18).padEnd(20)} | ${s.mode.toUpperCase().padEnd(10)} | ${s.status.padEnd(15)} | ${coloredState}`);
   }
   console.log('------------------------------------------------------------------------------------------');
   saveSessions(sessions);
 }
 
-// Request wrapper mock for REST API
+// Request wrapper helper
 async function request(url: string, options: any): Promise<any> {
   const fetch = require('node-fetch');
   const res = await fetch(url, {
@@ -142,7 +190,6 @@ async function handleSmartLaunch() {
 
   console.log(`Deploying session for ${agents.join(', ')} in ${mode.toUpperCase()} mode...`);
   
-  // Call deploy_session programmatically
   process.argv = [
     process.argv[0],
     process.argv[1],
@@ -287,22 +334,54 @@ async function handleApproveMerge() {
 }
 
 export async function main() {
+  const PURPLE = '\x1b[1;35m';
+  const CYAN = '\x1b[1;36m';
+  const RESET = '\x1b[0m';
+
+  // 1. Output Bold Purple JULES COMPANION Block ASCII Art Banner
+  console.log(`${PURPLE}
+ ██████  ██    ██  ██      ███████  ███████ 
+    ██   ██    ██  ██      ██       ██      
+    ██   ██    ██  ██      █████    ███████ 
+ ██  ██  ██    ██  ██      ██            ██ 
+  ████    ██████   ███████ ███████  ███████ 
+
+  ██████  ██████  ███    ███ ██████   █████  ███    ██  ██  ██████  ███    ██ 
+ ██      ██    ██ ████  ████ ██   ██ ██   ██ ████   ██  ██ ██    ██ ████   ██ 
+ ██      ██    ██ ██ ████ ██ ██████  ███████ ██ ██  ██  ██ ██    ██ ██ ██  ██ 
+ ██      ██    ██ ██  ██  ██ ██      ██   ██ ██  ██ ██  ██ ██    ██ ██  ██ ██ 
+  ██████  ██████  ██      ██ ██      ██   ██ ██   ████  ██  ██████  ██   ████ 
+${RESET}`);
+
+  // 2. Output Detailed ASCII Workflow Diagram
+  console.log(`${CYAN}
+  ⚙️  JULES WORKFLOW LIFE-CYCLE:
+  [1. Deploy] ──► [2. Smart Launch] ──► [3. Monitor] ──► [4. Auto-Process]
+                                                                │
+                                                                ▼
+  [6. Merge]  ◄── [docs/reports/]   ◄── [5. Inspect] ◄── [Safety Gate]
+${RESET}`);
+
+  // 3. Ensure API Key before menu load
+  await ensureApiKey();
+
   while (true) {
     console.log(`
-============================================
-   Jules Companion Interactive Console Menu
-============================================
-1. Deploy Specialist Agent Session (Manual)
-2. Auto-Interpret Intent & Deploy (Smart Launch)
-3. Check Active Sessions Status (Single-Shot)
-4. Auto-Process Active Sessions (Approve & Reply)
-5. Inspect Completed Sessions (Generate Reports)
-6. Approve & Finalize Merge (Integrate Patch)
-7. Workspace Setup / Self-Healing
-8. Exit
-============================================`);
+ ╔═════════════════════════════════════════════════════════╗
+ ║                SELECT INTERACTIVE ACTION                ║
+ ╠═════════════════════════════════════════════════════════╣
+ ║  [ 1 ] 🚀 Deploy Specialist Session (Manual)            ║
+ ║  [ 2 ] 🤖 Auto-Interpret Intent & Deploy (Smart Launch) ║
+ ║  [ 3 ] 📊 Check Active Sessions Status (Single-Shot)    ║
+ ║  [ 4 ] ⚡ Auto-Process Active Sessions (Approve & Reply) ║
+ ║  [ 5 ] 🔍 Inspect Completed Sessions (Generate Reports) ║
+ ║  [ 6 ] ✅ Approve & Finalize Merge (Integrate Patch)     ║
+ ║  [ 7 ] 🔑 Configure / Update API Key                    ║
+ ║  [ 8 ] ⚙️  Workspace Setup / Self-Healing                ║
+ ║  [ 9 ] 🚪 Exit                                          ║
+ ╚═════════════════════════════════════════════════════════╝`);
 
-    const choice = await question('Enter Option (1-8): ');
+    const choice = await question('Enter Option (1-9): ');
     if (choice === '1') {
       await handleManualDeploy();
     } else if (choice === '2') {
@@ -316,14 +395,16 @@ export async function main() {
     } else if (choice === '6') {
       await handleApproveMerge();
     } else if (choice === '7') {
+      await handleUpdateApiKey();
+    } else if (choice === '8') {
       console.log('\nRunning Setup...');
       runSetup();
-    } else if (choice === '8') {
+    } else if (choice === '9') {
       console.log('Goodbye!');
       rl.close();
       process.exit(0);
     } else {
-      console.log('Invalid option. Please choose 1-8.');
+      console.log('Invalid option. Please choose 1-9.');
     }
   }
 }
