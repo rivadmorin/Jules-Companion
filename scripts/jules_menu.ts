@@ -113,7 +113,7 @@ async function handleUpdateApiKey() {
   }
 }
 
-function inferAgentAndMode(text: string, registryPath: string): { agents: string[], mode: 'code' | 'review' } {
+export function inferAgentAndMode(text: string, registryPath: string): { agents: string[], mode: 'code' | 'review' } {
   const normalized = text.toLowerCase();
   let mode: 'code' | 'review' = 'code';
   const reviewKeywords = ['audit', 'review', 'analyze', 'check', 'inspect', 'security scan', 'report'];

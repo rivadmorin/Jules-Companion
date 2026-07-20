@@ -195,6 +195,22 @@ If this project has staging folders, remove .jules-companion/, docs/jules-review
 
 ---
 
+## Pengujian Unit (Unit Testing)
+
+Repositori ini menyertakan suite pengujian unit (*unit testing*) menggunakan Node.js Test Runner bawaan untuk menjamin kestabilan kode saat dilakukan pemeliharaan.
+
+Untuk menjalankan seluruh pengujian:
+```bash
+npm test
+```
+
+Pengujian mencakup:
+*   **Argument Parser (`parseArgs`)**: Memastikan argumen CLI diterjemahkan dengan benar.
+*   **Directory Resolver (`getProjectDirs`)**: Memastikan direktori lokal dibuat di lokasi yang tepat.
+*   **Intent Inference Engine (`inferAgentAndMode`)**: Memastikan agen spesialis dan mode yang diusulkan sesuai dengan maksud pengguna dalam bahasa alami.
+
+---
+
 ## Cara Uninstall (Uninstallation)
 
 Untuk menghapus skill global ini secara bersih:

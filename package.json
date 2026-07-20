@@ -9,7 +9,8 @@
     "registry": "node dist/generate_registry.js",
     "deploy": "node dist/deploy_session.js",
     "merge": "node dist/merge_session.js",
-    "client": "node dist/jules_client.js"
+    "client": "node dist/jules_client.js",
+    "test": "tsx --test tests/companion.test.ts"
   },
   "keywords": [
     "jules",
