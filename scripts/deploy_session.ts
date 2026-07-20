@@ -1,34 +1,17 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { spawnSync } from 'child_process';
 import { request, getApiKey, JulesSource } from './jules_client';
-
-function parseArgs(args: string[]): Record<string, string | boolean> {
-  const params: Record<string, string | boolean> = {};
-  for (let i = 0; i < args.length; i++) {
-    if (args[i].startsWith('--')) {
-      const key = args[i].slice(2);
-      const value = args[i + 1];
-      if (value && !value.startsWith('--')) {
-        params[key] = value;
-        i++;
-      } else {
-        params[key] = true;
-      }
-    }
-  }
-  return params;
-}
+import { parseArgs, getProjectDirs, loadSessions, saveSessions, runGit, SessionRecord } from './utils';
 
 function getCurrentBranch(): string {
-  const res = spawnSync('git', ['branch', '--show-current'], { encoding: 'utf8' });
-  return res.status === 0 && res.stdout.trim() ? res.stdout.trim() : 'main';
+  const res = runGit(['branch', '--show-current']);
+  return res.success && res.stdout ? res.stdout : 'main';
 }
 
 function getGitRemoteRepo(): string | null {
-  const res = spawnSync('git', ['config', '--get', 'remote.origin.url'], { encoding: 'utf8' });
-  if (res.status !== 0) return null;
-  const url = res.stdout.trim();
+  const res = runGit(['config', '--get', 'remote.origin.url']);
+  if (!res.success) return null;
+  const url = res.stdout;
   const match = url.match(/github\.com[/:]([^/]+)\/([^.]+)/);
   if (match) {
     return `${match[1]}/${match[2]}`.replace(/\.git$/, '');
@@ -41,8 +24,7 @@ function validateAgents(agentsStr: string, registryPath: string): string[] {
   try {
     const registry = JSON.parse(fs.readFileSync(registryPath, 'utf8'));
     const inputAgents = agentsStr.split(',').map(a => a.trim().toLowerCase());
-    const invalidAgents = inputAgents.filter(a => !registry.agents[a]);
-    return invalidAgents;
+    return inputAgents.filter(a => !registry.agents[a]);
   } catch {
     return [];
   }
@@ -69,20 +51,25 @@ Options:
   }
 
   // Mode validation
-  const mode = String(params.mode || 'code').toLowerCase();
-  if (mode !== 'code' && mode !== 'review') {
+  const modeStr = String(params.mode || 'code').toLowerCase();
+  if (modeStr !== 'code' && modeStr !== 'review') {
     console.error(`Error: Invalid mode '${params.mode}'. Allowed modes are 'code' or 'review'.`);
     process.exit(1);
   }
+  const mode = modeStr as 'code' | 'review';
 
-  // 1. Local Agent Name Validation
-  const registryPath = path.join(__dirname, '..', 'references', 'agents', 'registry.json');
-  const invalidAgents = validateAgents(String(params.agents), registryPath);
+  const dirs = getProjectDirs();
+  const registryPath = path.join(dirs.agentsDir, 'registry.json');
+  const fallbackRegistryPath = path.join(__dirname, '..', 'references', 'agents', 'registry.json');
+  const activeRegistryPath = fs.existsSync(registryPath) ? registryPath : fallbackRegistryPath;
+
+  // 1. Agent Name Validation
+  const invalidAgents = validateAgents(String(params.agents), activeRegistryPath);
   if (invalidAgents.length > 0) {
     console.error(`Error: Invalid agent name(s) specified: ${invalidAgents.join(', ')}`);
-    if (fs.existsSync(registryPath)) {
+    if (fs.existsSync(activeRegistryPath)) {
       try {
-        const registry = JSON.parse(fs.readFileSync(registryPath, 'utf8'));
+        const registry = JSON.parse(fs.readFileSync(activeRegistryPath, 'utf8'));
         console.log('Available valid agents:', Object.keys(registry.agents).join(', '));
       } catch (_) {}
     }
@@ -134,17 +121,7 @@ Options:
     const requirePlanApproval = typeStr === 'review' || typeStr === 'interactive';
     const agentList = String(params.agents).split(',').map(a => a.trim().toLowerCase());
 
-    const sessionsPath = path.join(process.cwd(), '.jules-companion', 'sessions.json');
-    let localSessions: any[] = [];
-    if (fs.existsSync(sessionsPath)) {
-      try {
-        localSessions = JSON.parse(fs.readFileSync(sessionsPath, 'utf8'));
-      } catch (e) {
-        localSessions = [];
-      }
-    }
-    if (!Array.isArray(localSessions)) localSessions = [];
-
+    const localSessions = loadSessions();
     const today = new Date().toISOString().split('T')[0];
     const taskSlug = params.task ? String(params.task).slice(0, 30).toLowerCase().replace(/[^a-z0-9]+/g, '-') : 'task';
 
@@ -152,7 +129,7 @@ Options:
       console.log(`\nPreparing deployment for agent: ${agent} (Mode: ${mode.toUpperCase()})...`);
 
       const templatePaths = [
-        path.join(process.cwd(), '.jules-companion', 'references', 'agents', `${agent}.md`),
+        path.join(dirs.agentsDir, `${agent}.md`),
         path.join(__dirname, '..', 'references', 'agents', `${agent}.md`)
       ];
 
@@ -165,13 +142,12 @@ Options:
       }
 
       const reviewFileName = `docs/jules-reviews/${today}-${agent}-${taskSlug}.md`;
-      const reviewDirective = mode === 'review'
-        ? `\n\n---\n⚠️ MODE STRICT DIRECTIVE: REVIEW-ONLY MODE\nYou are operating in REVIEW-ONLY mode.\n1. DO NOT modify, edit, or delete any application code files (.ts, .js, .py, .go, .rs, .json, etc.).\n2. Write ALL your findings, analysis, code snippets, and refactoring recommendations exclusively into a single Markdown file located at:\n   \`${reviewFileName}\`\n3. Provide clear line numbers, problem descriptions, and proposed code fixes inside the Markdown document so the main agent can review them.\n`
-        : '';
+      const modeDirective = mode === 'review'
+        ? `⚠️ MODE STRICT DIRECTIVE: REVIEW-ONLY MODE\nYou are operating in REVIEW-ONLY mode.\n1. DO NOT modify, edit, or delete any application code files (.ts, .js, .py, .go, .rs, .json, etc.).\n2. Write ALL your findings, analysis, code snippets, and refactoring recommendations exclusively into a single Markdown file located at:\n   \`${reviewFileName}\`\n3. Provide clear line numbers, problem descriptions, and proposed code fixes inside the Markdown document so the main agent can review them.`
+        : `⚠️ MODE DIRECTIVE: CODE IMPLEMENTATION MODE\nYou are operating in CODE mode. Perform direct code implementation and modifications as required.`;
 
-      const combinedPrompt = templateContent
-        ? `${templateContent}\n\n---\n## Specific Task Requirements for this Session:\n${params.task}${reviewDirective}`
-        : `${params.task}${reviewDirective}`;
+      // Structured Prompt Fusion: Agent Role System Template + Custom User Task Request + Mode Directive
+      const combinedPrompt = `# AGENT SYSTEM & ROLE DIRECTIVES\n${templateContent}\n\n---\n# USER TASK & SPECIFIC REQUIREMENTS\n${params.task}\n\n---\n# EXECUTION MODE DIRECTIVE\n${modeDirective}`;
 
       const payload = {
         prompt: combinedPrompt,
@@ -198,15 +174,14 @@ Options:
         id: sessionId,
         agent,
         mode,
-        task: params.task,
+        task: String(params.task),
         status: 'launched',
         timestamp: new Date().toISOString()
       });
     }
 
-    fs.mkdirSync(path.dirname(sessionsPath), { recursive: true });
-    fs.writeFileSync(sessionsPath, JSON.stringify(localSessions, null, 2), 'utf8');
-    console.log(`\nAll sessions registered in ${sessionsPath}`);
+    saveSessions(localSessions);
+    console.log(`\nAll sessions registered in .jules-companion/sessions.json`);
 
   } catch (error: any) {
     console.error('Deployment failed:', error.message);

@@ -1,46 +1,19 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { spawnSync } from 'child_process';
-import { request, getApiKey, getSessions, SessionRecord } from './jules_client';
-
-function runGit(args: string[]): { success: boolean; stdout: string; stderr: string } {
-  const res = spawnSync('git', args, { encoding: 'utf8' });
-  return {
-    success: res.status === 0,
-    stdout: res.stdout ? res.stdout.trim() : '',
-    stderr: res.stderr ? res.stderr.trim() : ''
-  };
-}
-
-function parseArgs(args: string[]): Record<string, string | boolean> {
-  const params: Record<string, string | boolean> = {};
-  for (let i = 0; i < args.length; i++) {
-    if (args[i].startsWith('--')) {
-      const key = args[i].slice(2);
-      const value = args[i + 1];
-      if (value && !value.startsWith('--')) {
-        params[key] = value;
-        i++;
-      } else {
-        params[key] = true;
-      }
-    }
-  }
-  return params;
-}
+import { request, getApiKey } from './jules_client';
+import { parseArgs, getProjectDirs, loadSessions, runGit } from './utils';
 
 async function processMergeForSession(
   sessionId: string,
   targetBranch: string,
   headers: Record<string, string>,
-  didStash: boolean,
+  scratchDir: string,
   originalBranch: string
 ): Promise<boolean> {
   console.log(`\n==========================================================================`);
   console.log(`🚀 Processing Merge for Session ID: ${sessionId}`);
   console.log(`==========================================================================`);
 
-  const scratchDir = path.join(process.cwd(), '.jules-companion', 'scratch');
   fs.mkdirSync(scratchDir, { recursive: true });
   const patchPath = path.join(scratchDir, `${sessionId}.patch`);
 
@@ -170,6 +143,7 @@ Options:
   }
 
   const headers = { 'X-Goog-Api-Key': apiKey };
+  const dirs = getProjectDirs();
 
   // 1. Pre-flight Git Status Check
   console.log('=== Step 1: Pre-flight Git Status Check ===');
@@ -196,7 +170,7 @@ Options:
   let targetSessionIds: string[] = [];
 
   if (isAll) {
-    const registeredSessions = getSessions();
+    const registeredSessions = loadSessions();
     targetSessionIds = registeredSessions.map(s => s.id);
     if (targetSessionIds.length === 0) {
       console.log('No registered sessions found in .jules-companion/sessions.json');
@@ -212,7 +186,7 @@ Options:
   let failCount = 0;
 
   for (const id of targetSessionIds) {
-    const ok = await processMergeForSession(id, targetBranch, headers, didStash, originalBranch);
+    const ok = await processMergeForSession(id, targetBranch, headers, dirs.scratchDir, originalBranch);
     if (ok) successCount++;
     else failCount++;
   }

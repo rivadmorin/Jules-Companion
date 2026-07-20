@@ -110,6 +110,12 @@ Skill ini dilengkapi dengan skrip otomatisasi berbasis **TypeScript** yang dikom
   node dist/deploy_session.js --type review --agents sentinel --task "Audit keamanan" --mode review
   ```
 
+* **Auto-Approval & Auto-Reply Engine (`auto_process.js`)**:
+  ```bash
+  # Polling otomatis dan persetujuan rencana/pesan balasan sesi yang tertunda
+  node dist/auto_process.js --all
+  ```
+
 * **Penggabungan Patch Safe-Git & Diff Code Report (`merge_session.js`)**:
   ```bash
   # Penggabungan sesi spesifik dengan laporan diff visual (📊)

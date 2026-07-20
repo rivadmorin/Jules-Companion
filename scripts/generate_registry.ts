@@ -1,28 +1,22 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-interface AgentInfo {
+export interface AgentMetadata {
   id: string;
   name: string;
-  emoji: string;
-  description: string;
+  role: string;
   group: 'coding' | 'advisory';
+  description: string;
   file: string;
 }
 
-interface AgentRegistry {
+export interface Registry {
   generatedAt: string;
   totalAgents: number;
-  agents: Record<string, AgentInfo>;
+  agents: Record<string, AgentMetadata>;
 }
 
-const codingAgents = new Set([
-  'palette', 'sentinel', 'bolt', 'watcher', 'exterminator',
-  'builder', 'alchemist', 'materialist', 'netrunner', 'dockerist',
-  'packager', 'modernizer', 'janitor', 'proteus', 'benchmarker'
-]);
-
-export function generateRegistry(): AgentRegistry {
+export function generateRegistry(): Registry {
   const agentsDir = path.join(__dirname, '..', 'references', 'agents');
   
   if (!fs.existsSync(agentsDir)) {
@@ -30,59 +24,60 @@ export function generateRegistry(): AgentRegistry {
     process.exit(1);
   }
 
+  const codingAgents = new Set([
+    'palette', 'sentinel', 'bolt', 'nomad', 'packager', 'exterminator',
+    'builder', 'conduit', 'alchemist', 'gatekeeper', 'bridge', 'dockerist',
+    'modernizer', 'inspector', 'janitor', 'logger', 'benchmarker', 'watcher',
+    'chameleon', 'innovator', 'materialist', 'partisan', 'netrunner', 'adapter'
+  ]);
+
   const files = fs.readdirSync(agentsDir).filter(f => f.endsWith('.md'));
-  const agents: Record<string, AgentInfo> = {};
+  const agentsMap: Record<string, AgentMetadata> = {};
 
   for (const file of files) {
+    const id = path.basename(file, '.md').toLowerCase();
     const filePath = path.join(agentsDir, file);
-    const agentId = path.basename(file, '.md').toLowerCase();
-    
-    try {
-      const content = fs.readFileSync(filePath, 'utf8');
-      const lines = content.split('\n').map(l => l.trim()).filter(Boolean);
-      
-      let name = agentId;
-      let emoji = '';
-      let description = 'Specialized agent';
+    const content = fs.readFileSync(filePath, 'utf8');
 
-      // Parse pattern: You are "Name" EMOJI - Description
-      const firstLine = lines[0] || '';
-      const match = firstLine.match(/You are "([^"]+)"\s*([^\s-]+)?\s*-\s*(.+)/i);
-
-      if (match) {
-        name = match[1];
-        emoji = match[2] || '';
-        description = match[3];
-      } else {
-        // Fallback: Use first header or non-empty line
-        const header = lines.find(l => l.startsWith('#'));
-        if (header) {
-          name = header.replace(/^#+\s*/, '');
-        }
-      }
-
-      agents[agentId] = {
-        id: agentId,
-        name,
-        emoji,
-        description,
-        group: codingAgents.has(agentId) ? 'coding' : 'advisory',
-        file: `references/agents/${file}`
-      };
-    } catch (err: any) {
-      console.error(`Warning: Failed to process ${file}:`, err.message);
+    // Extract title / role from first header
+    let role = id;
+    const headerMatch = content.match(/^#\scoped?\s*(.+)$/m) || content.match(/^#\s*(.+)$/m);
+    if (headerMatch) {
+      role = headerMatch[1].trim();
     }
+
+    // Extract short description from first non-header paragraph
+    let description = '';
+    const lines = content.split('\n');
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (trimmed && !trimmed.startsWith('#') && !trimmed.startsWith('```')) {
+        description = trimmed;
+        break;
+      }
+    }
+
+    const group: 'coding' | 'advisory' = codingAgents.has(id) ? 'coding' : 'advisory';
+
+    agentsMap[id] = {
+      id,
+      name: id.charAt(0).toUpperCase() + id.slice(1),
+      role,
+      group,
+      description,
+      file: `references/agents/${file}`
+    };
   }
 
-  const registry: AgentRegistry = {
+  const registry: Registry = {
     generatedAt: new Date().toISOString(),
-    totalAgents: Object.keys(agents).length,
-    agents
+    totalAgents: Object.keys(agentsMap).length,
+    agents: agentsMap
   };
 
-  const outputPath = path.join(agentsDir, 'registry.json');
-  fs.writeFileSync(outputPath, JSON.stringify(registry, null, 2), 'utf8');
-  console.log(`Successfully generated registry with ${registry.totalAgents} agents at ${outputPath}`);
+  const registryPath = path.join(agentsDir, 'registry.json');
+  fs.writeFileSync(registryPath, JSON.stringify(registry, null, 2), 'utf8');
+  console.log(`Registry generated successfully at ${registryPath} (${registry.totalAgents} agents index).`);
 
   return registry;
 }

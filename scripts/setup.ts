@@ -2,6 +2,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
 import { spawnSync } from 'child_process';
+import { getProjectDirs } from './utils';
+import { generateRegistry } from './generate_registry';
 
 interface SetupResult {
   os: string;
@@ -49,7 +51,7 @@ function ensureGitIdentity(): boolean {
       const setLocalEmail = spawnSync('git', ['config', '--local', 'user.email', 'agent@jules.local'], { encoding: 'utf8' });
       return setLocalName.status === 0 && setLocalEmail.status === 0;
     }
-    
+
     console.log('  - Git Identity: Verified ✓');
     return true;
   } catch (err: any) {
@@ -60,7 +62,7 @@ function ensureGitIdentity(): boolean {
 
 export function runSetup(targetDir: string = process.cwd()): SetupResult {
   console.log('=== Jules-Companion Self-Healing Environment Setup ===');
-  
+
   const osType = process.platform;
   console.log(`OS Detected: ${osType} (${process.arch})`);
 
@@ -78,17 +80,12 @@ export function runSetup(targetDir: string = process.cwd()): SetupResult {
   console.log('Checking Authentication & Git Identity...');
   const ghAuth = checkGhAuth();
   console.log(`  - GitHub Auth : ${ghAuth ? 'Logged In ✓' : '⚠️ Not Logged In'}`);
-  
+
   const gitIdentityOk = ensureGitIdentity();
 
-  // 3. Directory structure creation
-  const julesLocalDir = path.join(targetDir, '.jules-companion');
-  const refLocalDir = path.join(julesLocalDir, 'references');
-  const agentsLocalDir = path.join(refLocalDir, 'agents');
-  const scratchLocalDir = path.join(julesLocalDir, 'scratch');
-  const docsReviewsDir = path.join(targetDir, 'docs', 'jules-reviews');
-
-  [julesLocalDir, refLocalDir, agentsLocalDir, scratchLocalDir, docsReviewsDir].forEach(dir => {
+  // 3. Project directories setup via utils
+  const dirs = getProjectDirs(targetDir);
+  [dirs.julesDir, dirs.refDir, dirs.agentsDir, dirs.scratchDir, dirs.docsReviewsDir].forEach(dir => {
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
@@ -117,7 +114,7 @@ export function runSetup(targetDir: string = process.cwd()): SetupResult {
     const filesToCopy = ['jules-cli.md', 'jules-api.md', 'prompt-templates.md'];
     for (const file of filesToCopy) {
       const src = path.join(sourceRefDir, file);
-      const dest = path.join(refLocalDir, file);
+      const dest = path.join(dirs.refDir, file);
       if (fs.existsSync(src)) {
         fs.copyFileSync(src, dest);
         copiedFiles.push(file);
@@ -130,7 +127,7 @@ export function runSetup(targetDir: string = process.cwd()): SetupResult {
       const agentFiles = fs.readdirSync(sourceAgentsDir);
       for (const af of agentFiles) {
         const src = path.join(sourceAgentsDir, af);
-        const dest = path.join(agentsLocalDir, af);
+        const dest = path.join(dirs.agentsDir, af);
         if (fs.statSync(src).isFile()) {
           fs.copyFileSync(src, dest);
           copiedFiles.push(`agents/${af}`);
@@ -161,8 +158,15 @@ export function runSetup(targetDir: string = process.cwd()): SetupResult {
     console.log('.jules-companion/ is already present in .gitignore.');
   }
 
-  // 6. Initialize config.json & sessions.json if missing
-  const configPath = path.join(julesLocalDir, 'config.json');
+  // 6. Synchronize/Generate Registry
+  try {
+    generateRegistry();
+  } catch (err: any) {
+    console.warn(`Warning: Could not auto-generate registry during setup: ${err.message}`);
+  }
+
+  // 7. Initialize config.json & sessions.json if missing
+  const configPath = path.join(dirs.julesDir, 'config.json');
   if (!fs.existsSync(configPath)) {
     fs.writeFileSync(configPath, JSON.stringify({
       os: osType,
@@ -171,7 +175,7 @@ export function runSetup(targetDir: string = process.cwd()): SetupResult {
     }, null, 2), 'utf8');
   }
 
-  const sessionsPath = path.join(julesLocalDir, 'sessions.json');
+  const sessionsPath = path.join(dirs.julesDir, 'sessions.json');
   if (!fs.existsSync(sessionsPath)) {
     fs.writeFileSync(sessionsPath, JSON.stringify([], null, 2), 'utf8');
   }

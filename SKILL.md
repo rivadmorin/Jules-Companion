@@ -117,13 +117,18 @@ Use the TypeScript script wrappers for high-performance, non-blocking monitoring
     # Pull the latest completed patch to a local file
     node dist/jules_client.js pull <session_id> scratch/patch_name.diff
     ```
-*   **Auto-deploy customized agent sessions**:
+*   **Auto-deploy customized agent sessions (Template + User Prompt Fusion)**:
     ```bash
     # Deploys Bolt agent in default 'code' mode (direct functional implementation)
     node dist/deploy_session.js --type start --agents bolt --task "Optimize loop allocation" --mode code
 
     # Deploys Sentinel agent in 'review' mode (audit-only, writes report to docs/jules-reviews/ without modifying code)
     node dist/deploy_session.js --type review --agents sentinel --task "Security vulnerability audit" --mode review
+    ```
+*   **Autonomous Session Auto-Approval & Auto-Reply Engine**:
+    ```bash
+    # Automatically polls pending sessions, approves plans, and sends auto-replies to keep cloud sessions moving fast
+    node dist/auto_process.js --all
     ```
 *   **Consolidated Patch Merge Pipeline & Automated Code Diff Report**:
     ```bash
