@@ -8,10 +8,27 @@ import { autoProcess } from './auto_process';
 import { inspectSession, approveMerge, checkSafetyGate } from './merge_session';
 import { getApiKey, request } from './jules_client';
 
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout
-});
+// Type imports to avoid loading runtime code before FFI check
+import type { CliRenderer as TuiRenderer, SelectRenderable as TuiSelect } from '@opentui/core';
+
+let rl: readline.Interface | null = null;
+
+function getRl(): readline.Interface {
+  if (!rl) {
+    rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout
+    });
+  }
+  return rl;
+}
+
+function closeRl() {
+  if (rl) {
+    rl.close();
+    rl = null;
+  }
+}
 
 const PURPLE = '\x1b[1;35m';
 const CYAN = '\x1b[1;36m';
@@ -54,7 +71,11 @@ const SPECIALIST_AGENTS = [
 ];
 
 function question(query: string): Promise<string> {
-  return new Promise((resolve) => rl.question(`${PURPLE}${query}${RESET}`, resolve));
+  return new Promise((resolve) => {
+    getRl().question(`${PURPLE}${query}${RESET}`, (ans) => {
+      resolve(ans);
+    });
+  });
 }
 
 async function ensureApiKey(): Promise<string | null> {
@@ -171,7 +192,7 @@ async function showActiveSessions() {
 
     let coloredState = liveState;
     if (liveState === 'COMPLETED') coloredState = `${GREEN}COMPLETED${RESET}`;
-    else if (liveState === 'RUNNING') coloredState = `${YELLOW}RUNNING${RESET}`;
+    else if (liveState === 'RUNNING' || liveState === 'IN_PROGRESS') coloredState = `${YELLOW}${liveState}${RESET}`;
     else if (liveState === 'FAILED') coloredState = `${RED}FAILED${RESET}`;
     else if (liveState.includes('AWAITING')) coloredState = `${CYAN}${liveState}${RESET}`;
 
@@ -180,8 +201,6 @@ async function showActiveSessions() {
   console.log(`${PURPLE}------------------------------------------------------------------------------------------${RESET}`);
   saveSessions(sessions);
 }
-
-
 
 async function handleSmartLaunch() {
   const dirs = getProjectDirs();
@@ -378,6 +397,139 @@ async function handleApproveMerge() {
   }
 }
 
+async function executeChoice(choice: string) {
+  if (choice === '1') {
+    await handleManualDeploy();
+  } else if (choice === '2') {
+    await handleSmartLaunch();
+  } else if (choice === '3') {
+    await showActiveSessions();
+  } else if (choice === '4') {
+    await handleAutoProcess();
+  } else if (choice === '5') {
+    await handleInspect();
+  } else if (choice === '6') {
+    await handleApproveMerge();
+  } else if (choice === '7') {
+    await handleUpdateApiKey();
+  } else if (choice === '8') {
+    console.log(`${PURPLE}\nRunning Setup...${RESET}`);
+    runSetup();
+  }
+}
+
+async function runOpenTUIMenu(): Promise<void> {
+  const opentui = await import('@opentui/core');
+
+  const width = process.stdout.columns || 80;
+  const height = process.stdout.rows || 24;
+
+  closeRl(); // Ensure stdin is released for OpenTUI
+
+  const renderer = new opentui.CliRenderer(process.stdin, process.stdout, width, height, {
+    screenMode: 'main-screen',
+    exitOnCtrlC: true
+  });
+
+  const select = new opentui.SelectRenderable(renderer, {
+    options: [
+      { name: '🚀 Deploy Specialist Session (Manual Selection List)', description: 'Select specialists and deploy' },
+      { name: '🤖 Auto-Interpret Intent & Deploy (Smart Launch)', description: 'Deploy based on natural language goal' },
+      { name: '📊 Check Active Sessions Status (Single-Shot)', description: 'Fetch live state of sessions' },
+      { name: '⚡ Auto-Process Active Sessions (Approve & Reply)', description: 'Automatically process plan approval/replies' },
+      { name: '🔍 Inspect Completed Sessions (Generate Reports)', description: 'Examine completed session changes' },
+      { name: '✅ Approve & Finalize Merge (Integrate Patch)', description: 'Merge completed and inspected session branch' },
+      { name: '🔑 Configure / Update API Key', description: 'Configure Google Jules API Key' },
+      { name: '⚙️  Workspace Setup / Self-Healing', description: 'Prepare folders and registry index' },
+      { name: '🚪 Exit', description: 'Exit console' }
+    ],
+    width: '100%',
+    height: '100%',
+    backgroundColor: '#1a1025',
+    textColor: '#e0c0ff',
+    focusedBackgroundColor: '#502090',
+    focusedTextColor: '#ffffff',
+    descriptionColor: '#a080d0',
+    selectedDescriptionColor: '#ffffff'
+  });
+
+  renderer.root.add(select);
+  select.focus();
+
+  renderer.keyInput.on('keypress', (keyEvent) => {
+    if (keyEvent.ctrl && keyEvent.name === 'c') {
+      renderer.destroy();
+      process.exit(0);
+    }
+    select.handleKeyPress(keyEvent);
+    renderer.requestRender();
+  });
+
+  select.on('itemSelected', async () => {
+    const opt = select.getSelectedOption();
+    if (!opt) return;
+
+    renderer.destroy();
+
+    const choiceText = opt.name;
+    let choice = '9';
+    if (choiceText.includes('Deploy Specialist')) choice = '1';
+    else if (choiceText.includes('Auto-Interpret')) choice = '2';
+    else if (choiceText.includes('Check Active')) choice = '3';
+    else if (choiceText.includes('Auto-Process')) choice = '4';
+    else if (choiceText.includes('Inspect Completed')) choice = '5';
+    else if (choiceText.includes('Approve & Finalize')) choice = '6';
+    else if (choiceText.includes('Configure / Update')) choice = '7';
+    else if (choiceText.includes('Workspace Setup')) choice = '8';
+
+    await executeChoice(choice);
+
+    if (choice !== '9') {
+      setTimeout(() => {
+        runOpenTUIMenu().catch((err) => {
+          console.warn(`${YELLOW}[ JULES ] OpenTUI error during reload: ${err.message}. Switching to Fallback menu.${RESET}`);
+          runFallbackMenu();
+        });
+      }, 500);
+    } else {
+      console.log(`${PURPLE}Goodbye!${RESET}`);
+      process.exit(0);
+    }
+  });
+
+  renderer.requestRender();
+}
+
+async function runFallbackMenu() {
+  while (true) {
+    console.log(`${PURPLE}
+ ╔═════════════════════════════════════════════════════════════════════════╗
+ ║                        SELECT INTERACTIVE ACTION                        ║
+ ╠═════════════════════════════════════════════════════════════════════════╣
+ ║  [ 1 ] 🚀 Deploy Specialist Session (Manual Selection List)             ║
+ ║  [ 2 ] 🤖 Auto-Interpret Intent & Deploy (Smart Launch)                 ║
+ ║  [ 3 ] 📊 Check Active Sessions Status (Single-Shot)                    ║
+ ║  [ 4 ] ⚡ Auto-Process Active Sessions (Approve & Reply)                ║
+ ║  [ 5 ] 🔍 Inspect Completed Sessions (Generate Reports)                 ║
+ ║  [ 6 ] ✅ Approve & Finalize Merge (Integrate Patch)                    ║
+ ║  [ 7 ] 🔑 Configure / Update API Key                                    ║
+ ║  [ 8 ] ⚙️  Workspace Setup / Self-Healing                               ║
+ ║  [ 9 ] 🚪 Exit                                                          ║
+ ╚═════════════════════════════════════════════════════════════════════════╝${RESET}`);
+
+    const choice = await question('Enter Option (1-9): ');
+    if (choice === '9') {
+      console.log(`${PURPLE}Goodbye!${RESET}`);
+      closeRl();
+      process.exit(0);
+    } else if (['1', '2', '3', '4', '5', '6', '7', '8'].includes(choice)) {
+      await executeChoice(choice);
+    } else {
+      console.log(`${PURPLE}Invalid option. Please choose 1-9.${RESET}`);
+    }
+  }
+}
+
 export async function main() {
   // 1. Output Bold Purple JULES COMPANION Block ASCII Art Banner
   console.log(`${PURPLE}
@@ -406,47 +558,13 @@ ${RESET}`);
   // 3. Ensure API Key before menu load
   await ensureApiKey();
 
-  while (true) {
-    console.log(`${PURPLE}
- ╔═════════════════════════════════════════════════════════════════════════╗
- ║                        SELECT INTERACTIVE ACTION                        ║
- ╠═════════════════════════════════════════════════════════════════════════╣
- ║  [ 1 ] 🚀 Deploy Specialist Session (Manual Selection List)             ║
- ║  [ 2 ] 🤖 Auto-Interpret Intent & Deploy (Smart Launch)                 ║
- ║  [ 3 ] 📊 Check Active Sessions Status (Single-Shot)                    ║
- ║  [ 4 ] ⚡ Auto-Process Active Sessions (Approve & Reply)                ║
- ║  [ 5 ] 🔍 Inspect Completed Sessions (Generate Reports)                 ║
- ║  [ 6 ] ✅ Approve & Finalize Merge (Integrate Patch)                    ║
- ║  [ 7 ] 🔑 Configure / Update API Key                                    ║
- ║  [ 8 ] ⚙️  Workspace Setup / Self-Healing                               ║
- ║  [ 9 ] 🚪 Exit                                                          ║
- ╚═════════════════════════════════════════════════════════════════════════╝${RESET}`);
-
-    const choice = await question('Enter Option (1-9): ');
-    if (choice === '1') {
-      await handleManualDeploy();
-    } else if (choice === '2') {
-      await handleSmartLaunch();
-    } else if (choice === '3') {
-      await showActiveSessions();
-    } else if (choice === '4') {
-      await handleAutoProcess();
-    } else if (choice === '5') {
-      await handleInspect();
-    } else if (choice === '6') {
-      await handleApproveMerge();
-    } else if (choice === '7') {
-      await handleUpdateApiKey();
-    } else if (choice === '8') {
-      console.log(`${PURPLE}\nRunning Setup...${RESET}`);
-      runSetup();
-    } else if (choice === '9') {
-      console.log(`${PURPLE}Goodbye!${RESET}`);
-      rl.close();
-      process.exit(0);
-    } else {
-      console.log(`${PURPLE}Invalid option. Please choose 1-9.${RESET}`);
-    }
+  // Try to load OpenTUI; fallback to ANSI box-drawing loop if FFI or module fails
+  try {
+    await runOpenTUIMenu();
+  } catch (err: any) {
+    console.log(`${YELLOW}\n[ JULES ] OpenTUI native engine not supported on this platform: ${err.message}.${RESET}`);
+    console.log(`${PURPLE}[ JULES ] Falling back to premium ANSI CLI engine.${RESET}`);
+    await runFallbackMenu();
   }
 }
 

@@ -99,7 +99,7 @@ Skill ini dilengkapi dengan skrip otomatisasi berbasis **TypeScript** yang dikom
   # Buka konsol menu terpadu dari direktori proyek mana saja
   jules-companion
   ```
-  Menyediakan alur interaktif berbasis angka (1-8) mulai dari Deployment, Smart Launch (Auto-Interpret Intent), Polling Sesi Aktif, Inspeksi Patch + Markdown Report, hingga Merge Akhir.
+  Menyediakan alur interaktif modern berbasis **Anomaly OpenTUI** (`@opentui/core`) yang mendukung navigasi tombol panah keyboard. Jika pustaka FFI/Zig native tidak didukung pada platform runtime Anda, konsol otomatis beralih (*fallback*) ke menu ANSI Box-Drawing 75-karakter premium secara aman tanpa *crash*. Menyediakan alur Deployment, Smart Launch, Polling Sesi Aktif, Inspeksi Patch + Laporan Markdown, hingga Merge Akhir.
 
 * **Deploy Sesi Cloud Otonom (`deploy_session.js`)**:
   ```bash
