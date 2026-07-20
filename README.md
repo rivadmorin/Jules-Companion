@@ -6,6 +6,66 @@ Skill ini mengorganisasikan pengerjaan dengan memobilisasi **30 peran agen spesi
 
 ---
 
+## 📐 Visual Architecture & Workflow
+
+```text
+===================================================================================================
+                       JULES-COMPANION ARCHITECTURE & WORKFLOW
+===================================================================================================
+
+ [ USER / DEVELOPER ]
+          │
+          ▼
+ 🤖 [ MAIN AI AGENT ] ──────────────► Read Agent Registry
+ (Antigravity / Claude)             (references/agents/registry.json)
+          │                                  │
+          ▼                                  ▼
+ ⚙️  [ LOCAL SETUP ] ──────────────► Initialize Workspace Staging
+ (node dist/setup.js)               - .jules-companion/
+                                    - docs/jules-reviews/
+                                    - .gitignore
+          │
+          ├────────────────────────────────────────────────────────┐
+          │                                                        │
+          ▼ (--mode code)                                          ▼ (--mode review)
+ 💻 [ CODE IMPLEMENTATION ]                               🔍 [ AUDIT-ONLY REVIEW ]
+ - Direct functional code changes                          - Strict Directive Injected
+ - App logic updates (.ts, .py, etc.)                      - NO app code changes allowed
+          │                                                - Writes Markdown Report to:
+          │                                                  docs/jules-reviews/
+          │                                                        │
+          └────────────────────────┬───────────────────────────────┘
+                                   │
+                                   ▼
+                       🛰️ [ GOOGLE JULES API ]
+                       (POST /v1alpha/sessions)
+                                   │
+                                   ▼
+                       ☁️ [ CLOUD VM SANDBOX ]
+                       (Task Execution & Git Diff)
+                                   │
+                                   ▼
+                     🔀 [ ADVANCED PATCH MERGE ]
+                    (node dist/merge_session.js)
+                                   │
+             ┌─────────────────────┴─────────────────────┐
+             ▼                                           ▼
+  📊 [ VISUAL CODE DIFF REPORT ]               📄 [ REVIEW DOCUMENT REPORT ]
+  - File changes (--stat)                      - Output review file path
+  - Diff log saved to:                         - Print summary snippet
+    .jules-companion/scratch/diff-*.log        - Main Agent inspection
+             │                                           │
+             └─────────────────────┬─────────────────────┘
+                                   │
+                                   ▼
+                       ✅ [ CLEAN GIT MERGE ]
+                       (Target Branch: main)
+
+===================================================================================================
+```
+
+---
+
 ## Persyaratan (Prerequisites)
 
 Sebelum memasang skill ini, pastikan perkakas berikut telah terinstal dan terkonfigurasi di sistem Anda:
