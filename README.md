@@ -43,14 +43,21 @@ Skill ini dilengkapi dengan skrip otomatisasi berbasis **TypeScript** yang dikom
 
 * **Deploy Sesi Cloud Otonom (`deploy_session.js`)**:
   ```bash
-  node dist/deploy_session.js --type review --agents bolt,sentinel --task "Optimasi memori dan perbaiki sanitasi input"
+  # Mode 'code' (default): Penulisan kode fungsional biasa
+  node dist/deploy_session.js --type start --agents bolt --task "Optimasi memori loop" --mode code
+
+  # Mode 'review': Audit non-destruktif, menulis laporan markdown ke docs/jules-reviews/
+  node dist/deploy_session.js --type review --agents sentinel --task "Audit keamanan" --mode review
   ```
 
-* **Penggabungan Patch Safe-Git (`merge_session.js`)**:
+* **Penggabungan Patch Safe-Git & Diff Code Report (`merge_session.js`)**:
   ```bash
+  # Penggabungan sesi spesifik dengan laporan diff visual (📊)
   node dist/merge_session.js --session <session_id> --target main
+
+  # Penggabungan batch seluruh sesi selesai secara otomatis
+  node dist/merge_session.js --all --target main
   ```
-  Mendownload patch unidiff, membuat branch isolasi, melakukan verifikasi patch, dan menggabungkan kode dengan rollback otomatis jika terjadi masalah.
 
 ---
 
@@ -66,34 +73,40 @@ Perintah di atas akan otomatis mengkloning repositori ke `~/.gemini/config/skill
 
 ---
 
-## 🤖 Prompt Siap Tempel untuk AI Agent (Copy & Paste)
+## 🤖 Prompts Ready for AI Agents (Copy & Paste)
 
-Cukup salin dan tempelkan salah satu prompt di bawah ini langsung ke chat AI Agent Anda (**Antigravity**, **Claude Code**, **Gemini CLI**, **Cursor**, dll.):
+Copy and paste any of the prompts below directly into your AI Agent chat (**Antigravity**, **Claude Code**, **Gemini CLI**, **Cursor**, etc.):
 
-### 1. Prompt Instalasi Global & Inisialisasi Proyek
+### 1. Global Installation & Project Initialization Prompt
 ```text
-Tolong pasang dan aktifkan skill jules-companion secara global di sistem saya dengan menjalankan perintah berikut di terminal:
+Please install and activate the jules-companion skill globally on my system by running the following command in the terminal:
 curl -sSL https://raw.githubusercontent.com/rivadmorin/Jules-Companion/main/install.sh | bash
-Setelah instalasi selesai, jalankan setup.js di proyek ini untuk menyiapkan folder staging .jules-companion/.
+After installation completes, run node dist/setup.js in this project to initialize the .jules-companion/ staging folder and docs/jules-reviews/ directory.
 ```
 
-### 2. Prompt Peluncuran Agen Spesialis (Deploy Session)
+### 2. Deploy Specialist Agent (Code Mode) Prompt
 ```text
-Gunakan skill jules-companion untuk mendeploy agen 'bolt' dan 'sentinel' guna menganalisis dan mengoptimasi performa serta keamanan codebase ini. Jalankan skrip:
-node dist/deploy_session.js --type review --agents bolt,sentinel --task "Audit keamanan dan optimasi alokasi memori"
+Use the jules-companion skill to deploy the 'bolt' agent in code mode to optimize application performance. Run:
+node dist/deploy_session.js --type start --agents bolt --task "Optimize memory allocations" --mode code
 ```
 
-### 3. Prompt Penarikan & Penggabungan Patch (Merge Session)
+### 3. Deploy Specialist Agent (Audit-Only Review Mode) Prompt
 ```text
-Tarik hasil patch dari sesi cloud Google Jules <session_id> dan gabungkan ke branch utama proyek ini dengan aman menggunakan perintah:
-node dist/merge_session.js --session <session_id> --target main
+Use the jules-companion skill to deploy the 'sentinel' agent in review mode for a non-destructive security audit. Run:
+node dist/deploy_session.js --type review --agents sentinel --task "Security vulnerability audit" --mode review
 ```
 
-### 4. Prompt Uninstallation Skill Global & Pembersihan Proyek
+### 4. Fetch & Batch Merge Patches Prompt
 ```text
-Tolong hapus skill jules-companion secara bersih dari sistem saya dengan menjalankan perintah:
+Fetch completed Jules cloud session patches, display the visual code diff report (📊), detect review documents (📄), and merge into main:
+node dist/merge_session.js --all --target main
+```
+
+### 5. Skill Uninstallation & Cleanup Prompt
+```text
+Please cleanly remove the jules-companion skill from my system:
 rm -rf ~/.gemini/config/skills/jules-companion
-Jika proyek ini memiliki folder staging .jules-companion/, hapus folder tersebut dan bersihkan entri .jules-companion/ dari file .gitignore.
+If this project has a .jules-companion/ staging directory, remove it and clean up .gitignore.
 ```
 
 ---

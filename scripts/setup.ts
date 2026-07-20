@@ -75,7 +75,7 @@ export function runSetup(targetDir: string = process.cwd()): SetupResult {
   }
 
   // 2. Auth & Identity checks
-  console.log('Checking Autentikasi & Git Identity...');
+  console.log('Checking Authentication & Git Identity...');
   const ghAuth = checkGhAuth();
   console.log(`  - GitHub Auth : ${ghAuth ? 'Logged In ✓' : '⚠️ Not Logged In'}`);
   
@@ -86,8 +86,9 @@ export function runSetup(targetDir: string = process.cwd()): SetupResult {
   const refLocalDir = path.join(julesLocalDir, 'references');
   const agentsLocalDir = path.join(refLocalDir, 'agents');
   const scratchLocalDir = path.join(julesLocalDir, 'scratch');
+  const docsReviewsDir = path.join(targetDir, 'docs', 'jules-reviews');
 
-  [julesLocalDir, refLocalDir, agentsLocalDir, scratchLocalDir].forEach(dir => {
+  [julesLocalDir, refLocalDir, agentsLocalDir, scratchLocalDir, docsReviewsDir].forEach(dir => {
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }

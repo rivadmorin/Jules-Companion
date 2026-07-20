@@ -119,13 +119,19 @@ Use the TypeScript script wrappers for high-performance, non-blocking monitoring
     ```
 *   **Auto-deploy customized agent sessions**:
     ```bash
-    # Deploys Bolt and Watcher agents, combining templates with task instructions
-    node dist/deploy_session.js --type review --agents bolt,watcher --task "Optimize TUI render path"
+    # Deploys Bolt agent in default 'code' mode (direct functional implementation)
+    node dist/deploy_session.js --type start --agents bolt --task "Optimize loop allocation" --mode code
+
+    # Deploys Sentinel agent in 'review' mode (audit-only, writes report to docs/jules-reviews/ without modifying code)
+    node dist/deploy_session.js --type review --agents sentinel --task "Security vulnerability audit" --mode review
     ```
-*   **Consolidated Patch Merge Pipeline**:
+*   **Consolidated Patch Merge Pipeline & Automated Code Diff Report**:
     ```bash
-    # Automatically pulls completed session patch, creates isolated branch, checks diff, and merges
+    # Pulls session patch, prints visual code diff summary (📊), detects review docs (📄), and merges
     node dist/merge_session.js --session <session_id> --target main
+
+    # Batch merges all completed registered sessions sequentially
+    node dist/merge_session.js --all --target main
     ```
 
 ---

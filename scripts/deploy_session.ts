@@ -56,14 +56,22 @@ export async function deploySession() {
 Jules Session Deployment Helper (TypeScript)
 
 Usage:
-  node dist/deploy_session.js --type <interactive|review|start> --agents <agent1,agent2> --task "<task description>" [--branch <branch>]
+  node dist/deploy_session.js --type <interactive|review|start> --agents <agent1,agent2> --task "<task description>" [--mode <code|review>] [--branch <branch>]
 
 Options:
   --type      Session type: 'interactive' (interactive plan), 'review' (require plan approval), 'start' (auto-approve plan and execute)
   --agents    Comma-separated list of agent names (e.g. bolt,sentinel)
   --task      Specific task instructions for the agents
+  --mode      Execution mode: 'code' (direct code implementation, default) or 'review' (audit-only, writes report to docs/jules-reviews/)
   --branch    Repository branch to start from (defaults to current git branch)
 `);
+    process.exit(1);
+  }
+
+  // Mode validation
+  const mode = String(params.mode || 'code').toLowerCase();
+  if (mode !== 'code' && mode !== 'review') {
+    console.error(`Error: Invalid mode '${params.mode}'. Allowed modes are 'code' or 'review'.`);
     process.exit(1);
   }
 
@@ -137,8 +145,11 @@ Options:
     }
     if (!Array.isArray(localSessions)) localSessions = [];
 
+    const today = new Date().toISOString().split('T')[0];
+    const taskSlug = params.task ? String(params.task).slice(0, 30).toLowerCase().replace(/[^a-z0-9]+/g, '-') : 'task';
+
     for (const agent of agentList) {
-      console.log(`\nPreparing deployment for agent: ${agent}...`);
+      console.log(`\nPreparing deployment for agent: ${agent} (Mode: ${mode.toUpperCase()})...`);
 
       const templatePaths = [
         path.join(process.cwd(), '.jules-companion', 'references', 'agents', `${agent}.md`),
@@ -153,13 +164,18 @@ Options:
         }
       }
 
+      const reviewFileName = `docs/jules-reviews/${today}-${agent}-${taskSlug}.md`;
+      const reviewDirective = mode === 'review'
+        ? `\n\n---\n⚠️ MODE STRICT DIRECTIVE: REVIEW-ONLY MODE\nYou are operating in REVIEW-ONLY mode.\n1. DO NOT modify, edit, or delete any application code files (.ts, .js, .py, .go, .rs, .json, etc.).\n2. Write ALL your findings, analysis, code snippets, and refactoring recommendations exclusively into a single Markdown file located at:\n   \`${reviewFileName}\`\n3. Provide clear line numbers, problem descriptions, and proposed code fixes inside the Markdown document so the main agent can review them.\n`
+        : '';
+
       const combinedPrompt = templateContent
-        ? `${templateContent}\n\n---\n## Specific Task Requirements for this Session:\n${params.task}`
-        : String(params.task);
+        ? `${templateContent}\n\n---\n## Specific Task Requirements for this Session:\n${params.task}${reviewDirective}`
+        : `${params.task}${reviewDirective}`;
 
       const payload = {
         prompt: combinedPrompt,
-        title: `${agent}-session`,
+        title: `${agent}-session-${mode}`,
         sourceContext: {
           source: sourceName,
           githubRepoContext: {
@@ -176,11 +192,12 @@ Options:
       }, payload);
 
       const sessionId = sessionResult.id || (sessionResult.name ? sessionResult.name.split('/').pop() : 'UNKNOWN');
-      console.log(`Session deployed successfully! Session ID: ${sessionId}`);
+      console.log(`Session deployed successfully! Session ID: ${sessionId} (Mode: ${mode})`);
 
       localSessions.push({
         id: sessionId,
         agent,
+        mode,
         task: params.task,
         status: 'launched',
         timestamp: new Date().toISOString()
