@@ -445,12 +445,14 @@ async function runOpenTUIMenu(): Promise<void> {
     ],
     width: '100%',
     height: '100%',
-    backgroundColor: '#1a1025',
-    textColor: '#e0c0ff',
-    focusedBackgroundColor: '#502090',
+    backgroundColor: '#000000',
+    textColor: '#aaaaaa',
+    focusedBackgroundColor: '#222222',
     focusedTextColor: '#ffffff',
-    descriptionColor: '#a080d0',
-    selectedDescriptionColor: '#ffffff'
+    descriptionColor: '#555555',
+    selectedDescriptionColor: '#eeeeee',
+    itemSpacing: 1,
+    showScrollIndicator: false
   });
 
   renderer.root.add(select);
