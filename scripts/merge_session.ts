@@ -11,7 +11,7 @@ export async function checkSafetyGate(headers: Record<string, string>): Promise<
   console.log(`Checking Safety Gate for ${activeSessions.length} active session(s)...`);
   let allCompleted = true;
 
-  for (const s of activeSessions) {
+  await Promise.all(activeSessions.map(async (s) => {
     try {
       const data = await request(`https://jules.googleapis.com/v1alpha/sessions/${s.id}`, { headers });
       const state = data.state || 'UNKNOWN';
@@ -26,7 +26,7 @@ export async function checkSafetyGate(headers: Record<string, string>): Promise<
     } catch (err: any) {
       console.warn(`⚠️ Warning: Failed to query status for session ${s.id}: ${err.message}`);
     }
-  }
+  }));
 
   saveSessions(sessions);
   return allCompleted;
