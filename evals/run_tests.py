@@ -2,7 +2,8 @@ import json
 import os
 
 def run_simulation():
-    evals_path = "/media/toor/WD_BLACK1/Data Utama/Coding/Antigravity/Playground/Jules-Companion/evals/evals.json"
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    evals_path = os.path.join(script_dir, "evals.json")
     with open(evals_path, 'r') as f:
         data = json.load(f)
     
@@ -118,7 +119,7 @@ def run_simulation():
             }
         })
     
-    output_path = "/media/toor/WD_BLACK1/Data Utama/Coding/Antigravity/Playground/Jules-Companion/evals/results.json"
+    output_path = os.path.join(script_dir, "results.json")
     with open(output_path, 'w') as f:
         json.dump(results, f, indent=2)
     print(f"Simulation completed. Results written to {output_path}")

@@ -2,7 +2,8 @@ import json
 import os
 
 def grade_results():
-    results_path = "/media/toor/WD_BLACK1/Data Utama/Coding/Antigravity/Playground/Jules-Companion/evals/results.json"
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    results_path = os.path.join(script_dir, "results.json")
     with open(results_path, 'r') as f:
         results = json.load(f)
 
@@ -48,7 +49,7 @@ def grade_results():
     
     markdown = markdown + summary
     
-    grader_path = "/media/toor/WD_BLACK1/Data Utama/Coding/Antigravity/Playground/Jules-Companion/evals/grader.md"
+    grader_path = os.path.join(script_dir, "grader.md")
     with open(grader_path, 'w') as f:
         f.write(markdown)
     
@@ -63,7 +64,7 @@ def grade_results():
         "gain_pct": skill_score - baseline_score
     }
     
-    benchmark_path = "/media/toor/WD_BLACK1/Data Utama/Coding/Antigravity/Playground/evals/benchmark.json"
+    benchmark_path = os.path.join(script_dir, "benchmark.json")
     os.makedirs(os.path.dirname(benchmark_path), exist_ok=True)
     with open(benchmark_path, 'w') as f:
         json.dump(benchmark, f, indent=2)
