@@ -1,7 +1,9 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
-import { spawnSync } from 'child_process';
+import { spawnSync, exec } from 'child_process';
+import { promisify } from 'util';
+const execAsync = promisify(exec);
 import { getProjectDirs } from './utils';
 import { generateRegistry } from './generate_registry';
 
@@ -15,41 +17,42 @@ interface SetupResult {
   status: 'SUCCESS' | 'WARNING' | 'ERROR';
 }
 
-function checkCommand(cmd: string, osType: string): boolean {
+async function checkCommand(cmd: string, osType: string): Promise<boolean> {
   const checkCmd = osType === 'win32' ? 'where' : 'which';
   try {
-    const res = spawnSync(checkCmd, [cmd], { encoding: 'utf8' });
-    return res.status === 0;
+    await execAsync(`${checkCmd} ${cmd}`);
+    return true;
   } catch {
     return false;
   }
 }
 
-function checkGhAuth(): boolean {
+async function checkGhAuth(): Promise<boolean> {
   try {
-    const res = spawnSync('gh', ['auth', 'status'], { encoding: 'utf8' });
-    return res.status === 0;
+    await execAsync('gh auth status');
+    return true;
   } catch {
     return false;
   }
 }
 
-function ensureGitIdentity(): boolean {
+async function ensureGitIdentity(): Promise<boolean> {
   try {
-    const gitCheck = spawnSync('git', ['rev-parse', '--is-inside-work-tree'], { encoding: 'utf8' });
-    if (gitCheck.status !== 0) {
+    try { await execAsync('git rev-parse --is-inside-work-tree'); } catch {
       console.log('  - Git Identity: Skipped (Not inside a Git repository)');
       return true;
     }
 
-    const nameRes = spawnSync('git', ['config', 'user.name'], { encoding: 'utf8' });
-    const emailRes = spawnSync('git', ['config', 'user.email'], { encoding: 'utf8' });
+    const checkName = execAsync('git config user.name').catch(() => null);
+    const checkEmail = execAsync('git config user.email').catch(() => null);
+    const [nameRes, emailRes] = await Promise.all([checkName, checkEmail]);
 
-    if (nameRes.status !== 0 || !nameRes.stdout.trim() || emailRes.status !== 0 || !emailRes.stdout.trim()) {
+    if (!nameRes || !nameRes.stdout.trim() || !emailRes || !emailRes.stdout.trim()) {
       console.log('  - Git Identity: Configuring local fallback identity...');
-      const setLocalName = spawnSync('git', ['config', '--local', 'user.name', 'Jules Companion'], { encoding: 'utf8' });
-      const setLocalEmail = spawnSync('git', ['config', '--local', 'user.email', 'agent@jules.local'], { encoding: 'utf8' });
-      return setLocalName.status === 0 && setLocalEmail.status === 0;
+      const setLocalName = execAsync('git config --local user.name "Jules Companion"');
+      const setLocalEmail = execAsync('git config --local user.email "agent@jules.local"');
+      await Promise.all([setLocalName, setLocalEmail]);
+      return true;
     }
 
     console.log('  - Git Identity: Verified ✓');
@@ -60,7 +63,7 @@ function ensureGitIdentity(): boolean {
   }
 }
 
-export function runSetup(targetDir: string = process.cwd()): SetupResult {
+export async function runSetup(targetDir: string = process.cwd()): Promise<SetupResult> {
   console.log('=== Jules-Companion Self-Healing Environment Setup ===');
 
   const osType = process.platform;
@@ -70,18 +73,23 @@ export function runSetup(targetDir: string = process.cwd()): SetupResult {
   const deps = ['git', 'gh', 'node', 'jules'];
   const depStatus: Record<string, boolean> = {};
 
-  for (const dep of deps) {
-    depStatus[dep] = checkCommand(dep, osType);
-    const icon = depStatus[dep] ? '✓' : '⚠️ Missing';
+  const depChecks = deps.map(async (dep) => {
+    const ok = await checkCommand(dep, osType);
+    return { dep, ok };
+  });
+  const results = await Promise.all(depChecks);
+
+  for (const { dep, ok } of results) {
+    depStatus[dep] = ok;
+    const icon = ok ? '✓' : '⚠️ Missing';
     console.log(`  - ${dep.padEnd(10)}: ${icon}`);
   }
 
   // 2. Auth & Identity checks
   console.log('Checking Authentication & Git Identity...');
-  const ghAuth = checkGhAuth();
+  const [ghAuth, gitIdentityOk] = await Promise.all([checkGhAuth(), ensureGitIdentity()]);
   console.log(`  - GitHub Auth : ${ghAuth ? 'Logged In ✓' : '⚠️ Not Logged In'}`);
 
-  const gitIdentityOk = ensureGitIdentity();
 
   // 3. Project directories setup via utils
   const dirs = getProjectDirs(targetDir);
@@ -161,7 +169,7 @@ export function runSetup(targetDir: string = process.cwd()): SetupResult {
 
   // 6. Synchronize/Generate Registry
   try {
-    generateRegistry();
+    await generateRegistry();
   } catch (err: any) {
     console.warn(`Warning: Could not auto-generate registry during setup: ${err.message}`);
   }
@@ -197,5 +205,5 @@ export function runSetup(targetDir: string = process.cwd()): SetupResult {
 }
 
 if (require.main === module) {
-  runSetup();
+  runSetup().catch(err => console.error(err));
 }

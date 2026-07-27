@@ -11,9 +11,14 @@ export interface ProjectDirs {
   docsReviewsDir: string;
 }
 
+const projectDirsCache = new Map<string, ProjectDirs>();
+
 export function getProjectDirs(targetDir: string = process.cwd()): ProjectDirs {
+  if (projectDirsCache.has(targetDir)) {
+    return projectDirsCache.get(targetDir)!;
+  }
   const julesDir = path.join(targetDir, '.jules-companion');
-  return {
+  const dirs: ProjectDirs = {
     targetDir,
     julesDir,
     refDir: path.join(julesDir, 'references'),
@@ -21,6 +26,8 @@ export function getProjectDirs(targetDir: string = process.cwd()): ProjectDirs {
     scratchDir: path.join(julesDir, 'scratch'),
     docsReviewsDir: path.join(targetDir, 'docs', 'jules-reviews')
   };
+  projectDirsCache.set(targetDir, dirs);
+  return dirs;
 }
 
 export function parseArgs(args: string[]): Record<string, string | boolean> {
