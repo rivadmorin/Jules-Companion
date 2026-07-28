@@ -16,7 +16,7 @@ export interface Registry {
   agents: Record<string, AgentMetadata>;
 }
 
-export function generateRegistry(): Registry {
+export async function generateRegistry(): Promise<Registry> {
   const agentsDir = path.join(__dirname, '..', 'references', 'agents');
   
   if (!fs.existsSync(agentsDir)) {
@@ -34,14 +34,14 @@ export function generateRegistry(): Registry {
   const files = fs.readdirSync(agentsDir).filter(f => f.endsWith('.md'));
   const agentsMap: Record<string, AgentMetadata> = {};
 
-  for (const file of files) {
+  const processFile = async (file: string) => {
     const id = path.basename(file, '.md').toLowerCase();
     const filePath = path.join(agentsDir, file);
-    const content = fs.readFileSync(filePath, 'utf8');
+    const content = await fs.promises.readFile(filePath, 'utf8');
 
     // Extract title / role from first header
     let role = id;
-    const headerMatch = content.match(/^#\scoped?\s*(.+)$/m) || content.match(/^#\s*(.+)$/m);
+    const headerMatch = content.match(/^#\\scoped?\\s*(.+)$/m) || content.match(/^#\\s*(.+)$/m);
     if (headerMatch) {
       role = headerMatch[1].trim();
     }
@@ -67,7 +67,9 @@ export function generateRegistry(): Registry {
       description,
       file: `references/agents/${file}`
     };
-  }
+  };
+
+  await Promise.all(files.map(processFile));
 
   const registry: Registry = {
     generatedAt: new Date().toISOString(),
@@ -76,12 +78,15 @@ export function generateRegistry(): Registry {
   };
 
   const registryPath = path.join(agentsDir, 'registry.json');
-  fs.writeFileSync(registryPath, JSON.stringify(registry, null, 2), 'utf8');
+  await fs.promises.writeFile(registryPath, JSON.stringify(registry, null, 2), 'utf8');
   console.log(`Registry generated successfully at ${registryPath} (${registry.totalAgents} agents index).`);
 
   return registry;
 }
 
 if (require.main === module) {
-  generateRegistry();
+  generateRegistry().catch(err => {
+    console.error(`Failed to generate registry: ${err.message}`);
+    process.exit(1);
+  });
 }

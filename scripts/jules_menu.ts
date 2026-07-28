@@ -281,7 +281,7 @@ export async function main() {
       await handleApproveMerge(getArg('--session'));
       break;
     case '--setup':
-      runSetup();
+      await runSetup();
       console.log(JSON.stringify({ status: "success", action: "setup" }));
       break;
     case '--update-key':

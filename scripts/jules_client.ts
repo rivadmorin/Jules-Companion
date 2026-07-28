@@ -16,7 +16,11 @@ export interface JulesSource {
   [key: string]: any;
 }
 
+let cachedApiKey: string | null = null;
+
 export function getApiKey(): string | null {
+  if (cachedApiKey !== null) return cachedApiKey;
+
   const checkPaths = [
     path.join(process.cwd(), '.env'),
     path.join(process.cwd(), '.jules-companion', '.env'),
@@ -30,7 +34,8 @@ export function getApiKey(): string | null {
         const content = fs.readFileSync(p, 'utf8');
         const match = content.match(/^JULES_API_KEY\s*=\s*(.+)$/m);
         if (match && match[1]) {
-          return match[1].trim().replace(/^["']|["']$/g, '');
+          cachedApiKey = match[1].trim().replace(/^["']|["']$/g, '');
+          return cachedApiKey;
         }
       } catch (e) {
         // Skip unreadable .env file
@@ -38,7 +43,8 @@ export function getApiKey(): string | null {
     }
   }
 
-  return process.env.JULES_API_KEY || null;
+  cachedApiKey = process.env.JULES_API_KEY || null;
+  return cachedApiKey;
 }
 
 export function getSessions(): SessionRecord[] {
