@@ -170,15 +170,16 @@ Usage:
       }
 
       if (isJson) {
-        const results = [];
-        for (const s of sessionsList) {
-          try {
-            const data = await request(`https://jules.googleapis.com/v1alpha/sessions/${s.id}`, { headers });
-            results.push({ agent: s.agent, id: s.id, state: data.state || 'UNKNOWN' });
-          } catch (e: any) {
-            results.push({ agent: s.agent, id: s.id, state: 'ERROR', error: e.message });
-          }
-        }
+        const results = await Promise.all(
+          sessionsList.map(async (s) => {
+            try {
+              const data = await request(`https://jules.googleapis.com/v1alpha/sessions/${s.id}`, { headers });
+              return { agent: s.agent, id: s.id, state: data.state || 'UNKNOWN' };
+            } catch (e: any) {
+              return { agent: s.agent, id: s.id, state: 'ERROR', error: e.message };
+            }
+          })
+        );
         console.log(JSON.stringify(results, null, 2));
         return;
       }
@@ -188,13 +189,19 @@ Usage:
       console.log(String('Agent').padEnd(15) + ' | ' + String('Session ID').padEnd(22) + ' | ' + String('State').padEnd(20));
       console.log('==========================================================================');
 
-      for (const s of sessionsList) {
-        try {
-          const data = await request(`https://jules.googleapis.com/v1alpha/sessions/${s.id}`, { headers });
-          console.log(String(s.agent).padEnd(15) + ' | ' + String(s.id).padEnd(22) + ' | ' + String(data.state || 'UNKNOWN').padEnd(20));
-        } catch (e: any) {
-          console.log(String(s.agent).padEnd(15) + ' | ' + String(s.id).padEnd(22) + ' | ' + `ERROR: ${e.message}`);
-        }
+      const textResults = await Promise.all(
+        sessionsList.map(async (s) => {
+          try {
+            const data = await request(`https://jules.googleapis.com/v1alpha/sessions/${s.id}`, { headers });
+            return String(s.agent).padEnd(15) + ' | ' + String(s.id).padEnd(22) + ' | ' + String(data.state || 'UNKNOWN').padEnd(20);
+          } catch (e: any) {
+            return String(s.agent).padEnd(15) + ' | ' + String(s.id).padEnd(22) + ' | ' + `ERROR: ${e.message}`;
+          }
+        })
+      );
+
+      for (const result of textResults) {
+        console.log(result);
       }
       console.log('==========================================================================\n');
     } else if (command === 'status') {
