@@ -104,11 +104,8 @@ Options:
     }
   }
 
-  let processedCount = 0;
-  for (const s of targets) {
-    const processed = await processSingleSession(s, headers, customReply);
-    if (processed) processedCount++;
-  }
+  const results = await Promise.all(targets.map(s => processSingleSession(s, headers, customReply)));
+  const processedCount = results.filter(Boolean).length;
 
   saveSessions(sessions);
   console.log(`\nAuto-process completed: ${processedCount} session(s) updated.`);
