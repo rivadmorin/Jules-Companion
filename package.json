@@ -4,13 +4,14 @@
   "description": "Google Jules CLI & REST API companion skill with 30 specialized agents",
   "main": "dist/setup.js",
   "scripts": {
-    "build": "tsc",
+    "build": "esbuild scripts/*.ts --outdir=dist --platform=node --format=cjs",
     "setup": "node dist/setup.js",
     "registry": "node dist/generate_registry.js",
     "deploy": "node dist/deploy_session.js",
     "merge": "node dist/merge_session.js",
     "client": "node dist/jules_client.js",
-    "test": "tsx --test tests/companion.test.ts"
+    "test": "tsx --test tests/companion.test.ts",
+    "mcp": "node dist/mcp_server.js"
   },
   "keywords": [
     "jules",
@@ -22,7 +23,11 @@
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^20.11.0",
+    "esbuild": "^0.28.1",
     "tsx": "^4.7.1",
     "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.30.0"
   }
 }
