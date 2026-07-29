@@ -99,6 +99,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 async function captureOutput(fn: () => Promise<any> | any): Promise<string> {
     const originalLog = console.log;
     const originalError = console.error;
+    const originalExit = process.exit;
     let output = '';
 
     console.log = (...args: any[]) => {
@@ -108,9 +109,16 @@ async function captureOutput(fn: () => Promise<any> | any): Promise<string> {
         output += args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ') + '\n';
     };
 
+    (process as any).exit = (code?: number) => {
+        throw new Error(`Process exited with code ${code}`);
+    };
+
     try {
         await fn();
+    } catch (err: any) {
+        output += `\nCaught Error: ${err.message}`;
     } finally {
+        process.exit = originalExit;
         console.log = originalLog;
         console.error = originalError;
     }
