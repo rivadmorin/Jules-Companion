@@ -194,6 +194,23 @@ curl -sSL https://raw.githubusercontent.com/rivadmorin/Jules-Companion/main/unin
 If this project has staging folders, remove .jules-companion/, docs/jules-reviews/, and docs/jules-reports/ directories.
 ```
 
+
+---
+
+## ⚡ AI Agent Slash Commands
+
+Mulai sekarang, Anda tidak perlu lagi menyalin/mengetik prompt panjang secara manual. Anda bisa langsung mengetikkan **Slash Commands** berikut di dalam obrolan asisten AI Anda, dan asisten akan secara otomatis mengeksekusi perintah terminal yang sesuai di belakang layar:
+
+| Slash Command | Fungsi / Deskripsi |
+| :--- | :--- |
+| `/jules-menu` | Membuka konsol TUI interaktif Jules Companion. |
+| `/jules-deploy <agen> <tugas>` | Membuat sesi baru secara otonom (contoh: `/jules-deploy bolt optimasi memori`). |
+| `/jules-review <agen> <tugas>` | Membuat sesi audit (Review-Only mode) secara aman. |
+| `/jules-status` | Mengecek status seluruh sesi cloud yang sedang aktif saat ini. |
+| `/jules-auto` | Menjalankan proses auto-approval dan auto-reply agar sesi cloud berjalan cepat. |
+| `/jules-inspect <session_id>` | Menarik patch, mengisolasinya ke *review branch*, dan membuat laporan Markdown. |
+| `/jules-merge <session_id>` | Menyetujui dan menggabungkan patch yang telah diinspeksi ke *main branch*. |
+| `/jules-doctor` | Menjalankan pemeriksaan keutuhan sistem dan validasi dependensi. |
 ---
 
 ## Pengujian Unit (Unit Testing)
