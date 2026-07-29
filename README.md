@@ -143,7 +143,7 @@ Perintah di atas akan otomatis mengkloning repositori ke `~/.gemini/config/skill
 
 ## 🤖 Prompts Ready for AI Agents (Copy & Paste)
 
-Copy and paste any of the prompts below directly into your AI Agent chat (**Antigravity**, **Claude Code**, **Gemini CLI**, **Cursor**, etc.):
+Copy and paste any of the prompts below directly into your AI Agent chat (**Antigravity CLI**, **Antigravity IDE**, **Claude**, **Hermes Agent**, **Gemini CLI**, **Cursor**, etc.):
 
 ### 1. Global Project Initialization Prompt
 ```text
@@ -190,8 +190,7 @@ Type Option 6 inside jules-companion to finalize the git merge and delete tempor
 ### 8. Skill Uninstallation & Cleanup Prompt
 ```text
 Please cleanly remove the jules-companion skill:
-rm -rf ~/.gemini/config/skills/jules-companion
-rm -f ~/.local/bin/jules-companion
+curl -sSL https://raw.githubusercontent.com/rivadmorin/Jules-Companion/main/uninstall.sh | bash
 If this project has staging folders, remove .jules-companion/, docs/jules-reviews/, and docs/jules-reports/ directories.
 ```
 
@@ -218,7 +217,7 @@ Pengujian mencakup:
 Untuk menghapus skill global ini secara bersih:
 
 ```bash
-rm -rf ~/.gemini/config/skills/jules-companion
+curl -sSL https://raw.githubusercontent.com/rivadmorin/Jules-Companion/main/uninstall.sh | bash
 ```
 2. Jika Anda ingin melakukan pembersihan penuh di suatu proyek tertentu, tanyakan asisten untuk membersihkan staging area proyek Anda. Asisten akan menghapus `.jules-companion/` serta membersihkan entri pengabaian di berkas `.gitignore` secara otomatis.
 
