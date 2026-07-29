@@ -17,9 +17,16 @@ Skill ini mengorganisasikan **30 agen AI spesialis**, yang terbagi tegas menjadi
 
 Instal skill ini secara global pada sistem Anda:
 
-```bash
+### Linux/macOS
+```sh
 curl -sSL https://raw.githubusercontent.com/rivadmorin/Jules-Companion/main/install.sh | bash
 ```
+
+### Windows (PowerShell)
+```powershell
+powershell -c "irm https://raw.githubusercontent.com/rivadmorin/Jules-Companion/main/install.ps1 | iex"
+```
+
 *Perintah ini akan mengkloning repositori ke `~/.gemini/config/skills/jules-companion`, menginstal dependensi, dan membuat pintasan (shortcut) global `jules-companion`.*
 
 ## 💬 Slash Commands Agen AI
@@ -47,6 +54,12 @@ Untuk penjelasan komprehensif mengenai cara kerja aplikasi ini, arsitekturnya, d
 
 Untuk menghapus skill global secara bersih:
 
-```bash
+### Linux/macOS
+```sh
 curl -sSL https://raw.githubusercontent.com/rivadmorin/Jules-Companion/main/uninstall.sh | bash
+```
+
+### Windows (PowerShell)
+```powershell
+powershell -c "irm https://raw.githubusercontent.com/rivadmorin/Jules-Companion/main/uninstall.ps1 | iex"
 ```

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-29T03:22:36.731Z",
+  "generatedAt": "2026-07-29T12:34:46.728Z",
   "totalAgents": 30,
   "agents": {
     "adapter": {
@@ -58,6 +58,14 @@
       "description": "You are \"Cartographer\" 🗺️ - a Codebase Structures & ASCII Layout Mapping agent who analyze codebase directory structures, map out component dependencies, and design flowcharts in Mermaid and ASCII layouts.",
       "file": "references/agents/cartographer.md"
     },
+    "chameleon": {
+      "id": "chameleon",
+      "name": "Chameleon",
+      "role": "chameleon",
+      "group": "coding",
+      "description": "You are \"Chameleon\" 🦎 - a Language & Stack Porting agent who translate, restyle, and port modules or code blocks between programming languages or frameworks idiomatic to the target environment.",
+      "file": "references/agents/chameleon.md"
+    },
     "conduit": {
       "id": "conduit",
       "name": "Conduit",
@@ -81,14 +89,6 @@
       "group": "advisory",
       "description": "You are \"Critic\" 🗣️ - a Senior Code Review agent who review code changes (diffs) thoroughly, critiquing readability, design anti-patterns, and logic efficiency.",
       "file": "references/agents/critic.md"
-    },
-    "chameleon": {
-      "id": "chameleon",
-      "name": "Chameleon",
-      "role": "chameleon",
-      "group": "coding",
-      "description": "You are \"Chameleon\" 🦎 - a Language & Stack Porting agent who translate, restyle, and port modules or code blocks between programming languages or frameworks idiomatic to the target environment.",
-      "file": "references/agents/chameleon.md"
     },
     "dockerist": {
       "id": "dockerist",
@@ -162,14 +162,6 @@
       "description": "You are \"Materialist\" 🎴 - a Google Material Design 3 Styling agent who arrange, modify, and style UI designs to strictly follow Google Material Design 3 guidelines.",
       "file": "references/agents/materialist.md"
     },
-    "netrunner": {
-      "id": "netrunner",
-      "name": "Netrunner",
-      "role": "netrunner",
-      "group": "coding",
-      "description": "You are \"Netrunner\" 🌐 - a Network & Web-Server Configurations agent who configure web servers, reverse proxies, port routings, SSL/TLS certifications, and REST/gRPC networking scopes.",
-      "file": "references/agents/netrunner.md"
-    },
     "modernizer": {
       "id": "modernizer",
       "name": "Modernizer",
@@ -177,6 +169,14 @@
       "group": "coding",
       "description": "You are \"Modernizer\" ⚙️ - a Legacy Code Refactoring & Upgrades agent who refactor legacy syntaxes, replace deprecated functions, upgrade outdated packages, and migrate JS code to TypeScript.",
       "file": "references/agents/modernizer.md"
+    },
+    "netrunner": {
+      "id": "netrunner",
+      "name": "Netrunner",
+      "role": "netrunner",
+      "group": "coding",
+      "description": "You are \"Netrunner\" 🌐 - a Network & Web-Server Configurations agent who configure web servers, reverse proxies, port routings, SSL/TLS certifications, and REST/gRPC networking scopes.",
+      "file": "references/agents/netrunner.md"
     },
     "nomad": {
       "id": "nomad",
@@ -210,14 +210,6 @@
       "description": "You are \"Partisan\" 🛰️ - a Decentralized & P2P Architectures agent who design decentralized architectures, integrate peer-to-peer (P2P) communications, and enforce censor-resistance rules to keep services active.",
       "file": "references/agents/partisan.md"
     },
-    "scribe": {
-      "id": "scribe",
-      "name": "Scribe",
-      "role": "scribe",
-      "group": "advisory",
-      "description": "You are \"Scribe\" 📝 - a README.md & Technical Documentation agent who author detailed READMEs, API specifications, and developer guides in clean, organized Markdown layouts.",
-      "file": "references/agents/scribe.md"
-    },
     "proteus": {
       "id": "proteus",
       "name": "Proteus",
@@ -225,6 +217,14 @@
       "group": "advisory",
       "description": "You are \"Proteus\" 🎭 - a Custom Analysis & Advisory agent who deliver custom analyses and checklists based on specific user requests outside standard roles.",
       "file": "references/agents/proteus.md"
+    },
+    "scribe": {
+      "id": "scribe",
+      "name": "Scribe",
+      "role": "scribe",
+      "group": "advisory",
+      "description": "You are \"Scribe\" 📝 - a README.md & Technical Documentation agent who author detailed READMEs, API specifications, and developer guides in clean, organized Markdown layouts.",
+      "file": "references/agents/scribe.md"
     },
     "sentinel": {
       "id": "sentinel",
