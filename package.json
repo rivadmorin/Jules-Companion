@@ -10,7 +10,7 @@
     "deploy": "node dist/deploy_session.js",
     "merge": "node dist/merge_session.js",
     "client": "node dist/jules_client.js",
-    "test": "tsx --test tests/companion.test.ts tests/slash_command.test.ts",
+    "test": "tsx --test tests/*.test.ts",
     "mcp": "node dist/mcp_server.js"
   },
   "keywords": [
