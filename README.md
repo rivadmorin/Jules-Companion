@@ -8,6 +8,8 @@ Skill ini mengorganisasikan pengerjaan dengan memobilisasi **30 peran agen spesi
 
 ## 📐 Visual Architecture & Workflow
 
+*Untuk dokumentasi teknis mendalam mengenai arsitektur, cara kerja, dan logika program, silakan baca [Dokumentasi Arsitektur](docs/architecture.md).*
+
 ```text
 ===================================================================================================
                        JULES-COMPANION ARCHITECTURE & WORKFLOW
