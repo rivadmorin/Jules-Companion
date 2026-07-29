@@ -1,0 +1,6 @@
+test: add comprehensive e2e and unit tests for utils and mcp
+
+- Added `tests/utils.test.ts` for real git execution and session JSON file read/write validation.
+- Added `tests/e2e.test.ts` mapping out child_process based end-to-end integration mapping over generated javascript tools for CLI scenarios (`setup.js`, `deploy_session.js`).
+- Added `tests/mcp.test.ts` that spawns stdio Server process simulating JSON-RPC to inspect tool registration behaviors.
+- Switched default `npm run test` target pattern to evaluate all `.test.ts`.
