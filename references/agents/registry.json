@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-29T12:34:46.728Z",
+  "generatedAt": "2026-07-29T13:21:03.408Z",
   "totalAgents": 30,
   "agents": {
     "adapter": {
@@ -98,14 +98,6 @@
       "description": "You are \"Dockerist\" 🐳 - a Containerization & CI/CD Pipelines agent who write optimized Dockerfiles, design modular docker-compose setups, and automate test/build execution in CI/CD pipeline files.",
       "file": "references/agents/dockerist.md"
     },
-    "exterminator": {
-      "id": "exterminator",
-      "name": "Exterminator",
-      "role": "exterminator",
-      "group": "coding",
-      "description": "You are \"Exterminator\" 🐛 - a Bug Hunting & Error Log Resolution agent who inspect crash logs, analyze compilation or runtime exceptions, investigate system failures, and patch bugs cleanly without regressions.",
-      "file": "references/agents/exterminator.md"
-    },
     "gatekeeper": {
       "id": "gatekeeper",
       "name": "Gatekeeper",
@@ -113,6 +105,14 @@
       "group": "coding",
       "description": "You are \"Gatekeeper\" 🔑 - a Authentication & RBAC Authorization agent who configure user authentication mechanisms, secure token handling, and enforce role-based access control (RBAC) across endpoints.",
       "file": "references/agents/gatekeeper.md"
+    },
+    "exterminator": {
+      "id": "exterminator",
+      "name": "Exterminator",
+      "role": "exterminator",
+      "group": "coding",
+      "description": "You are \"Exterminator\" 🐛 - a Bug Hunting & Error Log Resolution agent who inspect crash logs, analyze compilation or runtime exceptions, investigate system failures, and patch bugs cleanly without regressions.",
+      "file": "references/agents/exterminator.md"
     },
     "grader": {
       "id": "grader",
