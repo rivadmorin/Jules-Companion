@@ -125,8 +125,8 @@ Options:
     const today = new Date().toISOString().split('T')[0];
     const taskSlug = params.task ? String(params.task).slice(0, 30).toLowerCase().replace(/[^a-z0-9]+/g, '-') : 'task';
 
-    for (const agent of agentList) {
-      console.log(`\nPreparing deployment for agent: ${agent} (Mode: ${mode.toUpperCase()})...`);
+    const deployPromises = agentList.map(async (agent) => {
+      let outputBuffer = `\nPreparing deployment for agent: ${agent} (Mode: ${mode.toUpperCase()})...\n`;
 
       const templatePaths = [
         path.join(dirs.agentsDir, `${agent}.md`),
@@ -146,7 +146,6 @@ Options:
         ? `⚠️ MODE STRICT DIRECTIVE: REVIEW-ONLY MODE\nYou are operating in REVIEW-ONLY mode.\n1. DO NOT modify, edit, or delete any application code files (.ts, .js, .py, .go, .rs, .json, etc.).\n2. Write ALL your findings, analysis, code snippets, and refactoring recommendations exclusively into a single Markdown file located at:\n   \`${reviewFileName}\`\n3. Provide clear line numbers, problem descriptions, and proposed code fixes inside the Markdown document so the main agent can review them.`
         : `⚠️ MODE DIRECTIVE: CODE IMPLEMENTATION MODE\nYou are operating in CODE mode. Perform direct code implementation and modifications as required.`;
 
-      // Structured Prompt Fusion: Agent Role System Template + Custom User Task Request + Mode Directive
       const combinedPrompt = `# AGENT SYSTEM & ROLE DIRECTIVES\n${templateContent}\n\n---\n# USER TASK & SPECIFIC REQUIREMENTS\n${params.task}\n\n---\n# EXECUTION MODE DIRECTIVE\n${modeDirective}`;
 
       const payload = {
@@ -161,23 +160,34 @@ Options:
         requirePlanApproval
       };
 
-      console.log(`Sending session request to Google REST API...`);
+      outputBuffer += `Sending session request to Google REST API...\n`;
       const sessionResult = await request('https://jules.googleapis.com/v1alpha/sessions', {
         method: 'POST',
         headers
       }, payload);
 
       const sessionId = sessionResult.id || (sessionResult.name ? sessionResult.name.split('/').pop() : 'UNKNOWN');
-      console.log(`Session deployed successfully! Session ID: ${sessionId} (Mode: ${mode})`);
+      outputBuffer += `Session deployed successfully! Session ID: ${sessionId} (Mode: ${mode})`;
 
-      localSessions.push({
-        id: sessionId,
+      return {
         agent,
-        mode,
-        task: String(params.task),
-        status: 'launched',
-        timestamp: new Date().toISOString()
-      });
+        output: outputBuffer,
+        sessionRecord: {
+          id: sessionId,
+          agent,
+          mode,
+          task: String(params.task),
+          status: 'launched',
+          timestamp: new Date().toISOString()
+        }
+      };
+    });
+
+    const results = await Promise.all(deployPromises);
+
+    for (const res of results) {
+      console.log(res.output);
+      localSessions.push(res.sessionRecord);
     }
 
     saveSessions(localSessions);
