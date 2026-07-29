@@ -9,7 +9,7 @@ import {
 
 import { deploySession } from './deploy_session.js';
 import { mergeSession } from './merge_session.js';
-import { handleSetup } from './setup.js';
+import { runSetup } from './setup.js';
 
 const server = new Server(
   {
@@ -96,7 +96,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 });
 
 // We need to capture console output since the existing functions use it extensively
-async function captureOutput(fn: () => Promise<void> | void): Promise<string> {
+async function captureOutput(fn: () => Promise<any> | any): Promise<string> {
     const originalLog = console.log;
     const originalError = console.error;
     let output = '';
