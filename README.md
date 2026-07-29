@@ -17,9 +17,16 @@ It mobilizes **30 specialized AI agents**, dividing them strictly into Coding (m
 
 Install the skill globally on your system:
 
-```bash
+### Linux/macOS
+```sh
 curl -sSL https://raw.githubusercontent.com/rivadmorin/Jules-Companion/main/install.sh | bash
 ```
+
+### Windows (PowerShell)
+```powershell
+powershell -c "irm https://raw.githubusercontent.com/rivadmorin/Jules-Companion/main/install.ps1 | iex"
+```
+
 *This command clones the repo to `~/.gemini/config/skills/jules-companion`, installs dependencies, and creates a global `jules-companion` shortcut.*
 
 ## 💬 AI Agent Slash Commands
@@ -47,6 +54,12 @@ For a comprehensive explanation of how this application works, its architecture,
 
 To cleanly remove the global skill:
 
-```bash
+### Linux/macOS
+```sh
 curl -sSL https://raw.githubusercontent.com/rivadmorin/Jules-Companion/main/uninstall.sh | bash
+```
+
+### Windows (PowerShell)
+```powershell
+powershell -c "irm https://raw.githubusercontent.com/rivadmorin/Jules-Companion/main/uninstall.ps1 | iex"
 ```
