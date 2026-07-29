@@ -1,4 +1,4 @@
-# Jules Companion 🚀
+# Jules Companion 🐙
 
 > **[Read in English (Baca dalam Bahasa Inggris)](README.md)**
 
