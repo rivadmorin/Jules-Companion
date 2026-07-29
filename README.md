@@ -260,6 +260,9 @@ Picu perintah `/jules-companion doctor` di dalam obrolan asisten untuk memverifi
 Jules-Companion/
 ├── SKILL.md              # Salinan instruksi perilaku asisten (English)
 ├── README.md             # Panduan instalasi global & fitur (Indonesian)
+├── docs/                 # Dokumentasi Arsitektur Lanjutan
+│   ├── architecture.md   # Index Arsitektur
+│   └── architecture/     # Rincian Arsitektur (Cara kerja, Logika, Alur)
 └── references/
     ├── jules-cli.md      # Panduan perintah CLI Google Jules
     ├── jules-api.md      # Panduan endpoint REST API Google Jules
