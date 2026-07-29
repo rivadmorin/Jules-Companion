@@ -1,9 +1,26 @@
 # Cara Kerja Program (How It Works)
 
-Cara kerja `jules-companion` secara garis besar mengikuti pola **Deploy** -> **Process** -> **Merge**, yang dijalankan dan diorkestrasi langsung di lokal komputer *developer*.
+Cara kerja `jules-companion` secara garis besar mengikuti pola **Deploy** -> **Process** -> **Merge**, yang dijalankan dan diorkestrasi langsung di lokal komputer *developer*. Aplikasi ini bertindak sebagai perantara yang aman antara ruang kerja lokal dan lingkungan Cloud Sandbox VM milik Jules.
 
-1.  **Inisialisasi (Setup)**: Saat pengguna memanggil `jules-companion`, atau skrip `setup.js`, skrip akan memeriksa dependensi lokal (Git, Node.js, `gh`, `jules`), menyinkronkan identitas *git local*, serta memastikan keberadaan dan isi folder `.jules-companion/` serta `.gitignore`. Folder ini digunakan untuk "membungkus" *prompt* referensi 30 agen agar agen AI (*Main Agent*) dapat membacanya.
-2.  **Pemilihan Agen & Prompt Fusion**: Developer memilih satu (atau beberapa) dari 30 agen beserta mode kerjanya (`code` atau `review`). Skrip *deploy* ( `deploy_session.ts` ) akan membaca *file* *Markdown* agen tersebut, menyatukannya (*fusion*) dengan *prompt* (instruksi tugas) dari *user*, kemudian menambahkan direktif eksplisit (contoh: "jangan ubah kode sumber, tulis laporan ke direktori tertentu" jika dalam mode `review`).
-3.  **Peluncuran Sesi (Cloud Deployment)**: Permintaan gabungan (*prompt*) ini dikirim menggunakan REST API ke *cloud sandbox* Jules. Metadata (*Session ID*, *Task*, dll) akan dicatat di `.jules-companion/sessions.json`.
-4.  **Otomasi (Auto-Process)**: Sistem cloud tidak selalu langsung mengeksekusi tugas. Kadang ia menunggu *approval plan* atau *user input*. Skrip `auto_process.ts` dijalankan (secara polling melalui menu interaktif) untuk memantau status API, memberikan persetujuan (*approvePlan*) secara otonom, dan merespons (bila asisten membutuhkan masukan).
-5.  **Pengunduhan Patch & Merge**: Jika API mengembalikan status `COMPLETED`, `merge_session.ts` akan mengambil artefak dari sesi tersebut berupa **Git Diff / Patch**. *Patch* ini diterapkan terlebih dahulu ke *branch* sementara (misal: `jules/review-...`) sehingga *developer* dapat memeriksanya dengan aman sebelum melakukan *merge* penuh ke *branch* utama. Laporan interaktif Markdown otomatis dihasilkan saat inspeksi ini.
+1.  **Inisialisasi Lingkungan Kerja (Setup)**
+    Saat pertama kali skill dipanggil di sebuah proyek, skrip inisialisasi (`setup.js`) akan:
+    *   Mendeteksi sistem operasi dan memeriksa ketersediaan dependensi (*Git*, *Node.js*, `gh`, dan Google `jules` CLI).
+    *   Membuat struktur folder terisolasi `.jules-companion/` di akar proyek. Folder ini digunakan sebagai *Staging Workspace* untuk menyimpan metadata sesi (`sessions.json`) dan menampung duplikat instruksi referensi ke 30 agen (*Agent Registry*).
+    *   Memastikan `.jules-companion/` terdaftar dalam `.gitignore` untuk mencegah berkas metadata dan instruksi asisten terkomit tanpa sengaja.
+
+2.  **Pemilihan Agen & Prompt Fusion**
+    `jules-companion` menyediakan 30 agen spesialis (*Palette, Sentinel, Bolt*, dll) yang dikategorikan ke dalam *Coding Group* (dapat memodifikasi kode) dan *Documenting/Advisory Group* (hanya membaca kode dan menulis markah turun).
+    *   Pengguna menjalankan perintah peluncuran (melalui TUI menu interaktif atau CLI langsung) dengan mendefinisikan tugas, memilih agen, dan menetapkan mode (`code` atau `review`).
+    *   Sistem melakukan **Prompt Fusion**: Ia menggabungkan template perilaku dasar agen (mis. `references/agents/bolt.md`) dengan *task* spesifik dari pengguna. Jika mode `review` dipilih, ia juga akan secara otomatis menyuntikkan arahan paksa (*strict directive*) yang melarang agen mengubah kode sumber dan mewajibkan penulisan hasil *review* ke dalam bentuk Markdown di dalam folder `docs/jules-reviews/`.
+
+3.  **Peluncuran Sesi (Cloud Deployment)**
+    Setelah Prompt tergabung dengan sempurna, instruksi dikirim ke *endpoint* API REST `POST /v1alpha/sessions` menggunakan modul internal `jules_client`. Skrip memetakan secara cerdas URL remote asal repositori `git` untuk memastikan Jules VM Sandbox menangani basis kode yang persis sama. ID sesi dan metadata kemudian disimpan di basis data lokal `sessions.json` untuk pelacakan masa mendatang.
+
+4.  **Otomasi Siklus Hidup (Auto-Process)**
+    Sistem eksekusi tugas Jules Sandbox tidak bersifat linear. Terkadang agen membutuhkan persetujuan terhadap rencana tindakan (*AWAITING_PLAN_APPROVAL*) atau input interaktif tambahan (*AWAITING_USER_INPUT*). Daripada meminta pengguna memantau secara manual, fitur `auto_process` dapat mem-*polling* status secara berkala dan dengan sigap menyetujui rencana (memberi otonomi pada agen) dan mengirim tanggapan standar otomatis (atau kustom) agar alur kerja *cloud* tetap berlanjut tanpa hambat.
+
+5.  **Pengunduhan Patch & Merge Lanjutan**
+    Ketika tugas selesai (status `COMPLETED`), modul `merge_session` diaktifkan:
+    *   Sistem mengambil *Git Patch* yang berisi perubahan kode dari *cloud*.
+    *   Patch ini **tidak** langsung diaplikasikan ke *branch* utama. Sebaliknya, *patch* diisolasi terlebih dahulu dalam sebuah cabang lokal sementara (misal: `jules/review-...`).
+    *   Setelah *patch* terpasang dengan sukses di cabang tinjauan dan laporan rangkuman perubahan (*Markdown diff*) dihasilkan, pengguna dipersilakan melakukan inspeksi. Jika semua tampak benar, pengguna menyetujui penggabungan dan *patch* akan di-*merge* ke *branch* asal, seraya menghapus *branch* isolasi yang kini usang.

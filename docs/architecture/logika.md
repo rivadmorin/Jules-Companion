@@ -1,31 +1,31 @@
 # Logika Program
 
-Berikut adalah logika spesifik pada skrip-skrip inti TypeScript.
+Berikut adalah rincian fungsional dan logika penanganan status dalam skrip-skrip inti TypeScript.
 
 ### A. Skrip `setup.ts` (Workspace Initialization)
-*   **Logika Pemeriksaan**: Menjalankan *child_process* untuk `where` (Windows) atau `which` (Unix) guna memastikan bahwa Git, GitHub CLI (`gh`), Node, dan Google Jules CLI tersedia.
-*   **Git Identity**: Melakukan `git rev-parse` untuk memeriksa status repositori, kemudian mengatur `user.name` dan `user.email` lokal jika gagal ditemukan.
-*   **Self-Healing Copy**: Skrip secara dinamis mencari letak instalasi *skill* global, dan menyalin *file* referensi (*templates agent* dan API docs) ke `.jules-companion/references` proyek saat ini agar agen AI (seperti Claude Code/Antigravity) dapat membaca instruksinya tanpa harus memiliki akses sistem *global root*.
+*   **Pemeriksaan Ketergantungan Eksternal**: Skrip memanggil proses anak (`child_process.execSync`) ke utilitas OS bawaan seperti `which` (Unix) atau `where` (Windows) untuk memvalidasi presensi binari esensial (*Git, GitHub CLI `gh`, Node.js, `jules`*).
+*   **Keutuhan Identitas Git**: Menjalankan rutin pelacakan konfigurasi *Git* (`git config --get user.name`). Jika identitas belum disetel (sebuah masalah umum dalam wadah pengembangan tanpa antarmuka), skrip akan mencoba mengatur nama dan email standar agar dapat membuat *commit patch* nanti.
+*   **Mekanisme Pemulihan Otomatis (*Self-Healing*)**: Skrip menemukan jalur global instalasi paket `npm` untuk asisten `jules-companion`. Skrip akan menyalin berkas-berkas templat ke ranah proyek (`.jules-companion/references`). Jika skrip ini dijalankan ulang dan mendapati berkas hilang (terhapus secara tidak sengaja), skrip ini secara proaktif akan merestorasi salinannya kembali.
 
 ### B. Skrip `deploy_session.ts` (API Integration & Payload Creation)
-*   **Validasi Argumen**: Memastikan *agent*, tugas, tipe, dan mode (`code`/`review`) tersedia. Parameter `--agents` bisa menerima *comma-separated list* (misalnya `bolt,sentinel`) dan divalidasi keaktifannya melalui *file* `registry.json`.
-*   **Pencocokan Repositori (Git Remote to Jules Source)**: Mengekstrak URL repositori lokal `git config --get remote.origin.url`, lalu mencarinya menggunakan `GET /v1alpha/sources` dari API Jules, guna memastikan sinkronisasi antara *cloud repository* dengan repositori lokal.
-*   **Prompt Fusion**: Menggabungkan tiga elemen:
-    1.  *Template* Agen (dari `references/agents/nama_agen.md`).
-    2.  Instruksi Tugas (*User Request*).
-    3.  *Mode Directive* (Aturan ketat jika mode `review` dipilih: melarang *edit* *file* kode dan mewajibkan keluaran ke `docs/jules-reviews/`).
-*   **REST Call**: Mengirimkan *POST* ke `/v1alpha/sessions` menggunakan `jules_client.ts`. ID dari hasil kembalian HTTP ini disimpan lokal di *file* `sessions.json`.
+*   **Validasi Keamanan Agen (*Registry Gate*)**: Argumen untuk agen (misal `--agents bolt,sentinel`) terlebih dahulu dipilah dan dicocokkan dengan manifes *hard-coded* di dalam berkas `registry.json`. Parameter tidak valid akan ditolak secara dini.
+*   **Pengikatan Remote Cerdas**: Mengekstrak repositori jarak jauh via `git config --get remote.origin.url`, dan kemudian mengonversinya (mis. dari gaya SSH `git@github.com:...` atau gaya HTTPS) ke penamaan repositori format *Jules Source*. Jika Jules tidak mengenali repositori ini, pengiriman sesi digagalkan.
+*   **Sintesis Prompt (*Fusion*)**: Pembuatan spesifikasi sesi yang meliputi:
+    1.  *Template* spesialis (Membaca konten dasar perilaku agen dari manifes lokal).
+    2.  Instruksi sasaran tugas.
+    3.  Penyuntikan Direktif Pelindung (Mencangkok aturan eksplisit yang melarang modifikasi kode sumber jika parameter `--mode review` aktif).
+*   **Ekskusi REST**: Beban kerja JSON (Payload) dikirimkan melalui permintaan POST `v1alpha/sessions` menggunakan pembungkus asinkron `jules_client`. Jika berhasil, berkas keadaan sesi lokal `sessions.json` diperbarui dengan ID sesi yang baru, menandainya sebagai sesi *pending*.
 
-### C. Skrip `auto_process.ts` (Lifecycle Management)
-*   Membaca daftar sesi dari `sessions.json`.
-*   Melakukan interogasi status `GET /v1alpha/sessions/{sessionId}`.
-*   **FSM (Finite State Machine) Logic**:
-    *   Jika status `AWAITING_PLAN_APPROVAL`: Skrip mengirim permintaan `POST /v1alpha/sessions/{sessionId}:approvePlan`.
-    *   Jika status `AWAITING_USER_INPUT`: Skrip mengirim perintah `POST /v1alpha/sessions/{sessionId}:sendMessage` (baik dengan balasan standar yang menginstruksikan asisten untuk lanjut bekerja, atau menggunakan argumen `--reply`).
-    *   Tujuannya meminimalkan *feedback-loop* manusia saat Jules VM Sandbox merancang rencana (*plan*).
+### C. Skrip `auto_process.ts` (Lifecycle Finite State Machine)
+Skrip ini beroperasi layaknya *Finite State Machine (FSM)* sederhana dengan tujuan mengurangi beban manual pada pengguna, dengan interogasi berkala (`polling` via HTTP GET):
+*   **State `AWAITING_PLAN_APPROVAL`**: Skrip mengeksekusi `POST /v1alpha/sessions/{sessionId}:approvePlan`. Tindakan ini secara otonom meloloskan agen ke tahap eksekusi implementasi.
+*   **State `AWAITING_USER_INPUT`**: Sistem cloud telah menghentikan agen karena agen memerlukan persetujuan tambahan atau klarifikasi. Skrip akan mengirim `POST /v1alpha/sessions/{sessionId}:sendMessage` yang berisi umpan balik standar untuk terus maju (atau *reply* kustom apabila disuplai via argumen).
+*   **Penanganan Error & Kebuntuan (*Deadlocks*)**: Merekam kegagalan transmisi jaringan dan memodifikasi status sesi internal secara anggun ke `failed` untuk menghindari siklus pemungutan suara berujung-tak-henti.
 
-### E. Skrip `jules_client.ts`
-*   Skrip ini adalah abstraksi murni dari modul bawaan `https` di Node.js, memungkinkan aplikasi melakukan panggilan REST asinkron dengan kontrol penuh pada tajuk (*header* HTTP, seperti menyertakan `X-Goog-Api-Key`), penanganan eror (*error handling*), dan eksekusi payload JSON *native* tanpa bergantung pada paket pihak ketiga besar (seperti Axios/Node-fetch).
+### E. Skrip `jules_client.ts` (REST Network Abstraction)
+*   **Adaptasi Modul Bawaan**: Membungkus modul `node:https` untuk komunikasi ringan, meminimalkan ruang memori tanpa menggunakan pustaka permintaan HTTP berbobot berat (seperti Axios).
+*   **Otorisasi Otomatis**: Secara terpusat menangani resolusi identitas rahasia (*secret resolving*). Mengekstrak `JULES_API_KEY` dari lingkungan sistem.
+*   **Penyatuan Tanggapan HTTP**: Mendukung resolusi janji-janji (*Promises*) untuk memisahkan pengkodean *header/body/payload* HTTP yang kotor dari skrip perutean lalu lintas level-tinggi.
 
 ### F. Konsol Menu Interaktif (`jules_menu.ts`)
-*   Sebagai opsi utama untuk developer manusia (non-AI), menyediakan visual terminal CLI. Menggunakan deteksi UI pintar: jika `@opentui/core` didukung (*via FFI/Zig native*), tampilkan UI *Rich-Terminal* responsif; jika tidak didukung (atau gagal dimuat), sistem tidak *crash* tetapi dengan aman otomatis menurunkan ke mode ASCII CLI standar (menggunakan *Readline* Node).
+*   **Sistem Degradasi UI (*Fallback UI*)**: Berusaha memanfaatkan dependensi *TUI (Text-Based UI)* modern berbasis *Zig/FFI* (`@opentui/core`). Jika pengikatan ini kandas, misalnya dikarenakan kendala sistem arsitektur langka atau kegagalan pembangunan *node-gyp*, konsol memulihkan diri dengan meniru menu baris perintah *ASCII ANSI* standar dengan rapi (memanfaatkan modul `readline` bawaan Node.js). Tindakan ini menjamin CLI tidak pernah hancur hanya karena permasalahan estetika antar-muka.
