@@ -1,291 +1,52 @@
 # Jules Companion 🚀
 
-`jules-companion` adalah custom skill (agen pembantu) tingkat global untuk asisten coding Anda (**Antigravity / Claude Code**). Skill ini dirancang sebagai ko-pilot koordinasi untuk mengintegrasikan alur kerja lokal (Git + GitHub CLI) dan pengerjaan otonom di cloud menggunakan **Google Jules CLI** (`jules`).
+> **[Read in Indonesian (Baca dalam Bahasa Indonesia)](README.id.md)**
 
-Skill ini mengorganisasikan pengerjaan dengan memobilisasi **30 peran agen spesialis** (agnostik bahasa pemrograman) yang terbagi secara tegas ke dalam kelompok Coding (menulis kode) dan Dokumentasi/Review (catatan/Markdown) untuk performa optimal dan efisiensi memori token.
+`jules-companion` is a global custom skill and CLI tool for your AI coding assistant (like Claude Code). It acts as a co-pilot to orchestrate local workflows (Git + GitHub CLI) with autonomous cloud execution using the **Google Jules API**.
 
----
+It mobilizes **30 specialized AI agents**, dividing them strictly into Coding (modifying code) and Documentation/Review (read-only) groups for optimal performance.
 
-## 📐 Visual Architecture & Workflow
+## ⚡ Core Features
 
-*Untuk dokumentasi teknis mendalam mengenai arsitektur, cara kerja, dan logika program, silakan baca [Dokumentasi Arsitektur](docs/architecture.md).*
+*   **30 Specialist Agents**: Pre-configured agents with specific roles (e.g., *Bolt* for performance, *Sentinel* for security).
+*   **Two-Stage Patch Merge**: Cloud patches are first pulled into an isolated review branch. You merge them into `main` only after inspecting the generated Markdown report.
+*   **Auto-Process Engine**: Automatically handles Jules cloud session blocking states (like AWAITING_PLAN_APPROVAL).
+*   **Fallback Interactive UI**: A clean, arrow-key navigable terminal UI.
 
-```text
-===================================================================================================
-                       JULES-COMPANION ARCHITECTURE & WORKFLOW
-===================================================================================================
+## 🚀 One-Line Install
 
- [ USER / DEVELOPER ]
-          │
-          ▼
- 🤖 [ MAIN AI AGENT ] ──────────────► Read Agent Registry
- (Antigravity / Claude)             (references/agents/registry.json)
-          │                                  │
-          ▼                                  ▼
- ⚙️  [ LOCAL SETUP ] ──────────────► Initialize Workspace Staging
- (node dist/setup.js)               - .jules-companion/
-                                    - docs/jules-reviews/
-                                    - .gitignore
-          │
-          ├────────────────────────────────────────────────────────┐
-          │                                                        │
-          ▼ (--mode code)                                          ▼ (--mode review)
- 💻 [ CODE IMPLEMENTATION ]                               🔍 [ AUDIT-ONLY REVIEW ]
- - Direct functional code changes                          - Strict Directive Injected
- - App logic updates (.ts, .py, etc.)                      - NO app code changes allowed
-          │                                                - Writes Markdown Report to:
-          │                                                  docs/jules-reviews/
-          │                                                        │
-          └────────────────────────┬───────────────────────────────┘
-                                   │
-                                   ▼
-                       🛰️ [ GOOGLE JULES API ]
-                       (POST /v1alpha/sessions)
-                                   │
-                                   ▼
-                       ☁️ [ CLOUD VM SANDBOX ]
-                       (Task Execution & Git Diff)
-                                   │
-                                   ▼
-                     🔀 [ ADVANCED PATCH MERGE ]
-                    (node dist/merge_session.js)
-                                   │
-             ┌─────────────────────┴─────────────────────┐
-             ▼                                           ▼
-  📊 [ VISUAL CODE DIFF REPORT ]               📄 [ REVIEW DOCUMENT REPORT ]
-  - File changes (--stat)                      - Output review file path
-  - Diff log saved to:                         - Print summary snippet
-    .jules-companion/scratch/diff-*.log        - Main Agent inspection
-             │                                           │
-             └─────────────────────┬─────────────────────┘
-                                   │
-                                   ▼
-                       ✅ [ CLEAN GIT MERGE ]
-                       (Target Branch: main)
-
-===================================================================================================
-```
-
----
-
-## Persyaratan (Prerequisites)
-
-Sebelum memasang skill ini, pastikan perkakas berikut telah terinstal dan terkonfigurasi di sistem Anda:
-
-1. **Google Jules CLI** (Terinstal secara global dan sudah masuk):
-   ```bash
-   npm install -g @google/jules
-   jules login
-   ```
-2. **GitHub CLI (`gh`)** (Terinstal dan sudah terautentikasi):
-   ```bash
-   gh auth login
-   ```
-3. **Git**: Repositori lokal yang diinisiasi Git (kecuali jika dijalankan dalam safe mode Non-Git).
-4. **Variabel Lingkungan**: Simpan `JULES_API_KEY` Anda di dalam berkas `.env` root proyek Anda jika ingin menggunakan pemanggilan REST API secara otomatis.
-
----
-
-## ⚡ Otomatisasi TypeScript & Registri Agen Cepat
-
-Skill ini dilengkapi dengan skrip otomatisasi berbasis **TypeScript** yang dikompilasi ke JavaScript (`dist/`) untuk performa tinggi dan nol kebingungan bagi Agent AI:
-
-* **Inisialisasi Lingkungan Kerja Otomatis (`setup.js`)**:
-  ```bash
-  node dist/setup.js
-  ```
-  Mendeteksi OS, memeriksa dependensi, membuat struktur folder `.jules-companion/`, folder tinjauan `docs/jules-reviews/`, folder laporan `docs/jules-reports/`, dan memperbarui `.gitignore`.
-
-* **Konsol Menu Interaktif & Smart Launch (`jules_menu.js`)**:
-  ```bash
-  # Buka konsol menu terpadu dari direktori proyek mana saja
-  jules-companion
-  ```
-  Menyediakan alur interaktif modern berbasis **Anomaly OpenTUI** (`@opentui/core`) yang mendukung navigasi tombol panah keyboard. Jika pustaka FFI/Zig native tidak didukung pada platform runtime Anda, konsol otomatis beralih (*fallback*) ke menu ANSI Box-Drawing 75-karakter premium secara aman tanpa *crash*. Menyediakan alur Deployment, Smart Launch, Polling Sesi Aktif, Inspeksi Patch + Laporan Markdown, hingga Merge Akhir.
-
-* **Deploy Sesi Cloud Otonom (`deploy_session.js`)**:
-  ```bash
-  # Mode 'code' (default): Penulisan kode fungsional biasa
-  node dist/deploy_session.js --type start --agents bolt --task "Optimasi memori loop" --mode code
-
-  # Mode 'review': Audit non-destruktif, menulis laporan ke docs/jules-reviews/
-  node dist/deploy_session.js --type review --agents sentinel --task "Audit keamanan" --mode review
-  ```
-
-* **Auto-Approval & Auto-Reply Engine (`auto_process.js`)**:
-  ```bash
-  # Polling otomatis dan persetujuan rencana / balasan sesi cloud yang tertunda
-  node dist/auto_process.js --all
-  ```
-
-* **Inspeksi & Penggabungan Patch Dua-Tahap (`merge_session.js`)**:
-  ```bash
-  # Tahap 1: Tarik patch ke branch isolasi & buat Laporan Markdown lokal
-  node dist/merge_session.js --inspect <session_id>
-
-  # Tahap 2: Merge branch isolasi ke branch utama setelah laporan disetujui
-  node dist/merge_session.js --approve <session_id>
-  ```
-
----
-
-## Cara Inisiasi Inisialisasi Global (One-Line Install)
-
-Cukup jalankan satu baris perintah ini di terminal Anda untuk menginstal skill secara **global** beserta perintah pintasnya:
+Install the skill globally on your system:
 
 ```bash
 curl -sSL https://raw.githubusercontent.com/rivadmorin/Jules-Companion/main/install.sh | bash
 ```
+*This command clones the repo to `~/.gemini/config/skills/jules-companion`, installs dependencies, and creates a global `jules-companion` shortcut.*
 
-Perintah di atas akan otomatis mengkloning repositori ke `~/.gemini/config/skills/jules-companion`, menginstal dependensi, membuat shortcut global `jules-companion` di `~/.local/bin/`, dan menggenerasi registri agen secara otomatis.
+## 💬 AI Agent Slash Commands
 
----
+You can paste these commands directly into your AI Assistant chat to trigger background actions:
 
-## 🤖 Prompts Ready for AI Agents (Copy & Paste)
-
-Copy and paste any of the prompts below directly into your AI Agent chat (**Antigravity CLI**, **Antigravity IDE**, **Claude**, **Hermes Agent**, **Gemini CLI**, **Cursor**, etc.):
-
-### 1. Global Project Initialization Prompt
-```text
-Please install and activate the jules-companion skill globally on my system:
-curl -sSL https://raw.githubusercontent.com/rivadmorin/Jules-Companion/main/install.sh | bash
-After installation completes, run jules-companion option 7 (or node dist/setup.js) in this project to initialize the staging directory, docs/jules-reviews/, and docs/jules-reports/ folders.
-```
-
-### 2. Launch Interactive Companion Console Prompt
-```text
-Launch the interactive Jules Companion menu to manage the Google Jules session lifecycle:
-jules-companion
-```
-
-### 3. Smart Launch Agent (Auto-Interpret Intent) Prompt
-```text
-Use the Smart Launch Option 2 in jules-companion to automatically map the required specialist agents and execution mode (code or review) based on my goal:
-Type Option 2 inside jules-companion, then input: "clean up memory leaks in jules_client and optimize loop allocations"
-```
-
-### 4. Check Active Session Status (Single-Shot Token-Saver) Prompt
-```text
-Verify the current live state of all active cloud sessions without loop polling:
-Type Option 3 inside jules-companion
-```
-
-### 5. Auto-Process Pending Approvals & Replies Prompt
-```text
-Automatically approve pending plans and send confirmation replies to the cloud sessions:
-Type Option 4 inside jules-companion
-```
-
-### 6. Inspect Patch & Generate Markdown Report Prompt
-```text
-Run Option 5 in jules-companion to enforce the All-Sessions-Completed Safety Gate, pull the patch into an isolated review branch, and generate the universal Markdown summary report under docs/jules-reports/ for inspection.
-```
-
-### 7. Approve & Finalize Git Merge Prompt
-```text
-Review the generated report under docs/jules-reports/ and merge the approved patch into the main branch:
-Type Option 6 inside jules-companion to finalize the git merge and delete temporary branches.
-```
-
-### 8. Skill Uninstallation & Cleanup Prompt
-```text
-Please cleanly remove the jules-companion skill:
-curl -sSL https://raw.githubusercontent.com/rivadmorin/Jules-Companion/main/uninstall.sh | bash
-If this project has staging folders, remove .jules-companion/, docs/jules-reviews/, and docs/jules-reports/ directories.
-```
-
-
----
-
-## ⚡ AI Agent Slash Commands
-
-Mulai sekarang, Anda tidak perlu lagi menyalin/mengetik prompt panjang secara manual. Anda bisa langsung mengetikkan **Slash Commands** berikut di dalam obrolan asisten AI Anda, dan asisten akan secara otomatis mengeksekusi perintah terminal yang sesuai di belakang layar:
-
-| Slash Command | Fungsi / Deskripsi |
+| Command | Description |
 | :--- | :--- |
-| `/jules-menu` | Membuka konsol TUI interaktif Jules Companion. |
-| `/jules-deploy <agen> <tugas>` | Membuat sesi baru secara otonom (contoh: `/jules-deploy bolt optimasi memori`). |
-| `/jules-review <agen> <tugas>` | Membuat sesi audit (Review-Only mode) secara aman. |
-| `/jules-status` | Mengecek status seluruh sesi cloud yang sedang aktif saat ini. |
-| `/jules-auto` | Menjalankan proses auto-approval dan auto-reply agar sesi cloud berjalan cepat. |
-| `/jules-inspect <session_id>` | Menarik patch, mengisolasinya ke *review branch*, dan membuat laporan Markdown. |
-| `/jules-merge <session_id>` | Menyetujui dan menggabungkan patch yang telah diinspeksi ke *main branch*. |
-| `/jules-doctor` | Menjalankan pemeriksaan keutuhan sistem dan validasi dependensi. |
----
+| `/jules-menu` | Opens the interactive Jules Companion TUI console. |
+| `/jules-deploy <agent> <task>` | Deploys a new autonomous coding session. |
+| `/jules-review <agent> <task>` | Creates a safe, non-destructive audit session. |
+| `/jules-status` | Checks the status of all active cloud sessions. |
+| `/jules-auto` | Runs the auto-approval and auto-reply engine. |
+| `/jules-inspect <session_id>` | Pulls a patch into an isolated branch and generates a report. |
+| `/jules-merge <session_id>` | Approves and merges the inspected patch into the main branch. |
+| `/jules-doctor` | Runs system integrity and dependency validation checks. |
 
-## Pengujian Unit (Unit Testing)
+## 📚 Documentation
 
-Repositori ini menyertakan suite pengujian unit (*unit testing*) menggunakan Node.js Test Runner bawaan untuk menjamin kestabilan kode saat dilakukan pemeliharaan.
+For a comprehensive explanation of how this application works, its architecture, and workflow logic, please read:
 
-Untuk menjalankan seluruh pengujian:
-```bash
-npm test
-```
+👉 **[Complete Application Documentation (Indonesian)](docs/penjelasan-aplikasi.md)**
 
-Pengujian mencakup:
-*   **Argument Parser (`parseArgs`)**: Memastikan argumen CLI diterjemahkan dengan benar.
-*   **Directory Resolver (`getProjectDirs`)**: Memastikan direktori lokal dibuat di lokasi yang tepat.
-*   **Intent Inference Engine (`inferAgentAndMode`)**: Memastikan agen spesialis dan mode yang diusulkan sesuai dengan maksud pengguna dalam bahasa alami.
+## 🧹 Uninstall
 
----
-
-## Cara Uninstall (Uninstallation)
-
-Untuk menghapus skill global ini secara bersih:
+To cleanly remove the global skill:
 
 ```bash
 curl -sSL https://raw.githubusercontent.com/rivadmorin/Jules-Companion/main/uninstall.sh | bash
-```
-2. Jika Anda ingin melakukan pembersihan penuh di suatu proyek tertentu, tanyakan asisten untuk membersihkan staging area proyek Anda. Asisten akan menghapus `.jules-companion/` serta membersihkan entri pengabaian di berkas `.gitignore` secara otomatis.
-
----
-
-## Fitur Unggulan & Alur Kerja Baru
-
-### 1. Penyiapan & Asesmen Lingkungan Kerja (Self-Copying Modular)
-Pada kali pertama skill dipanggil di suatu proyek baru:
-* **Deteksi OS Host**: Asisten mendeteksi otomatis sistem operasi Anda (Windows, macOS, Linux, atau Cloud VM container).
-* **Verifikasi PATH Dependensi**: Melakukan diagnosis otomatis jalur executable dependensi (`jules`, `gh`, `git`).
-* **Penyalinan Mandiri Per-Agen**: Membuat folder `.jules-companion/agents/{nama_agen}/` untuk 30 agen spesialis dan menyalin berkas spesifikasi global ke berkas lokal proyek `reference.md` dan inisiasi berkas jurnal kosong `journal.md` secara terisolasi.
-* **Keamanan Gitignore**: Folder `.jules-companion/` secara otomatis didaftarkan pada berkas `.gitignore` lokal.
-
-### 2. Klasifikasi Tegas Kelompok Kerja Agen
-* **💻 Kelompok Coding (24 Peran)**: Palette 🎨, Sentinel 🛡️, Bolt ⚡, Nomad 🎒, Packager 💿, Exterminator 🐛, Builder 🧱, Conduit 🔌, Alchemist 🧪, Gatekeeper 🔑, Bridge 🧲, Dockerist 🐳, Modernizer ⚙️, Inspector 🔎, Janitor 🧹, Logger 🪵, Benchmarker ⏱️, Watcher 👁️, Chameleon 🦎, Innovator 💡, Materialist 🎴, Partisan 🛰️, Netrunner 🌐, Adapter 🔌.
-  * *Wewenang*: Diizinkan menulis, memodifikasi, menguji, dan memformat berkas kode sumber aplikasi.
-* **📝 Kelompok Dokumentasi & Analitis (6 Peran)**: Scribe 📝, Cartographer 🗺️, Grader 📊, Consultant 🧠, Critic 🗣️, Proteus 🎭.
-  * *Wewenang*: Dilarang keras memodifikasi kode sumber aplikasi fungsional; hanya diperbolehkan menulis berkas Markdown (`.md`), ulasan kode, diagram, atau visualisasi ASCII.
-
-### 3. Alur Revisi Otonom via Komentar PR GitHub CLI
-Setiap kali PR dibuat oleh Jules, asisten dapat meminta revisi secara otonom langsung dari terminal lokal Anda menggunakan pembungkus perintah GitHub CLI:
-```bash
-gh pr comment <nomor_pr> --body "@jules tolong revisi ini: < detail_revisi_anda >"
-```
-Jules di cloud akan secara otomatis mengenali mention `@jules`, melakukan perbaikan kode di sandbox VM, dan asisten lokal akan memandu Anda menyinkronkan kembali patch barunya secara aman.
-
-### 4. Penyimpanan Sesi Terisolasi
-Seluruh patch, log, dan berkas rencana kerja hasil tarikan (*pull*) dari cloud Jules akan ditaruh secara terpisah di bawah sub-folder sesi milik agen terkait (`.jules-companion/agents/{nama_agen}/sessions/{sessionId}/`).
-
-### 5. Diagnosis Mandiri `/jules-companion doctor`
-Picu perintah `/jules-companion doctor` di dalam obrolan asisten untuk memverifikasi keutuhan folder 30 agen kustomisasi global/lokal, konfigurasi Gitignore, serta status login CLI. Jika ada berkas `reference.md` lokal yang hilang, asisten secara otonom menyalin kembali berkas tersebut dari folder kustomisasi global untuk memulihkan keutuhan sistem.
-
----
-
-## Struktur Repositori Arsip Proyek
-
-```
-Jules-Companion/
-├── SKILL.md              # Salinan instruksi perilaku asisten (English)
-├── README.md             # Panduan instalasi global & fitur (Indonesian)
-├── docs/                 # Dokumentasi Arsitektur Lanjutan
-│   ├── architecture.md   # Index Arsitektur
-│   └── architecture/     # Rincian Arsitektur (Cara kerja, Logika, Alur)
-└── references/
-    ├── jules-cli.md      # Panduan perintah CLI Google Jules
-    ├── jules-api.md      # Panduan endpoint REST API Google Jules
-    ├── prompt-templates.md # Manifest / Indeks Induk 30 agen spesialis
-    └── agents/           # 30 berkas template modular (Bolt.md layout standard)
-        ├── palette.md
-        ├── sentinel.md
-        ├── bolt.md
-        └── ...
 ```
