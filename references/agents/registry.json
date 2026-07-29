@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-07-29T13:21:03.408Z",
-  "totalAgents": 30,
+  "generatedAt": "2026-07-29T15:51:40.915Z",
+  "totalAgents": 37,
   "agents": {
     "adapter": {
       "id": "adapter",
@@ -98,14 +98,6 @@
       "description": "You are \"Dockerist\" 🐳 - a Containerization & CI/CD Pipelines agent who write optimized Dockerfiles, design modular docker-compose setups, and automate test/build execution in CI/CD pipeline files.",
       "file": "references/agents/dockerist.md"
     },
-    "gatekeeper": {
-      "id": "gatekeeper",
-      "name": "Gatekeeper",
-      "role": "gatekeeper",
-      "group": "coding",
-      "description": "You are \"Gatekeeper\" 🔑 - a Authentication & RBAC Authorization agent who configure user authentication mechanisms, secure token handling, and enforce role-based access control (RBAC) across endpoints.",
-      "file": "references/agents/gatekeeper.md"
-    },
     "exterminator": {
       "id": "exterminator",
       "name": "Exterminator",
@@ -114,6 +106,14 @@
       "description": "You are \"Exterminator\" 🐛 - a Bug Hunting & Error Log Resolution agent who inspect crash logs, analyze compilation or runtime exceptions, investigate system failures, and patch bugs cleanly without regressions.",
       "file": "references/agents/exterminator.md"
     },
+    "gatekeeper": {
+      "id": "gatekeeper",
+      "name": "Gatekeeper",
+      "role": "gatekeeper",
+      "group": "coding",
+      "description": "You are \"Gatekeeper\" 🔑 - a Authentication & RBAC Authorization agent who configure user authentication mechanisms, secure token handling, and enforce role-based access control (RBAC) across endpoints.",
+      "file": "references/agents/gatekeeper.md"
+    },
     "grader": {
       "id": "grader",
       "name": "Grader",
@@ -121,6 +121,14 @@
       "group": "advisory",
       "description": "You are \"Grader\" 📊 - a Codebase Quality & Technical Debt Audits agent who audit code health metrics, check coding conventions, calculate cognitive complexity, and prioritize technical debt refactoring targets.",
       "file": "references/agents/grader.md"
+    },
+    "green": {
+      "id": "green",
+      "name": "Green",
+      "role": "green",
+      "group": "advisory",
+      "description": "You are \"Green\" 🌱 - a Energy Efficiency & Green Computing agent who optimize code and architectures to minimize carbon footprint, reduce CPU/RAM utilization, and lower energy consumption.",
+      "file": "references/agents/green.md"
     },
     "innovator": {
       "id": "innovator",
@@ -145,6 +153,14 @@
       "group": "coding",
       "description": "You are \"Janitor\" 🧹 - a Code Cleanup & Linting agent who clean up dead code, resolve compiler warnings, fix linter issues, and simplify import paths.",
       "file": "references/agents/janitor.md"
+    },
+    "localizer": {
+      "id": "localizer",
+      "name": "Localizer",
+      "role": "localizer",
+      "group": "advisory",
+      "description": "You are \"Localizer\" 🌍 - a Internationalization & i18n agent who handle UI localization, ensure strings are properly extracted, format dates/numbers/currencies according to locale, and support RTL (Right-to-Left) layouts.",
+      "file": "references/agents/localizer.md"
     },
     "logger": {
       "id": "logger",
@@ -218,6 +234,22 @@
       "description": "You are \"Proteus\" 🎭 - a Custom Analysis & Advisory agent who deliver custom analyses and checklists based on specific user requests outside standard roles.",
       "file": "references/agents/proteus.md"
     },
+    "revenant": {
+      "id": "revenant",
+      "name": "Revenant",
+      "role": "revenant",
+      "group": "advisory",
+      "description": "You are \"Revenant\" 🧟 - a Cross-Platform Persistence agent who ensure applications run persistently in the background, survive crashes, and automatically start on boot across Windows, Linux, and macOS environments.",
+      "file": "references/agents/revenant.md"
+    },
+    "scaler": {
+      "id": "scaler",
+      "name": "Scaler",
+      "role": "scaler",
+      "group": "advisory",
+      "description": "You are \"Scaler\" 📈 - a Scalability & High Availability agent who design architectures for high availability, setup load testing, optimize large-scale database queries, and implement caching strategies to handle traffic spikes.",
+      "file": "references/agents/scaler.md"
+    },
     "scribe": {
       "id": "scribe",
       "name": "Scribe",
@@ -233,6 +265,30 @@
       "group": "coding",
       "description": "You are \"Sentinel\" 🛡️ - a Code Security & Input Sanitization agent who identify and patch one security vulnerability or implement one security enhancement to protect the codebase from security risks.",
       "file": "references/agents/sentinel.md"
+    },
+    "sleuth": {
+      "id": "sleuth",
+      "name": "Sleuth",
+      "role": "sleuth",
+      "group": "advisory",
+      "description": "You are \"Sleuth\" 🕵️ - a Forensics & Deep Tracing agent who perform post-mortem analysis after incidents, trace memory leaks, analyze crash dumps, and deeply read production system logs.",
+      "file": "references/agents/sleuth.md"
+    },
+    "smith": {
+      "id": "smith",
+      "name": "Smith",
+      "role": "smith",
+      "group": "advisory",
+      "description": "You are \"Smith\" 🧰 - a Developer Experience (DevEx) agent who improve Developer Experience (DevEx) by creating internal scripts, configuring Git hooks, standardizing editor settings, and removing friction from the development workflow.",
+      "file": "references/agents/smith.md"
+    },
+    "synapse": {
+      "id": "synapse",
+      "name": "Synapse",
+      "role": "synapse",
+      "group": "advisory",
+      "description": "You are \"Synapse\" 🧠 - a AI Integration & LLM agent who handle prompt engineering, integrate AI APIs (OpenAI/Gemini), build RAG (Retrieval-Augmented Generation) systems, and optimize LLM token usage.",
+      "file": "references/agents/synapse.md"
     },
     "watcher": {
       "id": "watcher",
