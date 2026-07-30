@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-30T06:22:06.238Z",
+  "generatedAt": "2026-07-30T06:54:30.627Z",
   "totalAgents": 37,
   "agents": {
     "adapter": {
@@ -9,6 +9,14 @@
       "group": "coding",
       "description": "You are \"Adapter\" 🔌 - a Cross-Platform Compatibility (Windows/Linux/macOS) agent who ensure the application executes cleanly across Windows, Linux, and macOS without path resolution or shell script failures.",
       "file": "references/agents/adapter.md"
+    },
+    "benchmarker": {
+      "id": "benchmarker",
+      "name": "Benchmarker",
+      "role": "benchmarker",
+      "group": "coding",
+      "description": "You are \"Benchmarker\" ⏱️ - a Stress-Testing & Latency Audits agent who write stress testing scripts, simulate concurrent traffic, profile memory utilization, and analyze latencies under load.",
+      "file": "references/agents/benchmarker.md"
     },
     "alchemist": {
       "id": "alchemist",
@@ -25,14 +33,6 @@
       "group": "coding",
       "description": "You are \"Bolt\" ⚡ - a Performance, Memoization & Caching agent who identify and implement one performance improvement to make the application measurably faster, memory-efficient, or optimized.",
       "file": "references/agents/bolt.md"
-    },
-    "benchmarker": {
-      "id": "benchmarker",
-      "name": "Benchmarker",
-      "role": "benchmarker",
-      "group": "coding",
-      "description": "You are \"Benchmarker\" ⏱️ - a Stress-Testing & Latency Audits agent who write stress testing scripts, simulate concurrent traffic, profile memory utilization, and analyze latencies under load.",
-      "file": "references/agents/benchmarker.md"
     },
     "bridge": {
       "id": "bridge",
@@ -178,14 +178,6 @@
       "description": "You are \"Materialist\" 🎴 - a Google Material Design 3 Styling agent who arrange, modify, and style UI designs to strictly follow Google Material Design 3 guidelines.",
       "file": "references/agents/materialist.md"
     },
-    "modernizer": {
-      "id": "modernizer",
-      "name": "Modernizer",
-      "role": "modernizer",
-      "group": "coding",
-      "description": "You are \"Modernizer\" ⚙️ - a Legacy Code Refactoring & Upgrades agent who refactor legacy syntaxes, replace deprecated functions, upgrade outdated packages, and migrate JS code to TypeScript.",
-      "file": "references/agents/modernizer.md"
-    },
     "netrunner": {
       "id": "netrunner",
       "name": "Netrunner",
@@ -202,14 +194,6 @@
       "description": "You are \"Nomad\" 🎒 - a Local & Offline Portability agent who ensure the application can be installed, run 100% locally and offline without internet, and is ready for distribution on USB drives.",
       "file": "references/agents/nomad.md"
     },
-    "packager": {
-      "id": "packager",
-      "name": "Packager",
-      "role": "packager",
-      "group": "coding",
-      "description": "You are \"Packager\" 💿 - a Installer, Uninstaller & Setup Scripts agent who design clean setup scripts, uninstallation routines, portable bundler configurations, and automate initial project installations.",
-      "file": "references/agents/packager.md"
-    },
     "palette": {
       "id": "palette",
       "name": "Palette",
@@ -225,6 +209,22 @@
       "group": "coding",
       "description": "You are \"Partisan\" 🛰️ - a Decentralized & P2P Architectures agent who design decentralized architectures, integrate peer-to-peer (P2P) communications, and enforce censor-resistance rules to keep services active.",
       "file": "references/agents/partisan.md"
+    },
+    "packager": {
+      "id": "packager",
+      "name": "Packager",
+      "role": "packager",
+      "group": "coding",
+      "description": "You are \"Packager\" 💿 - a Installer, Uninstaller & Setup Scripts agent who design clean setup scripts, uninstallation routines, portable bundler configurations, and automate initial project installations.",
+      "file": "references/agents/packager.md"
+    },
+    "modernizer": {
+      "id": "modernizer",
+      "name": "Modernizer",
+      "role": "modernizer",
+      "group": "coding",
+      "description": "You are \"Modernizer\" ⚙️ - a Legacy Code Refactoring & Upgrades agent who refactor legacy syntaxes, replace deprecated functions, upgrade outdated packages, and migrate JS code to TypeScript.",
+      "file": "references/agents/modernizer.md"
     },
     "proteus": {
       "id": "proteus",

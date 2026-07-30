@@ -5,6 +5,7 @@
   "main": "dist/setup.js",
   "scripts": {
     "build": "esbuild scripts/*.ts --outdir=dist --platform=node --format=cjs",
+    "pretest": "npm run build",
     "setup": "node dist/setup.js",
     "registry": "node dist/generate_registry.js",
     "deploy": "node dist/deploy_session.js",
@@ -24,8 +25,8 @@
   "devDependencies": {
     "@types/node": "^20.11.0",
     "esbuild": "^0.28.1",
-    "tsx": "^4.7.1",
-    "typescript": "^5.3.3"
+    "tsx": "^4.23.1",
+    "typescript": "^5.9.3"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.0"
