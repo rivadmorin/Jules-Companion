@@ -1,0 +1,4 @@
+## 2024-07-30 - SpawnSync E2E Execution in Temporary Directories
+**Discovery:** E2E testing of CLI tools (`generate_registry`, `jules_client`) requires overriding environmental variables (like `JULES_API_KEY`) carefully in `spawnSync`.
+**Analysis:** Relying strictly on the local mock environment (e.g., `JULES_API_KEY: 'mock_key'`) prevents random failures when executing locally or on CI that might have the actual project-level `.env`. Also, simulating side effects (like checking `.jules-companion/sessions.json` presence) forces creating a temporary test workspace so `spawnSync` isolates side effects cleanly.
+**Action:** When creating integration tests for scripts manipulating `.jules-companion` internals, always wrap `spawnSync` calls to use a custom isolated `TEST_DIR` and provide overriding mock environment variables to maintain idempotency.
