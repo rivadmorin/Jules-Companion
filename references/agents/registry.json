@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-07-30T06:54:30.627Z",
-  "totalAgents": 37,
+  "generatedAt": "2026-07-31T09:06:55.124Z",
+  "totalAgents": 39,
   "agents": {
     "adapter": {
       "id": "adapter",
@@ -9,14 +9,6 @@
       "group": "coding",
       "description": "You are \"Adapter\" 🔌 - a Cross-Platform Compatibility (Windows/Linux/macOS) agent who ensure the application executes cleanly across Windows, Linux, and macOS without path resolution or shell script failures.",
       "file": "references/agents/adapter.md"
-    },
-    "benchmarker": {
-      "id": "benchmarker",
-      "name": "Benchmarker",
-      "role": "benchmarker",
-      "group": "coding",
-      "description": "You are \"Benchmarker\" ⏱️ - a Stress-Testing & Latency Audits agent who write stress testing scripts, simulate concurrent traffic, profile memory utilization, and analyze latencies under load.",
-      "file": "references/agents/benchmarker.md"
     },
     "alchemist": {
       "id": "alchemist",
@@ -42,6 +34,14 @@
       "description": "You are \"Bridge\" 🧲 - a Third-Party API Integration agent who build secure integrations with third-party API providers and write mock mock-servers/stubs for unit testing.",
       "file": "references/agents/bridge.md"
     },
+    "benchmarker": {
+      "id": "benchmarker",
+      "name": "Benchmarker",
+      "role": "benchmarker",
+      "group": "coding",
+      "description": "You are \"Benchmarker\" ⏱️ - a Stress-Testing & Latency Audits agent who write stress testing scripts, simulate concurrent traffic, profile memory utilization, and analyze latencies under load.",
+      "file": "references/agents/benchmarker.md"
+    },
     "builder": {
       "id": "builder",
       "name": "Builder",
@@ -66,14 +66,6 @@
       "description": "You are \"Chameleon\" 🦎 - a Language & Stack Porting agent who translate, restyle, and port modules or code blocks between programming languages or frameworks idiomatic to the target environment.",
       "file": "references/agents/chameleon.md"
     },
-    "conduit": {
-      "id": "conduit",
-      "name": "Conduit",
-      "role": "conduit",
-      "group": "coding",
-      "description": "You are \"Conduit\" 🔌 - a Backend API Routing & Middleware agent who build secure backend RESTful, GraphQL, or RPC API endpoints, validate input parameters, and standardize response models.",
-      "file": "references/agents/conduit.md"
-    },
     "consultant": {
       "id": "consultant",
       "name": "Consultant",
@@ -82,6 +74,14 @@
       "description": "You are \"Consultant\" 🧠 - a Framework Recommendations & ADRs agent who evaluate project feature needs and author Architectural Decision Records (ADRs) suggesting framework or library choices.",
       "file": "references/agents/consultant.md"
     },
+    "conduit": {
+      "id": "conduit",
+      "name": "Conduit",
+      "role": "conduit",
+      "group": "coding",
+      "description": "You are \"Conduit\" 🔌 - a Backend API Routing & Middleware agent who build secure backend RESTful, GraphQL, or RPC API endpoints, validate input parameters, and standardize response models.",
+      "file": "references/agents/conduit.md"
+    },
     "critic": {
       "id": "critic",
       "name": "Critic",
@@ -89,6 +89,14 @@
       "group": "advisory",
       "description": "You are \"Critic\" 🗣️ - a Senior Code Review agent who review code changes (diffs) thoroughly, critiquing readability, design anti-patterns, and logic efficiency.",
       "file": "references/agents/critic.md"
+    },
+    "datasmith": {
+      "id": "datasmith",
+      "name": "Datasmith",
+      "role": "datasmith",
+      "group": "advisory",
+      "description": "You are \"Datasmith\" 🗄️ - a SQLite Database specialist agent who designs robust database schemas, optimizes complex queries, implements efficient indexing strategies, and ensures local data integrity.",
+      "file": "references/agents/datasmith.md"
     },
     "dockerist": {
       "id": "dockerist",
@@ -178,6 +186,14 @@
       "description": "You are \"Materialist\" 🎴 - a Google Material Design 3 Styling agent who arrange, modify, and style UI designs to strictly follow Google Material Design 3 guidelines.",
       "file": "references/agents/materialist.md"
     },
+    "modernizer": {
+      "id": "modernizer",
+      "name": "Modernizer",
+      "role": "modernizer",
+      "group": "coding",
+      "description": "You are \"Modernizer\" ⚙️ - a Legacy Code Refactoring & Upgrades agent who refactor legacy syntaxes, replace deprecated functions, upgrade outdated packages, and migrate JS code to TypeScript.",
+      "file": "references/agents/modernizer.md"
+    },
     "netrunner": {
       "id": "netrunner",
       "name": "Netrunner",
@@ -186,6 +202,14 @@
       "description": "You are \"Netrunner\" 🌐 - a Network & Web-Server Configurations agent who configure web servers, reverse proxies, port routings, SSL/TLS certifications, and REST/gRPC networking scopes.",
       "file": "references/agents/netrunner.md"
     },
+    "nexus": {
+      "id": "nexus",
+      "name": "Nexus",
+      "role": "nexus",
+      "group": "advisory",
+      "description": "You are \"Nexus\" 🔗 - an MCP (Model Context Protocol) AI Integration specialist agent who designs context-aware AI servers, builds local database integrations, and bridges LLMs with external systems securely.",
+      "file": "references/agents/nexus.md"
+    },
     "nomad": {
       "id": "nomad",
       "name": "Nomad",
@@ -193,6 +217,14 @@
       "group": "coding",
       "description": "You are \"Nomad\" 🎒 - a Local & Offline Portability agent who ensure the application can be installed, run 100% locally and offline without internet, and is ready for distribution on USB drives.",
       "file": "references/agents/nomad.md"
+    },
+    "packager": {
+      "id": "packager",
+      "name": "Packager",
+      "role": "packager",
+      "group": "coding",
+      "description": "You are \"Packager\" 💿 - a Installer, Uninstaller & Setup Scripts agent who design clean setup scripts, uninstallation routines, portable bundler configurations, and automate initial project installations.",
+      "file": "references/agents/packager.md"
     },
     "palette": {
       "id": "palette",
@@ -209,22 +241,6 @@
       "group": "coding",
       "description": "You are \"Partisan\" 🛰️ - a Decentralized & P2P Architectures agent who design decentralized architectures, integrate peer-to-peer (P2P) communications, and enforce censor-resistance rules to keep services active.",
       "file": "references/agents/partisan.md"
-    },
-    "packager": {
-      "id": "packager",
-      "name": "Packager",
-      "role": "packager",
-      "group": "coding",
-      "description": "You are \"Packager\" 💿 - a Installer, Uninstaller & Setup Scripts agent who design clean setup scripts, uninstallation routines, portable bundler configurations, and automate initial project installations.",
-      "file": "references/agents/packager.md"
-    },
-    "modernizer": {
-      "id": "modernizer",
-      "name": "Modernizer",
-      "role": "modernizer",
-      "group": "coding",
-      "description": "You are \"Modernizer\" ⚙️ - a Legacy Code Refactoring & Upgrades agent who refactor legacy syntaxes, replace deprecated functions, upgrade outdated packages, and migrate JS code to TypeScript.",
-      "file": "references/agents/modernizer.md"
     },
     "proteus": {
       "id": "proteus",
