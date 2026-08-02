@@ -40,6 +40,15 @@ const SPECIALIST_AGENTS = [
   { id: 30, name: 'proteus', desc: 'Flexible/Custom review agent (Markdown Only).' }
 ];
 
+/**
+ * Deploys a Jules session manually using a specified agent and task.
+ * Modifies the process arguments and invokes the underlying deploySession function.
+ *
+ * @param {string} [agent] - The name of the agent to deploy (e.g., 'bolt').
+ * @param {string} [task] - The task description for the agent.
+ * @param {string} [mode='code'] - The execution mode ('code' or 'review').
+ * @returns {Promise<void>}
+ */
 async function handleManualDeploy(agent?: string, task?: string, mode: string = 'code') {
   if (!agent || !task) {
     console.error(JSON.stringify({ error: "Missing --agent or --task arguments for manual deploy" }));
@@ -54,6 +63,14 @@ async function handleManualDeploy(agent?: string, task?: string, mode: string = 
   }
 }
 
+/**
+ * Analyzes the user's goal to automatically select the most appropriate agent,
+ * then deploys a Jules session with that agent.
+ *
+ * @param {string} [goal] - The objective or task description provided by the user.
+ * @param {string} [mode='code'] - The execution mode ('code' or 'review').
+ * @returns {Promise<void>}
+ */
 async function handleSmartLaunch(goal?: string, mode: string = 'code') {
   if (!goal) {
     console.error(JSON.stringify({ error: "Missing --goal argument for smart launch" }));
@@ -96,6 +113,11 @@ async function handleSmartLaunch(goal?: string, mode: string = 'code') {
   }
 }
 
+/**
+ * Retrieves and outputs the list of active Jules sessions from local storage.
+ *
+ * @returns {Promise<void>}
+ */
 async function showActiveSessions() {
   const sessions = loadSessions();
   if (sessions.length === 0) {
@@ -105,6 +127,12 @@ async function showActiveSessions() {
   console.log(JSON.stringify({ status: "success", data: sessions }));
 }
 
+/**
+ * Triggers the auto-process engine to poll and automatically advance all
+ * active Jules sessions (e.g., auto-approving plans, auto-replying).
+ *
+ * @returns {Promise<void>}
+ */
 async function handleAutoProcess() {
   process.argv = [process.argv[0], process.argv[1], '--all'];
   try {
@@ -115,6 +143,14 @@ async function handleAutoProcess() {
   }
 }
 
+/**
+ * Inspects a completed Jules session by fetching its patch, applying it to
+ * an isolated review branch, and generating a markdown report.
+ * Checks the safety gate before proceeding.
+ *
+ * @param {string} [sessionId] - The ID of the session to inspect. If not provided, lists available sessions.
+ * @returns {Promise<void>}
+ */
 async function handleInspect(sessionId?: string) {
   const sessions = loadSessions();
   const completed = sessions.filter(s => s.status === 'completed' || s.status === 'launched' || s.status === 'plan_approved');
@@ -161,6 +197,13 @@ async function handleInspect(sessionId?: string) {
   }
 }
 
+/**
+ * Approves and merges the isolated review branch for a previously inspected
+ * Jules session into the current target branch. Checks the safety gate.
+ *
+ * @param {string} [sessionId] - The ID of the session to merge. If not provided, lists available sessions.
+ * @returns {Promise<void>}
+ */
 async function handleApproveMerge(sessionId?: string) {
   const sessions = loadSessions();
   const inspected = sessions.filter(s => s.status === 'inspected');
@@ -207,6 +250,12 @@ async function handleApproveMerge(sessionId?: string) {
   }
 }
 
+/**
+ * Updates the Jules API key stored in the local `.jules-companion/.env` file.
+ *
+ * @param {string} [newKey] - The new API key to save.
+ * @returns {Promise<void>}
+ */
 async function handleUpdateApiKey(newKey?: string) {
     if (!newKey) {
         console.error(JSON.stringify({ error: "Missing --key argument" }));
@@ -234,6 +283,13 @@ async function handleUpdateApiKey(newKey?: string) {
     }
 }
 
+/**
+ * Main entry point for the Jules menu CLI interface.
+ * Parses incoming command-line arguments to route execution to the
+ * appropriate handler function.
+ *
+ * @returns {Promise<void>}
+ */
 export async function main() {
   const args = process.argv.slice(2);
 

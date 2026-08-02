@@ -96,6 +96,13 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 });
 
 // We need to capture console output since the existing functions use it extensively
+/**
+ * Intercepts standard output and standard error from a given function and captures it as a string.
+ * Essential for redirecting CLI-based script output to MCP text responses.
+ *
+ * @param {Function} fn - The asynchronous function to execute and capture.
+ * @returns {Promise<string>} The captured console output.
+ */
 async function captureOutput(fn: () => Promise<any> | any): Promise<string> {
     const originalLog = console.log;
     const originalError = console.error;
@@ -206,6 +213,11 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   }
 });
 
+/**
+ * Initializes and starts the stdio-based MCP (Model Context Protocol) server for Jules Companion.
+ *
+ * @returns {Promise<void>}
+ */
 async function main() {
   const transport = new StdioServerTransport();
   await server.connect(transport);

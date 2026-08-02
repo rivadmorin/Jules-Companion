@@ -17,6 +17,13 @@ interface SetupResult {
   status: 'SUCCESS' | 'WARNING' | 'ERROR';
 }
 
+/**
+ * Checks if a specific CLI command exists and is executable in the current environment.
+ *
+ * @param {string} cmd - The command to check (e.g., 'git', 'gh').
+ * @param {string} osType - The operating system platform identifier (e.g., 'win32', 'linux').
+ * @returns {Promise<boolean>} True if the command is available, false otherwise.
+ */
 async function checkCommand(cmd: string, osType: string): Promise<boolean> {
   const checkCmd = osType === 'win32' ? 'where' : 'which';
   try {
@@ -27,6 +34,11 @@ async function checkCommand(cmd: string, osType: string): Promise<boolean> {
   }
 }
 
+/**
+ * Verifies if the GitHub CLI (gh) is authenticated.
+ *
+ * @returns {Promise<boolean>} True if authenticated, false otherwise.
+ */
 async function checkGhAuth(): Promise<boolean> {
   try {
     await execAsync('gh auth status');
@@ -36,6 +48,12 @@ async function checkGhAuth(): Promise<boolean> {
   }
 }
 
+/**
+ * Ensures that a Git user identity (name and email) is configured.
+ * Sets a local fallback identity if missing and the context is within a Git repository.
+ *
+ * @returns {Promise<boolean>} True if identity is verified or successfully configured, false on failure.
+ */
 async function ensureGitIdentity(): Promise<boolean> {
   try {
     try { await execAsync('git rev-parse --is-inside-work-tree'); } catch {
@@ -63,6 +81,13 @@ async function ensureGitIdentity(): Promise<boolean> {
   }
 }
 
+/**
+ * Executes the self-healing environment setup process for Jules Companion.
+ * Validates dependencies, ensures directory structures, syncs reference files, and generates the agent registry.
+ *
+ * @param {string} targetDir - The root project directory to set up (defaults to process.cwd()).
+ * @returns {Promise<SetupResult>} An object containing the setup status and verification results.
+ */
 export async function runSetup(targetDir: string = process.cwd()): Promise<SetupResult> {
   console.log('=== Jules-Companion Self-Healing Environment Setup ===');
 
