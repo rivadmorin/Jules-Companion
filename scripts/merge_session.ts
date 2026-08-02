@@ -3,6 +3,13 @@ import * as path from 'path';
 import { request, getApiKey } from './jules_client';
 import { parseArgs, getProjectDirs, loadSessions, saveSessions, runGit, SessionRecord } from './utils';
 
+/**
+ * Evaluates the safety gate by verifying that all active sessions have concluded.
+ * This prevents concurrent modifications from interfering with one another.
+ *
+ * @param {Record<string, string>} headers - The HTTP headers including the authentication token.
+ * @returns {Promise<boolean>} True if all tracked sessions are completed or failed, false otherwise.
+ */
 export async function checkSafetyGate(headers: Record<string, string>): Promise<boolean> {
   const sessions = loadSessions();
   const activeSessions = sessions.filter(s => s.status !== 'merged' && s.status !== 'failed');
@@ -32,6 +39,18 @@ export async function checkSafetyGate(headers: Record<string, string>): Promise<
   return allCompleted;
 }
 
+/**
+ * Generates a comprehensive Markdown report summarizing the changes or review findings
+ * produced by a Jules session. The report includes Git diff statistics and concatenated reviews.
+ *
+ * @param {string} sessionId - The unique identifier of the Jules session.
+ * @param {string} agent - The name of the agent that executed the session.
+ * @param {'code' | 'review'} mode - The execution mode (code implementation or review audit).
+ * @param {any} dirs - Project directories context object.
+ * @param {string} patchBranch - The isolated Git branch where changes were applied.
+ * @param {string} targetBranch - The target branch intended for final merging.
+ * @returns {string} The absolute path to the generated Markdown report file.
+ */
 function generateMarkdownReport(
   sessionId: string,
   agent: string,
@@ -97,6 +116,16 @@ ${detailedAuditFindings}
   return reportPath;
 }
 
+/**
+ * Stage 1: Inspects a completed session by pulling its patch, applying it to a new
+ * isolated Git review branch, and generating a local diff summary report.
+ *
+ * @param {string} sessionId - The unique identifier of the session to inspect.
+ * @param {string} targetBranch - The branch from which the review branch will be cut.
+ * @param {Record<string, string>} headers - The HTTP headers for API authentication.
+ * @param {string} originalBranch - The branch to return to after inspection operations.
+ * @returns {Promise<boolean>} True if inspection completes successfully, false on error.
+ */
 export async function inspectSession(
   sessionId: string,
   targetBranch: string,
@@ -147,12 +176,14 @@ export async function inspectSession(
   const patchBranch = `jules/review-${sessionId.slice(0, 8)}`;
   console.log(`Checking out isolated review branch: ${patchBranch}...`);
 
+  // Create a new isolated branch for this specific session review, starting from the target branch
   const checkoutBranchRes = runGit(['checkout', '-b', patchBranch, targetBranch]);
   if (!checkoutBranchRes.success) {
     runGit(['checkout', patchBranch]);
   }
 
   // Apply check
+  // Perform a dry-run patch application to detect merge conflicts before modifying the working tree
   const applyCheckRes = runGit(['apply', '--check', patchPath]);
   if (!applyCheckRes.success) {
     console.error(`❌ Error: Git patch dry-run failed:\n${applyCheckRes.stderr}`);
@@ -192,6 +223,15 @@ export async function inspectSession(
   return true;
 }
 
+/**
+ * Stage 2: Approves and merges the isolated review branch back into the main target branch.
+ * Cleans up temporary artifacts and branch structures after a successful merge.
+ *
+ * @param {string} sessionId - The unique identifier of the session being approved.
+ * @param {string} targetBranch - The branch that will receive the merged changes.
+ * @param {string} originalBranch - The branch to checkout after the merge operation concludes.
+ * @returns {Promise<boolean>} True if the merge completes successfully, false otherwise.
+ */
 export async function approveMerge(
   sessionId: string,
   targetBranch: string,
@@ -240,6 +280,11 @@ export async function approveMerge(
   }
 }
 
+/**
+ * Main CLI entry point for the Two-Stage Merge & Inspection Engine.
+ * Parses command line arguments to coordinate either inspection or approval workflows,
+ * safely stashing local changes before proceeding.
+ */
 export async function mergeSession() {
   const params = parseArgs(process.argv.slice(2));
   const isInspect = Boolean(params.inspect);

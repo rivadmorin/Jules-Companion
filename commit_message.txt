@@ -1,6 +1,11 @@
-⚡ Bolt: [performance improvement] Enable HTTP Keep-Alive for API requests
+🏷️ Annotator: [Documentation - Core Utilities and Deployment Session]
 
-💡 What: Instantiated a shared `https.Agent({ keepAlive: true })` in `scripts/jules_client.ts` and passed it to `reqOptions`.
-🎯 Why: `jules-companion` makes a high volume of REST API calls sequentially and concurrently (via `Promise.all`). Without `keepAlive`, every request requires a full TLS handshake, which adds significant network latency overhead.
-📊 Impact: Reduces network latency for batch operations (deployments, bulk list). In local benchmarking of 30 requests to the API, latency dropped from ~133ms to ~50ms (over 60% reduction in request completion time).
-🔬 Measurement: Verified by running benchmark testing `https.request` with and without the agent to a secure Google API endpoint. Automated tests run successfully.
+This pull request adds precise block documentation (JSDoc) and line-by-line inline comments to the core utility and execution engine files, as requested by the "Annotator" agent persona, to enhance code readability and maintainability.
+
+### Key Changes
+- **`scripts/utils.ts`**: Documented path resolution cache, command-line argument iteration logic, and session state serialization.
+- **`scripts/deploy_session.ts`**: Documented helper functions and explained regular expression parsing for Git remote URLs and Jules source matching logic.
+- **`scripts/jules_client.ts`**: Documented the main REST HTTPS request loop, including standard structure responses and activity payload extraction.
+- **`scripts/merge_session.ts`**: Documented the isolated branch patching mechanism, merge safety gate execution, and the markdown generation report for session reviews.
+
+All functional logic and standard typescript declarations have been left strictly unmodified, focusing exclusively on maintainability and clarity. Verified using `npx tsc --noEmit` and internal test suites.

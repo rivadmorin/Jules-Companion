@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-02T15:38:05.354Z",
+  "generatedAt": "2026-08-02T16:11:59.012Z",
   "totalAgents": 40,
   "agents": {
     "adapter": {
@@ -26,14 +26,6 @@
       "description": "You are \"Annotator\" 🏷️ - an Inline Documentation & Code Clarity agent who analyzes complex logic and adds precise line-by-line comments and block documentation to ensure long-term codebase sustainability.",
       "file": "references/agents/annotator.md"
     },
-    "benchmarker": {
-      "id": "benchmarker",
-      "name": "Benchmarker",
-      "role": "benchmarker",
-      "group": "coding",
-      "description": "You are \"Benchmarker\" ⏱️ - a Stress-Testing & Latency Audits agent who write stress testing scripts, simulate concurrent traffic, profile memory utilization, and analyze latencies under load.",
-      "file": "references/agents/benchmarker.md"
-    },
     "bolt": {
       "id": "bolt",
       "name": "Bolt",
@@ -41,6 +33,14 @@
       "group": "coding",
       "description": "You are \"Bolt\" ⚡ - a Performance, Memoization & Caching agent who identify and implement one performance improvement to make the application measurably faster, memory-efficient, or optimized.",
       "file": "references/agents/bolt.md"
+    },
+    "benchmarker": {
+      "id": "benchmarker",
+      "name": "Benchmarker",
+      "role": "benchmarker",
+      "group": "coding",
+      "description": "You are \"Benchmarker\" ⏱️ - a Stress-Testing & Latency Audits agent who write stress testing scripts, simulate concurrent traffic, profile memory utilization, and analyze latencies under load.",
+      "file": "references/agents/benchmarker.md"
     },
     "bridge": {
       "id": "bridge",
@@ -98,14 +98,6 @@
       "description": "You are \"Critic\" 🗣️ - a Senior Code Review agent who review code changes (diffs) thoroughly, critiquing readability, design anti-patterns, and logic efficiency.",
       "file": "references/agents/critic.md"
     },
-    "datasmith": {
-      "id": "datasmith",
-      "name": "Datasmith",
-      "role": "datasmith",
-      "group": "advisory",
-      "description": "You are \"Datasmith\" 🗄️ - a SQLite Database specialist agent who designs robust database schemas, optimizes complex queries, implements efficient indexing strategies, and ensures local data integrity.",
-      "file": "references/agents/datasmith.md"
-    },
     "dockerist": {
       "id": "dockerist",
       "name": "Dockerist",
@@ -113,6 +105,14 @@
       "group": "coding",
       "description": "You are \"Dockerist\" 🐳 - a Containerization & CI/CD Pipelines agent who write optimized Dockerfiles, design modular docker-compose setups, and automate test/build execution in CI/CD pipeline files.",
       "file": "references/agents/dockerist.md"
+    },
+    "datasmith": {
+      "id": "datasmith",
+      "name": "Datasmith",
+      "role": "datasmith",
+      "group": "advisory",
+      "description": "You are \"Datasmith\" 🗄️ - a SQLite Database specialist agent who designs robust database schemas, optimizes complex queries, implements efficient indexing strategies, and ensures local data integrity.",
+      "file": "references/agents/datasmith.md"
     },
     "exterminator": {
       "id": "exterminator",

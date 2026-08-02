@@ -172,6 +172,10 @@ export function request<T = any>(
   });
 }
 
+/**
+ * Main CLI entry point for testing and executing Jules API operations directly.
+ * Handled commands: list, sources, status, reply, and pull.
+ */
 async function main() {
   const apiKey = getApiKey();
   if (!apiKey) {
@@ -266,12 +270,14 @@ Usage:
 
       console.log(`Fetching activities for session ${id}...`);
       const data = await request(`https://jules.googleapis.com/v1alpha/sessions/${id}/activities`, { headers });
+      // Activities contain the chronological history of the session, including patches
       const activities = data.activities || [];
       let patchContent: string | null = null;
 
       for (const act of activities) {
         if (act.artifacts) {
           for (const art of act.artifacts) {
+            // Look for a generated git patch within the changeset artifacts
             if (art.changeSet && art.changeSet.gitPatch && art.changeSet.gitPatch.unidiffPatch) {
               patchContent = art.changeSet.gitPatch.unidiffPatch;
               break;
