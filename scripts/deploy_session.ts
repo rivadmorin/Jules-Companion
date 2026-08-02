@@ -3,15 +3,26 @@ import * as path from 'path';
 import { request, getApiKey, JulesSource } from './jules_client';
 import { parseArgs, getProjectDirs, loadSessions, saveSessions, runGit, SessionRecord } from './utils';
 
+/**
+ * Retrieves the name of the currently active Git branch.
+ *
+ * @returns {string} The name of the current branch, or 'main' if it cannot be determined.
+ */
 function getCurrentBranch(): string {
   const res = runGit(['branch', '--show-current']);
   return res.success && res.stdout ? res.stdout : 'main';
 }
 
+/**
+ * Extracts the repository slug (owner/repo) from the configured Git remote 'origin' URL.
+ *
+ * @returns {string | null} The repository slug, or null if parsing fails or no remote exists.
+ */
 function getGitRemoteRepo(): string | null {
   const res = runGit(['config', '--get', 'remote.origin.url']);
   if (!res.success) return null;
   const url = res.stdout;
+  // Match standard HTTPS and SSH github.com URLs to extract the owner (match[1]) and repo name (match[2]).
   const match = url.match(/github\.com[/:]([^/]+)\/([^.]+)/);
   if (match) {
     return `${match[1]}/${match[2]}`.replace(/\.git$/, '');
@@ -19,6 +30,13 @@ function getGitRemoteRepo(): string | null {
   return null;
 }
 
+/**
+ * Validates a comma-separated list of agent names against the known agents registry.
+ *
+ * @param {string} agentsStr - A comma-separated string of agent names provided by the user.
+ * @param {string} registryPath - The file path to the `registry.json` file.
+ * @returns {string[]} An array of invalid agent names found in the input string.
+ */
 function validateAgents(agentsStr: string, registryPath: string): string[] {
   if (!fs.existsSync(registryPath)) return [];
   try {
@@ -30,6 +48,11 @@ function validateAgents(agentsStr: string, registryPath: string): string[] {
   }
 }
 
+/**
+ * Orchestrates the deployment of a new Jules session by preparing the environment,
+ * matching local Git state with Jules cloud sources, formatting the appropriate agent prompt,
+ * and executing the API request.
+ */
 export async function deploySession() {
   const params = parseArgs(process.argv.slice(2));
 
@@ -99,6 +122,7 @@ Options:
     const sources: JulesSource[] = sourcesData.sources || [];
 
     let matchedSource: JulesSource | null = null;
+    // Search for a Jules Cloud source that includes the local Git repository's slug (owner/repo).
     const searchStr = gitRepo.toLowerCase();
     matchedSource = sources.find(s => s.name.toLowerCase().includes(searchStr)) || null;
 
