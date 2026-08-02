@@ -2,6 +2,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as https from 'https';
 
+const sharedAgent = new https.Agent({ keepAlive: true });
+
 export interface SessionRecord {
   id: string;
   agent: string;
@@ -92,7 +94,8 @@ export function request<T = any>(
         'Content-Type': 'application/json',
         'User-Agent': 'Jules-Companion-TS/1.0',
         ...options.headers
-      }
+      },
+      agent: sharedAgent
     };
 
     const req = https.request(reqOptions, (res) => {
