@@ -16,6 +16,12 @@ export interface Registry {
   agents: Record<string, AgentMetadata>;
 }
 
+/**
+ * Generates the agent registry by scanning the markdown template files in the `references/agents` directory.
+ * Extracts metadata such as agent role and description to build a centralized `registry.json` index.
+ *
+ * @returns {Promise<Registry>} A promise that resolves to the generated Registry object.
+ */
 export async function generateRegistry(): Promise<Registry> {
   const agentsDir = path.join(__dirname, '..', 'references', 'agents');
   
