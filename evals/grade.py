@@ -7,15 +7,25 @@ import json
 import os
 
 def grade_results():
-    """
-    Evaluates the simulation results and generates grading artifacts.
+    """Evaluates the simulation results and generates grading artifacts.
 
     This function processes 'results.json' produced by run_tests.py. It iterates
     over each test case to count the passed assertions for both the baseline and
     the skill-active responses. It then calculates the percentage scores and
     performance gain, outputting the details to a Markdown report ('grader.md')
     and persisting the metrics in a JSON file ('benchmark.json').
+
+    Args:
+        None
+
+    Returns:
+        None
+
+    Raises:
+        FileNotFoundError: If 'results.json' is not found in the script's directory.
+        json.JSONDecodeError: If 'results.json' contains invalid JSON.
     """
+    # Resolve the script directory to reliably locate results.json and output grading artifacts.
     script_dir = os.path.dirname(os.path.abspath(__file__))
     results_path = os.path.join(script_dir, "results.json")
 
@@ -56,7 +66,8 @@ def grade_results():
             markdown += f"- [{status}] {ass['assertion']}\n"
         markdown += "\n---\n\n"
         
-    # Calculate percentage scores (prevent division by zero implicitly if assertions exist)
+    # Calculate percentage scores. The conditional check `if total_assertions > 0`
+    # prevents a ZeroDivisionError in cases where the test suite is empty.
     baseline_score = (baseline_passed_count / total_assertions) * 100 if total_assertions > 0 else 0
     skill_score = (skill_passed_count / total_assertions) * 100 if total_assertions > 0 else 0
     

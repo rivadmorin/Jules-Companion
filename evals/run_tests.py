@@ -7,14 +7,25 @@ import json
 import os
 
 def run_simulation():
-    """
-    Executes the evaluation simulation by loading test cases and generating mock responses.
+    """Executes the evaluation simulation by loading test cases and generating mock responses.
 
     This function reads 'evals.json', iterates through each test case, and injects
     pre-defined mock AI responses to simulate the behavior of the agent both with
     and without the jules-companion skill active. The structured output is then
     saved to 'results.json' for grading.
+
+    Args:
+        None
+
+    Returns:
+        None
+
+    Raises:
+        FileNotFoundError: If 'evals.json' is not found in the script's directory.
+        json.JSONDecodeError: If 'evals.json' contains invalid JSON.
     """
+    # Calculate the absolute path to the directory containing this script
+    # to ensure robust file resolution regardless of where the script is executed from.
     script_dir = os.path.dirname(os.path.abspath(__file__))
     evals_path = os.path.join(script_dir, "evals.json")
 
@@ -38,6 +49,8 @@ def run_simulation():
         skill_passed = []
 
         # Mocking logic: Simulate agent responses based on specific test case IDs.
+        # This static evaluation approach guarantees that tests are deterministic,
+        # execute rapidly, and do not incur costs or latency associated with real API calls.
         # This replaces actual API calls to ensure consistent and fast evaluation runs.
         if tc_id == "TC_001_OS_SETUP_SELF_COPY":
             baseline_response = "I will initialize config.json and sessions.json in .jules-companion/ folder."
