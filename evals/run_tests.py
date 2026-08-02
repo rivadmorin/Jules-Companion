@@ -1,15 +1,31 @@
+"""
+Evaluation test runner for Jules Companion.
+This script simulates the execution of predefined test cases from evals.json,
+providing both baseline (without skill) and skill-active responses for comparison.
+"""
 import json
 import os
 
 def run_simulation():
+    """
+    Executes the evaluation simulation by loading test cases and generating mock responses.
+
+    This function reads 'evals.json', iterates through each test case, and injects
+    pre-defined mock AI responses to simulate the behavior of the agent both with
+    and without the jules-companion skill active. The structured output is then
+    saved to 'results.json' for grading.
+    """
     script_dir = os.path.dirname(os.path.abspath(__file__))
     evals_path = os.path.join(script_dir, "evals.json")
+
+    # Load the evaluation definitions
     with open(evals_path, 'r') as f:
         data = json.load(f)
     
     test_cases = data["test_cases"]
     results = []
 
+    # Process each test case sequentially
     for tc in test_cases:
         tc_id = tc["id"]
         prompt = tc["prompt"]
@@ -21,6 +37,8 @@ def run_simulation():
         skill_response = ""
         skill_passed = []
 
+        # Mocking logic: Simulate agent responses based on specific test case IDs.
+        # This replaces actual API calls to ensure consistent and fast evaluation runs.
         if tc_id == "TC_001_OS_SETUP_SELF_COPY":
             baseline_response = "I will initialize config.json and sessions.json in .jules-companion/ folder."
             baseline_passed = [False, False, False]
@@ -106,6 +124,7 @@ def run_simulation():
             )
             skill_passed = [True, True, True]
 
+        # Compile the final comparison payload for this test case
         results.append({
             "id": tc_id,
             "prompt": prompt,
@@ -119,6 +138,7 @@ def run_simulation():
             }
         })
     
+    # Persist the evaluation payload to disk for downstream grading
     output_path = os.path.join(script_dir, "results.json")
     with open(output_path, 'w') as f:
         json.dump(results, f, indent=2)

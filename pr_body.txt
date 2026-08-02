@@ -1,9 +1,10 @@
-This pull request adds precise block documentation (JSDoc) and line-by-line inline comments to the core utility and execution engine files, as requested by the "Annotator" agent persona, to enhance code readability and maintainability.
+This PR addresses missing documentation in the codebase, particularly in Python evaluation scripts and TypeScript mock files.
 
-### Key Changes
-- **`scripts/utils.ts`**: Documented path resolution cache, command-line argument iteration logic, and session state serialization.
-- **`scripts/deploy_session.ts`**: Documented helper functions and explained regular expression parsing for Git remote URLs and Jules source matching logic.
-- **`scripts/jules_client.ts`**: Documented the main REST HTTPS request loop, including standard structure responses and activity payload extraction.
-- **`scripts/merge_session.ts`**: Documented the isolated branch patching mechanism, merge safety gate execution, and the markdown generation report for session reviews.
+**Changes:**
+- Added comprehensive PyDoc/Docstrings to functions in `evals/run_tests.py`, `evals/grade.py`, and `evals/generate_review.py`.
+- Added selected inline comments to elucidate complex logic flows in evaluation test case processing and grading.
+- Inserted English JSDoc to `simulateAIAgent` within `tests/slash_command.test.ts`.
+- Enhanced MCP server mapping readability in `scripts/mcp_server.ts` with inline documentation.
+- Updated the Annotator journal outlining language consistency policies moving forward.
 
-All functional logic and standard typescript declarations have been left strictly unmodified, focusing exclusively on maintainability and clarity. Verified using `npx tsc --noEmit` and internal test suites.
+These enhancements align with Annotator boundaries: avoiding functional logic modification while fortifying codebase sustainability.

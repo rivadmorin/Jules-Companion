@@ -3,6 +3,15 @@ import * as assert from 'node:assert';
 import * as path from 'path';
 
 // Simulate the AI agent parsing the string
+/**
+ * Simulates the AI Agent's interpretation of a slash command by parsing the input prompt.
+ *
+ * This function acts as a basic mock for the AI's intent recognition logic, mapping
+ * specific string triggers to corresponding backend CLI commands.
+ *
+ * @param prompt - The user input string containing a potential slash command (e.g., "/jules-deploy bolt fix bugs").
+ * @returns The parsed command array intended for process execution, or null if no command matched.
+ */
 function simulateAIAgent(prompt: string): string | null {
   if (prompt.startsWith('/jules-menu')) {
     return 'jules-companion';

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-02T17:42:09.409Z",
+  "generatedAt": "2026-08-02T18:58:14.959Z",
   "totalAgents": 40,
   "agents": {
     "adapter": {
@@ -58,14 +58,6 @@
       "description": "You are \"Builder\" 🧱 - a Frontend Component Scaffolding agent who build clean, modular, reusable, and responsive frontend UI components following established visual structures.",
       "file": "references/agents/builder.md"
     },
-    "cartographer": {
-      "id": "cartographer",
-      "name": "Cartographer",
-      "role": "cartographer",
-      "group": "advisory",
-      "description": "You are \"Cartographer\" 🗺️ - a Codebase Structures & ASCII Layout Mapping agent who analyze codebase directory structures, map out component dependencies, and design flowcharts in Mermaid and ASCII layouts.",
-      "file": "references/agents/cartographer.md"
-    },
     "chameleon": {
       "id": "chameleon",
       "name": "Chameleon",
@@ -73,6 +65,14 @@
       "group": "coding",
       "description": "You are \"Chameleon\" 🦎 - a Language & Stack Porting agent who translate, restyle, and port modules or code blocks between programming languages or frameworks idiomatic to the target environment.",
       "file": "references/agents/chameleon.md"
+    },
+    "cartographer": {
+      "id": "cartographer",
+      "name": "Cartographer",
+      "role": "cartographer",
+      "group": "advisory",
+      "description": "You are \"Cartographer\" 🗺️ - a Codebase Structures & ASCII Layout Mapping agent who analyze codebase directory structures, map out component dependencies, and design flowcharts in Mermaid and ASCII layouts.",
+      "file": "references/agents/cartographer.md"
     },
     "conduit": {
       "id": "conduit",
@@ -130,14 +130,6 @@
       "description": "You are \"Gatekeeper\" 🔑 - a Authentication & RBAC Authorization agent who configure user authentication mechanisms, secure token handling, and enforce role-based access control (RBAC) across endpoints.",
       "file": "references/agents/gatekeeper.md"
     },
-    "grader": {
-      "id": "grader",
-      "name": "Grader",
-      "role": "grader",
-      "group": "advisory",
-      "description": "You are \"Grader\" 📊 - a Codebase Quality & Technical Debt Audits agent who audit code health metrics, check coding conventions, calculate cognitive complexity, and prioritize technical debt refactoring targets.",
-      "file": "references/agents/grader.md"
-    },
     "green": {
       "id": "green",
       "name": "Green",
@@ -153,6 +145,14 @@
       "group": "coding",
       "description": "You are \"Innovator\" 💡 - a New Feature Implementation agent who design, implement, and integrate new functional features into the codebase following established architectural patterns.",
       "file": "references/agents/innovator.md"
+    },
+    "grader": {
+      "id": "grader",
+      "name": "Grader",
+      "role": "grader",
+      "group": "advisory",
+      "description": "You are \"Grader\" 📊 - a Codebase Quality & Technical Debt Audits agent who audit code health metrics, check coding conventions, calculate cognitive complexity, and prioritize technical debt refactoring targets.",
+      "file": "references/agents/grader.md"
     },
     "inspector": {
       "id": "inspector",
@@ -186,14 +186,6 @@
       "description": "You are \"Logger\" 🪵 - a Structured Logging & Telemetry agent who integrate structured logging patterns, error tracking configurations, observability metrics, and trace request contexts.",
       "file": "references/agents/logger.md"
     },
-    "materialist": {
-      "id": "materialist",
-      "name": "Materialist",
-      "role": "materialist",
-      "group": "coding",
-      "description": "You are \"Materialist\" 🎴 - a Google Material Design 3 Styling agent who arrange, modify, and style UI designs to strictly follow Google Material Design 3 guidelines.",
-      "file": "references/agents/materialist.md"
-    },
     "modernizer": {
       "id": "modernizer",
       "name": "Modernizer",
@@ -201,6 +193,14 @@
       "group": "coding",
       "description": "You are \"Modernizer\" ⚙️ - a Legacy Code Refactoring & Upgrades agent who refactor legacy syntaxes, replace deprecated functions, upgrade outdated packages, and migrate JS code to TypeScript.",
       "file": "references/agents/modernizer.md"
+    },
+    "materialist": {
+      "id": "materialist",
+      "name": "Materialist",
+      "role": "materialist",
+      "group": "coding",
+      "description": "You are \"Materialist\" 🎴 - a Google Material Design 3 Styling agent who arrange, modify, and style UI designs to strictly follow Google Material Design 3 guidelines.",
+      "file": "references/agents/materialist.md"
     },
     "netrunner": {
       "id": "netrunner",
@@ -266,6 +266,14 @@
       "description": "You are \"Revenant\" 🧟 - a Cross-Platform Persistence agent who ensure applications run persistently in the background, survive crashes, and automatically start on boot across Windows, Linux, and macOS environments.",
       "file": "references/agents/revenant.md"
     },
+    "scaler": {
+      "id": "scaler",
+      "name": "Scaler",
+      "role": "scaler",
+      "group": "advisory",
+      "description": "You are \"Scaler\" 📈 - a Scalability & High Availability agent who design architectures for high availability, setup load testing, optimize large-scale database queries, and implement caching strategies to handle traffic spikes.",
+      "file": "references/agents/scaler.md"
+    },
     "scribe": {
       "id": "scribe",
       "name": "Scribe",
@@ -313,14 +321,6 @@
       "group": "coding",
       "description": "You are \"Watcher\" 👁️ - a Data Integrity & Schema Validation agent who validate incoming/outgoing data structures, sanitize request parameters, check serializations, and enforce type safety constraints.",
       "file": "references/agents/watcher.md"
-    },
-    "scaler": {
-      "id": "scaler",
-      "name": "Scaler",
-      "role": "scaler",
-      "group": "advisory",
-      "description": "You are \"Scaler\" 📈 - a Scalability & High Availability agent who design architectures for high availability, setup load testing, optimize large-scale database queries, and implement caching strategies to handle traffic spikes.",
-      "file": "references/agents/scaler.md"
     }
   }
 }

@@ -1,7 +1,21 @@
+"""
+Review generation module for Jules Companion evaluations.
+This script transforms the structured evaluation results into a visually appealing HTML dashboard.
+"""
+
 import json
 
 def build_review_html():
+    """
+    Parses 'results.json' and injects the evaluation data into a static HTML template.
+
+    This function reads the simulation results, generates a responsive HTML layout
+    with embedded CSS styles, and loops through the test cases to construct a
+    side-by-side comparison of the baseline versus the skill-active runs. The final
+    HTML is written to 'review.html'.
+    """
     results_path = "/media/toor/WD_BLACK1/Data Utama/Coding/Antigravity/Playground/Jules-Companion/evals/results.json"
+    # Read the raw evaluation results from JSON
     with open(results_path, 'r') as f:
         results = json.load(f)
 
@@ -261,6 +275,7 @@ def build_review_html():
         </div>
 """
 
+    # Iterate through each test case to build the side-by-side comparison cards
     for r in results:
         html_content += f"""
         <div class="case-card">
