@@ -1,5 +1,4 @@
-
-## 2024-05-18 - Keep the Repo Clean
-**Discovery:** My PR was partially rejected because I committed temporary scripts (patch_client.sh, replace_auto.js, etc.) used to perform the string replacements.
-**Analysis:** The repository must be kept clean, and only intentional source code changes should be submitted. Temporary tools used for generation or search-and-replace are execution artifacts.
-**Action:** Always run `rm -f <temp files>` and ensure the workspace is completely clean of execution tools before requesting review or submitting.
+## 2024-05-24 - Language Consistency in Documentation
+**Discovery:** The main project documentation (README, /docs) is in Indonesian, but existing inline code comments and block documentation (JSDoc) are written in English.
+**Analysis:** Maintaining a consistent language for internal code documentation is crucial for developer experience and future maintainability. Mixing languages in code comments can cause confusion.
+**Action:** Always write new JSDoc, PyDoc, and inline comments in English, regardless of the language used in the user-facing documentation files. Ensure all Python eval scripts receive proper PyDoc block comments, as they are currently lacking them.

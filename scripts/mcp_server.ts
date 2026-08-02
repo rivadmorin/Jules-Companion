@@ -23,6 +23,7 @@ const server = new Server(
   }
 );
 
+// Define the available tools exposed by the MCP server to external clients.
 server.setRequestHandler(ListToolsRequestSchema, async () => {
   return {
     tools: [
