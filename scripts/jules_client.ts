@@ -20,7 +20,17 @@ export interface JulesSource {
 
 let cachedApiKey: string | null = null;
 
+/**
+ * Locates and retrieves the Jules API Key.
+ *
+ * First checks the cached value, then attempts to parse `.env` files in
+ * the current working directory or the package directory. Finally, falls
+ * back to the system environment variables.
+ *
+ * @returns {string | null} The API key if found, otherwise null.
+ */
 export function getApiKey(): string | null {
+  // Return early if the key is already loaded in memory
   if (cachedApiKey !== null) return cachedApiKey;
 
   const checkPaths = [
@@ -49,6 +59,15 @@ export function getApiKey(): string | null {
   return cachedApiKey;
 }
 
+/**
+ * Retrieves a list of active sessions from local storage.
+ *
+ * It attempts to locate `sessions.json` in various standard directories
+ * and robustly parses the content, handling both array and object structures
+ * from legacy formats.
+ *
+ * @returns {SessionRecord[]} An array of session records, or an empty array if none found or parsing fails.
+ */
 export function getSessions(): SessionRecord[] {
   const checkPaths = [
     path.join(process.cwd(), '.jules-companion', 'sessions.json'),
@@ -61,10 +80,13 @@ export function getSessions(): SessionRecord[] {
       try {
         const content = fs.readFileSync(p, 'utf8');
         const parsed = JSON.parse(content);
+        // Happy path: The file is a direct array of session records
         if (Array.isArray(parsed)) return parsed;
+        // Fallback handling for nested or legacy object structures
         if (typeof parsed === 'object' && parsed !== null) {
           const sessionsObj = parsed.sessions || parsed;
           if (Array.isArray(sessionsObj)) return sessionsObj;
+          // Legacy format: { "agentName": "sessionId" }
           return Object.entries(sessionsObj).map(([agent, id]) => ({
             id: String(id),
             agent
@@ -78,6 +100,17 @@ export function getSessions(): SessionRecord[] {
   return [];
 }
 
+/**
+ * Makes an HTTPS request to the Google Jules API.
+ *
+ * @template T - The expected return type of the parsed JSON response.
+ * @param {string} url - The full URL for the request.
+ * @param {Object} options - Request options.
+ * @param {string} [options.method='GET'] - HTTP method.
+ * @param {Record<string, string>} [options.headers] - Custom HTTP headers.
+ * @param {any} [body=null] - The request body payload. If it's an object, it will be JSON stringified.
+ * @returns {Promise<T>} A promise that resolves to the parsed response data.
+ */
 export function request<T = any>(
   url: string,
   options: { method?: string; headers?: Record<string, string> } = {},
@@ -102,20 +135,25 @@ export function request<T = any>(
       let data = '';
       res.on('data', (chunk) => { data += chunk; });
       res.on('end', () => {
+        // Successful response range
         if (res.statusCode && res.statusCode >= 200 && res.statusCode < 300) {
           try {
+            // Attempt to parse JSON response. If it fails, fallback to raw string (e.g., empty responses).
             resolve(JSON.parse(data));
           } catch (e) {
             resolve(data as unknown as T);
           }
         } else {
+          // Base error message covering status code and standard HTTP status message
           let errMsg = `HTTP ${res.statusCode}: ${res.statusMessage}`;
           try {
+            // Attempt to parse structured error payload from Jules API
             const errObj = JSON.parse(data);
             if (errObj.error && errObj.error.message) {
               errMsg = `HTTP ${res.statusCode} (${errObj.error.status || 'ERROR'}): ${errObj.error.message}`;
             }
           } catch (_) {
+            // If the error response is not valid JSON (e.g., proxy error), append the raw truncated body
             if (data) errMsg += ` - ${data.slice(0, 200)}`;
           }
           reject(new Error(errMsg));

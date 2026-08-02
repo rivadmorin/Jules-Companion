@@ -1,6 +1,15 @@
 import { request, getApiKey } from './jules_client';
 import { parseArgs, loadSessions, saveSessions, SessionRecord } from './utils';
 
+/**
+ * Processes a single Jules session by checking its status and taking automatic actions
+ * based on its current state (e.g., auto-approving plans, auto-replying to prompts).
+ *
+ * @param {SessionRecord} sessionRecord - The record of the session to process.
+ * @param {Record<string, string>} headers - API headers including authentication.
+ * @param {string} [customReply] - Optional custom message to send if awaiting user input.
+ * @returns {Promise<boolean>} True if an action was taken or the session is complete, false otherwise.
+ */
 async function processSingleSession(
   sessionRecord: SessionRecord,
   headers: Record<string, string>,
@@ -14,7 +23,9 @@ async function processSingleSession(
     const state = sessionData.state || 'UNKNOWN';
     console.log(`Current state: ${state}`);
 
+    // Handle state machine transitions automatically to unblock autonomous agents
     if (state === 'AWAITING_PLAN_APPROVAL') {
+      // Auto-approve the plan immediately to let the agent continue its work
       console.log(`⚡ Session ${sessionId} is awaiting plan approval. Sending auto-approval request...`);
       await request(`https://jules.googleapis.com/v1alpha/sessions/${sessionId}:approvePlan`, {
         method: 'POST',
@@ -25,6 +36,7 @@ async function processSingleSession(
       return true;
 
     } else if (state === 'AWAITING_USER_INPUT') {
+      // Provide a generic or custom reply to keep the agent moving forward
       const message = customReply || 'Proceed with task execution and implementation.';
       console.log(`⚡ Session ${sessionId} is awaiting user input. Sending auto-reply: "${message}"...`);
       await request(`https://jules.googleapis.com/v1alpha/sessions/${sessionId}:sendMessage`, {
