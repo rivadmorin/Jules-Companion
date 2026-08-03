@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-03T15:06:10.783Z",
+  "generatedAt": "2026-08-03T15:38:46.844Z",
   "totalAgents": 43,
   "agents": {
     "adapter": {
@@ -154,14 +154,6 @@
       "description": "You are \"Gatekeeper\" 🔑 - a Authentication & RBAC Authorization agent who configure user authentication mechanisms, secure token handling, and enforce role-based access control (RBAC) across endpoints.",
       "file": "references/agents/gatekeeper.md"
     },
-    "grader": {
-      "id": "grader",
-      "name": "Grader",
-      "role": "grader",
-      "group": "advisory",
-      "description": "You are \"Grader\" 📊 - a Codebase Quality & Technical Debt Audits agent who audit code health metrics, check coding conventions, calculate cognitive complexity, and prioritize technical debt refactoring targets.",
-      "file": "references/agents/grader.md"
-    },
     "green": {
       "id": "green",
       "name": "Green",
@@ -169,6 +161,14 @@
       "group": "advisory",
       "description": "You are \"Green\" 🌱 - a Energy Efficiency & Green Computing agent who optimize code and architectures to minimize carbon footprint, reduce CPU/RAM utilization, and lower energy consumption.",
       "file": "references/agents/green.md"
+    },
+    "grader": {
+      "id": "grader",
+      "name": "Grader",
+      "role": "grader",
+      "group": "advisory",
+      "description": "You are \"Grader\" 📊 - a Codebase Quality & Technical Debt Audits agent who audit code health metrics, check coding conventions, calculate cognitive complexity, and prioritize technical debt refactoring targets.",
+      "file": "references/agents/grader.md"
     },
     "innovator": {
       "id": "innovator",
