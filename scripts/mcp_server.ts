@@ -207,6 +207,7 @@ const GetSessionStatusSchema = z.object({
 server.setRequestHandler(CallToolRequestSchema, async (req) => {
   switch (req.params.name) {
     case 'deploy_session': {
+      // The deploy_session tool translates JSON-RPC structured inputs into CLI arguments.
       const parsed = DeploySessionSchema.safeParse(req.params.arguments);
       if (!parsed.success) {
         return {
@@ -216,7 +217,10 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
       }
       const { type, agents, task, mode, branch } = parsed.data;
 
-      // Override process.argv for the CLI script
+      // We need to manipulate process.argv temporarily here because the underlying core functions
+      // (deploySession, mergeSession) were originally written purely for a CLI environment and parse
+      // their arguments directly from process.argv instead of accepting function parameters.
+      // This shim allows the MCP server to reuse the exact same robust logic without major refactoring.
       const args = [
           'node',
           'dist/deploy_session.js',
@@ -245,6 +249,7 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
       }
     }
     case 'merge_session': {
+      // The merge_session tool handles translating state mutation commands (inspect, approve) to the CLI runner.
         const parsed = MergeSessionSchema.safeParse(req.params.arguments);
         if (!parsed.success) {
           return {

@@ -282,8 +282,15 @@ export async function approveMerge(
 
 /**
  * Main CLI entry point for the Two-Stage Merge & Inspection Engine.
- * Parses command line arguments to coordinate either inspection or approval workflows,
- * safely stashing local changes before proceeding.
+ *
+ * This orchestration function parses command line arguments to coordinate either
+ * the inspection (Stage 1) or approval (Stage 2) workflows. It includes a critical safety
+ * mechanism: it stashes local uncommitted changes before performing branch modifications
+ * (to prevent accidental loss of developer work) and pops the stash after the operation
+ * is complete. It also enforces a safety gate to block operations if active sessions are
+ * still in progress.
+ *
+ * @returns {Promise<void>}
  */
 export async function mergeSession() {
   const params = parseArgs(process.argv.slice(2));
@@ -320,6 +327,8 @@ Options:
   const headers = { 'X-Goog-Api-Key': apiKey };
 
   // Git Pre-flight Stash Check
+  // Safety Mechanism: We stash any uncommitted local changes before switching branches.
+  // This prevents dirty working tree errors during git checkout and protects the user's WIP.
   const statusRes = runGit(['status', '--porcelain']);
   let didStash = false;
   if (statusRes.stdout) {

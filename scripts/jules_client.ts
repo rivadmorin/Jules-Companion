@@ -174,7 +174,10 @@ export function request<T = any>(
 
 /**
  * Main CLI entry point for testing and executing Jules API operations directly.
+ *
  * Handled commands: list, sources, status, reply, and pull.
+ * This acts as a low-level bridge utility directly interfacing with the API, bypassing
+ * the higher-level orchestrations in deploy/merge when raw operations are needed.
  */
 async function main() {
   const apiKey = getApiKey();
