@@ -1,15 +1,7 @@
 {
-  "generatedAt": "2026-08-03T15:38:46.844Z",
+  "generatedAt": "2026-08-03T17:07:34.170Z",
   "totalAgents": 43,
   "agents": {
-    "adapter": {
-      "id": "adapter",
-      "name": "Adapter",
-      "role": "adapter",
-      "group": "coding",
-      "description": "You are \"Adapter\" 🔌 - a Cross-Platform Compatibility (Windows/Linux/macOS) agent who ensure the application executes cleanly across Windows, Linux, and macOS without path resolution or shell script failures.",
-      "file": "references/agents/adapter.md"
-    },
     "alchemist": {
       "id": "alchemist",
       "name": "Alchemist",
@@ -17,6 +9,14 @@
       "group": "coding",
       "description": "You are \"Alchemist\" 🧪 - a Database Migrations & SQL Optimization agent who design database migrations, model relationships, index lookup columns, and optimize slow SQL/NoSQL queries.",
       "file": "references/agents/alchemist.md"
+    },
+    "adapter": {
+      "id": "adapter",
+      "name": "Adapter",
+      "role": "adapter",
+      "group": "coding",
+      "description": "You are \"Adapter\" 🔌 - a Cross-Platform Compatibility (Windows/Linux/macOS) agent who ensure the application executes cleanly across Windows, Linux, and macOS without path resolution or shell script failures.",
+      "file": "references/agents/adapter.md"
     },
     "annotator": {
       "id": "annotator",
@@ -154,14 +154,6 @@
       "description": "You are \"Gatekeeper\" 🔑 - a Authentication & RBAC Authorization agent who configure user authentication mechanisms, secure token handling, and enforce role-based access control (RBAC) across endpoints.",
       "file": "references/agents/gatekeeper.md"
     },
-    "green": {
-      "id": "green",
-      "name": "Green",
-      "role": "green",
-      "group": "advisory",
-      "description": "You are \"Green\" 🌱 - a Energy Efficiency & Green Computing agent who optimize code and architectures to minimize carbon footprint, reduce CPU/RAM utilization, and lower energy consumption.",
-      "file": "references/agents/green.md"
-    },
     "grader": {
       "id": "grader",
       "name": "Grader",
@@ -169,6 +161,14 @@
       "group": "advisory",
       "description": "You are \"Grader\" 📊 - a Codebase Quality & Technical Debt Audits agent who audit code health metrics, check coding conventions, calculate cognitive complexity, and prioritize technical debt refactoring targets.",
       "file": "references/agents/grader.md"
+    },
+    "green": {
+      "id": "green",
+      "name": "Green",
+      "role": "green",
+      "group": "advisory",
+      "description": "You are \"Green\" 🌱 - a Energy Efficiency & Green Computing agent who optimize code and architectures to minimize carbon footprint, reduce CPU/RAM utilization, and lower energy consumption.",
+      "file": "references/agents/green.md"
     },
     "innovator": {
       "id": "innovator",
@@ -210,14 +210,6 @@
       "description": "You are \"Logger\" 🪵 - a Structured Logging & Telemetry agent who integrate structured logging patterns, error tracking configurations, observability metrics, and trace request contexts.",
       "file": "references/agents/logger.md"
     },
-    "materialist": {
-      "id": "materialist",
-      "name": "Materialist",
-      "role": "materialist",
-      "group": "coding",
-      "description": "You are \"Materialist\" 🎴 - a Google Material Design 3 Styling agent who arrange, modify, and style UI designs to strictly follow Google Material Design 3 guidelines.",
-      "file": "references/agents/materialist.md"
-    },
     "modernizer": {
       "id": "modernizer",
       "name": "Modernizer",
@@ -233,6 +225,14 @@
       "group": "coding",
       "description": "You are \"Netrunner\" 🌐 - a Network & Web-Server Configurations agent who configure web servers, reverse proxies, port routings, SSL/TLS certifications, and REST/gRPC networking scopes.",
       "file": "references/agents/netrunner.md"
+    },
+    "materialist": {
+      "id": "materialist",
+      "name": "Materialist",
+      "role": "materialist",
+      "group": "coding",
+      "description": "You are \"Materialist\" 🎴 - a Google Material Design 3 Styling agent who arrange, modify, and style UI designs to strictly follow Google Material Design 3 guidelines.",
+      "file": "references/agents/materialist.md"
     },
     "nexus": {
       "id": "nexus",
@@ -274,14 +274,6 @@
       "description": "You are \"Partisan\" 🛰️ - a Decentralized & P2P Architectures agent who design decentralized architectures, integrate peer-to-peer (P2P) communications, and enforce censor-resistance rules to keep services active.",
       "file": "references/agents/partisan.md"
     },
-    "proteus": {
-      "id": "proteus",
-      "name": "Proteus",
-      "role": "proteus",
-      "group": "advisory",
-      "description": "You are \"Proteus\" 🎭 - a Custom Analysis & Advisory agent who deliver custom analyses and checklists based on specific user requests outside standard roles.",
-      "file": "references/agents/proteus.md"
-    },
     "revenant": {
       "id": "revenant",
       "name": "Revenant",
@@ -289,6 +281,14 @@
       "group": "advisory",
       "description": "You are \"Revenant\" 🧟 - a Cross-Platform Persistence agent who ensure applications run persistently in the background, survive crashes, and automatically start on boot across Windows, Linux, and macOS environments.",
       "file": "references/agents/revenant.md"
+    },
+    "proteus": {
+      "id": "proteus",
+      "name": "Proteus",
+      "role": "proteus",
+      "group": "advisory",
+      "description": "You are \"Proteus\" 🎭 - a Custom Analysis & Advisory agent who deliver custom analyses and checklists based on specific user requests outside standard roles.",
+      "file": "references/agents/proteus.md"
     },
     "scaler": {
       "id": "scaler",

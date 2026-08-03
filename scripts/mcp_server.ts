@@ -1,4 +1,3 @@
-import { z } from 'zod';
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import {
@@ -9,13 +8,15 @@ import {
   ReadResourceRequestSchema,
   McpError,
 } from '@modelcontextprotocol/sdk/types.js';
+import { z } from 'zod';
 
-import { deploySession } from './deploy_session.js';
-import { mergeSession } from './merge_session.js';
-import { runSetup } from './setup.js';
-import { loadSessions } from './utils.js';
-import { request, getApiKey } from './jules_client.js';
+import { deploySession } from './deploy_session';
+import { mergeSession } from './merge_session';
+import { loadSessions } from './utils';
+import { runSetup } from './setup';
+import { getApiKey, request } from './jules_client';
 
+// Initialize the MCP Server instance
 const server = new Server(
   {
     name: 'jules-companion-mcp',
@@ -24,18 +25,19 @@ const server = new Server(
   {
     capabilities: {
       tools: {},
-      resources: {},
+      resources: {}
     },
   }
 );
 
-
+// Define resources exposed to the LLM Client (e.g. Claude Desktop)
+// Resources provide passive context data that the LLM can read.
 server.setRequestHandler(ListResourcesRequestSchema, async () => {
   return {
     resources: [
       {
         uri: 'jules://sessions',
-        name: 'Active Jules Sessions',
+        name: 'Jules Active Sessions',
         description: 'A list of active and historical Jules AI sessions from the local state file.',
         mimeType: 'application/json'
       }
@@ -43,6 +45,7 @@ server.setRequestHandler(ListResourcesRequestSchema, async () => {
   };
 });
 
+// Handle requests to read the content of the exposed resources
 server.setRequestHandler(ReadResourceRequestSchema, async (req) => {
   if (req.params.uri === 'jules://sessions') {
     const sessions = loadSessions();
@@ -59,7 +62,8 @@ server.setRequestHandler(ReadResourceRequestSchema, async (req) => {
   throw new McpError(ErrorCode.InvalidRequest, `Resource not found: ${req.params.uri}`);
 });
 
-// Define the available tools exposed by the MCP server to external clients.
+// Define the available JSON-RPC tools exposed by the MCP server to external clients.
+// Tools represent actionable commands that the LLM can execute.
 server.setRequestHandler(ListToolsRequestSchema, async () => {
   return {
     tools: [
@@ -146,10 +150,12 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
   };
 });
 
-// We need to capture console output since the existing functions use it extensively
 /**
  * Intercepts standard output and standard error from a given function and captures it as a string.
- * Essential for redirecting CLI-based script output to MCP text responses.
+ * This is essential for the MCP server because the underlying CLI scripts (like deploy_session)
+ * natively print to console.log/console.error. To return this output over JSON-RPC via stdio,
+ * we must capture it temporarily, suppress actual stdout emission (which would break the JSON-RPC
+ * communication stream), and return it as a string payload.
  *
  * @param {Function} fn - The asynchronous function to execute and capture.
  * @returns {Promise<string>} The captured console output.
@@ -160,13 +166,17 @@ async function captureOutput(fn: () => Promise<any> | any): Promise<string> {
     const originalExit = process.exit;
     let output = '';
 
+    // Override console.log to append to our local buffer instead of writing to stdout
     console.log = (...args: any[]) => {
         output += args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ') + '\n';
     };
+
+    // Override console.error similarly
     console.error = (...args: any[]) => {
         output += args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ') + '\n';
     };
 
+    // Intercept process.exit to prevent the CLI scripts from terminating the entire MCP server process
     (process as any).exit = (code?: number) => {
         throw new Error(`Process exited with code ${code}`);
     };
@@ -176,6 +186,7 @@ async function captureOutput(fn: () => Promise<any> | any): Promise<string> {
     } catch (err: any) {
         output += `\nCaught Error: ${err.message}`;
     } finally {
+        // Always restore original Node.js global properties regardless of success/failure
         process.exit = originalExit;
         console.log = originalLog;
         console.error = originalError;
@@ -183,8 +194,7 @@ async function captureOutput(fn: () => Promise<any> | any): Promise<string> {
     return output;
 }
 
-
-
+// Zod schemas for runtime validation of the incoming JSON-RPC payload arguments
 const DeploySessionSchema = z.object({
   type: z.enum(['interactive', 'review', 'start']),
   agents: z.string(),
@@ -204,10 +214,11 @@ const GetSessionStatusSchema = z.object({
   sessionId: z.string()
 });
 
+// Central execution router for handling incoming tool calls
 server.setRequestHandler(CallToolRequestSchema, async (req) => {
   switch (req.params.name) {
     case 'deploy_session': {
-      // The deploy_session tool translates JSON-RPC structured inputs into CLI arguments.
+      // Parse and validate the incoming JSON-RPC structured payload
       const parsed = DeploySessionSchema.safeParse(req.params.arguments);
       if (!parsed.success) {
         return {
@@ -217,10 +228,9 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
       }
       const { type, agents, task, mode, branch } = parsed.data;
 
-      // We need to manipulate process.argv temporarily here because the underlying core functions
-      // (deploySession, mergeSession) were originally written purely for a CLI environment and parse
-      // their arguments directly from process.argv instead of accepting function parameters.
-      // This shim allows the MCP server to reuse the exact same robust logic without major refactoring.
+      // Shim: Translate structured JSON inputs into raw CLI arguments.
+      // We manipulate process.argv temporarily because the underlying `deploySession` function
+      // was written purely for a CLI environment and parses arguments directly from process.argv.
       const args = [
           'node',
           'dist/deploy_session.js',
@@ -232,9 +242,10 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
       if (branch) args.push('--branch', branch);
 
       const originalArgv = process.argv;
-      process.argv = args;
+      process.argv = args; // Inject mock CLI arguments
 
       try {
+          // Execute the CLI script while intercepting its console output
           const output = await captureOutput(deploySession);
           return {
             content: [{ type: 'text', text: output }],
@@ -245,11 +256,12 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
             isError: true,
           }
       } finally {
+          // Restore original argv
           process.argv = originalArgv;
       }
     }
     case 'merge_session': {
-      // The merge_session tool handles translating state mutation commands (inspect, approve) to the CLI runner.
+      // The merge_session tool translates state mutation commands (inspect, approve) to the CLI runner.
         const parsed = MergeSessionSchema.safeParse(req.params.arguments);
         if (!parsed.success) {
           return {
@@ -259,6 +271,7 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
         }
         const { sessionId, inspect, approve, inspectAll } = parsed.data;
 
+        // Shim CLI arguments
         const args = ['node', 'dist/merge_session.js'];
         if (sessionId) args.push('--id', sessionId);
         if (inspect) args.push('--inspect');
@@ -304,6 +317,8 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
           };
         }
         const { sessionId } = parsed.data;
+
+        // Execute direct REST API call rather than going through a CLI script
         const apiKey = getApiKey();
         if (!apiKey) {
             return {
@@ -336,12 +351,15 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
 
 /**
  * Initializes and starts the stdio-based MCP (Model Context Protocol) server for Jules Companion.
+ * Connects the server logic to standard input/output streams used by Claude Desktop/Antigravity IDE.
  *
  * @returns {Promise<void>}
  */
 async function main() {
   const transport = new StdioServerTransport();
   await server.connect(transport);
+  // Important: We must use console.error for status messages in MCP because console.log
+  // writes to stdout, which is reserved strictly for JSON-RPC communication frames.
   console.error('Jules Companion MCP server running on stdio');
 }
 

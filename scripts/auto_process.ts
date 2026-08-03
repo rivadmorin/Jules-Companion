@@ -19,24 +19,30 @@ async function processSingleSession(
   console.log(`\nChecking status for session ${sessionId} (${sessionRecord.agent} - ${sessionRecord.mode.toUpperCase()})...`);
 
   try {
+    // Fetch the current session state directly from the Google Jules API
     const sessionData = await request(`https://jules.googleapis.com/v1alpha/sessions/${sessionId}`, { headers });
+    // Default to UNKNOWN if state is missing from response payload
     const state = sessionData.state || 'UNKNOWN';
     console.log(`Current state: ${state}`);
 
     // Handle state machine transitions automatically to unblock autonomous agents
     if (state === 'AWAITING_PLAN_APPROVAL') {
-      // Auto-approve the plan immediately to let the agent continue its work
+      // The cloud agent has proposed an execution plan and halted, awaiting human approval.
+      // We automatically send the 'approvePlan' API request to unblock the agent immediately.
       console.log(`⚡ Session ${sessionId} is awaiting plan approval. Sending auto-approval request...`);
       await request(`https://jules.googleapis.com/v1alpha/sessions/${sessionId}:approvePlan`, {
         method: 'POST',
         headers
       }, {});
       console.log(`✅ Plan approved automatically for session ${sessionId}!`);
+
+      // Update local state so subsequent processes know this phase is complete
       sessionRecord.status = 'plan_approved';
       return true;
 
     } else if (state === 'AWAITING_USER_INPUT') {
-      // Provide a generic or custom reply to keep the agent moving forward
+      // The cloud agent has requested clarification or input before proceeding.
+      // We send a generic authorization to continue (or custom user flag) to prevent it from stalling.
       const message = customReply || 'Proceed with task execution and implementation.';
       console.log(`⚡ Session ${sessionId} is awaiting user input. Sending auto-reply: "${message}"...`);
       await request(`https://jules.googleapis.com/v1alpha/sessions/${sessionId}:sendMessage`, {
@@ -44,18 +50,23 @@ async function processSingleSession(
         headers
       }, { prompt: message });
       console.log(`✅ Message sent successfully to session ${sessionId}!`);
+
+      // Mark state as replied so we track our interactions locally
       sessionRecord.status = 'replied';
       return true;
 
     } else if (state === 'COMPLETED') {
+      // The agent has successfully completed all tasks and is ready for the patch review and merge phase.
       console.log(`✓ Session ${sessionId} is COMPLETED. Ready for patch merge.`);
       sessionRecord.status = 'completed';
       return true;
     } else {
+      // Handle states like IN_PROGRESS or ERROR where no autonomous input action is possible currently
       console.log(`Session ${sessionId} is in state: ${state}. No immediate action required.`);
       return false;
     }
   } catch (err: any) {
+    // Graceful error logging to ensure one failing session doesn't crash the entire auto-process batch
     console.error(`❌ Failed to auto-process session ${sessionId}: ${err.message}`);
     return false;
   }
@@ -72,11 +83,13 @@ async function processSingleSession(
  * @returns {Promise<void>}
  */
 export async function autoProcess() {
+  // Extract CLI argument dictionaries
   const params = parseArgs(process.argv.slice(2));
   const isAll = Boolean(params.all);
   const targetId = params.session ? String(params.session) : null;
   const customReply = params.reply ? String(params.reply) : undefined;
 
+  // Enforce usage constraints: must provide either --all or --session
   if (!isAll && !targetId) {
     console.log(`
 Jules Session Auto-Approval & Auto-Reply Engine (TypeScript)
@@ -93,6 +106,7 @@ Options:
     process.exit(1);
   }
 
+  // Ensure necessary credentials are setup in the environment before triggering requests
   const apiKey = getApiKey();
   if (!apiKey) {
     console.error('Error: JULES_API_KEY not found in environment or .env file.');
@@ -100,8 +114,10 @@ Options:
   }
 
   const headers = { 'X-Goog-Api-Key': apiKey };
+  // Load local sessions cache to determine which sessions are active
   const sessions = loadSessions();
 
+  // Fast fail if --all was requested but there's nothing to process
   if (sessions.length === 0 && isAll) {
     console.log('No registered sessions found in .jules-companion/sessions.json');
     process.exit(0);
@@ -109,7 +125,7 @@ Options:
 
   let targets: SessionRecord[] = [];
   if (isAll) {
-    targets = sessions;
+    targets = sessions; // Process everything found
   } else if (targetId) {
     // Search for the requested session in our local tracking file.
     // If not found, we create a dummy 'mock' session record just to force an API call,
@@ -121,7 +137,7 @@ Options:
       targets = [{
         id: targetId,
         agent: 'unknown',
-        mode: 'code',
+        mode: 'code', // Fallback defaults
         task: '',
         status: 'manual',
         timestamp: new Date().toISOString()
@@ -129,9 +145,12 @@ Options:
     }
   }
 
+  // Concurrently process all targeted sessions to minimize network wait time blockages
   const results = await Promise.all(targets.map(s => processSingleSession(s, headers, customReply)));
+  // Filter boolean successes to log how many sessions actually received updates or input
   const processedCount = results.filter(Boolean).length;
 
+  // Ensure our local status markers (e.g., 'plan_approved', 'completed') are persisted back to storage
   saveSessions(sessions);
   console.log(`\nAuto-process completed: ${processedCount} session(s) updated.`);
 }

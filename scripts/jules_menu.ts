@@ -1,74 +1,58 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { getProjectDirs, loadSessions, saveSessions, runGit } from './utils';
+import { spawn } from 'child_process';
 import { runSetup } from './setup';
+import { getProjectDirs, runGit, loadSessions } from './utils';
 import { deploySession } from './deploy_session';
-import { autoProcess } from './auto_process';
 import { inspectSession, approveMerge, checkSafetyGate } from './merge_session';
-import { getApiKey, request } from './jules_client';
+import { autoProcess } from './auto_process';
+import { getApiKey } from './jules_client';
 
 const SPECIALIST_AGENTS = [
-  { id: 1, name: 'palette', desc: 'UI/UX & Tailwind CSS styling implementation.' },
-  { id: 2, name: 'sentinel', desc: 'Security auditing, validation, crash prevention.' },
-  { id: 3, name: 'bolt', desc: 'Speed optimizations, CPU profiling, efficient loops.' },
-  { id: 4, name: 'nomad', desc: 'API endpoints routing, migration, integrations.' },
-  { id: 5, name: 'packager', desc: 'NPM dependencies management and library upgrades.' },
-  { id: 6, name: 'exterminator', desc: 'Debugging logic bugs and syntax issues.' },
-  { id: 7, name: 'builder', desc: 'Automated build fixes and compiler issues resolution.' },
-  { id: 8, name: 'conduit', desc: 'REST API clients, networking protocols, WebSockets.' },
-  { id: 9, name: 'alchemist', desc: 'High-order functions, complex algorithms, data mapping.' },
-  { id: 10, name: 'gatekeeper', desc: 'Authentication systems (OAuth, JWT, session cookies).' },
-  { id: 11, name: 'bridge', desc: 'Third-party API integrations, timeouts, mock servers.' },
-  { id: 12, name: 'dockerist', desc: 'Dockerfiles, Docker Compose, container orchestration.' },
-  { id: 13, name: 'modernizer', desc: 'Refactoring legacy code, deprecation removals.' },
-  { id: 14, name: 'inspector', desc: 'Unit testing, integration testing, and test coverage.' },
-  { id: 15, name: 'janitor', desc: 'Code cleanup, dead code removal, linter fixes.' },
-  { id: 16, name: 'logger', desc: 'Structured logging, tracing, APM configurations.' },
-  { id: 17, name: 'benchmarker', desc: 'Load testing, concurrency benchmarks, performance metrics.' },
-  { id: 18, name: 'watcher', desc: 'Data schema validation, input typings.' },
-  { id: 19, name: 'chameleon', desc: 'Code translation/porting between languages.' },
-  { id: 20, name: 'innovator', desc: 'New feature implementation within existing architecture.' },
-  { id: 21, name: 'materialist', desc: 'Google Material Design 3 guidelines adherence.' },
-  { id: 22, name: 'partisan', desc: 'Decentralization, P2P network integrations.' },
-  { id: 23, name: 'netrunner', desc: 'Reverse proxy setups, server configs, SSL.' },
-  { id: 24, name: 'adapter', desc: 'Cross-platform compatibility setups (Win/Mac/Lin).' },
-  { id: 25, name: 'scribe', desc: 'README.md generation, API documentation. (Markdown Only)' },
-  { id: 26, name: 'cartographer', desc: 'Architecture mapping, ASCII diagrams, flowcharts.' },
-  { id: 27, name: 'grader', desc: 'Codebase quality assessment, technical debt reporting.' },
-  { id: 28, name: 'consultant', desc: 'Architectural Decision Records (ADR) authoring.' },
-  { id: 29, name: 'critic', desc: 'PR Review logs, code smells identification.' },
-  { id: 30, name: 'proteus', desc: 'Flexible/Custom review agent (Markdown Only).' }
+  { name: "innovator", desc: "Feature Engineering & Core Logic" },
+  { name: "bolt", desc: "Performance & Optimization Expert" },
+  { name: "sentinel", desc: "Security Auditing & Hardening" },
+  { name: "exterminator", desc: "Bug Fixing & Root Cause Analysis" },
+  { name: "palette", desc: "UI/UX, CSS, and Styling Expert" },
+  { name: "inspector", desc: "Test Coverage & Edge Case Validation" },
+  { name: "janitor", desc: "Code Refactoring & Cleanup" },
+  { name: "dockerist", desc: "Containerization & DevOps" },
+  { name: "scribe", desc: "Documentation & Readme Generation" },
+  { name: "critic", desc: "Code Review & PR Feedback" }
 ];
 
 /**
- * Deploys a Jules session manually using a specified agent and task.
- * Modifies the process arguments and invokes the underlying deploySession function.
+ * Handles the manual deployment of a Jules session via the TUI or slash commands.
+ * Validates inputs and delegates to the core `deploySession` orchestrator.
  *
- * @param {string} [agent] - The name of the agent to deploy (e.g., 'bolt').
- * @param {string} [task] - The task description for the agent.
- * @param {string} [mode='code'] - The execution mode ('code' or 'review').
+ * @param {string} [agent] - The target agent name.
+ * @param {string} [task] - The task description.
+ * @param {string} mode - The execution mode ('code' or 'review').
  * @returns {Promise<void>}
  */
 async function handleManualDeploy(agent?: string, task?: string, mode: string = 'code') {
   if (!agent || !task) {
-    console.error(JSON.stringify({ error: "Missing --agent or --task arguments for manual deploy" }));
+    console.error(JSON.stringify({ error: "Missing --agent or --task arguments" }));
     return;
   }
+
+  // Inject command-line arguments to satisfy the deploySession CLI parser dependency
+  process.argv = [process.argv[0], process.argv[1], '--type', 'start', '--agents', agent, '--task', task, '--mode', mode];
+
   try {
-    process.argv = [process.argv[0], process.argv[1], '--type', 'start', '--agents', agent, '--task', task, '--mode', mode];
     await deploySession();
-    console.log(JSON.stringify({ status: "success", action: "manual_deploy", agent, mode }));
+    console.log(JSON.stringify({ status: "success", action: "deploy", agent, mode }));
   } catch (err: any) {
-    console.error(JSON.stringify({ error: `Deploy failed: ${err.message}` }));
+    console.error(JSON.stringify({ error: `Deployment failed: ${err.message}` }));
   }
 }
 
 /**
- * Analyzes the user's goal to automatically select the most appropriate agent,
- * then deploys a Jules session with that agent.
+ * Executes a "Smart Launch" by heuristically analyzing natural language intent
+ * to auto-select the most appropriate specialist AI agent for a given task.
  *
- * @param {string} [goal] - The objective or task description provided by the user.
- * @param {string} [mode='code'] - The execution mode ('code' or 'review').
+ * @param {string} [goal] - The natural language intent or objective.
+ * @param {string} mode - The execution mode ('code' or 'review').
  * @returns {Promise<void>}
  */
 async function handleSmartLaunch(goal?: string, mode: string = 'code') {
@@ -80,7 +64,8 @@ async function handleSmartLaunch(goal?: string, mode: string = 'code') {
   console.log(JSON.stringify({ info: "Analyzing intent..." }));
   const goalLower = goal.toLowerCase();
 
-  let selectedAgent = 'innovator';
+  // Basic heuristic keyword matching routing logic
+  let selectedAgent = 'innovator'; // Default fallback
   if (goalLower.includes('ui') || goalLower.includes('css') || goalLower.includes('style')) selectedAgent = 'palette';
   else if (goalLower.includes('security') || goalLower.includes('audit')) selectedAgent = 'sentinel';
   else if (goalLower.includes('speed') || goalLower.includes('optimize') || goalLower.includes('memory')) selectedAgent = 'bolt';
@@ -90,7 +75,7 @@ async function handleSmartLaunch(goal?: string, mode: string = 'code') {
   else if (goalLower.includes('docker') || goalLower.includes('container')) selectedAgent = 'dockerist';
   else if (goalLower.includes('docs') || goalLower.includes('readme')) {
       selectedAgent = 'scribe';
-      mode = 'review';
+      mode = 'review'; // Force review mode to prevent documentation tools from corrupting code logic
   } else if (goalLower.includes('review')) {
       selectedAgent = 'critic';
       mode = 'review';
@@ -105,6 +90,7 @@ async function handleSmartLaunch(goal?: string, mode: string = 'code') {
   }));
 
   try {
+    // Dispatch to standard deployment logic with dynamically selected parameters
     process.argv = [process.argv[0], process.argv[1], '--type', 'start', '--agents', selectedAgent, '--task', goal, '--mode', mode];
     await deploySession();
     console.log(JSON.stringify({ status: "success", action: "smart_launch", agent: selectedAgent, mode }));
@@ -115,6 +101,7 @@ async function handleSmartLaunch(goal?: string, mode: string = 'code') {
 
 /**
  * Retrieves and outputs the list of active Jules sessions from local storage.
+ * Formats output as JSON for consumption by external IDE clients.
  *
  * @returns {Promise<void>}
  */
@@ -153,6 +140,7 @@ async function handleAutoProcess() {
  */
 async function handleInspect(sessionId?: string) {
   const sessions = loadSessions();
+  // Filter for sessions that have reached a terminal state in the cloud
   const completed = sessions.filter(s => s.status === 'completed' || s.status === 'launched' || s.status === 'plan_approved');
   
   if (completed.length === 0) {
@@ -160,6 +148,7 @@ async function handleInspect(sessionId?: string) {
     return;
   }
 
+  // If no ID provided, return context to the UI to prompt the user
   if (!sessionId) {
     console.log(JSON.stringify({
       error: "Missing --session argument",
@@ -168,6 +157,7 @@ async function handleInspect(sessionId?: string) {
     return;
   }
 
+  // Allow partial ID matching for convenience
   const target = completed.find(s => s.id === sessionId || s.id.startsWith(sessionId));
   if (!target) {
      console.error(JSON.stringify({ error: `Session ${sessionId} not found or not in completed state` }));
@@ -190,6 +180,7 @@ async function handleInspect(sessionId?: string) {
       return;
     }
 
+    // Delegate to Stage 1 merge engine
     await inspectSession(target.id, targetBranch, { 'X-Goog-Api-Key': apiKey }, targetBranch);
     console.log(JSON.stringify({ status: "success", action: "inspect", session: target.id }));
   } catch (err: any) {
@@ -206,6 +197,7 @@ async function handleInspect(sessionId?: string) {
  */
 async function handleApproveMerge(sessionId?: string) {
   const sessions = loadSessions();
+  // Filter for sessions that have completed Stage 1 inspection
   const inspected = sessions.filter(s => s.status === 'inspected');
 
   if (inspected.length === 0) {
@@ -243,6 +235,7 @@ async function handleApproveMerge(sessionId?: string) {
       return;
     }
 
+    // Delegate to Stage 2 merge engine
     await approveMerge(target.id, targetBranch, targetBranch);
     console.log(JSON.stringify({ status: "success", action: "approve_merge", session: target.id }));
   } catch (err: any) {
@@ -272,6 +265,7 @@ async function handleUpdateApiKey(newKey?: string) {
             envContent = fs.readFileSync(envPath, 'utf8');
         }
 
+        // Parse and rewrite to overwrite existing key without losing other vars
         const lines = envContent.split('\n');
         const newLines = lines.filter(l => !l.startsWith('JULES_API_KEY='));
         newLines.push(`JULES_API_KEY=${newKey}`);
@@ -286,13 +280,14 @@ async function handleUpdateApiKey(newKey?: string) {
 /**
  * Main entry point for the Jules menu CLI interface.
  * Parses incoming command-line arguments to route execution to the
- * appropriate handler function.
+ * appropriate handler function. Designed for direct invocation by external IDE extensions.
  *
  * @returns {Promise<void>}
  */
 export async function main() {
   const args = process.argv.slice(2);
 
+  // If no arguments provided, output discovery metadata
   if (args.length === 0) {
     console.log(JSON.stringify({
       name: "Jules Companion AI Interface",
@@ -310,6 +305,7 @@ export async function main() {
     return;
   }
 
+  // Utility to extract flag values
   const getArg = (flag: string) => {
     const idx = args.indexOf(flag);
     return idx !== -1 && idx + 1 < args.length ? args[idx + 1] : undefined;
@@ -317,6 +313,7 @@ export async function main() {
 
   const action = args[0];
 
+  // Primary routing switch
   switch (action) {
     case '--deploy':
       await handleManualDeploy(getArg('--agent'), getArg('--task'), getArg('--mode') || 'code');

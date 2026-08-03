@@ -1,56 +1,59 @@
-import * as fs from 'fs';
-import * as path from 'path';
 import * as https from 'https';
+import * as path from 'path';
+import * as fs from 'fs';
 
+// Network requests to the Google Jules API are optimized using a shared https.Agent
+// to prevent TLS handshake overhead on batch CLI operations.
 const sharedAgent = new https.Agent({ keepAlive: true });
 
 export interface SessionRecord {
   id: string;
   agent: string;
+  mode?: 'code' | 'review';
   task?: string;
   status?: string;
   timestamp?: string;
 }
 
-export interface JulesSource {
-  name: string;
-  id?: string;
-  [key: string]: any;
-}
-
-let cachedApiKey: string | null = null;
-
 /**
- * Locates and retrieves the Jules API Key.
+ * Retrieves the Google Jules API key from either the system environment variables
+ * or local .env fallback files in standard locations.
+ * Uses a caching mechanism so filesystem isn't hit repeatedly during the same process execution.
  *
- * First checks the cached value, then attempts to parse `.env` files in
- * the current working directory or the package directory. Finally, falls
- * back to the system environment variables.
- *
- * @returns {string | null} The API key if found, otherwise null.
+ * @returns {string | null} The raw API key string if found, otherwise null.
  */
+let cachedApiKey: string | null = null;
 export function getApiKey(): string | null {
-  // Return early if the key is already loaded in memory
-  if (cachedApiKey !== null) return cachedApiKey;
+  if (cachedApiKey) return cachedApiKey;
 
-  const checkPaths = [
-    path.join(process.cwd(), '.env'),
+  // 1. Check system-level environment variable first
+  if (process.env.JULES_API_KEY) {
+    cachedApiKey = process.env.JULES_API_KEY;
+    return cachedApiKey;
+  }
+
+  // 2. Define fallback paths where a `.env` file might be stored locally
+  const envPaths = [
     path.join(process.cwd(), '.jules-companion', '.env'),
-    path.join(__dirname, '..', '.env'),
-    path.join(__dirname, '..', '.jules-companion', '.env')
+    path.join(process.cwd(), '.env'),
+    path.join(__dirname, '..', '.jules-companion', '.env'),
+    path.join(__dirname, '..', '.env')
   ];
 
-  for (const p of checkPaths) {
+  // 3. Sequentially search paths and parse the .env structure if found
+  for (const p of envPaths) {
     if (fs.existsSync(p)) {
       try {
         const content = fs.readFileSync(p, 'utf8');
-        const match = content.match(/^JULES_API_KEY\s*=\s*(.+)$/m);
+        // Match standard KEY=VALUE formats, ignoring whitespace
+        const match = content.match(/JULES_API_KEY\s*=\s*(.+)/);
         if (match && match[1]) {
-          cachedApiKey = match[1].trim().replace(/^["']|["']$/g, '');
+           // Clean out any trailing carriage returns from windows files or end quotes
+          cachedApiKey = match[1].trim().replace(/^['"]|['"]$/g, '');
           return cachedApiKey;
         }
       } catch (e) {
-        // Skip unreadable .env file
+        // Skip unreadable .env file and try the next path
       }
     }
   }
@@ -80,13 +83,16 @@ export function getSessions(): SessionRecord[] {
       try {
         const content = fs.readFileSync(p, 'utf8');
         const parsed = JSON.parse(content);
-        // Happy path: The file is a direct array of session records
+        // Happy path: The file is a direct array of session records (modern format)
         if (Array.isArray(parsed)) return parsed;
+
         // Fallback handling for nested or legacy object structures
         if (typeof parsed === 'object' && parsed !== null) {
           const sessionsObj = parsed.sessions || parsed;
+          // If nested object was an array, return it directly
           if (Array.isArray(sessionsObj)) return sessionsObj;
-          // Legacy format: { "agentName": "sessionId" }
+
+          // Legacy format fallback: { "agentName": "sessionId" } mapping
           return Object.entries(sessionsObj).map(([agent, id]) => ({
             id: String(id),
             agent
@@ -102,6 +108,8 @@ export function getSessions(): SessionRecord[] {
 
 /**
  * Makes an HTTPS request to the Google Jules API.
+ * This is a lightweight internal HTTP client built directly on node:https to avoid
+ * heavyweight external dependencies like Axios or Node Fetch polyfills.
  *
  * @template T - The expected return type of the parsed JSON response.
  * @param {string} url - The full URL for the request.
@@ -125,35 +133,38 @@ export function request<T = any>(
       method: options.method || 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'User-Agent': 'Jules-Companion-TS/1.0',
+        'User-Agent': 'Jules-Companion-TS/1.0', // Custom User-Agent for Google API telemetry
         ...options.headers
       },
-      agent: sharedAgent
+      agent: sharedAgent // Reuse KeepAlive agent to optimize rapid subsequent API requests
     };
 
     const req = https.request(reqOptions, (res) => {
       let data = '';
+      // Accumulate stream chunks into a single raw response string
       res.on('data', (chunk) => { data += chunk; });
+
       res.on('end', () => {
-        // Successful response range
+        // Successful response range (HTTP 200 - 299)
         if (res.statusCode && res.statusCode >= 200 && res.statusCode < 300) {
           try {
-            // Attempt to parse JSON response. If it fails, fallback to raw string (e.g., empty responses).
+            // Attempt to parse JSON response payload.
             resolve(JSON.parse(data));
           } catch (e) {
+            // If it fails (e.g. empty response strings or raw text), fallback to returning the raw string.
             resolve(data as unknown as T);
           }
         } else {
-          // Base error message covering status code and standard HTTP status message
+          // Construct base error message covering the standard HTTP status line
           let errMsg = `HTTP ${res.statusCode}: ${res.statusMessage}`;
           try {
-            // Attempt to parse structured error payload from Jules API
+            // Attempt to parse structured Google API error payload
             const errObj = JSON.parse(data);
             if (errObj.error && errObj.error.message) {
               errMsg = `HTTP ${res.statusCode} (${errObj.error.status || 'ERROR'}): ${errObj.error.message}`;
             }
           } catch (_) {
-            // If the error response is not valid JSON (e.g., proxy error), append the raw truncated body
+            // If the error response is not valid JSON (e.g., standard proxy HTML error page), append truncated raw body
             if (data) errMsg += ` - ${data.slice(0, 200)}`;
           }
           reject(new Error(errMsg));
@@ -161,13 +172,17 @@ export function request<T = any>(
       });
     });
 
+    // Handle fundamental networking/DNS resolution errors
     req.on('error', (e) => {
       reject(new Error(`Network error connecting to Google Jules API: ${e.message}`));
     });
 
+    // If body exists, stringify it and flush down the network stream
     if (body) {
       req.write(typeof body === 'string' ? body : JSON.stringify(body));
     }
+
+    // Explicitly conclude request pipeline
     req.end();
   });
 }
@@ -188,6 +203,7 @@ async function main() {
   }
 
   const headers = { 'X-Goog-Api-Key': apiKey };
+  // Strip out JSON flags from command payload parsing
   const args = process.argv.slice(2).filter(arg => arg !== '--json');
   const isJson = process.argv.includes('--json');
   const command = args[0];
@@ -218,6 +234,7 @@ Usage:
       }
 
       if (isJson) {
+        // Output raw JSON map of current session states
         const results = await Promise.all(
           sessionsList.map(async (s) => {
             try {
@@ -237,6 +254,7 @@ Usage:
       console.log(String('Agent').padEnd(15) + ' | ' + String('Session ID').padEnd(22) + ' | ' + String('State').padEnd(20));
       console.log('==========================================================================');
 
+      // Concurrent fetch to prevent hanging sequentially if list is long
       const textResults = await Promise.all(
         sessionsList.map(async (s) => {
           try {
@@ -261,6 +279,7 @@ Usage:
       const id = args[1];
       const message = args.slice(2).join(' ');
       if (!id || !message) throw new Error('Session ID and message required for reply');
+
       const response = await request(`https://jules.googleapis.com/v1alpha/sessions/${id}:sendMessage`, {
         method: 'POST',
         headers
@@ -273,10 +292,11 @@ Usage:
 
       console.log(`Fetching activities for session ${id}...`);
       const data = await request(`https://jules.googleapis.com/v1alpha/sessions/${id}/activities`, { headers });
-      // Activities contain the chronological history of the session, including patches
+      // Activities contain the chronological history of the session, including patches and generated artifacts.
       const activities = data.activities || [];
       let patchContent: string | null = null;
 
+      // Iteratively dig into nested artifact structures to locate the final Git patch generated by the cloud.
       for (const act of activities) {
         if (act.artifacts) {
           for (const art of act.artifacts) {
@@ -287,11 +307,12 @@ Usage:
             }
           }
         }
-        if (patchContent) break;
+        if (patchContent) break; // Optimization: stop parsing early once patch is extracted
       }
 
       if (patchContent) {
         const fullPath = path.resolve(outputPath);
+        // Ensure destination folder tree exists before dumping content
         fs.mkdirSync(path.dirname(fullPath), { recursive: true });
         fs.writeFileSync(fullPath, patchContent, 'utf8');
         console.log(`Successfully pulled patch and wrote to ${fullPath}`);
@@ -310,4 +331,8 @@ Usage:
 
 if (require.main === module) {
   main();
+}
+
+export interface JulesSource {
+  name: string;
 }
