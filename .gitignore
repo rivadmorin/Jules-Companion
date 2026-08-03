@@ -6,6 +6,7 @@ coverage/
 
 # Jules Companion local state & runtime directories
 .jules-companion/
+scratch/
 
 # Planning & temporary working files
 task_plan.md
