@@ -6,14 +6,25 @@ This script transforms the structured evaluation results into a visually appeali
 import json
 
 def build_review_html():
-    """
-    Parses 'results.json' and injects the evaluation data into a static HTML template.
+    """Parses 'results.json' and injects the evaluation data into a static HTML template.
 
     This function reads the simulation results, generates a responsive HTML layout
     with embedded CSS styles, and loops through the test cases to construct a
     side-by-side comparison of the baseline versus the skill-active runs. The final
     HTML is written to 'review.html'.
+
+    Args:
+        None
+
+    Returns:
+        None
+
+    Raises:
+        FileNotFoundError: If 'results.json' is missing from the specified path.
+        json.JSONDecodeError: If 'results.json' is malformed.
     """
+    # Hardcoded absolute path used for robust file discovery in specific local test environments.
+    # Ideally, this should be computed dynamically like in run_tests.py using __file__.
     results_path = "/media/toor/WD_BLACK1/Data Utama/Coding/Antigravity/Playground/Jules-Companion/evals/results.json"
     # Read the raw evaluation results from JSON
     with open(results_path, 'r') as f:
@@ -341,6 +352,7 @@ def build_review_html():
 </html>
 """
 
+    # Hardcoded output path for the review HTML file.
     review_path = "/media/toor/WD_BLACK1/Data Utama/Coding/Antigravity/Playground/Jules-Companion/evals/review.html"
     with open(review_path, 'w') as f:
         f.write(html_content)
