@@ -46,7 +46,7 @@ server.setRequestHandler(ListResourcesRequestSchema, async () => {
 });
 
 // Handle requests to read the content of the exposed resources
-server.setRequestHandler(ReadResourceRequestSchema, async (req) => {
+server.setRequestHandler(ReadResourceRequestSchema, async (req: { params: { uri: string } }) => {
   if (req.params.uri === 'jules://sessions') {
     const sessions = loadSessions();
     return {
@@ -215,7 +215,7 @@ const GetSessionStatusSchema = z.object({
 });
 
 // Central execution router for handling incoming tool calls
-server.setRequestHandler(CallToolRequestSchema, async (req) => {
+server.setRequestHandler(CallToolRequestSchema, async (req: { params: { name: string; arguments?: Record<string, any> } }) => {
   switch (req.params.name) {
     case 'deploy_session': {
       // Parse and validate the incoming JSON-RPC structured payload

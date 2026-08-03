@@ -134,14 +134,16 @@ Options:
     if (found) {
       targets = [found];
     } else {
-      targets = [{
+      const newRecord: SessionRecord = {
         id: targetId,
         agent: 'unknown',
         mode: 'code', // Fallback defaults
         task: '',
         status: 'manual',
         timestamp: new Date().toISOString()
-      }];
+      };
+      sessions.push(newRecord);
+      targets = [newRecord];
     }
   }
 

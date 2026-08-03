@@ -22,19 +22,29 @@ describe('MCP Server Integration Tests', () => {
     });
 
     test('mcp_server.js should start and accept JSON-RPC on stdio', () => {
-        // Send a simple ListToolsRequest via stdin
-        const requestPayload = {
+        // Send initialize and tools/list requests via stdin
+        const initializePayload = {
             jsonrpc: "2.0",
             id: 1,
+            method: "initialize",
+            params: {
+                protocolVersion: "2024-11-05",
+                capabilities: {},
+                clientInfo: { name: "test", version: "1.0.0" }
+            }
+        };
+        const requestPayload = {
+            jsonrpc: "2.0",
+            id: 2,
             method: "tools/list",
             params: {}
         };
 
         const res = spawnSync('node', [path.join(DIST_DIR, 'mcp_server.js')], {
-            input: JSON.stringify(requestPayload) + '\n',
+            input: JSON.stringify(initializePayload) + '\n' + JSON.stringify(requestPayload) + '\n',
             cwd: TEST_DIR,
             encoding: 'utf8',
-            timeout: 2000 // MCP server normally waits for more, so we timeout to force exit or we kill it
+            timeout: 5000 // MCP server normally waits for more, so we timeout to force exit or we kill it
         });
 
         // The process might exit due to timeout or we check the output
