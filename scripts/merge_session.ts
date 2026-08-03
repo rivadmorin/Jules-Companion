@@ -21,8 +21,8 @@ export async function checkSafetyGate(headers: Record<string, string>): Promise<
   console.log(`Checking safety gate: ${activeSessions.length} active sessions found locally.`);
   let hasRunning = false;
 
-  // Verify against authoritative remote API source of truth
-  for (const s of activeSessions) {
+  // Verify against authoritative remote API source of truth concurrently
+  await Promise.all(activeSessions.map(async (s) => {
     try {
       const sessionData = await request(`https://jules.googleapis.com/v1alpha/sessions/${s.id}`, { headers });
       const state = sessionData.state || 'UNKNOWN';
@@ -37,7 +37,7 @@ export async function checkSafetyGate(headers: Record<string, string>): Promise<
       console.warn(`- Failed to fetch status for ${s.id}, assuming active for safety.`);
       hasRunning = true;
     }
-  }
+  }));
 
   saveSessions(sessions);
   return !hasRunning;
