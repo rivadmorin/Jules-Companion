@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-03T07:53:54.997Z",
+  "generatedAt": "2026-08-03T08:33:03.454Z",
   "totalAgents": 40,
   "agents": {
     "adapter": {
@@ -34,14 +34,6 @@
       "description": "You are \"Benchmarker\" ⏱️ - a Stress-Testing & Latency Audits agent who write stress testing scripts, simulate concurrent traffic, profile memory utilization, and analyze latencies under load.",
       "file": "references/agents/benchmarker.md"
     },
-    "bolt": {
-      "id": "bolt",
-      "name": "Bolt",
-      "role": "bolt",
-      "group": "coding",
-      "description": "You are \"Bolt\" ⚡ - a Performance, Memoization & Caching agent who identify and implement one performance improvement to make the application measurably faster, memory-efficient, or optimized.",
-      "file": "references/agents/bolt.md"
-    },
     "bridge": {
       "id": "bridge",
       "name": "Bridge",
@@ -57,6 +49,22 @@
       "group": "coding",
       "description": "You are \"Builder\" 🧱 - a Frontend Component Scaffolding agent who build clean, modular, reusable, and responsive frontend UI components following established visual structures.",
       "file": "references/agents/builder.md"
+    },
+    "bolt": {
+      "id": "bolt",
+      "name": "Bolt",
+      "role": "bolt",
+      "group": "coding",
+      "description": "You are \"Bolt\" ⚡ - a Performance, Memoization & Caching agent who identify and implement one performance improvement to make the application measurably faster, memory-efficient, or optimized.",
+      "file": "references/agents/bolt.md"
+    },
+    "cartographer": {
+      "id": "cartographer",
+      "name": "Cartographer",
+      "role": "cartographer",
+      "group": "advisory",
+      "description": "You are \"Cartographer\" 🗺️ - a Codebase Structures & ASCII Layout Mapping agent who analyze codebase directory structures, map out component dependencies, and design flowcharts in Mermaid and ASCII layouts.",
+      "file": "references/agents/cartographer.md"
     },
     "chameleon": {
       "id": "chameleon",
@@ -82,30 +90,6 @@
       "description": "You are \"Consultant\" 🧠 - a Framework Recommendations & ADRs agent who evaluate project feature needs and author Architectural Decision Records (ADRs) suggesting framework or library choices.",
       "file": "references/agents/consultant.md"
     },
-    "critic": {
-      "id": "critic",
-      "name": "Critic",
-      "role": "critic",
-      "group": "advisory",
-      "description": "You are \"Critic\" 🗣️ - a Senior Code Review agent who review code changes (diffs) thoroughly, critiquing readability, design anti-patterns, and logic efficiency.",
-      "file": "references/agents/critic.md"
-    },
-    "datasmith": {
-      "id": "datasmith",
-      "name": "Datasmith",
-      "role": "datasmith",
-      "group": "advisory",
-      "description": "You are \"Datasmith\" 🗄️ - a SQLite Database specialist agent who designs robust database schemas, optimizes complex queries, implements efficient indexing strategies, and ensures local data integrity.",
-      "file": "references/agents/datasmith.md"
-    },
-    "cartographer": {
-      "id": "cartographer",
-      "name": "Cartographer",
-      "role": "cartographer",
-      "group": "advisory",
-      "description": "You are \"Cartographer\" 🗺️ - a Codebase Structures & ASCII Layout Mapping agent who analyze codebase directory structures, map out component dependencies, and design flowcharts in Mermaid and ASCII layouts.",
-      "file": "references/agents/cartographer.md"
-    },
     "dockerist": {
       "id": "dockerist",
       "name": "Dockerist",
@@ -113,6 +97,14 @@
       "group": "coding",
       "description": "You are \"Dockerist\" 🐳 - a Containerization & CI/CD Pipelines agent who write optimized Dockerfiles, design modular docker-compose setups, and automate test/build execution in CI/CD pipeline files.",
       "file": "references/agents/dockerist.md"
+    },
+    "critic": {
+      "id": "critic",
+      "name": "Critic",
+      "role": "critic",
+      "group": "advisory",
+      "description": "You are \"Critic\" 🗣️ - a Senior Code Review agent who review code changes (diffs) thoroughly, critiquing readability, design anti-patterns, and logic efficiency.",
+      "file": "references/agents/critic.md"
     },
     "exterminator": {
       "id": "exterminator",
@@ -138,6 +130,14 @@
       "description": "You are \"Grader\" 📊 - a Codebase Quality & Technical Debt Audits agent who audit code health metrics, check coding conventions, calculate cognitive complexity, and prioritize technical debt refactoring targets.",
       "file": "references/agents/grader.md"
     },
+    "datasmith": {
+      "id": "datasmith",
+      "name": "Datasmith",
+      "role": "datasmith",
+      "group": "advisory",
+      "description": "You are \"Datasmith\" 🗄️ - a SQLite Database specialist agent who designs robust database schemas, optimizes complex queries, implements efficient indexing strategies, and ensures local data integrity.",
+      "file": "references/agents/datasmith.md"
+    },
     "green": {
       "id": "green",
       "name": "Green",
@@ -161,6 +161,14 @@
       "group": "coding",
       "description": "You are \"Inspector\" 🔎 - a Unit & Integration Testing agent who write unit, integration, and end-to-end (E2E) tests across codebase modules to maintain application reliability.",
       "file": "references/agents/inspector.md"
+    },
+    "janitor": {
+      "id": "janitor",
+      "name": "Janitor",
+      "role": "janitor",
+      "group": "coding",
+      "description": "You are \"Janitor\" 🧹 - a Code Cleanup & Linting agent who clean up dead code, resolve compiler warnings, fix linter issues, and simplify import paths.",
+      "file": "references/agents/janitor.md"
     },
     "localizer": {
       "id": "localizer",
@@ -249,14 +257,6 @@
       "group": "advisory",
       "description": "You are \"Proteus\" 🎭 - a Custom Analysis & Advisory agent who deliver custom analyses and checklists based on specific user requests outside standard roles.",
       "file": "references/agents/proteus.md"
-    },
-    "janitor": {
-      "id": "janitor",
-      "name": "Janitor",
-      "role": "janitor",
-      "group": "coding",
-      "description": "You are \"Janitor\" 🧹 - a Code Cleanup & Linting agent who clean up dead code, resolve compiler warnings, fix linter issues, and simplify import paths.",
-      "file": "references/agents/janitor.md"
     },
     "revenant": {
       "id": "revenant",
