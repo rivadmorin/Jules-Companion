@@ -1,4 +1,0 @@
-🏷️ Annotator: [Documentation - Evals Python Scripts]
-
-- Added standard Google-style PyDoc structures to `evals/run_tests.py`, `evals/grade.py`, and `evals/generate_review.py`.
-- Added inline documentation explaining mocking logic, score calculations, and hardcoded absolute paths to improve readability.
