@@ -2,22 +2,58 @@
 
 > **[Read in Indonesian (Baca dalam Bahasa Indonesia)](README.id.md)**
 
-`jules-companion` is a global custom skill and CLI tool for your AI coding assistant (like Claude Code). It acts as a co-pilot to orchestrate local workflows (Git + GitHub CLI) with autonomous cloud execution using the **Google Jules API**.
+`jules-companion` is a Model Context Protocol (MCP) Server, global Agent Skill, and CLI tool for modern AI coding agents and IDEs — including **Antigravity IDE**, **OpenCode**, **Claude Code**, **Cursor**, **Windsurf**, and **Codex CLI**.
 
-It mobilizes **30 specialized AI agents**, dividing them strictly into Coding (modifying code) and Documentation/Review (read-only) groups for optimal performance.
+It acts as an intelligent co-pilot to orchestrate local workflows (Git + GitHub CLI) with autonomous cloud execution using the **Google Jules API**.
 
-## ⚡ Core Features
+---
 
-*   **30 Specialist Agents**: Pre-configured agents with specific roles (e.g., *Bolt* for performance, *Sentinel* for security).
-*   **Two-Stage Patch Merge**: Cloud patches are first pulled into an isolated review branch. You merge them into `main` only after inspecting the generated Markdown report.
-*   **Auto-Process Engine**: Automatically handles Jules cloud session blocking states (like AWAITING_PLAN_APPROVAL).
-*   **Fallback Interactive UI**: A clean, arrow-key navigable terminal UI.
+## ⚡ Key Capabilities
 
-## 🚀 One-Line Install
+* **🔌 Native MCP Server**: Connects seamlessly with any MCP-compliant AI client (Antigravity IDE, Claude Desktop, OpenCode, Cursor) exposing high-level tools & real-time session resources.
+* **🤖 30 Specialist Agents**: Pre-configured agents with specialized domain roles (e.g., *Bolt* for performance, *Sentinel* for security, *Architect* for structural design).
+* **🛡️ Two-Stage Patch Merge**: Cloud patches are pulled into an isolated review branch first. You inspect the generated Markdown report before merging into `main`.
+* **🔄 Auto-Process Engine**: Automatically monitors and resolves Jules cloud session blocking states (such as `AWAITING_PLAN_APPROVAL`).
+* **💻 Interactive TUI Console**: Fallback terminal UI with arrow-key navigation for direct manual management.
 
-Install the skill globally on your system:
+---
 
-### Linux/macOS
+## 🔌 MCP Integration (Antigravity IDE, OpenCode, Claude, etc.)
+
+`jules-companion` exposes an MCP server running on `stdio` via JSON-RPC.
+
+### Server Configuration
+
+Add `jules-companion` to your AI Client's MCP configuration (`mcp_config.json` or equivalent):
+
+```json
+{
+  "mcpServers": {
+    "jules-companion": {
+      "command": "node",
+      "args": ["/path/to/jules-companion/dist/mcp_server.js"]
+    }
+  }
+}
+```
+
+### Exposed MCP Tools & Resources
+
+| Type | Name / URI | Description |
+| :--- | :--- | :--- |
+| **Tool** | `deploy_session` | Deploys a new Jules session with specialized agents and task instructions. |
+| **Tool** | `merge_session` | Inspects, approves, or merges a completed Jules cloud session patch. |
+| **Tool** | `get_session_status` | Retrieves real-time session state directly from Google Jules API. |
+| **Tool** | `setup_workspace` | Initializes the local Jules workspace staging environment. |
+| **Resource** | `jules://sessions` | Returns active and historical Jules AI sessions from local state. |
+
+---
+
+## 🚀 One-Line Installation
+
+Install `jules-companion` globally on your system:
+
+### Linux / macOS
 ```sh
 curl -sSL https://raw.githubusercontent.com/rivadmorin/Jules-Companion/main/install.sh | bash
 ```
@@ -27,15 +63,16 @@ curl -sSL https://raw.githubusercontent.com/rivadmorin/Jules-Companion/main/inst
 powershell -c "irm https://raw.githubusercontent.com/rivadmorin/Jules-Companion/main/install.ps1 | iex"
 ```
 
-*This command clones the repo to `~/.gemini/config/skills/jules-companion`, installs dependencies, and creates a global `jules-companion` shortcut.*
+*This command clones the repository to `~/.gemini/config/skills/jules-companion`, builds TypeScript artifacts, installs dependencies, and sets up global shortcuts.*
+
+---
 
 ## 💬 AI Agent Slash Commands
 
-You can paste these commands directly into your AI Assistant chat to trigger background actions:
+When used as an Agent Skill in assistants like **Antigravity IDE** or **Claude Code**, you can trigger background actions using slash commands:
 
 | Command | Description |
 | :--- | :--- |
-| `/jules-menu` | Opens the interactive Jules Companion TUI console. |
 | `/jules-deploy <agent> <task>` | Deploys a new autonomous coding session. |
 | `/jules-review <agent> <task>` | Creates a safe, non-destructive audit session. |
 | `/jules-status` | Checks the status of all active cloud sessions. |
@@ -44,17 +81,21 @@ You can paste these commands directly into your AI Assistant chat to trigger bac
 | `/jules-merge <session_id>` | Approves and merges the inspected patch into the main branch. |
 | `/jules-doctor` | Runs system integrity and dependency validation checks. |
 
+---
+
 ## 📚 Documentation
 
-For a comprehensive explanation of how this application works, its architecture, and workflow logic, please read:
+For a comprehensive breakdown of the application architecture, agent roles, and workflow logic:
 
 👉 **[Complete Application Documentation (Indonesian)](docs/penjelasan-aplikasi.md)**
 
-## 🧹 Uninstall
+---
 
-To cleanly remove the global skill:
+## 🧹 Uninstallation
 
-### Linux/macOS
+To cleanly remove `jules-companion`:
+
+### Linux / macOS
 ```sh
 curl -sSL https://raw.githubusercontent.com/rivadmorin/Jules-Companion/main/uninstall.sh | bash
 ```

@@ -16,9 +16,6 @@
 +
 +When the user types any of the following `/jules-*` slash commands in the chat prompt, you (the AI Agent) MUST interpret them and execute the corresponding bash commands autonomously. Do NOT ask the user to run these commands themselves.
 +
-+*   **/jules-menu**
-+    *   **Action:** Launch the interactive console.
-+    *   **Command:** `jules-companion` (or `node dist/jules_menu.js`)
 +*   **/jules-deploy `<agent>` `<task>`**
 +    *   **Action:** Deploy a new session with a specific agent. By default, use `--mode code` unless specified otherwise.
 +    *   **Command:** `node dist/deploy_session.js --type start --agents <agent> --task "<task>"`

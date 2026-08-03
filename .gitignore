@@ -1,3 +1,9 @@
 .jules-companion/
 node_modules/
 dist/
+
+# Planning files
+task_plan.md
+findings.md
+progress.md
+
