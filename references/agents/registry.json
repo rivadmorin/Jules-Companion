@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-02T18:58:14.959Z",
+  "generatedAt": "2026-08-03T07:53:54.997Z",
   "totalAgents": 40,
   "agents": {
     "adapter": {
@@ -66,14 +66,6 @@
       "description": "You are \"Chameleon\" 🦎 - a Language & Stack Porting agent who translate, restyle, and port modules or code blocks between programming languages or frameworks idiomatic to the target environment.",
       "file": "references/agents/chameleon.md"
     },
-    "cartographer": {
-      "id": "cartographer",
-      "name": "Cartographer",
-      "role": "cartographer",
-      "group": "advisory",
-      "description": "You are \"Cartographer\" 🗺️ - a Codebase Structures & ASCII Layout Mapping agent who analyze codebase directory structures, map out component dependencies, and design flowcharts in Mermaid and ASCII layouts.",
-      "file": "references/agents/cartographer.md"
-    },
     "conduit": {
       "id": "conduit",
       "name": "Conduit",
@@ -106,6 +98,14 @@
       "description": "You are \"Datasmith\" 🗄️ - a SQLite Database specialist agent who designs robust database schemas, optimizes complex queries, implements efficient indexing strategies, and ensures local data integrity.",
       "file": "references/agents/datasmith.md"
     },
+    "cartographer": {
+      "id": "cartographer",
+      "name": "Cartographer",
+      "role": "cartographer",
+      "group": "advisory",
+      "description": "You are \"Cartographer\" 🗺️ - a Codebase Structures & ASCII Layout Mapping agent who analyze codebase directory structures, map out component dependencies, and design flowcharts in Mermaid and ASCII layouts.",
+      "file": "references/agents/cartographer.md"
+    },
     "dockerist": {
       "id": "dockerist",
       "name": "Dockerist",
@@ -130,6 +130,14 @@
       "description": "You are \"Gatekeeper\" 🔑 - a Authentication & RBAC Authorization agent who configure user authentication mechanisms, secure token handling, and enforce role-based access control (RBAC) across endpoints.",
       "file": "references/agents/gatekeeper.md"
     },
+    "grader": {
+      "id": "grader",
+      "name": "Grader",
+      "role": "grader",
+      "group": "advisory",
+      "description": "You are \"Grader\" 📊 - a Codebase Quality & Technical Debt Audits agent who audit code health metrics, check coding conventions, calculate cognitive complexity, and prioritize technical debt refactoring targets.",
+      "file": "references/agents/grader.md"
+    },
     "green": {
       "id": "green",
       "name": "Green",
@@ -146,14 +154,6 @@
       "description": "You are \"Innovator\" 💡 - a New Feature Implementation agent who design, implement, and integrate new functional features into the codebase following established architectural patterns.",
       "file": "references/agents/innovator.md"
     },
-    "grader": {
-      "id": "grader",
-      "name": "Grader",
-      "role": "grader",
-      "group": "advisory",
-      "description": "You are \"Grader\" 📊 - a Codebase Quality & Technical Debt Audits agent who audit code health metrics, check coding conventions, calculate cognitive complexity, and prioritize technical debt refactoring targets.",
-      "file": "references/agents/grader.md"
-    },
     "inspector": {
       "id": "inspector",
       "name": "Inspector",
@@ -161,14 +161,6 @@
       "group": "coding",
       "description": "You are \"Inspector\" 🔎 - a Unit & Integration Testing agent who write unit, integration, and end-to-end (E2E) tests across codebase modules to maintain application reliability.",
       "file": "references/agents/inspector.md"
-    },
-    "janitor": {
-      "id": "janitor",
-      "name": "Janitor",
-      "role": "janitor",
-      "group": "coding",
-      "description": "You are \"Janitor\" 🧹 - a Code Cleanup & Linting agent who clean up dead code, resolve compiler warnings, fix linter issues, and simplify import paths.",
-      "file": "references/agents/janitor.md"
     },
     "localizer": {
       "id": "localizer",
@@ -186,14 +178,6 @@
       "description": "You are \"Logger\" 🪵 - a Structured Logging & Telemetry agent who integrate structured logging patterns, error tracking configurations, observability metrics, and trace request contexts.",
       "file": "references/agents/logger.md"
     },
-    "modernizer": {
-      "id": "modernizer",
-      "name": "Modernizer",
-      "role": "modernizer",
-      "group": "coding",
-      "description": "You are \"Modernizer\" ⚙️ - a Legacy Code Refactoring & Upgrades agent who refactor legacy syntaxes, replace deprecated functions, upgrade outdated packages, and migrate JS code to TypeScript.",
-      "file": "references/agents/modernizer.md"
-    },
     "materialist": {
       "id": "materialist",
       "name": "Materialist",
@@ -201,6 +185,14 @@
       "group": "coding",
       "description": "You are \"Materialist\" 🎴 - a Google Material Design 3 Styling agent who arrange, modify, and style UI designs to strictly follow Google Material Design 3 guidelines.",
       "file": "references/agents/materialist.md"
+    },
+    "modernizer": {
+      "id": "modernizer",
+      "name": "Modernizer",
+      "role": "modernizer",
+      "group": "coding",
+      "description": "You are \"Modernizer\" ⚙️ - a Legacy Code Refactoring & Upgrades agent who refactor legacy syntaxes, replace deprecated functions, upgrade outdated packages, and migrate JS code to TypeScript.",
+      "file": "references/agents/modernizer.md"
     },
     "netrunner": {
       "id": "netrunner",
@@ -257,6 +249,14 @@
       "group": "advisory",
       "description": "You are \"Proteus\" 🎭 - a Custom Analysis & Advisory agent who deliver custom analyses and checklists based on specific user requests outside standard roles.",
       "file": "references/agents/proteus.md"
+    },
+    "janitor": {
+      "id": "janitor",
+      "name": "Janitor",
+      "role": "janitor",
+      "group": "coding",
+      "description": "You are \"Janitor\" 🧹 - a Code Cleanup & Linting agent who clean up dead code, resolve compiler warnings, fix linter issues, and simplify import paths.",
+      "file": "references/agents/janitor.md"
     },
     "revenant": {
       "id": "revenant",

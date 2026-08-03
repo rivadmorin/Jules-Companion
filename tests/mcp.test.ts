@@ -48,6 +48,7 @@ describe('MCP Server Integration Tests', () => {
             assert.ok(res.stdout.includes('deploy_session'), 'Should expose deploy_session tool');
             assert.ok(res.stdout.includes('merge_session'), 'Should expose merge_session tool');
             assert.ok(res.stdout.includes('setup_workspace'), 'Should expose setup_workspace tool');
+            assert.ok(res.stdout.includes('get_session_status'), 'Should expose get_session_status tool');
         }
     });
 });
