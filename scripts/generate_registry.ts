@@ -18,7 +18,8 @@ export interface Registry {
 
 /**
  * Generates the agent registry by scanning the markdown template files in the `references/agents` directory.
- * Extracts metadata such as agent role and description to build a centralized `registry.json` index.
+ * Extracts metadata such as agent role and description dynamically using regex, compiling it into a
+ * centralized `registry.json` index. This index powers the deploy validations and intelligent routing mechanisms.
  *
  * @returns {Promise<Registry>} A promise that resolves to the generated Registry object.
  */
@@ -30,6 +31,8 @@ export async function generateRegistry(): Promise<Registry> {
     process.exit(1);
   }
 
+  // Predefined hardcoded list of agents designated for active coding/implementation duties.
+  // Agents not on this list will default to 'advisory' (e.g., Critic, Scribe).
   const codingAgents = new Set([
     'palette', 'sentinel', 'bolt', 'nomad', 'packager', 'exterminator',
     'builder', 'conduit', 'alchemist', 'gatekeeper', 'bridge', 'dockerist',
@@ -41,23 +44,27 @@ export async function generateRegistry(): Promise<Registry> {
   const files = fs.readdirSync(agentsDir).filter(f => f.endsWith('.md'));
   const agentsMap: Record<string, AgentMetadata> = {};
 
+  // Process each markdown file to extract its internal semantic metadata
   const processFile = async (file: string) => {
+    // Determine the baseline ID from the filename (e.g., 'bolt.md' -> 'bolt')
     const id = path.basename(file, '.md').toLowerCase();
     const filePath = path.join(agentsDir, file);
     const content = await fs.promises.readFile(filePath, 'utf8');
 
-    // Extract title / role from first header
+    // Extract title / role from first top-level Markdown header (# Header)
     let role = id;
+    // Regex accounts for optional \scoped? tags sometimes prefixed in headers by older systems
     const headerMatch = content.match(/^#\\scoped?\\s*(.+)$/m) || content.match(/^#\\s*(.+)$/m);
     if (headerMatch) {
       role = headerMatch[1].trim();
     }
 
-    // Extract short description from first non-header paragraph
+    // Extract short description from first valid non-header paragraph
     let description = '';
     const lines = content.split('\n');
     for (const line of lines) {
       const trimmed = line.trim();
+      // Skip empty lines, headers (#), and code blocks (```)
       if (trimmed && !trimmed.startsWith('#') && !trimmed.startsWith('```')) {
         description = trimmed;
         break;
@@ -66,6 +73,7 @@ export async function generateRegistry(): Promise<Registry> {
 
     const group: 'coding' | 'advisory' = codingAgents.has(id) ? 'coding' : 'advisory';
 
+    // Populate the master mapping object
     agentsMap[id] = {
       id,
       name: id.charAt(0).toUpperCase() + id.slice(1),
@@ -76,6 +84,7 @@ export async function generateRegistry(): Promise<Registry> {
     };
   };
 
+  // Concurrently parse all markdown templates
   await Promise.all(files.map(processFile));
 
   const registry: Registry = {
@@ -84,6 +93,7 @@ export async function generateRegistry(): Promise<Registry> {
     agents: agentsMap
   };
 
+  // Persist the extracted metadata database to disk for fast runtime access
   const registryPath = path.join(agentsDir, 'registry.json');
   await fs.promises.writeFile(registryPath, JSON.stringify(registry, null, 2), 'utf8');
   console.log(`Registry generated successfully at ${registryPath} (${registry.totalAgents} agents index).`);

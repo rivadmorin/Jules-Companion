@@ -1,13 +1,12 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { request, getApiKey, JulesSource } from './jules_client';
-import { parseArgs, getProjectDirs, loadSessions, saveSessions, runGit, SessionRecord, getFormattedDateDDMMYYYY } from './utils';
-
+import { parseArgs, getProjectDirs, runGit, loadSessions, saveSessions, getFormattedDateDDMMYYYY } from './utils';
 
 /**
- * Retrieves the name of the currently active Git branch.
+ * Determines the currently active local Git branch name.
  *
- * @returns {string} The name of the current branch, or 'main' if it cannot be determined.
+ * @returns {string} The name of the current branch (defaults to 'main' if parsing fails).
  */
 function getCurrentBranch(): string {
   const res = runGit(['branch', '--show-current']);
@@ -15,17 +14,21 @@ function getCurrentBranch(): string {
 }
 
 /**
- * Extracts the repository slug (owner/repo) from the configured Git remote 'origin' URL.
+ * Parses the Git remote origin URL to extract the `owner/repository` slug.
+ * This is critical for matching local repositories to their corresponding Jules Cloud sources.
  *
- * @returns {string | null} The repository slug, or null if parsing fails or no remote exists.
+ * @returns {string | null} The repository slug (e.g., 'rivadmorin/Jules-Companion') or null if parsing fails or no remote exists.
  */
 function getGitRemoteRepo(): string | null {
   const res = runGit(['config', '--get', 'remote.origin.url']);
   if (!res.success) return null;
   const url = res.stdout;
+
   // Match standard HTTPS and SSH github.com URLs to extract the owner (match[1]) and repo name (match[2]).
+  // Captures both git@github.com:owner/repo.git and https://github.com/owner/repo.git forms.
   const match = url.match(/github\.com[/:]([^/]+)\/([^.]+)/);
   if (match) {
+    // Return clean slug stripped of trailing .git
     return `${match[1]}/${match[2]}`.replace(/\.git$/, '');
   }
   return null;
@@ -42,7 +45,9 @@ function validateAgents(agentsStr: string, registryPath: string): string[] {
   if (!fs.existsSync(registryPath)) return [];
   try {
     const registry = JSON.parse(fs.readFileSync(registryPath, 'utf8'));
+    // Normalize input to lowercase for case-insensitive matching
     const inputAgents = agentsStr.split(',').map(a => a.trim().toLowerCase());
+    // Filter out names that do not exist as keys in the registry
     return inputAgents.filter(a => !registry.agents[a]);
   } catch {
     return [];
@@ -64,6 +69,7 @@ function validateAgents(agentsStr: string, registryPath: string): string[] {
 export async function deploySession() {
   const params = parseArgs(process.argv.slice(2));
 
+  // Mandate core arguments: target agents, user instructions (task), and execution type
   if (!params.agents || !params.task || !params.type) {
     console.log(`
 Jules Session Deployment Helper (TypeScript)
@@ -81,7 +87,7 @@ Options:
     process.exit(1);
   }
 
-  // Mode validation
+  // Mode validation: Prevent hallucinations by strict limiting.
   const modeStr = String(params.mode || 'code').toLowerCase();
   if (modeStr !== 'code' && modeStr !== 'review') {
     console.error(`Error: Invalid mode '${params.mode}'. Allowed modes are 'code' or 'review'.`);
@@ -90,6 +96,8 @@ Options:
   const mode = modeStr as 'code' | 'review';
 
   const dirs = getProjectDirs();
+
+  // Try local project registry first, fallback to global install registry
   const registryPath = path.join(dirs.agentsDir, 'registry.json');
   const fallbackRegistryPath = path.join(__dirname, '..', 'references', 'agents', 'registry.json');
   const activeRegistryPath = fs.existsSync(registryPath) ? registryPath : fallbackRegistryPath;
@@ -98,6 +106,7 @@ Options:
   const invalidAgents = validateAgents(String(params.agents), activeRegistryPath);
   if (invalidAgents.length > 0) {
     console.error(`Error: Invalid agent name(s) specified: ${invalidAgents.join(', ')}`);
+    // Provide a helpful fallback listing of valid options to the user if registry is readable
     if (fs.existsSync(activeRegistryPath)) {
       try {
         const registry = JSON.parse(fs.readFileSync(activeRegistryPath, 'utf8'));
@@ -126,10 +135,12 @@ Options:
 
   try {
     console.log(`Matching repository '${gitRepo}' with Jules sources...`);
+    // Retrieve all active cloud source integrations linked to this Jules account
     const sourcesData = await request('https://jules.googleapis.com/v1alpha/sources', { headers });
     const sources: JulesSource[] = sourcesData.sources || [];
 
     let matchedSource: JulesSource | null = null;
+
     // Search for a Jules Cloud source that includes the local Git repository's slug (owner/repo).
     // This mapping is crucial because Jules API expects a predefined cloud source ID (e.g., github.com/user/repo)
     // rather than just arbitrary local paths, ensuring the cloud agent has access to the correct remote codebase.
@@ -137,6 +148,7 @@ Options:
     matchedSource = sources.find(s => s.name.toLowerCase().includes(searchStr)) || null;
 
     if (!matchedSource && sources.length > 0) {
+      // Best-effort fallback if exact match isn't found
       matchedSource = sources[0];
       console.warn(`Warning: Exact origin '${gitRepo}' not matched. Falling back to source: ${matchedSource.name}`);
     }
@@ -157,6 +169,8 @@ Options:
 
     const localSessions = loadSessions();
     const today = new Date().toISOString().split('T')[0];
+
+    // Create a URL-safe, hyphenated slug representation of the user task string for filename usage
     const taskSlug = params.task ? String(params.task).slice(0, 30).toLowerCase().replace(/[^a-z0-9]+/g, '-') : 'task';
 
     // We use Promise.all to concurrently deploy multiple specialized agents for the same task.
@@ -165,6 +179,7 @@ Options:
     const deployPromises = agentList.map(async (agent) => {
       let outputBuffer = `\nPreparing deployment for agent: ${agent} (Mode: ${mode.toUpperCase()})...\n`;
 
+      // Resolve agent system prompt markdown template
       const templatePaths = [
         path.join(dirs.agentsDir, `${agent}.md`),
         path.join(__dirname, '..', 'references', 'agents', `${agent}.md`)
@@ -179,6 +194,8 @@ Options:
       }
 
       const currentDateDDMMYYYY = getFormattedDateDDMMYYYY();
+
+      // Strict behavioral override injected dynamically to govern AI date formatting
       const dateAndJournalDirective = `⚠️ DATE & JOURNAL STRICT DIRECTIVES:
 1. CURRENT SESSION DATE: ${currentDateDDMMYYYY} (Format: DD-MM-YYYY).
 2. Target Journal File: .jules/${agent}.md
@@ -187,10 +204,13 @@ Options:
 5. NEVER invent or hallucinate past dates. Use strictly '${currentDateDDMMYYYY}'.`;
 
       const reviewFileName = `docs/jules-reviews/${today}-${agent}-${taskSlug}.md`;
+
+      // Inject restrictive guidelines based on the operational mode
       const modeDirective = mode === 'review'
         ? `⚠️ MODE STRICT DIRECTIVE: REVIEW-ONLY MODE\nYou are operating in REVIEW-ONLY mode.\n1. DO NOT modify, edit, or delete any application code files (.ts, .js, .py, .go, .rs, .json, etc.).\n2. Write ALL your findings, analysis, code snippets, and refactoring recommendations exclusively into a single Markdown file located at:\n   \`${reviewFileName}\`\n3. Provide clear line numbers, problem descriptions, and proposed code fixes inside the Markdown document so the main agent can review them.`
         : `⚠️ MODE DIRECTIVE: CODE IMPLEMENTATION MODE\nYou are operating in CODE mode. Perform direct code implementation and modifications as required.`;
 
+      // Compose the final mega-prompt for the cloud session payload
       const combinedPrompt = `# AGENT SYSTEM & ROLE DIRECTIVES\n${templateContent}\n\n---\n# DATE & JOURNAL DIRECTIVES\n${dateAndJournalDirective}\n\n---\n# USER TASK & SPECIFIC REQUIREMENTS\n${params.task}\n\n---\n# EXECUTION MODE DIRECTIVE\n${modeDirective}`;
 
 
@@ -207,11 +227,13 @@ Options:
       };
 
       outputBuffer += `Sending session request to Google REST API...\n`;
+      // Initiate remote POST request to create cloud session
       const sessionResult = await request('https://jules.googleapis.com/v1alpha/sessions', {
         method: 'POST',
         headers
       }, payload);
 
+      // Extract unique identifier provided by Jules backend for persistent polling later
       const sessionId = sessionResult.id || (sessionResult.name ? sessionResult.name.split('/').pop() : 'UNKNOWN');
       outputBuffer += `Session deployed successfully! Session ID: ${sessionId} (Mode: ${mode})`;
 
@@ -229,8 +251,10 @@ Options:
       };
     });
 
+    // Wait for all concurrent deployments to resolve
     const results = await Promise.all(deployPromises);
 
+    // Persist all deployment metadata sequentially to our local `.jules-companion/sessions.json` registry cache
     for (const res of results) {
       console.log(res.output);
       localSessions.push(res.sessionRecord);

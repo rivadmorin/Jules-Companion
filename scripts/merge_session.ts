@@ -1,124 +1,144 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { request, getApiKey } from './jules_client';
-import { parseArgs, getProjectDirs, loadSessions, saveSessions, runGit, SessionRecord } from './utils';
+import { parseArgs, getProjectDirs, runGit, loadSessions, saveSessions, ProjectDirs } from './utils';
 
 /**
- * Evaluates the safety gate by verifying that all active sessions have concluded.
- * This prevents concurrent modifications from interfering with one another.
+ * Validates the safety constraints before executing branch manipulations.
+ * Prevents disruptive local branch switching operations if any registered cloud
+ * sessions are still actively modifying or generating code.
  *
- * @param {Record<string, string>} headers - The HTTP headers including the authentication token.
- * @returns {Promise<boolean>} True if all tracked sessions are completed or failed, false otherwise.
+ * @param {Record<string, string>} headers - API headers including authentication.
+ * @returns {Promise<boolean>} True if it's safe to proceed (no active sessions), false otherwise.
  */
 export async function checkSafetyGate(headers: Record<string, string>): Promise<boolean> {
   const sessions = loadSessions();
-  const activeSessions = sessions.filter(s => s.status !== 'merged' && s.status !== 'failed');
+  // Filter for sessions known to be in an intermediate operational state locally
+  const activeSessions = sessions.filter(s => s.status !== 'completed' && s.status !== 'merged' && s.status !== 'error');
+
   if (activeSessions.length === 0) return true;
 
-  console.log(`Checking Safety Gate for ${activeSessions.length} active session(s)...`);
-  let allCompleted = true;
+  console.log(`Checking safety gate: ${activeSessions.length} active sessions found locally.`);
+  let hasRunning = false;
 
-  await Promise.all(activeSessions.map(async (s) => {
+  // Verify against authoritative remote API source of truth
+  for (const s of activeSessions) {
     try {
-      const data = await request(`https://jules.googleapis.com/v1alpha/sessions/${s.id}`, { headers });
-      const state = data.state || 'UNKNOWN';
-      if (state !== 'COMPLETED' && state !== 'FAILED') {
-        console.warn(`❌ Safety Gate Blocked: Session ${s.id} (${s.agent}) is still in state '${state}'.`);
-        allCompleted = false;
-      } else if (state === 'FAILED') {
-        s.status = 'failed';
-      } else if (state === 'COMPLETED') {
-        s.status = 'completed';
+      const sessionData = await request(`https://jules.googleapis.com/v1alpha/sessions/${s.id}`, { headers });
+      const state = sessionData.state || 'UNKNOWN';
+      if (state !== 'COMPLETED' && state !== 'ERROR' && state !== 'CANCELLED') {
+         console.log(`- Session ${s.id} (${s.agent}) is still ${state}`);
+         hasRunning = true;
+      } else if (state === 'COMPLETED' && s.status !== 'completed' && s.status !== 'inspected') {
+         // Auto-sync status correction if local state was lagging
+         s.status = 'completed';
       }
-    } catch (err: any) {
-      console.warn(`⚠️ Warning: Failed to query status for session ${s.id}: ${err.message}`);
-    }
-  }));
-
-  saveSessions(sessions);
-  return allCompleted;
-}
-
-/**
- * Generates a comprehensive Markdown report summarizing the changes or review findings
- * produced by a Jules session. The report includes Git diff statistics and concatenated reviews.
- *
- * @param {string} sessionId - The unique identifier of the Jules session.
- * @param {string} agent - The name of the agent that executed the session.
- * @param {'code' | 'review'} mode - The execution mode (code implementation or review audit).
- * @param {any} dirs - Project directories context object.
- * @param {string} patchBranch - The isolated Git branch where changes were applied.
- * @param {string} targetBranch - The target branch intended for final merging.
- * @returns {string} The absolute path to the generated Markdown report file.
- */
-function generateMarkdownReport(
-  sessionId: string,
-  agent: string,
-  mode: 'code' | 'review',
-  dirs: any,
-  patchBranch: string,
-  targetBranch: string
-): string {
-  const today = new Date().toISOString().split('T')[0];
-  const reportPath = path.join(dirs.targetDir, 'docs', 'jules-reports', `${today}-${mode}-${agent}-${sessionId.slice(0, 8)}.md`);
-
-  const statRes = runGit(['diff', 'HEAD~1..HEAD', '--stat']);
-  const diffStat = statRes.stdout || 'No changes detected.';
-
-  let detailedAuditFindings = '';
-  if (mode === 'review') {
-    const filesRes = runGit(['diff', 'HEAD~1..HEAD', '--name-only']);
-    const files = filesRes.stdout.split('\n').filter(f => f.includes('docs/jules-reviews/') && f.endsWith('.md'));
-    if (files.length > 0) {
-      detailedAuditFindings = `\n## 🔍 Synthesized Audit Findings\n`;
-      for (const f of files) {
-        const fullPath = path.join(dirs.targetDir, f);
-        if (fs.existsSync(fullPath)) {
-          const findings = fs.readFileSync(fullPath, 'utf8');
-          detailedAuditFindings += `\n### File: [${path.basename(f)}](file://${fullPath})\n${findings}\n`;
-        }
-      }
-    } else {
-      detailedAuditFindings = `\n⚠️ No review report files found under docs/jules-reviews/ in the patch.`;
+    } catch (e) {
+      console.warn(`- Failed to fetch status for ${s.id}, assuming active for safety.`);
+      hasRunning = true;
     }
   }
 
-  const reportContent = `# 📄 Jules Session Report: ${agent} (${mode.toUpperCase()})
-
-- **Date**: ${new Date().toLocaleString()}
-- **Session ID**: \`${sessionId}\`
-- **Mode**: ${mode.toUpperCase()}
-- **Agent**: ${agent}
-- **Review Branch**: \`${patchBranch}\`
-- **Target Branch**: \`${targetBranch}\`
-
----
-
-## 📊 Code Changes Summary (Git Stat)
-\`\`\`text
-${diffStat}
-\`\`\`
-${detailedAuditFindings}
-
----
-
-## 📋 Inspection Checklist for Main Agent & User
-- [ ] Code syntax & type safety verified (\`npx tsc --noEmit\`).
-- [ ] Application behavior tested locally.
-- [ ] Main Agent & User alignment.
-- [ ] Approval Action: Run \`jules-companion\` Option 6 or command \`node dist/merge_session.js --approve ${sessionId}\` to finalize merge.
-`;
-
-  fs.mkdirSync(path.dirname(reportPath), { recursive: true });
-  fs.writeFileSync(reportPath, reportContent, 'utf8');
-  console.log(`✓ Markdown Report generated successfully at:`);
-  console.log(`  [Report File](file://${reportPath})`);
-  return reportPath;
+  saveSessions(sessions);
+  return !hasRunning;
 }
 
 /**
- * Stage 1: Inspects a completed session by pulling its patch, applying it to a new
- * isolated Git review branch, and generating a local diff summary report.
+ * Scans the provided unified diff patch string and generates a human-readable
+ * markdown summary abstracting file changes for the code review report.
+ *
+ * @param {string} patchContent - The raw git unified diff output.
+ * @returns {string} Formatted markdown list of touched files and change operations.
+ */
+function generateDiffSummary(patchContent: string): string {
+    const lines = patchContent.split('\n');
+    const summary: string[] = [];
+    for (const line of lines) {
+        // Look for the standard diff prefix indicating a file header
+        if (line.startsWith('diff --git')) {
+            const parts = line.split(' ');
+            if (parts.length >= 4) {
+               // Extrapolate raw target file path (dropping standard a/ or b/ prefixes)
+               const file = parts[3].replace(/^b\//, '');
+               summary.push(`- **Modified:** \`${file}\``);
+            }
+        }
+    }
+    return summary.length > 0 ? summary.join('\n') : '- No identifiable file changes found in patch.';
+}
+
+/**
+ * Generates the standardized markdown review report document following Stage 1 inspection.
+ * This artifact is intended for human approval (or automated agent secondary review)
+ * before the patch is finally merged.
+ *
+ * @param {string} sessionId - The session identifier.
+ * @param {string} agent - The name of the AI agent handling the session.
+ * @param {string} mode - The execution mode (e.g., 'code' or 'review').
+ * @param {ProjectDirs} dirs - Resolved project standard directories.
+ * @param {string} patchBranch - The isolated review branch name.
+ * @param {string} targetBranch - The ultimate destination branch for the merge.
+ */
+function generateMarkdownReport(
+    sessionId: string,
+    agent: string,
+    mode: string,
+    dirs: ProjectDirs,
+    patchBranch: string,
+    targetBranch: string
+) {
+    const today = new Date().toISOString().split('T')[0];
+    const reportPath = path.join(dirs.docsReviewsDir, `${today}-merge-report-${sessionId.slice(0, 8)}.md`);
+
+    const patchPath = path.join(dirs.scratchDir, `${sessionId}.patch`);
+    let patchSummary = '- Patch file not found locally.';
+    let rawPatch = '';
+
+    // Read the raw diff and generate summary
+    if (fs.existsSync(patchPath)) {
+        rawPatch = fs.readFileSync(patchPath, 'utf8');
+        patchSummary = generateDiffSummary(rawPatch);
+    }
+
+    const reportContent = `# 🔍 Jules AI Merge Review Report
+
+**Date:** ${new Date().toLocaleString()}
+**Session ID:** \`${sessionId}\`
+**Agent:** \`${agent}\`
+**Mode:** \`${mode.toUpperCase()}\`
+
+## 🌿 Branch Information
+- **Target Branch:** \`${targetBranch}\`
+- **Review Branch:** \`${patchBranch}\`
+
+## 📊 Affected Files Summary
+${patchSummary}
+
+## ⚙️ Next Steps
+1. Carefully review the modified code inside the isolated review branch: \`git checkout ${patchBranch}\`
+2. Run your local test suites or linter validation.
+3. If the patch quality is acceptable, execute the final merge:
+   \`\`\`bash
+   # Using CLI
+   node dist/merge_session.js --approve ${sessionId}
+
+   # Or via Antigravity slash command
+   /jules-merge ${sessionId}
+   \`\`\`
+
+---
+*This report was automatically generated by the Two-Stage Merge Engine during Stage 1 (Inspection).*
+`;
+
+    fs.mkdirSync(dirs.docsReviewsDir, { recursive: true });
+    fs.writeFileSync(reportPath, reportContent, 'utf8');
+    console.log(`\n📄 Markdown Review Report generated at: ${reportPath}`);
+}
+
+
+/**
+ * Stage 1: Inspects a completed session by pulling its cloud patch output,
+ * creating an isolated review branch, applying the patch locally, and generating reports.
  *
  * @param {string} sessionId - The unique identifier of the session to inspect.
  * @param {string} targetBranch - The branch from which the review branch will be cut.
@@ -144,12 +164,13 @@ export async function inspectSession(
 
   const patchPath = path.join(dirs.scratchDir, `${sessionId}.patch`);
 
-  // Fetch patch from REST API
+  // Fetch chronological activities (including artifacts) from REST API
   try {
     const data = await request(`https://jules.googleapis.com/v1alpha/sessions/${sessionId}/activities`, { headers });
     const activities = data.activities || [];
     let patchContent: string | null = null;
 
+    // Scan backwards/iteratively to locate the final unidiff Git patch payload generated by the cloud container
     for (const act of activities) {
       if (act.artifacts) {
         for (const art of act.artifacts) {
@@ -167,26 +188,31 @@ export async function inspectSession(
       return false;
     }
 
+    // Save remote patch to a temporary local scratch file
     fs.writeFileSync(patchPath, patchContent, 'utf8');
   } catch (err: any) {
     console.error(`❌ Failed to fetch patch: ${err.message}`);
     return false;
   }
 
+  // Define convention for the isolated branch name based on short ID
   const patchBranch = `jules/review-${sessionId.slice(0, 8)}`;
   console.log(`Checking out isolated review branch: ${patchBranch}...`);
 
-  // Create a new isolated branch for this specific session review, starting from the target branch
+  // Create a new isolated branch for this specific session review, starting from the target branch.
+  // This allows manual testing and inspection without polluting the main working branch.
   const checkoutBranchRes = runGit(['checkout', '-b', patchBranch, targetBranch]);
   if (!checkoutBranchRes.success) {
+    // If the branch already exists from a previous failed run, just check it out
     runGit(['checkout', patchBranch]);
   }
 
   // Apply check
-  // Perform a dry-run patch application to detect merge conflicts before modifying the working tree
+  // Perform a dry-run patch application to detect fatal merge conflicts before modifying the working tree.
   const applyCheckRes = runGit(['apply', '--check', patchPath]);
   if (!applyCheckRes.success) {
     console.error(`❌ Error: Git patch dry-run failed:\n${applyCheckRes.stderr}`);
+    // Rollback safely
     runGit(['checkout', originalBranch]);
     runGit(['branch', '-D', patchBranch]);
     if (fs.existsSync(patchPath)) fs.unlinkSync(patchPath);
@@ -198,7 +224,7 @@ export async function inspectSession(
   runGit(['add', '.']);
   runGit(['commit', '-m', `Review patch for Jules session ${sessionId}`]);
 
-  // Generate local visual code diff summary
+  // Generate local visual code diff summary in terminal
   console.log(`\n📊 === Code Diff Summary Report (${sessionId.slice(0, 8)}) ===`);
   const statRes = runGit(['diff', 'HEAD~1..HEAD', '--stat']);
   if (statRes.stdout) {
@@ -208,13 +234,14 @@ export async function inspectSession(
   const fullDiffRes = runGit(['diff', 'HEAD~1..HEAD']);
   fs.writeFileSync(path.join(dirs.scratchDir, `diff-${sessionId.slice(0, 8)}.log`), fullDiffRes.stdout || '', 'utf8');
 
-  // Generate universal Markdown report
+  // Generate universal Markdown report for user review
   generateMarkdownReport(sessionId, agent, mode, dirs, patchBranch, targetBranch);
 
-  // Return to original branch for safety
+  // Return to original branch for safety, protecting user working tree
   runGit(['checkout', originalBranch]);
 
   if (sessionRecord) {
+    // Escalate local state machine status indicating readiness for Stage 2
     sessionRecord.status = 'inspected';
     saveSessions(sessions);
   }
@@ -246,7 +273,7 @@ export async function approveMerge(
   console.log(`✅ Stage 2: Approving Merge for Session ${sessionId}`);
   console.log(`==========================================================================`);
 
-  // Verify branch exists
+  // Verify the inspection branch actually exists before attempting to merge
   const branchCheck = runGit(['branch', '--list', patchBranch]);
   if (!branchCheck.stdout.trim()) {
     console.error(`❌ Error: Inspection branch '${patchBranch}' not found.`);
@@ -255,18 +282,22 @@ export async function approveMerge(
   }
 
   console.log(`Merging review branch ${patchBranch} into ${targetBranch}...`);
+  // Must checkout target before merging into it
   runGit(['checkout', targetBranch]);
+  // Execute non-interactive fast-forward or standard merge strategy
   const mergeRes = runGit(['merge', patchBranch, '--no-edit']);
 
   if (mergeRes.success) {
     console.log(`✅ Successfully merged review branch into ${targetBranch}!`);
+    // Cleanup the temporary inspection branch
     runGit(['branch', '-D', patchBranch]);
     
-    // Clean up temporary patch file
+    // Clean up temporary patch file artifact
     const patchPath = path.join(dirs.scratchDir, `${sessionId}.patch`);
     if (fs.existsSync(patchPath)) fs.unlinkSync(patchPath);
 
     if (sessionRecord) {
+       // Mark terminal state so it won't be processed again
       sessionRecord.status = 'merged';
       saveSessions(sessions);
     }
@@ -275,6 +306,7 @@ export async function approveMerge(
     return true;
   } else {
     console.error(`❌ Error: Merge conflict occurred during final integration:\n${mergeRes.stderr}`);
+    // Revert back on failure so user can manually resolve conflicts in the IDE if needed
     runGit(['checkout', originalBranch]);
     return false;
   }
@@ -327,12 +359,13 @@ Options:
   const headers = { 'X-Goog-Api-Key': apiKey };
 
   // Git Pre-flight Stash Check
-  // Safety Mechanism: We stash any uncommitted local changes before switching branches.
-  // This prevents dirty working tree errors during git checkout and protects the user's WIP.
+  // Safety Mechanism: We stash any uncommitted local changes (WIP) before switching branches.
+  // This prevents dirty working tree errors during git checkout and protects the user's uncommitted work.
   const statusRes = runGit(['status', '--porcelain']);
   let didStash = false;
   if (statusRes.stdout) {
     console.log('Stashing uncommitted working tree changes...');
+    // Create uniquely named stash to avoid conflicting with user's own stashes
     const stashRes = runGit(['stash', 'push', '-u', '-m', `jules-merge-backup-${Date.now()}`]);
     if (!stashRes.success) {
       console.error('Error: Stash failed. Aborting.');
@@ -347,6 +380,8 @@ Options:
 
   try {
     // Enforce Safety Gate before any inspect/approve operations
+    // We do not want to merge patches while other agents are concurrently generating code,
+    // which could result in stale baseline states or chaotic merge conflicts.
     const safetyGateOk = await checkSafetyGate(headers);
     if (!safetyGateOk) {
       console.error('\n❌ Execution Blocked: One or more active sessions are still in progress.');
@@ -357,8 +392,10 @@ Options:
 
     if (isInspectAll) {
       const sessions = loadSessions();
+      // Find all sessions ready for the Stage 1 inspection process
       const completedSessions = sessions.filter(s => s.status === 'completed' || s.status === 'launched' || s.status === 'plan_approved');
       console.log(`Found ${completedSessions.length} completed session(s) to inspect.`);
+      // Run sequentially to ensure isolated branching operations don't collide
       for (const s of completedSessions) {
         await inspectSession(s.id, targetBranch, headers, originalBranch);
       }
@@ -373,6 +410,7 @@ Options:
   }
 
   if (didStash) {
+    // Safety Mechanism Recovery: Restore the user's uncommitted WIP changes back to their working directory
     console.log('Restoring stashed changes...');
     runGit(['stash', 'pop']);
   }

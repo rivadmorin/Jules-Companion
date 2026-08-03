@@ -19,10 +19,11 @@ interface SetupResult {
 
 /**
  * Checks if a specific CLI command exists and is executable in the current environment.
+ * Handles cross-platform differences between Unix (`which`) and Windows (`where`).
  *
  * @param {string} cmd - The command to check (e.g., 'git', 'gh').
  * @param {string} osType - The operating system platform identifier (e.g., 'win32', 'linux').
- * @returns {Promise<boolean>} True if the command is available, false otherwise.
+ * @returns {Promise<boolean>} True if the command is available in system PATH, false otherwise.
  */
 async function checkCommand(cmd: string, osType: string): Promise<boolean> {
   const checkCmd = osType === 'win32' ? 'where' : 'which';
@@ -36,11 +37,13 @@ async function checkCommand(cmd: string, osType: string): Promise<boolean> {
 
 /**
  * Verifies if the GitHub CLI (gh) is authenticated.
+ * This is required for creating Pull Requests or interacting with GitHub APIs.
  *
  * @returns {Promise<boolean>} True if authenticated, false otherwise.
  */
 async function checkGhAuth(): Promise<boolean> {
   try {
+    // `gh auth status` exits with code 0 if authenticated, non-zero otherwise
     await execAsync('gh auth status');
     return true;
   } catch {
@@ -50,23 +53,27 @@ async function checkGhAuth(): Promise<boolean> {
 
 /**
  * Ensures that a Git user identity (name and email) is configured.
- * Sets a local fallback identity if missing and the context is within a Git repository.
+ * Sets a local fallback identity ("Jules Companion") if missing and the context is within a Git repository.
+ * This is crucial because `git commit` will fail fatally without an identity configured.
  *
  * @returns {Promise<boolean>} True if identity is verified or successfully configured, false on failure.
  */
 async function ensureGitIdentity(): Promise<boolean> {
   try {
+    // Check if we are actually inside a Git workspace before attempting to set local configs
     try { await execAsync('git rev-parse --is-inside-work-tree'); } catch {
       console.log('  - Git Identity: Skipped (Not inside a Git repository)');
-      return true;
+      return true; // Not a failure condition if we aren't in a git repo
     }
 
+    // Check existing global or local configuration
     const checkName = execAsync('git config user.name').catch(() => null);
     const checkEmail = execAsync('git config user.email').catch(() => null);
     const [nameRes, emailRes] = await Promise.all([checkName, checkEmail]);
 
     if (!nameRes || !nameRes.stdout.trim() || !emailRes || !emailRes.stdout.trim()) {
       console.log('  - Git Identity: Configuring local fallback identity...');
+      // Apply local fallback identity specifically for automated commits
       const setLocalName = execAsync('git config --local user.name "Jules Companion"');
       const setLocalEmail = execAsync('git config --local user.email "agent@jules.local"');
       await Promise.all([setLocalName, setLocalEmail]);
@@ -117,6 +124,7 @@ export async function runSetup(targetDir: string = process.cwd()): Promise<Setup
 
 
   // 3. Project directories setup via utils
+  // Ensure the internal state and artifact directories are instantiated
   const dirs = getProjectDirs(targetDir);
   const docsReportsDir = path.join(targetDir, 'docs', 'jules-reports');
   [dirs.julesDir, dirs.refDir, dirs.agentsDir, dirs.scratchDir, dirs.docsReviewsDir, docsReportsDir].forEach(dir => {
@@ -126,10 +134,11 @@ export async function runSetup(targetDir: string = process.cwd()): Promise<Setup
   });
 
   // 4. Find source references directory (Global or Local Package root)
+  // This supports both global installation (`npm install -g`) and local repository execution
   const homeDir = os.homedir();
   const candidateGlobalRoots = [
-    path.join(homeDir, '.gemini', 'config', 'skills', 'jules-companion'),
-    path.join(__dirname, '..')
+    path.join(homeDir, '.gemini', 'config', 'skills', 'jules-companion'), // Standard Antigravity global skill path
+    path.join(__dirname, '..') // Local development path
   ];
 
   let sourceRefDir: string | null = null;
@@ -144,7 +153,7 @@ export async function runSetup(targetDir: string = process.cwd()): Promise<Setup
   const copiedFiles: string[] = [];
 
   if (sourceRefDir) {
-    // Copy top-level reference files
+    // Copy top-level reference framework files to local project staging area
     const filesToCopy = ['jules-cli.md', 'jules-api.md', 'prompt-templates.md'];
     for (const file of filesToCopy) {
       const src = path.join(sourceRefDir, file);
@@ -155,7 +164,7 @@ export async function runSetup(targetDir: string = process.cwd()): Promise<Setup
       }
     }
 
-    // Copy agent templates & registry
+    // Recursively sync agent Markdown templates to local project for customization capabilities
     const sourceAgentsDir = path.join(sourceRefDir, 'agents');
     if (fs.existsSync(sourceAgentsDir)) {
       const agentFiles = fs.readdirSync(sourceAgentsDir);
@@ -174,6 +183,7 @@ export async function runSetup(targetDir: string = process.cwd()): Promise<Setup
   }
 
   // 5. Update .gitignore
+  // Automatically inject `.jules-companion/` into the gitignore to prevent committing internal tool state
   let gitignoreUpdated = false;
   const gitignorePath = path.join(targetDir, '.gitignore');
   const entry = '.jules-companion/';
@@ -194,6 +204,7 @@ export async function runSetup(targetDir: string = process.cwd()): Promise<Setup
 
   // 6. Synchronize/Generate Registry
   try {
+    // Dynamically reconstruct the agent registry from the markdown template headers
     await generateRegistry();
   } catch (err: any) {
     console.warn(`Warning: Could not auto-generate registry during setup: ${err.message}`);
