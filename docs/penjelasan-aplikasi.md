@@ -61,7 +61,8 @@ Arsitektur `jules-companion` membagi sistem menjadi lingkungan **Lokal (Local Wo
     *   `auto_process.ts`: Mengelola siklus hidup sesi (otomatisasi *approve* dan membalas pertanyaan dari API).
     *   `merge_session.ts`: Manajemen Git, mengunduh *patch* dari *cloud*, dan menggabungkannya ke repositori lokal.
     *   `jules_client.ts`: Modul yang menangani interaksi langsung dengan REST API Google Jules (seperti GET/POST *request*).
-    *   `jules_menu.ts`: Konsol terminal interaktif (TUI).
+    *   `jules_menu.ts`: Konsol terminal fallback opsional untuk pengujian manual oleh pengguna (manusia).
+    *   `mcp_server.ts`: Server Model Context Protocol (MCP) untuk integrasi otonom dengan AI Agent/IDE (Antigravity IDE, OpenCode, Claude Code, Cursor).
 3.  **Google Jules REST API**: Layanan *backend* milik Google (`https://jules.googleapis.com/v1alpha/`) yang merespons permintaan dan memberikan metadata hasil perubahan (*git patches*).
 4.  **Agent Templates (`references/agents/*.md`)**: Berisi 30 instruksi sistem (*system prompt*) unik yang memberikan kepribadian dan batasan perilaku untuk berbagai tugas spesifik (contoh: *Bolt* untuk kecepatan, *Sentinel* untuk keamanan, *Critic* untuk *review*).
 

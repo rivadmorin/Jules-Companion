@@ -17,6 +17,15 @@ describe('Generate Registry Tests', () => {
     assert.strictEqual(registry.agents['inspector'].name, 'Inspector', 'Agent name should be formatted correctly');
     assert.strictEqual(registry.agents['inspector'].group, 'coding', 'Inspector should be a coding agent');
 
+    assert.ok(registry.agents['archivist'], 'Should contain archivist agent');
+    assert.strictEqual(registry.agents['archivist'].group, 'advisory');
+
+    assert.ok(registry.agents['enforcer'], 'Should contain enforcer agent');
+    assert.strictEqual(registry.agents['enforcer'].group, 'coding');
+
+    assert.ok(registry.agents['curator'], 'Should contain curator agent');
+    assert.strictEqual(registry.agents['curator'].group, 'advisory');
+
     // Check if registry.json was created/updated
     assert.ok(fs.existsSync(REGISTRY_PATH), 'registry.json should exist');
     const fileContent = fs.readFileSync(REGISTRY_PATH, 'utf8');

@@ -41,14 +41,14 @@ describe('Jules-Companion Unit Tests', () => {
 
   describe('Project Directory Resolver (getProjectDirs)', () => {
     test('should resolve directories relative to target path', () => {
-      const target = '/mock/project';
+      const target = path.join('mock', 'project');
       const dirs = getProjectDirs(target);
-      assert.strictEqual(dirs.targetDir, '/mock/project');
-      assert.strictEqual(dirs.julesDir, '/mock/project/.jules-companion');
-      assert.strictEqual(dirs.refDir, '/mock/project/.jules-companion/references');
-      assert.strictEqual(dirs.agentsDir, '/mock/project/.jules-companion/references/agents');
-      assert.strictEqual(dirs.scratchDir, '/mock/project/.jules-companion/scratch');
-      assert.strictEqual(dirs.docsReviewsDir, '/mock/project/docs/jules-reviews');
+      assert.strictEqual(dirs.targetDir, target);
+      assert.strictEqual(dirs.julesDir, path.join(target, '.jules-companion'));
+      assert.strictEqual(dirs.refDir, path.join(target, '.jules-companion', 'references'));
+      assert.strictEqual(dirs.agentsDir, path.join(target, '.jules-companion', 'references', 'agents'));
+      assert.strictEqual(dirs.scratchDir, path.join(target, '.jules-companion', 'scratch'));
+      assert.strictEqual(dirs.docsReviewsDir, path.join(target, 'docs', 'jules-reviews'));
     });
   });
 });

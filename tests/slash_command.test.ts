@@ -13,10 +13,6 @@ import * as path from 'path';
  * @returns The parsed command array intended for process execution, or null if no command matched.
  */
 function simulateAIAgent(prompt: string): string | null {
-  if (prompt.startsWith('/jules-menu')) {
-    return 'jules-companion';
-  }
-
   if (prompt.startsWith('/jules-deploy')) {
     const parts = prompt.split(' ').slice(1);
     if (parts.length >= 2) {
@@ -65,11 +61,6 @@ function simulateAIAgent(prompt: string): string | null {
 }
 
 describe('AI Agent Slash Commands Verification', () => {
-  test('should parse /jules-menu correctly', () => {
-    const cmd = simulateAIAgent('/jules-menu');
-    assert.strictEqual(cmd, 'jules-companion');
-  });
-
   test('should parse /jules-deploy correctly', () => {
     const cmd = simulateAIAgent('/jules-deploy bolt fix memory leaks');
     assert.strictEqual(cmd, 'node dist/deploy_session.js --type start --agents bolt --task "fix memory leaks"');
