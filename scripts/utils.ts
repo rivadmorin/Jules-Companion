@@ -122,3 +122,18 @@ export function saveSessions(sessions: SessionRecord[], targetDir: string = proc
   fs.mkdirSync(dirs.julesDir, { recursive: true });
   fs.writeFileSync(sessionsPath, JSON.stringify(sessions, null, 2), 'utf8');
 }
+
+/**
+ * Returns the provided date (or current date) formatted as DD-MM-YYYY.
+ * e.g., 03-08-2026
+ *
+ * @param date - Optional Date object (defaults to current system date)
+ * @returns Formatted date string in DD-MM-YYYY format
+ */
+export function getFormattedDateDDMMYYYY(date: Date = new Date()): string {
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+  return `${day}-${month}-${year}`;
+}
+

@@ -1,3 +1,3 @@
-## 2024-07-29 - Windows one-line installer support
+## 29-07-2024 - Windows one-line installer support
 **Learning:** Adding one line script installation functionality for Windows platform (Powershell equivalent to shell scripts). The script needs to check for proper dependencies, execute the TS compilation, install dependencies, copy files, and setup system path shortcuts. The regex updating on markdown files required precision to deal with both language formats accurately.
 **Action:** When implementing powershell alternative setups for global node tools, rely on `powershell -c "irm URL | iex"`, properly configure `.bat` shortcut wrappers for node projects and handle string escaping correctly within javascript templates or python replacements avoiding sandbox conflicts when outputting raw shells inside text blocks.

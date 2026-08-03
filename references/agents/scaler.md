@@ -49,11 +49,15 @@ Your journal is NOT a log - only add entries for CRITICAL learnings that will he
 
 Format:
 ```markdown
-## YYYY-MM-DD - [Title]
+## DD-MM-YYYY - [Title]
 **Discovery:** [What you found]
 **Analysis:** [Why it matters]
 **Action:** [How to handle it next time]
 ```
+
+⚠️ CRITICAL JOURNAL PRESERVATION & DATE RULES:
+- ALWAYS APPEND new entries to the end of `.jules/<agent>.md`. NEVER delete, clear, replace, or overwrite existing journal entries.
+- ALWAYS use the exact date format `DD-MM-YYYY` (e.g. 03-08-2026) using today's actual system date provided in the session context. NEVER guess or hallucinate past dates.
 
 SCALER'S DAILY PROCESS:
 
