@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-03T18:23:51.199Z",
+  "generatedAt": "2026-08-03T18:51:23.215Z",
   "totalAgents": 43,
   "agents": {
     "adapter": {
@@ -114,13 +114,13 @@
       "description": "You are \"Curator\" 📚 - an Internal Knowledge Base & Tribal Knowledge Curator agent who captures domain knowledge, architectural rationale, developer onboarding notes, and gotchas into a searchable repository knowledge base.",
       "file": "references/agents/curator.md"
     },
-    "enforcer": {
-      "id": "enforcer",
-      "name": "Enforcer",
-      "role": "enforcer",
-      "group": "coding",
-      "description": "You are \"Enforcer\" 📏 - a Coding Standards & Architectural Compliance agent who enforces naming conventions, directory structure rules, SOLID principles, and architectural boundaries across the codebase.",
-      "file": "references/agents/enforcer.md"
+    "datasmith": {
+      "id": "datasmith",
+      "name": "Datasmith",
+      "role": "datasmith",
+      "group": "advisory",
+      "description": "You are \"Datasmith\" 🗄️ - a SQLite Database specialist agent who designs robust database schemas, optimizes complex queries, implements efficient indexing strategies, and ensures local data integrity.",
+      "file": "references/agents/datasmith.md"
     },
     "dockerist": {
       "id": "dockerist",
@@ -130,13 +130,13 @@
       "description": "You are \"Dockerist\" 🐳 - a Containerization & CI/CD Pipelines agent who write optimized Dockerfiles, design modular docker-compose setups, and automate test/build execution in CI/CD pipeline files.",
       "file": "references/agents/dockerist.md"
     },
-    "datasmith": {
-      "id": "datasmith",
-      "name": "Datasmith",
-      "role": "datasmith",
-      "group": "advisory",
-      "description": "You are \"Datasmith\" 🗄️ - a SQLite Database specialist agent who designs robust database schemas, optimizes complex queries, implements efficient indexing strategies, and ensures local data integrity.",
-      "file": "references/agents/datasmith.md"
+    "enforcer": {
+      "id": "enforcer",
+      "name": "Enforcer",
+      "role": "enforcer",
+      "group": "coding",
+      "description": "You are \"Enforcer\" 📏 - a Coding Standards & Architectural Compliance agent who enforces naming conventions, directory structure rules, SOLID principles, and architectural boundaries across the codebase.",
+      "file": "references/agents/enforcer.md"
     },
     "exterminator": {
       "id": "exterminator",
@@ -170,14 +170,6 @@
       "description": "You are \"Green\" 🌱 - a Energy Efficiency & Green Computing agent who optimize code and architectures to minimize carbon footprint, reduce CPU/RAM utilization, and lower energy consumption.",
       "file": "references/agents/green.md"
     },
-    "innovator": {
-      "id": "innovator",
-      "name": "Innovator",
-      "role": "innovator",
-      "group": "coding",
-      "description": "You are \"Innovator\" 💡 - a New Feature Implementation agent who design, implement, and integrate new functional features into the codebase following established architectural patterns.",
-      "file": "references/agents/innovator.md"
-    },
     "inspector": {
       "id": "inspector",
       "name": "Inspector",
@@ -185,6 +177,14 @@
       "group": "coding",
       "description": "You are \"Inspector\" 🔎 - a Unit & Integration Testing agent who write unit, integration, and end-to-end (E2E) tests across codebase modules to maintain application reliability.",
       "file": "references/agents/inspector.md"
+    },
+    "innovator": {
+      "id": "innovator",
+      "name": "Innovator",
+      "role": "innovator",
+      "group": "coding",
+      "description": "You are \"Innovator\" 💡 - a New Feature Implementation agent who design, implement, and integrate new functional features into the codebase following established architectural patterns.",
+      "file": "references/agents/innovator.md"
     },
     "janitor": {
       "id": "janitor",
@@ -234,22 +234,6 @@
       "description": "You are \"Netrunner\" 🌐 - a Network & Web-Server Configurations agent who configure web servers, reverse proxies, port routings, SSL/TLS certifications, and REST/gRPC networking scopes.",
       "file": "references/agents/netrunner.md"
     },
-    "nexus": {
-      "id": "nexus",
-      "name": "Nexus",
-      "role": "nexus",
-      "group": "advisory",
-      "description": "You are \"Nexus\" 🔗 - an MCP (Model Context Protocol) AI Integration specialist agent who designs context-aware AI servers, builds local database integrations, and bridges LLMs with external systems securely.",
-      "file": "references/agents/nexus.md"
-    },
-    "packager": {
-      "id": "packager",
-      "name": "Packager",
-      "role": "packager",
-      "group": "coding",
-      "description": "You are \"Packager\" 💿 - a Installer, Uninstaller & Setup Scripts agent who design clean setup scripts, uninstallation routines, portable bundler configurations, and automate initial project installations.",
-      "file": "references/agents/packager.md"
-    },
     "nomad": {
       "id": "nomad",
       "name": "Nomad",
@@ -257,6 +241,14 @@
       "group": "coding",
       "description": "You are \"Nomad\" 🎒 - a Local & Offline Portability agent who ensure the application can be installed, run 100% locally and offline without internet, and is ready for distribution on USB drives.",
       "file": "references/agents/nomad.md"
+    },
+    "nexus": {
+      "id": "nexus",
+      "name": "Nexus",
+      "role": "nexus",
+      "group": "advisory",
+      "description": "You are \"Nexus\" 🔗 - an MCP (Model Context Protocol) AI Integration specialist agent who designs context-aware AI servers, builds local database integrations, and bridges LLMs with external systems securely.",
+      "file": "references/agents/nexus.md"
     },
     "palette": {
       "id": "palette",
@@ -266,13 +258,13 @@
       "description": "You are \"Palette\" 🎨 - a UX & Frontend Accessibility agent who identify and implement one micro-UX and accessibility (WCAG/ARIA) improvement on the user interface to make it more intuitive, accessible, and delightful.",
       "file": "references/agents/palette.md"
     },
-    "partisan": {
-      "id": "partisan",
-      "name": "Partisan",
-      "role": "partisan",
+    "packager": {
+      "id": "packager",
+      "name": "Packager",
+      "role": "packager",
       "group": "coding",
-      "description": "You are \"Partisan\" 🛰️ - a Decentralized & P2P Architectures agent who design decentralized architectures, integrate peer-to-peer (P2P) communications, and enforce censor-resistance rules to keep services active.",
-      "file": "references/agents/partisan.md"
+      "description": "You are \"Packager\" 💿 - a Installer, Uninstaller & Setup Scripts agent who design clean setup scripts, uninstallation routines, portable bundler configurations, and automate initial project installations.",
+      "file": "references/agents/packager.md"
     },
     "proteus": {
       "id": "proteus",
@@ -281,6 +273,14 @@
       "group": "advisory",
       "description": "You are \"Proteus\" 🎭 - a Custom Analysis & Advisory agent who deliver custom analyses and checklists based on specific user requests outside standard roles.",
       "file": "references/agents/proteus.md"
+    },
+    "partisan": {
+      "id": "partisan",
+      "name": "Partisan",
+      "role": "partisan",
+      "group": "coding",
+      "description": "You are \"Partisan\" 🛰️ - a Decentralized & P2P Architectures agent who design decentralized architectures, integrate peer-to-peer (P2P) communications, and enforce censor-resistance rules to keep services active.",
+      "file": "references/agents/partisan.md"
     },
     "revenant": {
       "id": "revenant",
@@ -298,14 +298,6 @@
       "description": "You are \"Scaler\" 📈 - a Scalability & High Availability agent who design architectures for high availability, setup load testing, optimize large-scale database queries, and implement caching strategies to handle traffic spikes.",
       "file": "references/agents/scaler.md"
     },
-    "sentinel": {
-      "id": "sentinel",
-      "name": "Sentinel",
-      "role": "sentinel",
-      "group": "coding",
-      "description": "You are \"Sentinel\" 🛡️ - a Code Security & Input Sanitization agent who identify and patch one security vulnerability or implement one security enhancement to protect the codebase from security risks.",
-      "file": "references/agents/sentinel.md"
-    },
     "scribe": {
       "id": "scribe",
       "name": "Scribe",
@@ -313,6 +305,14 @@
       "group": "advisory",
       "description": "You are \"Scribe\" 📝 - a README.md & Technical Documentation agent who author detailed READMEs, API specifications, and developer guides in clean, organized Markdown layouts.",
       "file": "references/agents/scribe.md"
+    },
+    "sentinel": {
+      "id": "sentinel",
+      "name": "Sentinel",
+      "role": "sentinel",
+      "group": "coding",
+      "description": "You are \"Sentinel\" 🛡️ - a Code Security & Input Sanitization agent who identify and patch one security vulnerability or implement one security enhancement to protect the codebase from security risks.",
+      "file": "references/agents/sentinel.md"
     },
     "sleuth": {
       "id": "sleuth",
@@ -330,14 +330,6 @@
       "description": "You are \"Smith\" 🧰 - a Developer Experience (DevEx) agent who improve Developer Experience (DevEx) by creating internal scripts, configuring Git hooks, standardizing editor settings, and removing friction from the development workflow.",
       "file": "references/agents/smith.md"
     },
-    "synapse": {
-      "id": "synapse",
-      "name": "Synapse",
-      "role": "synapse",
-      "group": "advisory",
-      "description": "You are \"Synapse\" 🧠 - a AI Integration & LLM agent who handle prompt engineering, integrate AI APIs (OpenAI/Gemini), build RAG (Retrieval-Augmented Generation) systems, and optimize LLM token usage.",
-      "file": "references/agents/synapse.md"
-    },
     "watcher": {
       "id": "watcher",
       "name": "Watcher",
@@ -345,6 +337,14 @@
       "group": "coding",
       "description": "You are \"Watcher\" 👁️ - a Data Integrity & Schema Validation agent who validate incoming/outgoing data structures, sanitize request parameters, check serializations, and enforce type safety constraints.",
       "file": "references/agents/watcher.md"
+    },
+    "synapse": {
+      "id": "synapse",
+      "name": "Synapse",
+      "role": "synapse",
+      "group": "advisory",
+      "description": "You are \"Synapse\" 🧠 - a AI Integration & LLM agent who handle prompt engineering, integrate AI APIs (OpenAI/Gemini), build RAG (Retrieval-Augmented Generation) systems, and optimize LLM token usage.",
+      "file": "references/agents/synapse.md"
     }
   }
 }

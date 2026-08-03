@@ -8,8 +8,8 @@ import { parseArgs, getProjectDirs, runGit, loadSessions, saveSessions, getForma
  *
  * @returns {string} The name of the current branch (defaults to 'main' if parsing fails).
  */
-function getCurrentBranch(): string {
-  const res = runGit(['branch', '--show-current']);
+function getCurrentBranch(targetDir?: string): string {
+  const res = runGit(['branch', '--show-current'], targetDir);
   return res.success && res.stdout ? res.stdout : 'main';
 }
 
@@ -19,8 +19,8 @@ function getCurrentBranch(): string {
  *
  * @returns {string | null} The repository slug (e.g., 'rivadmorin/Jules-Companion') or null if parsing fails or no remote exists.
  */
-function getGitRemoteRepo(): string | null {
-  const res = runGit(['config', '--get', 'remote.origin.url']);
+function getGitRemoteRepo(targetDir?: string): string | null {
+  const res = runGit(['config', '--get', 'remote.origin.url'], targetDir);
   if (!res.success) return null;
   const url = res.stdout;
 
@@ -95,7 +95,8 @@ Options:
   }
   const mode = modeStr as 'code' | 'review';
 
-  const dirs = getProjectDirs();
+  const targetDir = params.target ? String(params.target) : process.cwd();
+  const dirs = getProjectDirs(targetDir);
 
   // Try local project registry first, fallback to global install registry
   const registryPath = path.join(dirs.agentsDir, 'registry.json');
@@ -117,21 +118,21 @@ Options:
   }
 
   // 2. Git Remote Check
-  const gitRepo = getGitRemoteRepo();
+  const gitRepo = getGitRemoteRepo(targetDir);
   if (!gitRepo) {
     console.error('Error: No git remote origin url configured.');
     console.error('Jules-Companion requires that this repository is pushed to GitHub before deploying cloud sessions.');
     process.exit(1);
   }
 
-  const apiKey = getApiKey();
+  const apiKey = getApiKey(targetDir);
   if (!apiKey) {
     console.error('Error: JULES_API_KEY not found in environment or .env file.');
     process.exit(1);
   }
 
   const headers = { 'X-Goog-Api-Key': apiKey };
-  const startingBranch = String(params.branch || getCurrentBranch());
+  const startingBranch = String(params.branch || getCurrentBranch(targetDir));
 
   try {
     console.log(`Matching repository '${gitRepo}' with Jules sources...`);

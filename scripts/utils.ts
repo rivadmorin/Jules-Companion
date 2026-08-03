@@ -73,7 +73,8 @@ export function parseArgs(args: string[]): Record<string, string | boolean> {
  * @returns An object containing the success status, standard output, and standard error.
  */
 export function runGit(args: string[], cwd: string = process.cwd()): { success: boolean; stdout: string; stderr: string } {
-  const res = spawnSync('git', args, { encoding: 'utf8', cwd });
+  const resolvedCwd = path.resolve(cwd);
+  const res = spawnSync('git', args, { encoding: 'utf8', cwd: resolvedCwd });
   return {
     success: res.status === 0,
     stdout: res.stdout ? res.stdout.trim() : '',

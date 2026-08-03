@@ -94,6 +94,10 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             branch: {
               type: 'string',
               description: 'Repository branch to start from'
+            },
+            targetDir: {
+              type: 'string',
+              description: 'Target repository root directory'
             }
           },
           required: ['type', 'agents', 'task']
@@ -200,7 +204,8 @@ const DeploySessionSchema = z.object({
   agents: z.string(),
   task: z.string(),
   mode: z.enum(['code', 'review']).optional(),
-  branch: z.string().optional()
+  branch: z.string().optional(),
+  targetDir: z.string().optional()
 });
 
 const MergeSessionSchema = z.object({
@@ -226,11 +231,9 @@ server.setRequestHandler(CallToolRequestSchema, async (req: { params: { name: st
           isError: true,
         };
       }
-      const { type, agents, task, mode, branch } = parsed.data;
+      const { type, agents, task, mode, branch, targetDir } = parsed.data;
 
       // Shim: Translate structured JSON inputs into raw CLI arguments.
-      // We manipulate process.argv temporarily because the underlying `deploySession` function
-      // was written purely for a CLI environment and parses arguments directly from process.argv.
       const args = [
           'node',
           'dist/deploy_session.js',
@@ -240,6 +243,7 @@ server.setRequestHandler(CallToolRequestSchema, async (req: { params: { name: st
       ];
       if (mode) args.push('--mode', mode);
       if (branch) args.push('--branch', branch);
+      if (targetDir) args.push('--target', targetDir);
 
       const originalArgv = process.argv;
       process.argv = args; // Inject mock CLI arguments

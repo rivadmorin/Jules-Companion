@@ -1,4 +1,4 @@
-import { test, describe, before, after } from 'node:test';
+import { test, describe, before, beforeEach, after } from 'node:test';
 import * as assert from 'node:assert';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -13,6 +13,13 @@ describe('Jules Client Integration Tests', () => {
       fs.rmSync(TEST_DIR, { recursive: true, force: true });
     }
     fs.mkdirSync(TEST_DIR, { recursive: true });
+  });
+
+  beforeEach(() => {
+    const julesCompanionDir = path.join(TEST_DIR, '.jules-companion');
+    if (fs.existsSync(julesCompanionDir)) {
+      fs.rmSync(julesCompanionDir, { recursive: true, force: true });
+    }
   });
 
   after(() => {

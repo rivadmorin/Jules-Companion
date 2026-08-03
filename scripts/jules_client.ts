@@ -1,6 +1,7 @@
 import * as https from 'https';
 import * as path from 'path';
 import * as fs from 'fs';
+import { loadSessions } from './utils';
 
 // Network requests to the Google Jules API are optimized using a shared https.Agent
 // to prevent TLS handshake overhead on batch CLI operations.
@@ -23,22 +24,30 @@ export interface SessionRecord {
  * @returns {string | null} The raw API key string if found, otherwise null.
  */
 let cachedApiKey: string | null = null;
-export function getApiKey(): string | null {
+export function getApiKey(targetDir?: string): string | null {
+  if (process.env.JULES_API_KEY === '') return null;
   if (cachedApiKey) return cachedApiKey;
 
   // 1. Check system-level environment variable first
-  if (process.env.JULES_API_KEY) {
+  if (process.env.JULES_API_KEY && !process.env.JULES_API_KEY.includes('your_jules_api_key_here')) {
     cachedApiKey = process.env.JULES_API_KEY;
     return cachedApiKey;
   }
 
   // 2. Define fallback paths where a `.env` file might be stored locally
-  const envPaths = [
+  const envPaths: string[] = [];
+  if (targetDir) {
+    envPaths.push(
+      path.join(targetDir, '.jules-companion', '.env'),
+      path.join(targetDir, '.env')
+    );
+  }
+  envPaths.push(
     path.join(process.cwd(), '.jules-companion', '.env'),
     path.join(process.cwd(), '.env'),
     path.join(__dirname, '..', '.jules-companion', '.env'),
     path.join(__dirname, '..', '.env')
-  ];
+  );
 
   // 3. Sequentially search paths and parse the .env structure if found
   for (const p of envPaths) {
@@ -49,8 +58,11 @@ export function getApiKey(): string | null {
         const match = content.match(/JULES_API_KEY\s*=\s*(.+)/);
         if (match && match[1]) {
            // Clean out any trailing carriage returns from windows files or end quotes
-          cachedApiKey = match[1].trim().replace(/^['"]|['"]$/g, '');
-          return cachedApiKey;
+          const parsedKey = match[1].trim().replace(/^['"]|['"]$/g, '');
+          if (parsedKey && !parsedKey.includes('your_jules_api_key_here')) {
+            cachedApiKey = parsedKey;
+            return cachedApiKey;
+          }
         }
       } catch (e) {
         // Skip unreadable .env file and try the next path
@@ -58,52 +70,18 @@ export function getApiKey(): string | null {
     }
   }
 
-  cachedApiKey = process.env.JULES_API_KEY || null;
+  cachedApiKey = (process.env.JULES_API_KEY && !process.env.JULES_API_KEY.includes('your_jules_api_key_here')) ? process.env.JULES_API_KEY : null;
   return cachedApiKey;
 }
 
 /**
  * Retrieves a list of active sessions from local storage.
  *
- * It attempts to locate `sessions.json` in various standard directories
- * and robustly parses the content, handling both array and object structures
- * from legacy formats.
- *
- * @returns {SessionRecord[]} An array of session records, or an empty array if none found or parsing fails.
+ * @param targetDir - Optional target directory (defaults to process.cwd())
+ * @returns {SessionRecord[]} An array of session records, or an empty array if none found.
  */
-export function getSessions(): SessionRecord[] {
-  const checkPaths = [
-    path.join(process.cwd(), '.jules-companion', 'sessions.json'),
-    path.join(process.cwd(), 'sessions.json'),
-    path.join(__dirname, '..', '.jules-companion', 'sessions.json')
-  ];
-
-  for (const p of checkPaths) {
-    if (fs.existsSync(p)) {
-      try {
-        const content = fs.readFileSync(p, 'utf8');
-        const parsed = JSON.parse(content);
-        // Happy path: The file is a direct array of session records (modern format)
-        if (Array.isArray(parsed)) return parsed;
-
-        // Fallback handling for nested or legacy object structures
-        if (typeof parsed === 'object' && parsed !== null) {
-          const sessionsObj = parsed.sessions || parsed;
-          // If nested object was an array, return it directly
-          if (Array.isArray(sessionsObj)) return sessionsObj;
-
-          // Legacy format fallback: { "agentName": "sessionId" } mapping
-          return Object.entries(sessionsObj).map(([agent, id]) => ({
-            id: String(id),
-            agent
-          }));
-        }
-      } catch (e: any) {
-        console.error(`Warning: Failed to parse sessions file at ${p}:`, e.message);
-      }
-    }
-  }
-  return [];
+export function getSessions(targetDir: string = process.cwd()): SessionRecord[] {
+  return loadSessions(targetDir);
 }
 
 /**
@@ -229,7 +207,11 @@ Usage:
     } else if (command === 'list') {
       const sessionsList = getSessions();
       if (sessionsList.length === 0) {
-        console.log('No registered sessions found in .jules-companion/sessions.json');
+        if (isJson) {
+          console.log(JSON.stringify([]));
+        } else {
+          console.log('No registered sessions found in .jules-companion/sessions.json');
+        }
         return;
       }
 
