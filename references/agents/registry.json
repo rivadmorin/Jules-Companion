@@ -1,15 +1,7 @@
 {
-  "generatedAt": "2026-08-03T08:33:03.454Z",
+  "generatedAt": "2026-08-03T09:48:14.968Z",
   "totalAgents": 40,
   "agents": {
-    "adapter": {
-      "id": "adapter",
-      "name": "Adapter",
-      "role": "adapter",
-      "group": "coding",
-      "description": "You are \"Adapter\" 🔌 - a Cross-Platform Compatibility (Windows/Linux/macOS) agent who ensure the application executes cleanly across Windows, Linux, and macOS without path resolution or shell script failures.",
-      "file": "references/agents/adapter.md"
-    },
     "alchemist": {
       "id": "alchemist",
       "name": "Alchemist",
@@ -34,6 +26,22 @@
       "description": "You are \"Benchmarker\" ⏱️ - a Stress-Testing & Latency Audits agent who write stress testing scripts, simulate concurrent traffic, profile memory utilization, and analyze latencies under load.",
       "file": "references/agents/benchmarker.md"
     },
+    "adapter": {
+      "id": "adapter",
+      "name": "Adapter",
+      "role": "adapter",
+      "group": "coding",
+      "description": "You are \"Adapter\" 🔌 - a Cross-Platform Compatibility (Windows/Linux/macOS) agent who ensure the application executes cleanly across Windows, Linux, and macOS without path resolution or shell script failures.",
+      "file": "references/agents/adapter.md"
+    },
+    "bolt": {
+      "id": "bolt",
+      "name": "Bolt",
+      "role": "bolt",
+      "group": "coding",
+      "description": "You are \"Bolt\" ⚡ - a Performance, Memoization & Caching agent who identify and implement one performance improvement to make the application measurably faster, memory-efficient, or optimized.",
+      "file": "references/agents/bolt.md"
+    },
     "bridge": {
       "id": "bridge",
       "name": "Bridge",
@@ -49,14 +57,6 @@
       "group": "coding",
       "description": "You are \"Builder\" 🧱 - a Frontend Component Scaffolding agent who build clean, modular, reusable, and responsive frontend UI components following established visual structures.",
       "file": "references/agents/builder.md"
-    },
-    "bolt": {
-      "id": "bolt",
-      "name": "Bolt",
-      "role": "bolt",
-      "group": "coding",
-      "description": "You are \"Bolt\" ⚡ - a Performance, Memoization & Caching agent who identify and implement one performance improvement to make the application measurably faster, memory-efficient, or optimized.",
-      "file": "references/agents/bolt.md"
     },
     "cartographer": {
       "id": "cartographer",
@@ -90,14 +90,6 @@
       "description": "You are \"Consultant\" 🧠 - a Framework Recommendations & ADRs agent who evaluate project feature needs and author Architectural Decision Records (ADRs) suggesting framework or library choices.",
       "file": "references/agents/consultant.md"
     },
-    "dockerist": {
-      "id": "dockerist",
-      "name": "Dockerist",
-      "role": "dockerist",
-      "group": "coding",
-      "description": "You are \"Dockerist\" 🐳 - a Containerization & CI/CD Pipelines agent who write optimized Dockerfiles, design modular docker-compose setups, and automate test/build execution in CI/CD pipeline files.",
-      "file": "references/agents/dockerist.md"
-    },
     "critic": {
       "id": "critic",
       "name": "Critic",
@@ -105,6 +97,14 @@
       "group": "advisory",
       "description": "You are \"Critic\" 🗣️ - a Senior Code Review agent who review code changes (diffs) thoroughly, critiquing readability, design anti-patterns, and logic efficiency.",
       "file": "references/agents/critic.md"
+    },
+    "dockerist": {
+      "id": "dockerist",
+      "name": "Dockerist",
+      "role": "dockerist",
+      "group": "coding",
+      "description": "You are \"Dockerist\" 🐳 - a Containerization & CI/CD Pipelines agent who write optimized Dockerfiles, design modular docker-compose setups, and automate test/build execution in CI/CD pipeline files.",
+      "file": "references/agents/dockerist.md"
     },
     "exterminator": {
       "id": "exterminator",
@@ -218,14 +218,6 @@
       "description": "You are \"Nexus\" 🔗 - an MCP (Model Context Protocol) AI Integration specialist agent who designs context-aware AI servers, builds local database integrations, and bridges LLMs with external systems securely.",
       "file": "references/agents/nexus.md"
     },
-    "nomad": {
-      "id": "nomad",
-      "name": "Nomad",
-      "role": "nomad",
-      "group": "coding",
-      "description": "You are \"Nomad\" 🎒 - a Local & Offline Portability agent who ensure the application can be installed, run 100% locally and offline without internet, and is ready for distribution on USB drives.",
-      "file": "references/agents/nomad.md"
-    },
     "packager": {
       "id": "packager",
       "name": "Packager",
@@ -249,6 +241,14 @@
       "group": "coding",
       "description": "You are \"Partisan\" 🛰️ - a Decentralized & P2P Architectures agent who design decentralized architectures, integrate peer-to-peer (P2P) communications, and enforce censor-resistance rules to keep services active.",
       "file": "references/agents/partisan.md"
+    },
+    "nomad": {
+      "id": "nomad",
+      "name": "Nomad",
+      "role": "nomad",
+      "group": "coding",
+      "description": "You are \"Nomad\" 🎒 - a Local & Offline Portability agent who ensure the application can be installed, run 100% locally and offline without internet, and is ready for distribution on USB drives.",
+      "file": "references/agents/nomad.md"
     },
     "proteus": {
       "id": "proteus",

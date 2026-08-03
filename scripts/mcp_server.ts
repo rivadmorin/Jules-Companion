@@ -1,3 +1,4 @@
+import { z } from 'zod';
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import {
@@ -183,10 +184,37 @@ async function captureOutput(fn: () => Promise<any> | any): Promise<string> {
 }
 
 
+
+const DeploySessionSchema = z.object({
+  type: z.enum(['interactive', 'review', 'start']),
+  agents: z.string(),
+  task: z.string(),
+  mode: z.enum(['code', 'review']).optional(),
+  branch: z.string().optional()
+});
+
+const MergeSessionSchema = z.object({
+  sessionId: z.string().optional(),
+  inspect: z.boolean().optional(),
+  approve: z.boolean().optional(),
+  inspectAll: z.boolean().optional()
+});
+
+const GetSessionStatusSchema = z.object({
+  sessionId: z.string()
+});
+
 server.setRequestHandler(CallToolRequestSchema, async (req) => {
   switch (req.params.name) {
     case 'deploy_session': {
-      const { type, agents, task, mode, branch } = req.params.arguments as any;
+      const parsed = DeploySessionSchema.safeParse(req.params.arguments);
+      if (!parsed.success) {
+        return {
+          content: [{ type: 'text', text: `Validation Error: ${parsed.error.message}` }],
+          isError: true,
+        };
+      }
+      const { type, agents, task, mode, branch } = parsed.data;
 
       // Override process.argv for the CLI script
       const args = [
@@ -217,7 +245,14 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
       }
     }
     case 'merge_session': {
-        const { sessionId, inspect, approve, inspectAll } = req.params.arguments as any;
+        const parsed = MergeSessionSchema.safeParse(req.params.arguments);
+        if (!parsed.success) {
+          return {
+            content: [{ type: 'text', text: `Validation Error: ${parsed.error.message}` }],
+            isError: true,
+          };
+        }
+        const { sessionId, inspect, approve, inspectAll } = parsed.data;
 
         const args = ['node', 'dist/merge_session.js'];
         if (sessionId) args.push('--id', sessionId);
@@ -256,7 +291,14 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
         }
     }
     case 'get_session_status': {
-        const { sessionId } = req.params.arguments as any;
+        const parsed = GetSessionStatusSchema.safeParse(req.params.arguments);
+        if (!parsed.success) {
+          return {
+            content: [{ type: 'text', text: `Validation Error: ${parsed.error.message}` }],
+            isError: true,
+          };
+        }
+        const { sessionId } = parsed.data;
         const apiKey = getApiKey();
         if (!apiKey) {
             return {
@@ -278,6 +320,7 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
             };
         }
     }
+
     default:
       throw new McpError(
         ErrorCode.MethodNotFound,
