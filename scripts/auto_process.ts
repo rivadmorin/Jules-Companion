@@ -61,6 +61,16 @@ async function processSingleSession(
   }
 }
 
+/**
+ * Main orchestrator for the Auto-Process Engine.
+ *
+ * This CLI entry point parses user arguments to determine the scope of operations
+ * (processing all active sessions or just a specific session by ID). It handles API key
+ * validation, reads the local sessions registry, and executes single-session processing
+ * concurrently to clear any blocking states in the cloud.
+ *
+ * @returns {Promise<void>}
+ */
 export async function autoProcess() {
   const params = parseArgs(process.argv.slice(2));
   const isAll = Boolean(params.all);
@@ -101,6 +111,9 @@ Options:
   if (isAll) {
     targets = sessions;
   } else if (targetId) {
+    // Search for the requested session in our local tracking file.
+    // If not found, we create a dummy 'mock' session record just to force an API call,
+    // allowing users to process a session ID they created from another machine or environment.
     const found = sessions.find(s => s.id === targetId);
     if (found) {
       targets = [found];

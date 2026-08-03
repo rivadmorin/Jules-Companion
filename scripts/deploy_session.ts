@@ -52,6 +52,13 @@ function validateAgents(agentsStr: string, registryPath: string): string[] {
  * Orchestrates the deployment of a new Jules session by preparing the environment,
  * matching local Git state with Jules cloud sources, formatting the appropriate agent prompt,
  * and executing the API request.
+ *
+ * This function operates entirely based on parsed CLI arguments (via process.argv).
+ * It handles validation of agent names, verification of Git remote origins,
+ * and concurrent API dispatching if multiple agents are requested.
+ *
+ * @returns {Promise<void>}
+ * @throws Will exit the process (process.exit(1)) if critical validation fails (e.g., missing API key, missing git remote).
  */
 export async function deploySession() {
   const params = parseArgs(process.argv.slice(2));
@@ -123,6 +130,8 @@ Options:
 
     let matchedSource: JulesSource | null = null;
     // Search for a Jules Cloud source that includes the local Git repository's slug (owner/repo).
+    // This mapping is crucial because Jules API expects a predefined cloud source ID (e.g., github.com/user/repo)
+    // rather than just arbitrary local paths, ensuring the cloud agent has access to the correct remote codebase.
     const searchStr = gitRepo.toLowerCase();
     matchedSource = sources.find(s => s.name.toLowerCase().includes(searchStr)) || null;
 
@@ -149,6 +158,9 @@ Options:
     const today = new Date().toISOString().split('T')[0];
     const taskSlug = params.task ? String(params.task).slice(0, 30).toLowerCase().replace(/[^a-z0-9]+/g, '-') : 'task';
 
+    // We use Promise.all to concurrently deploy multiple specialized agents for the same task.
+    // This dramatically speeds up orchestration compared to sequential deployments,
+    // especially when spinning up teams (e.g., --agents=bolt,sentinel,annotator).
     const deployPromises = agentList.map(async (agent) => {
       let outputBuffer = `\nPreparing deployment for agent: ${agent} (Mode: ${mode.toUpperCase()})...\n`;
 

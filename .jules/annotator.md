@@ -1,4 +1,4 @@
-## 2024-05-24 - Language Consistency in Documentation
-**Discovery:** The main project documentation (README, /docs) is in Indonesian, but existing inline code comments and block documentation (JSDoc) are written in English.
-**Analysis:** Maintaining a consistent language for internal code documentation is crucial for developer experience and future maintainability. Mixing languages in code comments can cause confusion.
-**Action:** Always write new JSDoc, PyDoc, and inline comments in English, regardless of the language used in the user-facing documentation files. Ensure all Python eval scripts receive proper PyDoc block comments, as they are currently lacking them.
+## 2026-08-03 - [Language Consistency]
+**Discovery:** While some project documentation (like READMEs) is in Indonesian, inline code comments and JSDocs are expected to remain in English.
+**Analysis:** Maintaining a single language for code-level documentation ensures consistency for international developers while keeping end-user docs localized.
+**Action:** Always write JSDoc and inline comments in English for this codebase unless explicitly requested otherwise by the user.

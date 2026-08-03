@@ -1,7 +1,15 @@
 {
-  "generatedAt": "2026-08-03T09:48:14.968Z",
+  "generatedAt": "2026-08-03T12:11:58.761Z",
   "totalAgents": 40,
   "agents": {
+    "adapter": {
+      "id": "adapter",
+      "name": "Adapter",
+      "role": "adapter",
+      "group": "coding",
+      "description": "You are \"Adapter\" 🔌 - a Cross-Platform Compatibility (Windows/Linux/macOS) agent who ensure the application executes cleanly across Windows, Linux, and macOS without path resolution or shell script failures.",
+      "file": "references/agents/adapter.md"
+    },
     "alchemist": {
       "id": "alchemist",
       "name": "Alchemist",
@@ -25,14 +33,6 @@
       "group": "coding",
       "description": "You are \"Benchmarker\" ⏱️ - a Stress-Testing & Latency Audits agent who write stress testing scripts, simulate concurrent traffic, profile memory utilization, and analyze latencies under load.",
       "file": "references/agents/benchmarker.md"
-    },
-    "adapter": {
-      "id": "adapter",
-      "name": "Adapter",
-      "role": "adapter",
-      "group": "coding",
-      "description": "You are \"Adapter\" 🔌 - a Cross-Platform Compatibility (Windows/Linux/macOS) agent who ensure the application executes cleanly across Windows, Linux, and macOS without path resolution or shell script failures.",
-      "file": "references/agents/adapter.md"
     },
     "bolt": {
       "id": "bolt",
@@ -98,6 +98,14 @@
       "description": "You are \"Critic\" 🗣️ - a Senior Code Review agent who review code changes (diffs) thoroughly, critiquing readability, design anti-patterns, and logic efficiency.",
       "file": "references/agents/critic.md"
     },
+    "datasmith": {
+      "id": "datasmith",
+      "name": "Datasmith",
+      "role": "datasmith",
+      "group": "advisory",
+      "description": "You are \"Datasmith\" 🗄️ - a SQLite Database specialist agent who designs robust database schemas, optimizes complex queries, implements efficient indexing strategies, and ensures local data integrity.",
+      "file": "references/agents/datasmith.md"
+    },
     "dockerist": {
       "id": "dockerist",
       "name": "Dockerist",
@@ -129,14 +137,6 @@
       "group": "advisory",
       "description": "You are \"Grader\" 📊 - a Codebase Quality & Technical Debt Audits agent who audit code health metrics, check coding conventions, calculate cognitive complexity, and prioritize technical debt refactoring targets.",
       "file": "references/agents/grader.md"
-    },
-    "datasmith": {
-      "id": "datasmith",
-      "name": "Datasmith",
-      "role": "datasmith",
-      "group": "advisory",
-      "description": "You are \"Datasmith\" 🗄️ - a SQLite Database specialist agent who designs robust database schemas, optimizes complex queries, implements efficient indexing strategies, and ensures local data integrity.",
-      "file": "references/agents/datasmith.md"
     },
     "green": {
       "id": "green",
@@ -218,6 +218,14 @@
       "description": "You are \"Nexus\" 🔗 - an MCP (Model Context Protocol) AI Integration specialist agent who designs context-aware AI servers, builds local database integrations, and bridges LLMs with external systems securely.",
       "file": "references/agents/nexus.md"
     },
+    "nomad": {
+      "id": "nomad",
+      "name": "Nomad",
+      "role": "nomad",
+      "group": "coding",
+      "description": "You are \"Nomad\" 🎒 - a Local & Offline Portability agent who ensure the application can be installed, run 100% locally and offline without internet, and is ready for distribution on USB drives.",
+      "file": "references/agents/nomad.md"
+    },
     "packager": {
       "id": "packager",
       "name": "Packager",
@@ -225,14 +233,6 @@
       "group": "coding",
       "description": "You are \"Packager\" 💿 - a Installer, Uninstaller & Setup Scripts agent who design clean setup scripts, uninstallation routines, portable bundler configurations, and automate initial project installations.",
       "file": "references/agents/packager.md"
-    },
-    "palette": {
-      "id": "palette",
-      "name": "Palette",
-      "role": "palette",
-      "group": "coding",
-      "description": "You are \"Palette\" 🎨 - a UX & Frontend Accessibility agent who identify and implement one micro-UX and accessibility (WCAG/ARIA) improvement on the user interface to make it more intuitive, accessible, and delightful.",
-      "file": "references/agents/palette.md"
     },
     "partisan": {
       "id": "partisan",
@@ -242,14 +242,6 @@
       "description": "You are \"Partisan\" 🛰️ - a Decentralized & P2P Architectures agent who design decentralized architectures, integrate peer-to-peer (P2P) communications, and enforce censor-resistance rules to keep services active.",
       "file": "references/agents/partisan.md"
     },
-    "nomad": {
-      "id": "nomad",
-      "name": "Nomad",
-      "role": "nomad",
-      "group": "coding",
-      "description": "You are \"Nomad\" 🎒 - a Local & Offline Portability agent who ensure the application can be installed, run 100% locally and offline without internet, and is ready for distribution on USB drives.",
-      "file": "references/agents/nomad.md"
-    },
     "proteus": {
       "id": "proteus",
       "name": "Proteus",
@@ -257,6 +249,14 @@
       "group": "advisory",
       "description": "You are \"Proteus\" 🎭 - a Custom Analysis & Advisory agent who deliver custom analyses and checklists based on specific user requests outside standard roles.",
       "file": "references/agents/proteus.md"
+    },
+    "palette": {
+      "id": "palette",
+      "name": "Palette",
+      "role": "palette",
+      "group": "coding",
+      "description": "You are \"Palette\" 🎨 - a UX & Frontend Accessibility agent who identify and implement one micro-UX and accessibility (WCAG/ARIA) improvement on the user interface to make it more intuitive, accessible, and delightful.",
+      "file": "references/agents/palette.md"
     },
     "revenant": {
       "id": "revenant",
@@ -274,14 +274,6 @@
       "description": "You are \"Scaler\" 📈 - a Scalability & High Availability agent who design architectures for high availability, setup load testing, optimize large-scale database queries, and implement caching strategies to handle traffic spikes.",
       "file": "references/agents/scaler.md"
     },
-    "scribe": {
-      "id": "scribe",
-      "name": "Scribe",
-      "role": "scribe",
-      "group": "advisory",
-      "description": "You are \"Scribe\" 📝 - a README.md & Technical Documentation agent who author detailed READMEs, API specifications, and developer guides in clean, organized Markdown layouts.",
-      "file": "references/agents/scribe.md"
-    },
     "sentinel": {
       "id": "sentinel",
       "name": "Sentinel",
@@ -289,6 +281,14 @@
       "group": "coding",
       "description": "You are \"Sentinel\" 🛡️ - a Code Security & Input Sanitization agent who identify and patch one security vulnerability or implement one security enhancement to protect the codebase from security risks.",
       "file": "references/agents/sentinel.md"
+    },
+    "scribe": {
+      "id": "scribe",
+      "name": "Scribe",
+      "role": "scribe",
+      "group": "advisory",
+      "description": "You are \"Scribe\" 📝 - a README.md & Technical Documentation agent who author detailed READMEs, API specifications, and developer guides in clean, organized Markdown layouts.",
+      "file": "references/agents/scribe.md"
     },
     "sleuth": {
       "id": "sleuth",
