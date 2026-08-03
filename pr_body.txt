@@ -1,8 +1,0 @@
-This PR addresses missing documentation in the `evals` directory to ensure long-term codebase sustainability, in alignment with the `Annotator` 🏷️ role.
-
-**Changes:**
-- Added standard Google-style PyDoc structures (including `Args`, `Returns`, and `Raises` sections) to `evals/run_tests.py`, `evals/grade.py`, and `evals/generate_review.py`.
-- Added precise inline comments to explain complex or non-obvious logic, such as the static mocking logic in `run_tests.py`, zero-division safeguards in `grade.py`, and the reasoning behind hardcoded absolute paths in `generate_review.py`.
-- Maintained strict adherence to project documentation guidelines by writing internal code comments in English, as specified in `.jules/annotator.md`.
-
-These enhancements do not modify any functional logic and ensure tests pass seamlessly.

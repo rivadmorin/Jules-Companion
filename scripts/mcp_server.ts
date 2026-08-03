@@ -4,12 +4,16 @@ import {
   CallToolRequestSchema,
   ErrorCode,
   ListToolsRequestSchema,
+  ListResourcesRequestSchema,
+  ReadResourceRequestSchema,
   McpError,
 } from '@modelcontextprotocol/sdk/types.js';
 
 import { deploySession } from './deploy_session.js';
 import { mergeSession } from './merge_session.js';
 import { runSetup } from './setup.js';
+import { loadSessions } from './utils.js';
+import { request, getApiKey } from './jules_client.js';
 
 const server = new Server(
   {
@@ -19,9 +23,40 @@ const server = new Server(
   {
     capabilities: {
       tools: {},
+      resources: {},
     },
   }
 );
+
+
+server.setRequestHandler(ListResourcesRequestSchema, async () => {
+  return {
+    resources: [
+      {
+        uri: 'jules://sessions',
+        name: 'Active Jules Sessions',
+        description: 'A list of active and historical Jules AI sessions from the local state file.',
+        mimeType: 'application/json'
+      }
+    ]
+  };
+});
+
+server.setRequestHandler(ReadResourceRequestSchema, async (req) => {
+  if (req.params.uri === 'jules://sessions') {
+    const sessions = loadSessions();
+    return {
+      contents: [
+        {
+          uri: req.params.uri,
+          mimeType: 'application/json',
+          text: JSON.stringify(sessions, null, 2)
+        }
+      ]
+    };
+  }
+  throw new McpError(ErrorCode.InvalidRequest, `Resource not found: ${req.params.uri}`);
+});
 
 // Define the available tools exposed by the MCP server to external clients.
 server.setRequestHandler(ListToolsRequestSchema, async () => {
@@ -91,6 +126,20 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
            type: 'object',
            properties: {}
          }
+      },
+      {
+         name: 'get_session_status',
+         description: 'Retrieves the current status of a specific Jules session from the API.',
+         inputSchema: {
+           type: 'object',
+           properties: {
+             sessionId: {
+               type: 'string',
+               description: 'The ID of the session to check status for.'
+             }
+           },
+           required: ['sessionId']
+         }
       }
     ],
   };
@@ -134,10 +183,10 @@ async function captureOutput(fn: () => Promise<any> | any): Promise<string> {
 }
 
 
-server.setRequestHandler(CallToolRequestSchema, async (request) => {
-  switch (request.params.name) {
+server.setRequestHandler(CallToolRequestSchema, async (req) => {
+  switch (req.params.name) {
     case 'deploy_session': {
-      const { type, agents, task, mode, branch } = request.params.arguments as any;
+      const { type, agents, task, mode, branch } = req.params.arguments as any;
 
       // Override process.argv for the CLI script
       const args = [
@@ -168,7 +217,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
     }
     case 'merge_session': {
-        const { sessionId, inspect, approve, inspectAll } = request.params.arguments as any;
+        const { sessionId, inspect, approve, inspectAll } = req.params.arguments as any;
 
         const args = ['node', 'dist/merge_session.js'];
         if (sessionId) args.push('--id', sessionId);
@@ -206,10 +255,33 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             }
         }
     }
+    case 'get_session_status': {
+        const { sessionId } = req.params.arguments as any;
+        const apiKey = getApiKey();
+        if (!apiKey) {
+            return {
+              content: [{ type: 'text', text: 'Error: JULES_API_KEY not found in environment or .env file.' }],
+              isError: true,
+            };
+        }
+        try {
+            const data = await request(`https://jules.googleapis.com/v1alpha/sessions/${sessionId}`, {
+                headers: { 'X-Goog-Api-Key': apiKey }
+            });
+            return {
+              content: [{ type: 'text', text: JSON.stringify(data, null, 2) }],
+            };
+        } catch (error: any) {
+            return {
+              content: [{ type: 'text', text: `Error fetching session status: ${error.message}` }],
+              isError: true,
+            };
+        }
+    }
     default:
       throw new McpError(
         ErrorCode.MethodNotFound,
-        `Unknown tool: ${request.params.name}`
+        `Unknown tool: ${req.params.name}`
       );
   }
 });

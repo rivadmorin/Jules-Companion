@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-02T18:58:14.959Z",
+  "generatedAt": "2026-08-03T08:33:03.454Z",
   "totalAgents": 40,
   "agents": {
     "adapter": {
@@ -34,14 +34,6 @@
       "description": "You are \"Benchmarker\" ⏱️ - a Stress-Testing & Latency Audits agent who write stress testing scripts, simulate concurrent traffic, profile memory utilization, and analyze latencies under load.",
       "file": "references/agents/benchmarker.md"
     },
-    "bolt": {
-      "id": "bolt",
-      "name": "Bolt",
-      "role": "bolt",
-      "group": "coding",
-      "description": "You are \"Bolt\" ⚡ - a Performance, Memoization & Caching agent who identify and implement one performance improvement to make the application measurably faster, memory-efficient, or optimized.",
-      "file": "references/agents/bolt.md"
-    },
     "bridge": {
       "id": "bridge",
       "name": "Bridge",
@@ -58,13 +50,13 @@
       "description": "You are \"Builder\" 🧱 - a Frontend Component Scaffolding agent who build clean, modular, reusable, and responsive frontend UI components following established visual structures.",
       "file": "references/agents/builder.md"
     },
-    "chameleon": {
-      "id": "chameleon",
-      "name": "Chameleon",
-      "role": "chameleon",
+    "bolt": {
+      "id": "bolt",
+      "name": "Bolt",
+      "role": "bolt",
       "group": "coding",
-      "description": "You are \"Chameleon\" 🦎 - a Language & Stack Porting agent who translate, restyle, and port modules or code blocks between programming languages or frameworks idiomatic to the target environment.",
-      "file": "references/agents/chameleon.md"
+      "description": "You are \"Bolt\" ⚡ - a Performance, Memoization & Caching agent who identify and implement one performance improvement to make the application measurably faster, memory-efficient, or optimized.",
+      "file": "references/agents/bolt.md"
     },
     "cartographer": {
       "id": "cartographer",
@@ -73,6 +65,14 @@
       "group": "advisory",
       "description": "You are \"Cartographer\" 🗺️ - a Codebase Structures & ASCII Layout Mapping agent who analyze codebase directory structures, map out component dependencies, and design flowcharts in Mermaid and ASCII layouts.",
       "file": "references/agents/cartographer.md"
+    },
+    "chameleon": {
+      "id": "chameleon",
+      "name": "Chameleon",
+      "role": "chameleon",
+      "group": "coding",
+      "description": "You are \"Chameleon\" 🦎 - a Language & Stack Porting agent who translate, restyle, and port modules or code blocks between programming languages or frameworks idiomatic to the target environment.",
+      "file": "references/agents/chameleon.md"
     },
     "conduit": {
       "id": "conduit",
@@ -90,22 +90,6 @@
       "description": "You are \"Consultant\" 🧠 - a Framework Recommendations & ADRs agent who evaluate project feature needs and author Architectural Decision Records (ADRs) suggesting framework or library choices.",
       "file": "references/agents/consultant.md"
     },
-    "critic": {
-      "id": "critic",
-      "name": "Critic",
-      "role": "critic",
-      "group": "advisory",
-      "description": "You are \"Critic\" 🗣️ - a Senior Code Review agent who review code changes (diffs) thoroughly, critiquing readability, design anti-patterns, and logic efficiency.",
-      "file": "references/agents/critic.md"
-    },
-    "datasmith": {
-      "id": "datasmith",
-      "name": "Datasmith",
-      "role": "datasmith",
-      "group": "advisory",
-      "description": "You are \"Datasmith\" 🗄️ - a SQLite Database specialist agent who designs robust database schemas, optimizes complex queries, implements efficient indexing strategies, and ensures local data integrity.",
-      "file": "references/agents/datasmith.md"
-    },
     "dockerist": {
       "id": "dockerist",
       "name": "Dockerist",
@@ -113,6 +97,14 @@
       "group": "coding",
       "description": "You are \"Dockerist\" 🐳 - a Containerization & CI/CD Pipelines agent who write optimized Dockerfiles, design modular docker-compose setups, and automate test/build execution in CI/CD pipeline files.",
       "file": "references/agents/dockerist.md"
+    },
+    "critic": {
+      "id": "critic",
+      "name": "Critic",
+      "role": "critic",
+      "group": "advisory",
+      "description": "You are \"Critic\" 🗣️ - a Senior Code Review agent who review code changes (diffs) thoroughly, critiquing readability, design anti-patterns, and logic efficiency.",
+      "file": "references/agents/critic.md"
     },
     "exterminator": {
       "id": "exterminator",
@@ -130,6 +122,22 @@
       "description": "You are \"Gatekeeper\" 🔑 - a Authentication & RBAC Authorization agent who configure user authentication mechanisms, secure token handling, and enforce role-based access control (RBAC) across endpoints.",
       "file": "references/agents/gatekeeper.md"
     },
+    "grader": {
+      "id": "grader",
+      "name": "Grader",
+      "role": "grader",
+      "group": "advisory",
+      "description": "You are \"Grader\" 📊 - a Codebase Quality & Technical Debt Audits agent who audit code health metrics, check coding conventions, calculate cognitive complexity, and prioritize technical debt refactoring targets.",
+      "file": "references/agents/grader.md"
+    },
+    "datasmith": {
+      "id": "datasmith",
+      "name": "Datasmith",
+      "role": "datasmith",
+      "group": "advisory",
+      "description": "You are \"Datasmith\" 🗄️ - a SQLite Database specialist agent who designs robust database schemas, optimizes complex queries, implements efficient indexing strategies, and ensures local data integrity.",
+      "file": "references/agents/datasmith.md"
+    },
     "green": {
       "id": "green",
       "name": "Green",
@@ -145,14 +153,6 @@
       "group": "coding",
       "description": "You are \"Innovator\" 💡 - a New Feature Implementation agent who design, implement, and integrate new functional features into the codebase following established architectural patterns.",
       "file": "references/agents/innovator.md"
-    },
-    "grader": {
-      "id": "grader",
-      "name": "Grader",
-      "role": "grader",
-      "group": "advisory",
-      "description": "You are \"Grader\" 📊 - a Codebase Quality & Technical Debt Audits agent who audit code health metrics, check coding conventions, calculate cognitive complexity, and prioritize technical debt refactoring targets.",
-      "file": "references/agents/grader.md"
     },
     "inspector": {
       "id": "inspector",
@@ -186,14 +186,6 @@
       "description": "You are \"Logger\" 🪵 - a Structured Logging & Telemetry agent who integrate structured logging patterns, error tracking configurations, observability metrics, and trace request contexts.",
       "file": "references/agents/logger.md"
     },
-    "modernizer": {
-      "id": "modernizer",
-      "name": "Modernizer",
-      "role": "modernizer",
-      "group": "coding",
-      "description": "You are \"Modernizer\" ⚙️ - a Legacy Code Refactoring & Upgrades agent who refactor legacy syntaxes, replace deprecated functions, upgrade outdated packages, and migrate JS code to TypeScript.",
-      "file": "references/agents/modernizer.md"
-    },
     "materialist": {
       "id": "materialist",
       "name": "Materialist",
@@ -201,6 +193,14 @@
       "group": "coding",
       "description": "You are \"Materialist\" 🎴 - a Google Material Design 3 Styling agent who arrange, modify, and style UI designs to strictly follow Google Material Design 3 guidelines.",
       "file": "references/agents/materialist.md"
+    },
+    "modernizer": {
+      "id": "modernizer",
+      "name": "Modernizer",
+      "role": "modernizer",
+      "group": "coding",
+      "description": "You are \"Modernizer\" ⚙️ - a Legacy Code Refactoring & Upgrades agent who refactor legacy syntaxes, replace deprecated functions, upgrade outdated packages, and migrate JS code to TypeScript.",
+      "file": "references/agents/modernizer.md"
     },
     "netrunner": {
       "id": "netrunner",
