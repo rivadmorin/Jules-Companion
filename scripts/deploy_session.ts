@@ -1,7 +1,8 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { request, getApiKey, JulesSource } from './jules_client';
-import { parseArgs, getProjectDirs, loadSessions, saveSessions, runGit, SessionRecord } from './utils';
+import { parseArgs, getProjectDirs, loadSessions, saveSessions, runGit, SessionRecord, getFormattedDateDDMMYYYY } from './utils';
+
 
 /**
  * Retrieves the name of the currently active Git branch.
@@ -177,12 +178,21 @@ Options:
         }
       }
 
+      const currentDateDDMMYYYY = getFormattedDateDDMMYYYY();
+      const dateAndJournalDirective = `⚠️ DATE & JOURNAL STRICT DIRECTIVES:
+1. CURRENT SESSION DATE: ${currentDateDDMMYYYY} (Format: DD-MM-YYYY).
+2. Target Journal File: .jules/${agent}.md
+3. Format entry header strictly as: ## ${currentDateDDMMYYYY} - [Title]
+4. ALWAYS APPEND new entries to the end of .jules/${agent}.md. NEVER overwrite, clear, or delete existing entries.
+5. NEVER invent or hallucinate past dates. Use strictly '${currentDateDDMMYYYY}'.`;
+
       const reviewFileName = `docs/jules-reviews/${today}-${agent}-${taskSlug}.md`;
       const modeDirective = mode === 'review'
         ? `⚠️ MODE STRICT DIRECTIVE: REVIEW-ONLY MODE\nYou are operating in REVIEW-ONLY mode.\n1. DO NOT modify, edit, or delete any application code files (.ts, .js, .py, .go, .rs, .json, etc.).\n2. Write ALL your findings, analysis, code snippets, and refactoring recommendations exclusively into a single Markdown file located at:\n   \`${reviewFileName}\`\n3. Provide clear line numbers, problem descriptions, and proposed code fixes inside the Markdown document so the main agent can review them.`
         : `⚠️ MODE DIRECTIVE: CODE IMPLEMENTATION MODE\nYou are operating in CODE mode. Perform direct code implementation and modifications as required.`;
 
-      const combinedPrompt = `# AGENT SYSTEM & ROLE DIRECTIVES\n${templateContent}\n\n---\n# USER TASK & SPECIFIC REQUIREMENTS\n${params.task}\n\n---\n# EXECUTION MODE DIRECTIVE\n${modeDirective}`;
+      const combinedPrompt = `# AGENT SYSTEM & ROLE DIRECTIVES\n${templateContent}\n\n---\n# DATE & JOURNAL DIRECTIVES\n${dateAndJournalDirective}\n\n---\n# USER TASK & SPECIFIC REQUIREMENTS\n${params.task}\n\n---\n# EXECUTION MODE DIRECTIVE\n${modeDirective}`;
+
 
       const payload = {
         prompt: combinedPrompt,
