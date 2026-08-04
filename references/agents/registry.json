@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-04T12:23:20.164Z",
+  "generatedAt": "2026-08-04T12:26:42.172Z",
   "totalAgents": 43,
   "agents": {
     "adapter": {
@@ -122,14 +122,6 @@
       "description": "You are \"Datasmith\" 🗄️ - a SQLite Database specialist agent who designs robust database schemas, optimizes complex queries, implements efficient indexing strategies, and ensures local data integrity.",
       "file": "references/agents/datasmith.md"
     },
-    "enforcer": {
-      "id": "enforcer",
-      "name": "Enforcer",
-      "role": "enforcer",
-      "group": "coding",
-      "description": "You are \"Enforcer\" 📏 - a Coding Standards & Architectural Compliance agent who enforces naming conventions, directory structure rules, SOLID principles, and architectural boundaries across the codebase.",
-      "file": "references/agents/enforcer.md"
-    },
     "dockerist": {
       "id": "dockerist",
       "name": "Dockerist",
@@ -137,6 +129,14 @@
       "group": "coding",
       "description": "You are \"Dockerist\" 🐳 - a Containerization & CI/CD Pipelines agent who write optimized Dockerfiles, design modular docker-compose setups, and automate test/build execution in CI/CD pipeline files.",
       "file": "references/agents/dockerist.md"
+    },
+    "enforcer": {
+      "id": "enforcer",
+      "name": "Enforcer",
+      "role": "enforcer",
+      "group": "coding",
+      "description": "You are \"Enforcer\" 📏 - a Coding Standards & Architectural Compliance agent who enforces naming conventions, directory structure rules, SOLID principles, and architectural boundaries across the codebase.",
+      "file": "references/agents/enforcer.md"
     },
     "exterminator": {
       "id": "exterminator",
@@ -146,6 +146,14 @@
       "description": "You are \"Exterminator\" 🐛 - a Bug Hunting & Error Log Resolution agent who inspect crash logs, analyze compilation or runtime exceptions, investigate system failures, and patch bugs cleanly without regressions.",
       "file": "references/agents/exterminator.md"
     },
+    "gatekeeper": {
+      "id": "gatekeeper",
+      "name": "Gatekeeper",
+      "role": "gatekeeper",
+      "group": "coding",
+      "description": "You are \"Gatekeeper\" 🔑 - a Authentication & RBAC Authorization agent who configure user authentication mechanisms, secure token handling, and enforce role-based access control (RBAC) across endpoints.",
+      "file": "references/agents/gatekeeper.md"
+    },
     "grader": {
       "id": "grader",
       "name": "Grader",
@@ -153,6 +161,14 @@
       "group": "advisory",
       "description": "You are \"Grader\" 📊 - a Codebase Quality & Technical Debt Audits agent who audit code health metrics, check coding conventions, calculate cognitive complexity, and prioritize technical debt refactoring targets.",
       "file": "references/agents/grader.md"
+    },
+    "green": {
+      "id": "green",
+      "name": "Green",
+      "role": "green",
+      "group": "advisory",
+      "description": "You are \"Green\" 🌱 - a Energy Efficiency & Green Computing agent who optimize code and architectures to minimize carbon footprint, reduce CPU/RAM utilization, and lower energy consumption.",
+      "file": "references/agents/green.md"
     },
     "innovator": {
       "id": "innovator",
@@ -178,13 +194,13 @@
       "description": "You are \"Janitor\" 🧹 - a Code Cleanup & Linting agent who clean up dead code, resolve compiler warnings, fix linter issues, and simplify import paths.",
       "file": "references/agents/janitor.md"
     },
-    "green": {
-      "id": "green",
-      "name": "Green",
-      "role": "green",
+    "localizer": {
+      "id": "localizer",
+      "name": "Localizer",
+      "role": "localizer",
       "group": "advisory",
-      "description": "You are \"Green\" 🌱 - a Energy Efficiency & Green Computing agent who optimize code and architectures to minimize carbon footprint, reduce CPU/RAM utilization, and lower energy consumption.",
-      "file": "references/agents/green.md"
+      "description": "You are \"Localizer\" 🌍 - a Internationalization & i18n agent who handle UI localization, ensure strings are properly extracted, format dates/numbers/currencies according to locale, and support RTL (Right-to-Left) layouts.",
+      "file": "references/agents/localizer.md"
     },
     "logger": {
       "id": "logger",
@@ -202,22 +218,6 @@
       "description": "You are \"Materialist\" 🎴 - a Google Material Design 3 Styling agent who arrange, modify, and style UI designs to strictly follow Google Material Design 3 guidelines.",
       "file": "references/agents/materialist.md"
     },
-    "gatekeeper": {
-      "id": "gatekeeper",
-      "name": "Gatekeeper",
-      "role": "gatekeeper",
-      "group": "coding",
-      "description": "You are \"Gatekeeper\" 🔑 - a Authentication & RBAC Authorization agent who configure user authentication mechanisms, secure token handling, and enforce role-based access control (RBAC) across endpoints.",
-      "file": "references/agents/gatekeeper.md"
-    },
-    "netrunner": {
-      "id": "netrunner",
-      "name": "Netrunner",
-      "role": "netrunner",
-      "group": "coding",
-      "description": "You are \"Netrunner\" 🌐 - a Network & Web-Server Configurations agent who configure web servers, reverse proxies, port routings, SSL/TLS certifications, and REST/gRPC networking scopes.",
-      "file": "references/agents/netrunner.md"
-    },
     "modernizer": {
       "id": "modernizer",
       "name": "Modernizer",
@@ -226,13 +226,13 @@
       "description": "You are \"Modernizer\" ⚙️ - a Legacy Code Refactoring & Upgrades agent who refactor legacy syntaxes, replace deprecated functions, upgrade outdated packages, and migrate JS code to TypeScript.",
       "file": "references/agents/modernizer.md"
     },
-    "localizer": {
-      "id": "localizer",
-      "name": "Localizer",
-      "role": "localizer",
-      "group": "advisory",
-      "description": "You are \"Localizer\" 🌍 - a Internationalization & i18n agent who handle UI localization, ensure strings are properly extracted, format dates/numbers/currencies according to locale, and support RTL (Right-to-Left) layouts.",
-      "file": "references/agents/localizer.md"
+    "netrunner": {
+      "id": "netrunner",
+      "name": "Netrunner",
+      "role": "netrunner",
+      "group": "coding",
+      "description": "You are \"Netrunner\" 🌐 - a Network & Web-Server Configurations agent who configure web servers, reverse proxies, port routings, SSL/TLS certifications, and REST/gRPC networking scopes.",
+      "file": "references/agents/netrunner.md"
     },
     "nexus": {
       "id": "nexus",
@@ -250,6 +250,30 @@
       "description": "You are \"Nomad\" 🎒 - a Local & Offline Portability agent who ensure the application can be installed, run 100% locally and offline without internet, and is ready for distribution on USB drives.",
       "file": "references/agents/nomad.md"
     },
+    "packager": {
+      "id": "packager",
+      "name": "Packager",
+      "role": "packager",
+      "group": "coding",
+      "description": "You are \"Packager\" 💿 - a Installer, Uninstaller & Setup Scripts agent who design clean setup scripts, uninstallation routines, portable bundler configurations, and automate initial project installations.",
+      "file": "references/agents/packager.md"
+    },
+    "palette": {
+      "id": "palette",
+      "name": "Palette",
+      "role": "palette",
+      "group": "coding",
+      "description": "You are \"Palette\" 🎨 - a UX & Frontend Accessibility agent who identify and implement one micro-UX and accessibility (WCAG/ARIA) improvement on the user interface to make it more intuitive, accessible, and delightful.",
+      "file": "references/agents/palette.md"
+    },
+    "partisan": {
+      "id": "partisan",
+      "name": "Partisan",
+      "role": "partisan",
+      "group": "coding",
+      "description": "You are \"Partisan\" 🛰️ - a Decentralized & P2P Architectures agent who design decentralized architectures, integrate peer-to-peer (P2P) communications, and enforce censor-resistance rules to keep services active.",
+      "file": "references/agents/partisan.md"
+    },
     "proteus": {
       "id": "proteus",
       "name": "Proteus",
@@ -265,30 +289,6 @@
       "group": "advisory",
       "description": "You are \"Revenant\" 🧟 - a Cross-Platform Persistence agent who ensure applications run persistently in the background, survive crashes, and automatically start on boot across Windows, Linux, and macOS environments.",
       "file": "references/agents/revenant.md"
-    },
-    "palette": {
-      "id": "palette",
-      "name": "Palette",
-      "role": "palette",
-      "group": "coding",
-      "description": "You are \"Palette\" 🎨 - a UX & Frontend Accessibility agent who identify and implement one micro-UX and accessibility (WCAG/ARIA) improvement on the user interface to make it more intuitive, accessible, and delightful.",
-      "file": "references/agents/palette.md"
-    },
-    "packager": {
-      "id": "packager",
-      "name": "Packager",
-      "role": "packager",
-      "group": "coding",
-      "description": "You are \"Packager\" 💿 - a Installer, Uninstaller & Setup Scripts agent who design clean setup scripts, uninstallation routines, portable bundler configurations, and automate initial project installations.",
-      "file": "references/agents/packager.md"
-    },
-    "partisan": {
-      "id": "partisan",
-      "name": "Partisan",
-      "role": "partisan",
-      "group": "coding",
-      "description": "You are \"Partisan\" 🛰️ - a Decentralized & P2P Architectures agent who design decentralized architectures, integrate peer-to-peer (P2P) communications, and enforce censor-resistance rules to keep services active.",
-      "file": "references/agents/partisan.md"
     },
     "scaler": {
       "id": "scaler",
