@@ -2,7 +2,7 @@
  * @file mcp_server.ts
  * @description Initializes and configures the standard Model Context Protocol (MCP) server
  * for Jules Companion. This file acts as the primary interface between local LLM clients
- * (e.g. Claude Desktop) and the underlying CLI scripts, bridging stdio streams to JSON-RPC.
+ * (e.g. Antigravity IDE, Claude Desktop, Cursor, OpenCode) and the underlying session scripts, bridging stdio streams to JSON-RPC.
  */
 
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
@@ -19,6 +19,7 @@ import { z } from 'zod';
 
 import { deploySession } from './deploy_session';
 import { mergeSession } from './merge_session';
+import { autoProcess } from './auto_process';
 import { loadSessions } from './utils';
 import { runSetup } from './setup';
 import { getApiKey, request } from './jules_client';
@@ -46,8 +47,8 @@ const server = new Server(
   }
 );
 
-// Define resources exposed to the LLM Client (e.g. Claude Desktop)
-// Resources provide passive context data that the LLM can read.
+// Define resources exposed to the LLM Client (e.g. Antigravity IDE, Claude Desktop)
+// Resources provide passive context data that the LLM can read natively.
 server.setRequestHandler(ListResourcesRequestSchema, async () => {
   return {
     resources: [
@@ -79,7 +80,7 @@ server.setRequestHandler(ReadResourceRequestSchema, async (req: { params: { uri:
 });
 
 // Define the available JSON-RPC tools exposed by the MCP server to external clients.
-// Tools represent actionable commands that the LLM can execute.
+// Tools represent actionable commands that the LLM can execute natively.
 server.setRequestHandler(ListToolsRequestSchema, async () => {
   return {
     tools: [
@@ -140,6 +141,27 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             inspectAll: {
               type: 'boolean',
               description: 'If true, inspects all tracked sessions'
+            }
+          }
+        }
+      },
+      {
+        name: 'auto_process',
+        description: 'Polls and auto-processes pending Jules cloud sessions (auto-approves plans & auto-replies).',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            all: {
+              type: 'boolean',
+              description: 'If true, auto-processes all registered sessions in .jules-companion/sessions.json'
+            },
+            sessionId: {
+              type: 'string',
+              description: 'Specific session ID to process'
+            },
+            reply: {
+              type: 'string',
+              description: 'Optional custom reply message when session is awaiting user input'
             }
           }
         }
@@ -231,6 +253,12 @@ const MergeSessionSchema = z.object({
   inspectAll: z.boolean().optional()
 });
 
+const AutoProcessSchema = z.object({
+  all: z.boolean().optional(),
+  sessionId: z.string().optional(),
+  reply: z.string().optional()
+});
+
 const GetSessionStatusSchema = z.object({
   sessionId: z.string()
 });
@@ -274,7 +302,7 @@ server.setRequestHandler(CallToolRequestSchema, async (req: { params: { name: st
           return {
             content: [{ type: 'text', text: `Error: ${error.message}` }],
             isError: true,
-          }
+          };
       } finally {
           // Restore original argv
           process.argv = originalArgv;
@@ -310,7 +338,39 @@ server.setRequestHandler(CallToolRequestSchema, async (req: { params: { name: st
             return {
               content: [{ type: 'text', text: `Error: ${error.message}` }],
               isError: true,
-            }
+            };
+        } finally {
+            process.argv = originalArgv;
+        }
+    }
+    case 'auto_process': {
+        const parsed = AutoProcessSchema.safeParse(req.params.arguments);
+        if (!parsed.success) {
+          return {
+            content: [{ type: 'text', text: `Validation Error: ${parsed.error.message}` }],
+            isError: true,
+          };
+        }
+        const { all, sessionId, reply } = parsed.data;
+
+        const args = ['node', 'dist/auto_process.js'];
+        if (all) args.push('--all');
+        if (sessionId) args.push('--session', sessionId);
+        if (reply) args.push('--reply', reply);
+
+        const originalArgv = process.argv;
+        process.argv = args;
+
+        try {
+            const output = await captureOutput(autoProcess);
+            return {
+              content: [{ type: 'text', text: output }],
+            };
+        } catch (error: any) {
+            return {
+              content: [{ type: 'text', text: `Error: ${error.message}` }],
+              isError: true,
+            };
         } finally {
             process.argv = originalArgv;
         }
@@ -325,7 +385,7 @@ server.setRequestHandler(CallToolRequestSchema, async (req: { params: { name: st
             return {
               content: [{ type: 'text', text: `Error: ${error.message}` }],
               isError: true,
-            }
+            };
         }
     }
     case 'get_session_status': {

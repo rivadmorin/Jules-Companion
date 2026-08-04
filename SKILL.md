@@ -1,6 +1,6 @@
 ---
 name: jules-companion
-description: Assists the user to view, study, develop, and test code using Google Jules CLI (jules) and GitHub CLI (gh) with 30 specialized language-agnostic agents.
+description: Assists the user to view, study, develop, and test code using Google Jules CLI (jules) and GitHub CLI (gh) with 30 specialized language-agnostic agents via native MCP tools or CLI wrappers.
 ---
 
 # Jules Companion: Specialized AI-Agent Coordination Skill
@@ -80,70 +80,89 @@ Example prompt format:
 
 ---
 
-## 🛰️ Google REST API Integration Priority
+## 🔌 Primary Execution Standard: Native MCP Tool Calls
 
-Due to limitations or deprecated commands in the local `jules` CLI (e.g. lack of `reply` or `sendMessage` commands), the skill prioritizes interacting with Google Jules sessions using the **Google REST API** (endpoints defined under `https://jules.googleapis.com/v1alpha/sessions/`).
+When operating in an MCP-compliant host environment (Antigravity IDE, Claude Code, OpenCode, Cursor, Windsurf, etc.), AI Agents **MUST** prioritize calling native **MCP Tools** over executing terminal CLI shell commands.
 
-All local session operations should be handled via TypeScript automation scripts compiled in `dist/`.
+### Available MCP Tools & Schema Mapping
 
-### 1. REST API Configuration & Agent Registry
-Store your Google Jules REST API key in the `.jules-companion/.env` file:
-```env
-JULES_API_KEY=your_google_jules_api_key_here
-```
-For ultra-fast agent lookup without reading 30 markdown files, read the single compiled registry file:
-`references/agents/registry.json`.
-
-### 2. Session CLI Helpers (TypeScript & REST-powered)
-Use the TypeScript script wrappers for high-performance, non-blocking monitoring and control:
-*   **Automated Environment Setup & Self-Healing**:
-    ```bash
-    node dist/setup.js
-    ```
-*   **Direct REST commands via TypeScript client**:
-    ```bash
-    # List connected Google Jules repositories/sources
-    node dist/jules_client.js sources
-
-    # Get details of a session
-    node dist/jules_client.js status <session_id>
-    
-    # Get session list in raw JSON format (ideal for downstream tools/agents)
-    node dist/jules_client.js list --json
-    
-    # Send a reply or manual instruction to a session
-    node dist/jules_client.js reply <session_id> "your message"
-    
-    # Pull the latest completed patch to a local file
-    node dist/jules_client.js pull <session_id> scratch/patch_name.diff
-    ```
-*   **Auto-deploy customized agent sessions (Template + User Prompt Fusion)**:
-    ```bash
-    # Deploys Bolt agent in default 'code' mode (direct functional implementation)
-    node dist/deploy_session.js --type start --agents bolt --task "Optimize loop allocation" --mode code
-
-    # Deploys Sentinel agent in 'review' mode (audit-only, writes report to docs/jules-reviews/ without modifying code)
-    node dist/deploy_session.js --type review --agents sentinel --task "Security vulnerability audit" --mode review
-    ```
-*   **Autonomous Session Auto-Approval & Auto-Reply Engine**:
-    ```bash
-    # Automatically polls pending sessions, approves plans, and sends auto-replies to keep cloud sessions moving fast
-    node dist/auto_process.js --all
-    ```
-*   **Consolidated Patch Merge Pipeline & Automated Code Diff Report**:
-    ```bash
-    # Pulls session patch, prints visual code diff summary (📊), detects review docs (📄), and merges
-    node dist/merge_session.js --session <session_id> --target main
-
-    # Batch merges all completed registered sessions sequentially
-    node dist/merge_session.js --all --target main
-    ```
+1. **`jules-companion/deploy_session`**: Deploys a new Jules session with specialized agents.
+   ```json
+   {
+     "type": "start",
+     "agents": "bolt",
+     "task": "Optimize RSS XML parsing loop",
+     "mode": "code"
+   }
+   ```
+2. **`jules-companion/merge_session`**: Inspects or approves a completed session.
+   - Inspect: `{ "sessionId": "12345", "inspect": true }`
+   - Approve/Merge: `{ "sessionId": "12345", "approve": true }`
+   - Inspect All: `{ "inspectAll": true }`
+3. **`jules-companion/auto_process`**: Auto-approves execution plans & auto-replies.
+   - Bulk All: `{ "all": true }`
+   - Target Session: `{ "sessionId": "12345", "reply": "Proceed with execution" }`
+4. **`jules-companion/get_session_status`**: Queries real-time session status from Google REST API.
+   - `{ "sessionId": "12345" }`
+5. **`jules-companion/setup_workspace`**: Initializes workspace staging environment.
+   - `{}`
+6. **`jules://sessions` (MCP Resource)**: Reads active and historical session state.
 
 ---
 
-## 🛡️ Clean Uninstallation Cleanup
+## 🛠️ Secondary Execution Fallback: CLI Node Scripts
 
-If the `.jules-companion/` folder is deleted by the user, the cleanup should also revert any local stashes or temporary branches. 
+If the host environment does not support native MCP tool invocation, agents may fall back to direct Node CLI execution in the terminal:
+
+* **Automated Environment Setup**:
+  `node dist/setup.js`
+* **Session Deployment**:
+  `node dist/deploy_session.js --type start --agents bolt --task "Task description" --mode code`
+* **Auto-Process Engine**:
+  `node dist/auto_process.js --all`
+* **Session Inspection & Merge**:
+  `node dist/merge_session.js --inspect <session_id>`
+  `node dist/merge_session.js --approve <session_id>`
+* **Direct REST API Queries**:
+  `node dist/jules_client.js status <session_id>`
+
+---
+
+## 🚀 AI Agent Slash Commands Interpretation
+
+When the user types any of the following `/jules-*` slash commands in the chat prompt, the AI Agent **MUST** interpret them and execute the corresponding **MCP Tool call** as the primary action. Fall back to terminal bash commands only if MCP is unavailable.
+
+*   **/jules-deploy `<agent>` `<task>`**
+    *   **Primary (MCP Tool Call)**: Call `jules-companion/deploy_session` with:
+        `{ "type": "start", "agents": "<agent>", "task": "<task>", "mode": "code" }`
+    *   **Fallback (CLI)**: `node dist/deploy_session.js --type start --agents <agent> --task "<task>"`
+
+*   **/jules-review `<agent>` `<task>`**
+    *   **Primary (MCP Tool Call)**: Call `jules-companion/deploy_session` with:
+        `{ "type": "review", "agents": "<agent>", "task": "<task>", "mode": "review" }`
+    *   **Fallback (CLI)**: `node dist/deploy_session.js --type review --agents <agent> --task "<task>"`
+
+*   **/jules-status**
+    *   **Primary (MCP Tool / Resource)**: Read resource `jules://sessions` or call `jules-companion/get_session_status`.
+    *   **Fallback (CLI)**: `node dist/jules_client.js list --json`
+
+*   **/jules-auto**
+    *   **Primary (MCP Tool Call)**: Call `jules-companion/auto_process` with:
+        `{ "all": true }`
+    *   **Fallback (CLI)**: `node dist/auto_process.js --all`
+
+*   **/jules-inspect `<session_id>`**
+    *   **Primary (MCP Tool Call)**: Call `jules-companion/merge_session` with:
+        `{ "sessionId": "<session_id>", "inspect": true }`
+    *   **Fallback (CLI)**: `node dist/merge_session.js --inspect <session_id>`
+
+*   **/jules-merge `<session_id>`**
+    *   **Primary (MCP Tool Call)**: Call `jules-companion/merge_session` with:
+        `{ "sessionId": "<session_id>", "approve": true }`
+    *   **Fallback (CLI)**: `node dist/merge_session.js --approve <session_id>`
+
+*   **/jules-doctor**
+    *   **Action**: Execute diagnostic integrity checks on `SKILL.md`, `.env`, `.gitignore`, `git`, `gh`, and `node` versions, then report back.
 
 ---
 
@@ -156,9 +175,9 @@ To protect the local codebase from broken patches or destructive code generation
 *   Run a backup stash: `git stash push -u -m "jules-companion-backup"`.
 
 ### 2. Patch-Based Branch Isolation Merge Strategy
-When merging multiple patches generated in parallel (or single patches with high collision risks):
+When merging multiple patches generated in parallel:
 1.  Ensure you are on a fresh integration branch (e.g., `jules-integration`).
-2.  For each diff, create an isolated branch from the base commit (e.g., `branch-bolt` from `main`):
+2.  For each diff, create an isolated branch from the base commit:
     ```bash
     git checkout main -b branch-bolt
     git apply scratch/bolt_pull.diff
@@ -170,39 +189,17 @@ When merging multiple patches generated in parallel (or single patches with high
     git checkout jules-integration
     git merge branch-bolt --no-edit
     ```
-4.  If conflicts arise, Git's 3-way merge engine will highlight conflict markers (`<<<<<<<` and `>>>>>>>`). Resolve them manually, then run `git add .` and `git commit` to finalize.
+4.  If conflicts arise, Git's 3-way merge engine will highlight conflict markers. Resolve them manually, then run `git add .` and `git commit` to finalize.
 
 ### 3. Syntax Validation & Linting Gates
 After applying/merging any patch, the assistant **MUST** run language-specific validations before presenting the code to the user:
 *   **Rust**: Run `cargo check` and `cargo test`.
 *   **JavaScript/TypeScript**: Run `npm run check` or `tsc --noEmit`.
 *   **Python**: Run `flake8` or `mypy`.
-*   Check for unclosed delimiters, unstable syntax features (e.g. `let_chains` in stable Rust), and leftover git conflict markers. Fix any errors immediately.
+*   Fix any unclosed delimiters, invalid syntax, or leftover git conflict markers immediately.
 
 ---
 
-## 🚀 AI Agent Slash Commands Interpretation
+## 🛡️ Clean Uninstallation Cleanup
 
-When the user types any of the following `/jules-*` slash commands in the chat prompt, you (the AI Agent) MUST interpret them and execute the corresponding bash commands autonomously. Do NOT ask the user to run these commands themselves.
-
-*   **/jules-deploy `<agent>` `<task>`**
-    *   **Action:** Deploy a new session with a specific agent. By default, use `--mode code` unless specified otherwise.
-    *   **Command:** `node dist/deploy_session.js --type start --agents <agent> --task "<task>"`
-*   **/jules-review `<agent>` `<task>`**
-    *   **Action:** Deploy a new audit/review session with a specific agent.
-    *   **Command:** `node dist/deploy_session.js --type review --agents <agent> --task "<task>"`
-*   **/jules-status**
-    *   **Action:** Check the status of all active sessions.
-    *   **Command:** `node dist/jules_client.js list --json` (Then parse and summarize the output for the user).
-*   **/jules-auto**
-    *   **Action:** Trigger the autonomous auto-approval and auto-reply engine.
-    *   **Command:** `node dist/auto_process.js --all`
-*   **/jules-inspect `<session_id>`**
-    *   **Action:** Extract patch to an isolated review branch and generate a Markdown report.
-    *   **Command:** `node dist/merge_session.js --inspect <session_id>`
-*   **/jules-merge `<session_id>`**
-    *   **Action:** Approve and merge the inspected patch into the main branch.
-    *   **Command:** `node dist/merge_session.js --approve <session_id>`
-*   **/jules-doctor**
-    *   **Action:** Run system diagnostics, check configurations, and verify API connectivity.
-    *   **Command:** (Execute validation checks on `SKILL.md`, `.env`, `.gitignore`, `git`, `gh`, and `node` versions, then report back).
+If the `.jules-companion/` folder is deleted by the user, revert any local stashes or temporary branches cleanly.
