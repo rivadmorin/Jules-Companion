@@ -12,21 +12,34 @@ import { parseArgs, getProjectDirs, runGit, loadSessions, saveSessions, ProjectD
  * @returns {Promise<boolean>} True if it's safe to proceed (no active sessions), false otherwise.
  */
 export async function checkSafetyGate(headers: Record<string, string>): Promise<boolean> {
+  // Load the current local state of all registered sessions from the persistent store
   const sessions = loadSessions();
+  
   // Filter for sessions known to be in an intermediate operational state locally
+  // We exclude terminal states (completed, merged, error) as they no longer mutate code
   const activeSessions = sessions.filter(s => s.status !== 'completed' && s.status !== 'merged' && s.status !== 'error');
 
+  // If there are no locally recorded active sessions, the safety gate is immediately passed
   if (activeSessions.length === 0) return true;
 
+  // Log the initiation of the safety check for visibility to the user
   console.log(`Checking safety gate: ${activeSessions.length} active sessions found locally.`);
+  
+  // Track if any session is confirmed to be still running remotely
   let hasRunning = false;
 
   // Verify against authoritative remote API source of truth concurrently
   await Promise.all(activeSessions.map(async (s) => {
     try {
+      // Dispatch an API request to fetch the current authoritative status of the session
       const sessionData = await request(`https://jules.googleapis.com/v1alpha/sessions/${s.id}`, { headers });
+      
+      // Extract the state, defaulting to 'UNKNOWN' to handle unexpected API responses defensively
       const state = sessionData.state || 'UNKNOWN';
+      
+      // Determine if the remote session is still in a non-terminal state
       if (state !== 'COMPLETED' && state !== 'ERROR' && state !== 'CANCELLED') {
+         // The session is still running; log its status and flag the gate as blocked
          console.log(`- Session ${s.id} (${s.agent}) is still ${state}`);
          hasRunning = true;
       } else if (state === 'COMPLETED' && s.status !== 'completed' && s.status !== 'inspected') {
@@ -34,12 +47,16 @@ export async function checkSafetyGate(headers: Record<string, string>): Promise<
          s.status = 'completed';
       }
     } catch (e) {
+      // In the event of network failure or API error, we fail open/secure by assuming the session is still active
       console.warn(`- Failed to fetch status for ${s.id}, assuming active for safety.`);
       hasRunning = true;
     }
   }));
 
+  // Persist any auto-sync state corrections back to the local tracking file
   saveSessions(sessions);
+  
+  // The safety gate passes only if absolutely no running sessions were detected
   return !hasRunning;
 }
 
@@ -51,19 +68,32 @@ export async function checkSafetyGate(headers: Record<string, string>): Promise<
  * @returns {string} Formatted markdown list of touched files and change operations.
  */
 function generateDiffSummary(patchContent: string): string {
+    // Split the raw patch string into individual lines for sequential parsing
     const lines = patchContent.split('\n');
+    
+    // Initialize an array to accumulate the formatted markdown list items
     const summary: string[] = [];
+    
+    // Iterate over each line of the diff to extract file modification paths
     for (const line of lines) {
         // Look for the standard diff prefix indicating a file header
         if (line.startsWith('diff --git')) {
+            // Split the line into segments to isolate the file path arguments
             const parts = line.split(' ');
+            
+            // Ensure the diff line has the expected format (diff --git a/file b/file)
             if (parts.length >= 4) {
                // Extrapolate raw target file path (dropping standard a/ or b/ prefixes)
+               // parts[3] corresponds to the destination file path, we strip the 'b/' prefix
                const file = parts[3].replace(/^b\//, '');
+               
+               // Append the formatted file path to our markdown summary array
                summary.push(`- **Modified:** \`${file}\``);
             }
         }
     }
+    
+    // Return the joined summary list, or a fallback message if the patch was empty/unparseable
     return summary.length > 0 ? summary.join('\n') : '- No identifiable file changes found in patch.';
 }
 

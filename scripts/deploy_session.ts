@@ -4,12 +4,16 @@ import { request, getApiKey, JulesSource } from './jules_client';
 import { parseArgs, getProjectDirs, runGit, loadSessions, saveSessions, getFormattedDateDDMMYYYY } from './utils';
 
 /**
- * Determines the currently active local Git branch name.
+ * Determines the currently active local Git branch name by executing a child process.
+ * This is used to ensure the Jules cloud agent operates within the correct branch context matching the user's local state.
  *
- * @returns {string} The name of the current branch (defaults to 'main' if parsing fails).
+ * @param {string} [targetDir] - Optional directory path to execute the git command within. Defaults to the current working directory if omitted.
+ * @returns {string} The name of the current branch, or a safe fallback to 'main' if parsing fails or the command exits with an error.
  */
 function getCurrentBranch(targetDir?: string): string {
+  // Execute the standard git CLI command to retrieve the current branch name
   const res = runGit(['branch', '--show-current'], targetDir);
+  // Verify successful execution and non-empty output to prevent assigning undefined or empty strings; fallback to 'main'
   return res.success && res.stdout ? res.stdout : 'main';
 }
 

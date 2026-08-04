@@ -2,15 +2,31 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { spawnSync } from 'child_process';
 
+/**
+ * Defines the standard directory structure required by the jules-companion ecosystem.
+ * All paths are represented as absolute string paths.
+ */
 export interface ProjectDirs {
+  /** The root directory of the user's target project. */
   targetDir: string;
+  /** The root companion directory, typically `.jules-companion` within the target project. */
   julesDir: string;
+  /** Directory containing general reference materials and guidelines. */
   refDir: string;
+  /** Directory containing specialized agent definitions and prompt templates. */
   agentsDir: string;
+  /** Temporary scratchpad directory for agent execution artifacts. */
   scratchDir: string;
+  /** Directory for storing generated reviews within the target project's documentation folder. */
   docsReviewsDir: string;
 }
 
+/**
+ * Global memory cache for resolved project directories to avoid redundant path calculations.
+ * Keyed by the absolute target directory path.
+ *
+ * @type {Map<string, ProjectDirs>}
+ */
 const projectDirsCache = new Map<string, ProjectDirs>();
 
 /**

@@ -1,18 +1,35 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
+/**
+ * Represents the structured metadata extracted from an agent's markdown template file.
+ * This metadata provides the core configuration and routing details for individual agents.
+ */
 export interface AgentMetadata {
+  /** The unique lowercase identifier for the agent (e.g., 'bolt'). Derived from the filename. */
   id: string;
+  /** The capitalized display name of the agent (e.g., 'Bolt'). */
   name: string;
+  /** The specialized role or title of the agent, extracted from the first top-level Markdown header. */
   role: string;
+  /** The operational classification of the agent. 'coding' for implementation agents, 'advisory' for supportive roles. */
   group: 'coding' | 'advisory';
+  /** A concise summary of the agent's purpose, extracted from the first valid paragraph in the template. */
   description: string;
+  /** The relative file path to the agent's source markdown template. */
   file: string;
 }
 
+/**
+ * Represents the centralized, aggregated index of all available agents within the system.
+ * This registry is persisted to disk and used for rapid deployment validation and task routing.
+ */
 export interface Registry {
+  /** An ISO 8601 timestamp indicating exactly when this registry index was compiled. */
   generatedAt: string;
+  /** The total count of agents successfully parsed and included in this registry. */
   totalAgents: number;
+  /** A dictionary mapping agent unique IDs to their fully populated `AgentMetadata` objects. */
   agents: Record<string, AgentMetadata>;
 }
 

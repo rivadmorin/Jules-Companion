@@ -1,3 +1,12 @@
+/**
+ * @fileoverview Jules Menu CLI Interface
+ * 
+ * This file serves as the primary CLI routing interface for the Jules Companion AI.
+ * It parses incoming command-line arguments to trigger various session management
+ * actions (e.g., deploy, inspect, merge, monitor) and strictly formats all output
+ * as JSON to act as an API layer for external IDE extensions and clients.
+ */
+
 import * as fs from 'fs';
 import * as path from 'path';
 import { spawn } from 'child_process';
@@ -8,6 +17,14 @@ import { inspectSession, approveMerge, checkSafetyGate } from './merge_session';
 import { autoProcess } from './auto_process';
 import { getApiKey } from './jules_client';
 
+/**
+ * A predefined registry of specialist AI agents available for deployment.
+ * Each entry maps an agent's internal identifier to a descriptive summary
+ * of its designated capability area, utilized for both UI presentation
+ * and heuristic intent routing during a "Smart Launch".
+ * 
+ * @constant {Array<{name: string, desc: string}>}
+ */
 const SPECIALIST_AGENTS = [
   { name: "innovator", desc: "Feature Engineering & Core Logic" },
   { name: "bolt", desc: "Performance & Optimization Expert" },

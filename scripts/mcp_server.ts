@@ -1,3 +1,10 @@
+/**
+ * @file mcp_server.ts
+ * @description Initializes and configures the standard Model Context Protocol (MCP) server
+ * for Jules Companion. This file acts as the primary interface between local LLM clients
+ * (e.g. Claude Desktop) and the underlying CLI scripts, bridging stdio streams to JSON-RPC.
+ */
+
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import {
@@ -16,15 +23,24 @@ import { loadSessions } from './utils';
 import { runSetup } from './setup';
 import { getApiKey, request } from './jules_client';
 
-// Initialize the MCP Server instance
+/**
+ * Initialize the core Model Context Protocol (MCP) Server instance.
+ * Defines the fundamental server identity and declares the broad capabilities 
+ * (tools and resources) that this server supports.
+ */
 const server = new Server(
   {
+    // The unique identifier for this MCP server implementation
     name: 'jules-companion-mcp',
+    // The current semantic version of the server interface
     version: '1.0.0',
   },
   {
+    // Define the specific operational features this server provides to clients
     capabilities: {
+      // Expose actionable functions (tools) via JSON-RPC
       tools: {},
+      // Expose passive context data (resources) via JSON-RPC
       resources: {}
     },
   }
