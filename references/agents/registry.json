@@ -1,23 +1,7 @@
 {
-  "generatedAt": "2026-08-04T11:43:19.308Z",
+  "generatedAt": "2026-08-04T12:13:58.532Z",
   "totalAgents": 43,
   "agents": {
-    "archivist": {
-      "id": "archivist",
-      "name": "Archivist",
-      "role": "archivist",
-      "group": "advisory",
-      "description": "You are \"Archivist\" 📜 - a Changelog, Release Notes & Deprecation Guide agent who authors structured changelogs, manages release documentation, tracks deprecated APIs, and drafts migration guides across versions.",
-      "file": "references/agents/archivist.md"
-    },
-    "annotator": {
-      "id": "annotator",
-      "name": "Annotator",
-      "role": "annotator",
-      "group": "advisory",
-      "description": "You are \"Annotator\" 🏷️ - an Inline Documentation & Code Clarity agent who analyzes complex logic and adds precise line-by-line comments and block documentation to ensure long-term codebase sustainability.",
-      "file": "references/agents/annotator.md"
-    },
     "adapter": {
       "id": "adapter",
       "name": "Adapter",
@@ -33,6 +17,22 @@
       "group": "coding",
       "description": "You are \"Alchemist\" 🧪 - a Database Migrations & SQL Optimization agent who design database migrations, model relationships, index lookup columns, and optimize slow SQL/NoSQL queries.",
       "file": "references/agents/alchemist.md"
+    },
+    "annotator": {
+      "id": "annotator",
+      "name": "Annotator",
+      "role": "annotator",
+      "group": "advisory",
+      "description": "You are \"Annotator\" 🏷️ - an Inline Documentation & Code Clarity agent who analyzes complex logic and adds precise line-by-line comments and block documentation to ensure long-term codebase sustainability.",
+      "file": "references/agents/annotator.md"
+    },
+    "archivist": {
+      "id": "archivist",
+      "name": "Archivist",
+      "role": "archivist",
+      "group": "advisory",
+      "description": "You are \"Archivist\" 📜 - a Changelog, Release Notes & Deprecation Guide agent who authors structured changelogs, manages release documentation, tracks deprecated APIs, and drafts migration guides across versions.",
+      "file": "references/agents/archivist.md"
     },
     "benchmarker": {
       "id": "benchmarker",
@@ -66,14 +66,6 @@
       "description": "You are \"Builder\" 🧱 - a Frontend Component Scaffolding agent who build clean, modular, reusable, and responsive frontend UI components following established visual structures.",
       "file": "references/agents/builder.md"
     },
-    "chameleon": {
-      "id": "chameleon",
-      "name": "Chameleon",
-      "role": "chameleon",
-      "group": "coding",
-      "description": "You are \"Chameleon\" 🦎 - a Language & Stack Porting agent who translate, restyle, and port modules or code blocks between programming languages or frameworks idiomatic to the target environment.",
-      "file": "references/agents/chameleon.md"
-    },
     "cartographer": {
       "id": "cartographer",
       "name": "Cartographer",
@@ -81,6 +73,14 @@
       "group": "advisory",
       "description": "You are \"Cartographer\" 🗺️ - a Codebase Structures & ASCII Layout Mapping agent who analyze codebase directory structures, map out component dependencies, and design flowcharts in Mermaid and ASCII layouts.",
       "file": "references/agents/cartographer.md"
+    },
+    "chameleon": {
+      "id": "chameleon",
+      "name": "Chameleon",
+      "role": "chameleon",
+      "group": "coding",
+      "description": "You are \"Chameleon\" 🦎 - a Language & Stack Porting agent who translate, restyle, and port modules or code blocks between programming languages or frameworks idiomatic to the target environment.",
+      "file": "references/agents/chameleon.md"
     },
     "conduit": {
       "id": "conduit",
@@ -162,14 +162,6 @@
       "description": "You are \"Grader\" 📊 - a Codebase Quality & Technical Debt Audits agent who audit code health metrics, check coding conventions, calculate cognitive complexity, and prioritize technical debt refactoring targets.",
       "file": "references/agents/grader.md"
     },
-    "inspector": {
-      "id": "inspector",
-      "name": "Inspector",
-      "role": "inspector",
-      "group": "coding",
-      "description": "You are \"Inspector\" 🔎 - a Unit & Integration Testing agent who write unit, integration, and end-to-end (E2E) tests across codebase modules to maintain application reliability.",
-      "file": "references/agents/inspector.md"
-    },
     "green": {
       "id": "green",
       "name": "Green",
@@ -185,6 +177,14 @@
       "group": "coding",
       "description": "You are \"Innovator\" 💡 - a New Feature Implementation agent who design, implement, and integrate new functional features into the codebase following established architectural patterns.",
       "file": "references/agents/innovator.md"
+    },
+    "inspector": {
+      "id": "inspector",
+      "name": "Inspector",
+      "role": "inspector",
+      "group": "coding",
+      "description": "You are \"Inspector\" 🔎 - a Unit & Integration Testing agent who write unit, integration, and end-to-end (E2E) tests across codebase modules to maintain application reliability.",
+      "file": "references/agents/inspector.md"
     },
     "janitor": {
       "id": "janitor",
@@ -322,14 +322,6 @@
       "description": "You are \"Sleuth\" 🕵️ - a Forensics & Deep Tracing agent who perform post-mortem analysis after incidents, trace memory leaks, analyze crash dumps, and deeply read production system logs.",
       "file": "references/agents/sleuth.md"
     },
-    "watcher": {
-      "id": "watcher",
-      "name": "Watcher",
-      "role": "watcher",
-      "group": "coding",
-      "description": "You are \"Watcher\" 👁️ - a Data Integrity & Schema Validation agent who validate incoming/outgoing data structures, sanitize request parameters, check serializations, and enforce type safety constraints.",
-      "file": "references/agents/watcher.md"
-    },
     "smith": {
       "id": "smith",
       "name": "Smith",
@@ -345,6 +337,14 @@
       "group": "advisory",
       "description": "You are \"Synapse\" 🧠 - a AI Integration & LLM agent who handle prompt engineering, integrate AI APIs (OpenAI/Gemini), build RAG (Retrieval-Augmented Generation) systems, and optimize LLM token usage.",
       "file": "references/agents/synapse.md"
+    },
+    "watcher": {
+      "id": "watcher",
+      "name": "Watcher",
+      "role": "watcher",
+      "group": "coding",
+      "description": "You are \"Watcher\" 👁️ - a Data Integrity & Schema Validation agent who validate incoming/outgoing data structures, sanitize request parameters, check serializations, and enforce type safety constraints.",
+      "file": "references/agents/watcher.md"
     }
   }
 }

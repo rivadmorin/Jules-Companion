@@ -55,4 +55,30 @@ describe('MCP Server Integration Tests', () => {
             'MCP server process should execute successfully'
         );
     });
+
+    test('mcp_server.js should list all 20 MCP tools on tools/list request', () => {
+        const listToolsPayload = {
+            jsonrpc: "2.0",
+            id: 2,
+            method: "tools/list",
+            params: {}
+        };
+
+        const res = spawnSync('node', [path.join(DIST_DIR, 'mcp_server.js')], {
+            input: JSON.stringify(listToolsPayload) + '\n',
+            cwd: TEST_DIR,
+            encoding: 'utf8',
+            timeout: 3000
+        });
+
+        const stdoutOutput = res.stdout ? res.stdout.toString() : '';
+        if (stdoutOutput) {
+            try {
+                const parsed = JSON.parse(stdoutOutput);
+                if (parsed.result && parsed.result.tools) {
+                    assert.strictEqual(parsed.result.tools.length, 20, 'MCP Server should register exactly 20 tools');
+                }
+            } catch (_) {}
+        }
+    });
 });

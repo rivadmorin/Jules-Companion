@@ -84,29 +84,29 @@ Example prompt format:
 
 When operating in an MCP-compliant host environment (Antigravity IDE, Claude Code, OpenCode, Cursor, Windsurf, etc.), AI Agents **MUST** prioritize calling native **MCP Tools** over executing terminal CLI shell commands.
 
-### Available MCP Tools & Schema Mapping
+### Available MCP Tools & Schema Mapping (20 Tools)
 
-1. **`jules-companion/deploy_session`**: Deploys a new Jules session with specialized agents.
-   ```json
-   {
-     "type": "start",
-     "agents": "bolt",
-     "task": "Optimize RSS XML parsing loop",
-     "mode": "code"
-   }
-   ```
-2. **`jules-companion/merge_session`**: Inspects or approves a completed session.
-   - Inspect: `{ "sessionId": "12345", "inspect": true }`
-   - Approve/Merge: `{ "sessionId": "12345", "approve": true }`
-   - Inspect All: `{ "inspectAll": true }`
-3. **`jules-companion/auto_process`**: Auto-approves execution plans & auto-replies.
-   - Bulk All: `{ "all": true }`
-   - Target Session: `{ "sessionId": "12345", "reply": "Proceed with execution" }`
-4. **`jules-companion/get_session_status`**: Queries real-time session status from Google REST API.
-   - `{ "sessionId": "12345" }`
-5. **`jules-companion/setup_workspace`**: Initializes workspace staging environment.
-   - `{}`
-6. **`jules://sessions` (MCP Resource)**: Reads active and historical session state.
+1. **`deploy_session`**: Deploys a new Jules session with specialized agents.
+2. **`merge_session`**: Inspects or approves a completed session.
+3. **`auto_process`**: Auto-approves execution plans & auto-replies.
+4. `get_session_status`: Queries real-time session status from Google REST API.
+5. `setup_workspace`: Initializes workspace staging environment.
+6. `list_agents`: Lists 30 specialized agent roles and metadata from `registry.json`.
+7. `get_agent_info`: Reads instructions and boundaries markdown for a target agent.
+8. `list_sources`: Queries linked GitHub Cloud sources registered under this account.
+9. `run_doctor`: Runs diagnostic environment integrity checks.
+10. `create_custom_agent`: Scaffolds a new custom agent template and updates `registry.json`.
+11. `cancel_session`: Cancels an active or queued session via HTTP DELETE.
+12. `send_session_message`: Posts an interactive reply to a running session.
+13. `retry_failed_session`: Redeploys a failed session record with adjusted task instructions.
+14. `deploy_team`: Deploys multi-agent team presets (`full-audit`, `feature-sprint`, `refactor-boost`).
+15. `pull_session_diff`: Extracts raw unidiff patch string without merging.
+16. `checkout_session_branch`: Creates an isolated Git feature branch and applies patch.
+17. `create_github_pr`: Creates a GitHub Pull Request using `gh` CLI.
+18. `read_agent_journal`: Reads critical learnings logged in `.jules/<agent>.md`.
+19. `get_review_reports`: Scans and lists markdown audit reports in `docs/jules-reviews/`.
+20. `rollback_session`: Reverts uncommitted stashes or cleans working tree post-merge.
+21. **`jules://sessions` (MCP Resource)**: Reads active and historical session state.
 
 ---
 

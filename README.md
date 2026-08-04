@@ -37,16 +37,52 @@ Add `jules-companion` to your AI Client's MCP configuration (`mcp_config.json` o
 }
 ```
 
-### Exposed MCP Tools & Resources
+### Exposed MCP Tools (20 Tools) & Resources
 
-| Type | Name / URI | Description |
+#### 🔹 Group 1: Discovery & Setup
+| Name | Description | Sample Payload |
 | :--- | :--- | :--- |
-| **Tool** | `deploy_session` | Deploys a new Jules session with specialized agents and task instructions. |
-| **Tool** | `merge_session` | Inspects, approves, or merges a completed Jules cloud session patch. |
-| **Tool** | `auto_process` | Auto-approves execution plans & sends auto-replies to keep cloud sessions moving fast. |
-| **Tool** | `get_session_status` | Retrieves real-time session state directly from Google Jules API. |
-| **Tool** | `setup_workspace` | Initializes the local Jules workspace staging environment. |
-| **Resource** | `jules://sessions` | Returns active and historical Jules AI sessions from local state. |
+| `list_agents` | Returns JSON array of all 30 specialized agent roles from registry.json. | `{}` |
+| `get_agent_info` | Reads markdown template directives and boundaries for a target agent. | `{ "agentName": "annotator" }` |
+| `list_sources` | Queries linked GitHub Cloud sources registered under this account. | `{}` |
+| `run_doctor` | Runs environment health checks (.env, API key, git, gh CLI). | `{}` |
+| `create_custom_agent` | Scaffolds a custom agent template file and updates registry.json. | `{ "name": "custom", "role": "Role", "directives": "...", "boundariesDo": [], "boundariesDont": [] }` |
+
+#### 🔹 Group 2: Session Control & Interactivity
+| Name | Description | Sample Payload |
+| :--- | :--- | :--- |
+| `deploy_session` | Deploys a new Jules session with specialized agents. | `{ "type": "start", "agents": "annotator", "task": "...", "mode": "code" }` |
+| `get_session_status` | Retrieves real-time session state directly from Google Jules API. | `{ "sessionId": "12345" }` |
+| `cancel_session` | Cancels an active or queued Google Jules session via HTTP DELETE. | `{ "sessionId": "12345" }` |
+| `send_session_message` | Posts a follow-up reply or instruction to a running session. | `{ "sessionId": "12345", "message": "Proceed" }` |
+| `retry_failed_session` | Redeploys a failed session record with optional new task instructions. | `{ "sessionId": "12345" }` |
+
+#### 🔹 Group 3: Multi-Agent Orchestration
+| Name | Description | Sample Payload |
+| :--- | :--- | :--- |
+| `auto_process` | Auto-approves execution plans & sends auto-replies. | `{ "all": true }` |
+| `deploy_team` | Deploys multi-agent team presets (full-audit, feature-sprint, refactor-boost). | `{ "preset": "full-audit", "task": "Audit codebase" }` |
+| `setup_workspace` | Initializes the local Jules workspace staging environment. | `{}` |
+
+#### 🔹 Group 4: Patch, Git & PR Bridge
+| Name | Description | Sample Payload |
+| :--- | :--- | :--- |
+| `merge_session` | Inspects, approves, or merges a completed Jules session patch. | `{ "sessionId": "12345", "approve": true }` |
+| `pull_session_diff` | Extracts unidiff patch content without merging. | `{ "sessionId": "12345", "outputPath": "patch.diff" }` |
+| `checkout_session_branch` | Creates an isolated feature branch and applies the session patch. | `{ "sessionId": "12345" }` |
+| `create_github_pr` | Creates a GitHub Pull Request using gh CLI for a completed session. | `{ "sessionId": "12345" }` |
+
+#### 🔹 Group 5: Knowledge, Quality & Safety
+| Name | Description | Sample Payload |
+| :--- | :--- | :--- |
+| `read_agent_journal` | Reads critical learnings logged in `.jules/<agent>.md`. | `{ "agentName": "annotator" }` |
+| `get_review_reports` | Scans and lists markdown audit reports in `docs/jules-reviews/`. | `{}` |
+| `rollback_session` | Reverts uncommitted stashes or cleans working directory post-merge. | `{}` |
+
+#### 🔹 MCP Resource
+| URI | Description |
+| :--- | :--- |
+| `jules://sessions` | Returns active and historical Jules AI sessions from local state file. |
 
 ---
 

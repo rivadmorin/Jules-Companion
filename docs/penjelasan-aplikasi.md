@@ -62,7 +62,7 @@ Arsitektur `jules-companion` membagi sistem menjadi lingkungan **Lokal (Local Wo
     *   `merge_session.ts`: Manajemen Git, mengunduh *patch* dari *cloud*, dan menggabungkannya ke repositori lokal.
     *   `jules_client.ts`: Modul yang menangani interaksi langsung dengan REST API Google Jules (seperti GET/POST *request*).
     *   `jules_menu.ts`: Konsol terminal fallback opsional untuk pengujian manual oleh pengguna (manusia).
-    *   `mcp_server.ts`: Server Model Context Protocol (MCP) untuk integrasi otonom dengan AI Agent/IDE (Antigravity IDE, OpenCode, Claude Code, Cursor).
+    *   `mcp_server.ts`: Server Model Context Protocol (MCP) lengkap dengan 20 tools untuk integrasi otonom dengan AI Agent/IDE (Antigravity IDE, OpenCode, Claude Code, Cursor, Windsurf). Tools mencakup Discovery (`list_agents`, `get_agent_info`, `list_sources`, `run_doctor`, `create_custom_agent`), Session Control (`deploy_session`, `get_session_status`, `cancel_session`, `send_session_message`, `retry_failed_session`), Multi-Agent Orchestration (`auto_process`, `deploy_team`, `setup_workspace`), Git & PR Bridge (`merge_session`, `pull_session_diff`, `checkout_session_branch`, `create_github_pr`), serta Knowledge & Safety (`read_agent_journal`, `get_review_reports`, `rollback_session`).
 3.  **Google Jules REST API**: Layanan *backend* milik Google (`https://jules.googleapis.com/v1alpha/`) yang merespons permintaan dan memberikan metadata hasil perubahan (*git patches*).
 4.  **Agent Templates (`references/agents/*.md`)**: Berisi 30 instruksi sistem (*system prompt*) unik yang memberikan kepribadian dan batasan perilaku untuk berbagai tugas spesifik (contoh: *Bolt* untuk kecepatan, *Sentinel* untuk keamanan, *Critic* untuk *review*).
 

@@ -37,16 +37,52 @@ Tambahkan `jules-companion` ke konfigurasi MCP di Klien AI Anda (`mcp_config.jso
 }
 ```
 
-### MCP Tools & Resources Yang Disediakan
+### Exposed MCP Tools (20 Tools) & Resources
 
-| Tipe | Nama / URI | Deskripsi |
+#### 🔹 Group 1: Discovery & Setup
+| Nama Tool | Deskripsi | Contoh Payload |
 | :--- | :--- | :--- |
-| **Tool** | `deploy_session` | Menyebarkan (deploy) sesi Jules baru dengan agen spesialis dan instruksi tugas. |
-| **Tool** | `merge_session` | Menginspeksi, menyetujui, atau menggabungkan patch sesi cloud Jules yang telah selesai. |
-| **Tool** | `auto_process` | Menyetujui plan & mengirim auto-reply secara otomatis untuk memproses sesi cloud. |
-| **Tool** | `get_session_status` | Mengambil status sesi real-time langsung dari Google Jules API. |
-| **Tool** | `setup_workspace` | Menginisialisasi lingkungan staging workspace lokal Jules. |
-| **Resource** | `jules://sessions` | Mengembalikan daftar sesi Jules AI aktif dan histori dari status lokal. |
+| `list_agents` | Mengembalikan daftar JSON dari 30 agen spesialis di `registry.json`. | `{}` |
+| `get_agent_info` | Membaca template markdown instruksi dan batasan agen target. | `{ "agentName": "annotator" }` |
+| `list_sources` | Mengueri repositori GitHub Cloud terhubung di akun Jules ini. | `{}` |
+| `run_doctor` | Menjalankan pemeriksaan integritas lingkungan (.env, API key, git, gh CLI). | `{}` |
+| `create_custom_agent` | Membuat file template agen kustom dan memperbarui registry.json. | `{ "name": "custom", "role": "Role", "directives": "...", "boundariesDo": [], "boundariesDont": [] }` |
+
+#### 🔹 Group 2: Session Control & Interactivity
+| Nama Tool | Deskripsi | Contoh Payload |
+| :--- | :--- | :--- |
+| `deploy_session` | Menyebarkan sesi Jules baru dengan agen spesialis. | `{ "type": "start", "agents": "annotator", "task": "...", "mode": "code" }` |
+| `get_session_status` | Mengambil status sesi real-time langsung dari Google Jules API. | `{ "sessionId": "12345" }` |
+| `cancel_session` | Membatalkan sesi cloud Jules via HTTP DELETE. | `{ "sessionId": "12345" }` |
+| `send_session_message` | Mengirim pesan balasan atau instruksi ke sesi yang berjalan. | `{ "sessionId": "12345", "message": "Lanjutkan" }` |
+| `retry_failed_session` | Meng-deploy ulang sesi yang gagal dengan instruksi tugas baru. | `{ "sessionId": "12345" }` |
+
+#### 🔹 Group 3: Multi-Agent Orchestration
+| Nama Tool | Deskripsi | Contoh Payload |
+| :--- | :--- | :--- |
+| `auto_process` | Menyetujui plan & mengirim auto-reply secara otomatis. | `{ "all": true }` |
+| `deploy_team` | Menyebarkan preset tim multi-agen (full-audit, feature-sprint, refactor-boost). | `{ "preset": "full-audit", "task": "Audit codebase" }` |
+| `setup_workspace` | Menginisialisasi lingkungan staging workspace lokal Jules. | `{}` |
+
+#### 🔹 Group 4: Patch, Git & PR Bridge
+| Nama Tool | Deskripsi | Contoh Payload |
+| :--- | :--- | :--- |
+| `merge_session` | Menginspeksi, menyetujui, atau menggabungkan patch sesi cloud Jules. | `{ "sessionId": "12345", "approve": true }` |
+| `pull_session_diff` | Mengambil isi patch unidiff tanpa melakukan merge. | `{ "sessionId": "12345", "outputPath": "patch.diff" }` |
+| `checkout_session_branch` | Membuat branch fitur terisolasi dan menerapkan patch sesi. | `{ "sessionId": "12345" }` |
+| `create_github_pr` | Membuat GitHub Pull Request menggunakan gh CLI untuk sesi terhubung. | `{ "sessionId": "12345" }` |
+
+#### 🔹 Group 5: Knowledge, Quality & Safety
+| Nama Tool | Deskripsi | Contoh Payload |
+| :--- | :--- | :--- |
+| `read_agent_journal` | Membaca catatan pembelajaran agen di `.jules/<agent>.md`. | `{ "agentName": "annotator" }` |
+| `get_review_reports` | Memindai dan merangkum laporan audit markdown di `docs/jules-reviews/`. | `{}` |
+| `rollback_session` | Mengembalikan stashes uncommitted atau membersihkan working directory. | `{}` |
+
+#### 🔹 MCP Resource
+| URI | Deskripsi |
+| :--- | :--- |
+| `jules://sessions` | Mengembalikan daftar sesi Jules AI aktif dan histori dari status lokal. |
 
 ---
 

@@ -274,6 +274,38 @@ Options:
   }
 }
 
+/**
+ * Programmatically deploys a session for specified agents without relying on process.argv CLI inputs.
+ * Used internally by the `deploy_team` MCP tool and integration scripts.
+ *
+ * @param {string} agentsStr - Comma-separated list of agent identifiers.
+ * @param {string} task - Detailed task instructions for the agents.
+ * @param {'start' | 'review' | 'interactive'} type - Session execution type.
+ * @param {'code' | 'review'} [mode='code'] - Execution mode (code implementation vs review-only).
+ * @param {string} [branch] - Starting git branch name.
+ * @param {string} [targetDir] - Target project root directory.
+ * @returns {Promise<any[]>} Array of deployed session results and session IDs.
+ */
+export async function deploySessionWithAgents(
+  agentsStr: string,
+  task: string,
+  type: 'start' | 'review' | 'interactive',
+  mode: 'code' | 'review' = 'code',
+  branch?: string,
+  targetDir: string = process.cwd()
+) {
+  const originalArgv = process.argv;
+  const args = ['node', 'dist/deploy_session.js', '--type', type, '--agents', agentsStr, '--task', task, '--mode', mode, '--target', targetDir];
+  if (branch) args.push('--branch', branch);
+
+  process.argv = args;
+  try {
+    await deploySession();
+  } finally {
+    process.argv = originalArgv;
+  }
+}
+
 if (require.main === module) {
   deploySession();
 }

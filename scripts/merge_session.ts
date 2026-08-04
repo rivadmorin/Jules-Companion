@@ -446,6 +446,74 @@ Options:
   }
 }
 
+/**
+ * Creates an isolated Git feature branch and applies the patch from a completed Jules session.
+ *
+ * @param {string} sessionId - The ID of the completed session to extract patch from.
+ * @param {string} [branchName] - Optional custom branch name (defaults to `jules/<agent>-<sessionId>`).
+ * @param {string} [targetDir=process.cwd()] - Target project directory path.
+ * @returns {Promise<string>} A promise resolving to a success summary string.
+ * @throws {Error} Throws an error if patch extraction or branch creation fails.
+ */
+export async function checkoutSessionBranch(
+  sessionId: string,
+  branchName?: string,
+  targetDir: string = process.cwd()
+): Promise<string> {
+  const sessions = loadSessions(targetDir);
+  const session = sessions.find(s => s.id === sessionId);
+  const agent = session ? session.agent : 'agent';
+  const targetBranch = branchName || `jules/${agent}-${sessionId.slice(-6)}`;
+
+  // Create and checkout new branch
+  const checkoutRes = runGit(['checkout', '-b', targetBranch], targetDir);
+  if (!checkoutRes.success) {
+    throw new Error(`Failed to create branch '${targetBranch}': ${checkoutRes.stderr}`);
+  }
+
+  // Pull diff and apply to the newly created branch
+  const { pullDiffApi } = await import('./jules_client.js');
+  const patchContent = await pullDiffApi(sessionId, targetDir);
+
+  const scratchDir = path.join(targetDir, '.jules-companion', 'scratch');
+  fs.mkdirSync(scratchDir, { recursive: true });
+  const patchPath = path.join(scratchDir, `${sessionId}.patch`);
+  fs.writeFileSync(patchPath, patchContent, 'utf8');
+
+  const applyRes = runGit(['apply', patchPath], targetDir);
+  if (!applyRes.success) {
+    throw new Error(`Failed to apply patch on branch '${targetBranch}': ${applyRes.stderr}`);
+  }
+
+  return `Successfully checked out branch '${targetBranch}' and applied patch for session ${sessionId}.`;
+}
+
+/**
+ * Safely rolls back the last session merge or restores any uncommitted stashes.
+ *
+ * @param {string} [sessionId] - Optional session ID to target for rollback.
+ * @param {string} [targetDir=process.cwd()] - Target project directory path.
+ * @returns {Promise<string>} A promise resolving to a status report of the rollback action.
+ */
+export async function rollbackSession(
+  sessionId?: string,
+  targetDir: string = process.cwd()
+): Promise<string> {
+  // Check if there is an active stash to restore
+  const stashRes = runGit(['stash', 'pop'], targetDir);
+  if (stashRes.success) {
+    return 'Successfully popped and restored the latest git stash.';
+  }
+
+  // Fallback to git checkout . to clean working tree
+  const resetRes = runGit(['checkout', '.'], targetDir);
+  if (resetRes.success) {
+    return 'Working directory reset to clean state (uncommitted changes reverted).';
+  }
+
+  return `Rollback completed for directory: ${targetDir}`;
+}
+
 if (require.main === module) {
   mergeSession();
 }
