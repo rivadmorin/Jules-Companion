@@ -3,62 +3,20 @@ import * as path from 'path';
 import { request, getApiKey } from './jules_client';
 import { parseArgs, getProjectDirs, runGit, loadSessions, saveSessions, ProjectDirs } from './utils';
 
+import { checkSafetyGate as coreCheckSafetyGate } from './workflows/safety_gate';
+
 /**
  * Validates the safety constraints before executing branch manipulations.
  * Prevents disruptive local branch switching operations if any registered cloud
  * sessions are still actively modifying or generating code.
  *
- * @param {Record<string, string>} headers - API headers including authentication.
- * @returns {Promise<boolean>} True if it's safe to proceed (no active sessions), false otherwise.
+ * @param headers - API headers including authentication.
+ * @returns True if it's safe to proceed (no active sessions), false otherwise.
  */
 export async function checkSafetyGate(headers: Record<string, string>): Promise<boolean> {
-  // Load the current local state of all registered sessions from the persistent store
-  const sessions = loadSessions();
-  
-  // Filter for sessions known to be in an intermediate operational state locally
-  // We exclude terminal states (completed, merged, error) as they no longer mutate code
-  const activeSessions = sessions.filter(s => s.status !== 'completed' && s.status !== 'merged' && s.status !== 'error');
-
-  // If there are no locally recorded active sessions, the safety gate is immediately passed
-  if (activeSessions.length === 0) return true;
-
-  // Log the initiation of the safety check for visibility to the user
-  console.log(`Checking safety gate: ${activeSessions.length} active sessions found locally.`);
-  
-  // Track if any session is confirmed to be still running remotely
-  let hasRunning = false;
-
-  // Verify against authoritative remote API source of truth concurrently
-  await Promise.all(activeSessions.map(async (s) => {
-    try {
-      // Dispatch an API request to fetch the current authoritative status of the session
-      const sessionData = await request(`https://jules.googleapis.com/v1alpha/sessions/${s.id}`, { headers });
-      
-      // Extract the state, defaulting to 'UNKNOWN' to handle unexpected API responses defensively
-      const state = sessionData.state || 'UNKNOWN';
-      
-      // Determine if the remote session is still in a non-terminal state
-      if (state !== 'COMPLETED' && state !== 'ERROR' && state !== 'CANCELLED') {
-         // The session is still running; log its status and flag the gate as blocked
-         console.log(`- Session ${s.id} (${s.agent}) is still ${state}`);
-         hasRunning = true;
-      } else if (state === 'COMPLETED' && s.status !== 'completed' && s.status !== 'inspected') {
-         // Auto-sync status correction if local state was lagging
-         s.status = 'completed';
-      }
-    } catch (e) {
-      // In the event of network failure or API error, we fail open/secure by assuming the session is still active
-      console.warn(`- Failed to fetch status for ${s.id}, assuming active for safety.`);
-      hasRunning = true;
-    }
-  }));
-
-  // Persist any auto-sync state corrections back to the local tracking file
-  saveSessions(sessions);
-  
-  // The safety gate passes only if absolutely no running sessions were detected
-  return !hasRunning;
+  return coreCheckSafetyGate(headers);
 }
+
 
 /**
  * Scans the provided unified diff patch string and generates a human-readable

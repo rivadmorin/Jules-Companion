@@ -1,0 +1,54 @@
+# Sentrux Architectural Rules & Quality Gates for Jules-Companion
+
+[constraints]
+max_cycles = 0
+
+[[layers]]
+name = "tests"
+paths = ["tests/*"]
+order = 0
+
+[[layers]]
+name = "interfaces"
+paths = [
+  "scripts/mcp_server.ts",
+  "scripts/jules_menu.ts",
+  "scripts/sync_global.ts"
+]
+order = 1
+
+[[layers]]
+name = "mcp_modules"
+paths = [
+  "scripts/mcp/*",
+  "scripts/mcp/tools/*"
+]
+order = 2
+
+[[layers]]
+name = "workflows"
+paths = [
+  "scripts/workflows/*",
+  "scripts/deploy_session.ts",
+  "scripts/merge_session.ts",
+  "scripts/auto_process.ts",
+  "scripts/setup.ts"
+]
+order = 3
+
+[[layers]]
+name = "client"
+paths = [
+  "scripts/client/*",
+  "scripts/jules_client.ts"
+]
+order = 4
+
+[[layers]]
+name = "foundation"
+paths = [
+  "scripts/core/*",
+  "scripts/utils.ts",
+  "scripts/generate_registry.ts"
+]
+order = 5

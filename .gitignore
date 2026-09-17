@@ -40,3 +40,6 @@ desktop.ini
 !.vscode/launch.json
 !.vscode/extensions.json
 .idea/
+
+# graft's local graph cache — regenerable, not committed (run `graft build`).
+/graft/

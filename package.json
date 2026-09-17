@@ -4,7 +4,7 @@
   "description": "Google Jules CLI & REST API companion skill with 30 specialized agents",
   "main": "dist/setup.js",
   "scripts": {
-    "build": "esbuild scripts/*.ts --outdir=dist --platform=node --format=cjs",
+    "build": "esbuild scripts/*.ts scripts/**/*.ts --outdir=dist --platform=node --format=cjs",
     "postbuild": "npx tsx scripts/sync_global.ts",
     "sync": "npx tsx scripts/sync_global.ts",
     "pretest": "npm run build",

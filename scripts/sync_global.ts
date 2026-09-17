@@ -41,24 +41,17 @@ export function syncGlobalInstallation(targetWorkspaceDir: string = process.cwd(
   const localDist = path.join(targetWorkspaceDir, 'dist');
   const globalDist = path.join(globalSkillDir, 'dist');
   if (fs.existsSync(localDist)) {
-    fs.mkdirSync(globalDist, { recursive: true });
-    const distFiles = fs.readdirSync(localDist);
-    for (const f of distFiles) {
-      fs.copyFileSync(path.join(localDist, f), path.join(globalDist, f));
-      syncedFilesCount++;
-    }
+    fs.cpSync(localDist, globalDist, { recursive: true });
+    syncedFilesCount += fs.readdirSync(localDist).length;
   }
+
 
   // 2. Sync scripts directory
   const localScripts = path.join(targetWorkspaceDir, 'scripts');
   const globalScripts = path.join(globalSkillDir, 'scripts');
   if (fs.existsSync(localScripts)) {
-    fs.mkdirSync(globalScripts, { recursive: true });
-    const scriptFiles = fs.readdirSync(localScripts);
-    for (const f of scriptFiles) {
-      fs.copyFileSync(path.join(localScripts, f), path.join(globalScripts, f));
-      syncedFilesCount++;
-    }
+    fs.cpSync(localScripts, globalScripts, { recursive: true });
+    syncedFilesCount += fs.readdirSync(localScripts).length;
   }
 
   // 3. Sync references directory

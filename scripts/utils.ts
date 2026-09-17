@@ -1,33 +1,20 @@
+/**
+ * Common utility and shared orchestration functions for Jules Companion.
+ * @module utils
+ */
+
 import * as fs from 'fs';
 import * as path from 'path';
 import { spawnSync } from 'child_process';
+import { runGit as coreRunGit, GitExecutionResult } from './core/git';
+import {
+  getProjectDirs as coreGetProjectDirs,
+  loadSessions as coreLoadSessions,
+  saveSessions as coreSaveSessions
+} from './core/storage';
+import { ProjectDirs, SessionRecord } from './core/types';
 
-/**
- * Defines the standard directory structure required by the jules-companion ecosystem.
- * All paths are represented as absolute string paths.
- */
-export interface ProjectDirs {
-  /** The root directory of the user's target project. */
-  targetDir: string;
-  /** The root companion directory, typically `.jules-companion` within the target project. */
-  julesDir: string;
-  /** Directory containing general reference materials and guidelines. */
-  refDir: string;
-  /** Directory containing specialized agent definitions and prompt templates. */
-  agentsDir: string;
-  /** Temporary scratchpad directory for agent execution artifacts. */
-  scratchDir: string;
-  /** Directory for storing generated reviews within the target project's documentation folder. */
-  docsReviewsDir: string;
-}
-
-/**
- * Global memory cache for resolved project directories to avoid redundant path calculations.
- * Keyed by the absolute target directory path.
- *
- * @type {Map<string, ProjectDirs>}
- */
-const projectDirsCache = new Map<string, ProjectDirs>();
+export { ProjectDirs, SessionRecord, GitExecutionResult };
 
 /**
  * Resolves and caches standard directory paths used by the jules-companion ecosystem.
@@ -37,20 +24,7 @@ const projectDirsCache = new Map<string, ProjectDirs>();
  * @returns An object containing absolute paths for various internal companion directories.
  */
 export function getProjectDirs(targetDir: string = process.cwd()): ProjectDirs {
-  if (projectDirsCache.has(targetDir)) {
-    return projectDirsCache.get(targetDir)!;
-  }
-  const julesDir = path.join(targetDir, '.jules-companion');
-  const dirs: ProjectDirs = {
-    targetDir,
-    julesDir,
-    refDir: path.join(julesDir, 'references'),
-    agentsDir: path.join(julesDir, 'references', 'agents'),
-    scratchDir: path.join(julesDir, 'scratch'),
-    docsReviewsDir: path.join(targetDir, 'docs', 'jules-reviews')
-  };
-  projectDirsCache.set(targetDir, dirs);
-  return dirs;
+  return coreGetProjectDirs(targetDir);
 }
 
 /**
@@ -88,26 +62,11 @@ export function parseArgs(args: string[]): Record<string, string | boolean> {
  * @param cwd - The working directory to execute the command in (defaults to current working directory).
  * @returns An object containing the success status, standard output, and standard error.
  */
-export function runGit(args: string[], cwd: string = process.cwd()): { success: boolean; stdout: string; stderr: string } {
-  const resolvedCwd = path.resolve(cwd);
-  const res = spawnSync('git', args, { encoding: 'utf8', cwd: resolvedCwd });
-  return {
-    success: res.status === 0,
-    stdout: res.stdout ? res.stdout.trim() : '',
-    stderr: res.stderr ? res.stderr.trim() : ''
-  };
-}
-
-/**
- * Represents a stored session record tracking agent operational metadata and status.
- */
-export interface SessionRecord {
-  id: string;
-  agent: string;
-  mode: 'code' | 'review';
-  task: string;
-  status: string;
-  timestamp: string;
+export function runGit(
+  args: string[],
+  cwd: string = process.cwd()
+): { success: boolean; stdout: string; stderr: string } {
+  return coreRunGit(args, cwd);
 }
 
 /**
@@ -118,29 +77,17 @@ export interface SessionRecord {
  * @returns An array of parsed SessionRecord objects.
  */
 export function loadSessions(targetDir: string = process.cwd()): SessionRecord[] {
-  const dirs = getProjectDirs(targetDir);
-  const sessionsPath = path.join(dirs.julesDir, 'sessions.json');
-  if (!fs.existsSync(sessionsPath)) return [];
-  try {
-    const data = JSON.parse(fs.readFileSync(sessionsPath, 'utf8'));
-    return Array.isArray(data) ? data : [];
-  } catch {
-    return [];
-  }
+  return coreLoadSessions(targetDir);
 }
 
 /**
- * Persists an array of session records to the local state file.
- * Creates the `.jules-companion` directory if it does not already exist.
+ * Atomically writes an updated array of session records to the local state file.
  *
- * @param sessions - The array of SessionRecord objects to save.
+ * @param sessions - An array of updated SessionRecord objects to persist.
  * @param targetDir - The root project directory containing the `.jules-companion` folder.
  */
 export function saveSessions(sessions: SessionRecord[], targetDir: string = process.cwd()): void {
-  const dirs = getProjectDirs(targetDir);
-  const sessionsPath = path.join(dirs.julesDir, 'sessions.json');
-  fs.mkdirSync(dirs.julesDir, { recursive: true });
-  fs.writeFileSync(sessionsPath, JSON.stringify(sessions, null, 2), 'utf8');
+  coreSaveSessions(sessions, targetDir);
 }
 
 /**
@@ -160,8 +107,8 @@ export function getFormattedDateDDMMYYYY(date: Date = new Date()): string {
 /**
  * Runs comprehensive diagnostic environment integrity checks.
  *
- * @param {string} [targetDir=process.cwd()] - Target project directory path.
- * @returns {{ ok: boolean; checks: Record<string, string> }} Diagnostic check results mapping status strings.
+ * @param targetDir - Target project directory path (defaults to current working directory).
+ * @returns Diagnostic check results mapping status strings.
  */
 export function runDoctorChecks(targetDir: string = process.cwd()): { ok: boolean; checks: Record<string, string> } {
   const checks: Record<string, string> = {};
@@ -204,9 +151,9 @@ export function runDoctorChecks(targetDir: string = process.cwd()): { ok: boolea
 /**
  * Reads critical learnings logged in `.jules/<agentName>.md`.
  *
- * @param {string} agentName - The specialized agent identifier (e.g. 'annotator').
- * @param {string} [targetDir=process.cwd()] - Target project directory path.
- * @returns {string} The raw markdown contents of the agent journal.
+ * @param agentName - The specialized agent identifier (e.g. 'annotator').
+ * @param targetDir - Target project directory path (defaults to current working directory).
+ * @returns The raw markdown contents of the agent journal.
  */
 export function readAgentJournal(agentName: string, targetDir: string = process.cwd()): string {
   const journalPath = path.join(targetDir, '.jules', `${agentName.toLowerCase()}.md`);
@@ -219,10 +166,12 @@ export function readAgentJournal(agentName: string, targetDir: string = process.
 /**
  * Scans `docs/jules-reviews/` for markdown review reports generated by agents in review mode.
  *
- * @param {string} [targetDir=process.cwd()] - Target project directory path.
- * @returns {Array<{ fileName: string; path: string; sizeBytes: number }>} List of review report metadata.
+ * @param targetDir - Target project directory path (defaults to current working directory).
+ * @returns List of review report metadata.
  */
-export function getReviewReports(targetDir: string = process.cwd()): Array<{ fileName: string; path: string; sizeBytes: number }> {
+export function getReviewReports(
+  targetDir: string = process.cwd()
+): Array<{ fileName: string; path: string; sizeBytes: number }> {
   const reviewsDir = path.join(targetDir, 'docs', 'jules-reviews');
   if (!fs.existsSync(reviewsDir)) return [];
   const files = fs.readdirSync(reviewsDir);
@@ -242,13 +191,13 @@ export function getReviewReports(targetDir: string = process.cwd()): Array<{ fil
 /**
  * Programmatically scaffolds a new custom specialized agent template file and updates `registry.json`.
  *
- * @param {string} name - The lowercase unique identifier for the custom agent.
- * @param {string} role - The human-readable title/role description.
- * @param {string} directives - The core directives and execution instructions.
- * @param {string[]} boundariesDo - List of allowed actions (Always do).
- * @param {string[]} boundariesDont - List of forbidden actions (Never do).
- * @param {string} [targetDir=process.cwd()] - Target project directory path.
- * @returns {{ agentFile: string }} Object containing the path to the newly created agent template.
+ * @param name - The lowercase unique identifier for the custom agent.
+ * @param role - The human-readable title/role description.
+ * @param directives - The core directives and execution instructions.
+ * @param boundariesDo - List of allowed actions (Always do).
+ * @param boundariesDont - List of forbidden actions (Never do).
+ * @param targetDir - Target project directory path (defaults to current working directory).
+ * @returns Object containing the path to the newly created agent template.
  */
 export function createCustomAgentScaffold(
   name: string,
@@ -304,4 +253,3 @@ ${dontsText}
 
   return { agentFile: agentFilePath };
 }
-
