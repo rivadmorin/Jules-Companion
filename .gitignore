@@ -1,45 +1,110 @@
-# Node.js dependencies & build outputs
-node_modules/
-dist/
-coverage/
-.nyc_output/
+# ==============================================================================
+# Jules Companion - Comprehensive Git Ignore
+# Excludes non-system artifacts: runtime states, build bundles, caches, secrets,
+# evaluation outputs, temporary scratchpads, and OS/editor junk.
+# ==============================================================================
 
-# Jules Companion local state & runtime directories
+# 1. Dependencies & Package Managers
+node_modules/
+.pnp/
+.pnp.js
+
+# 2. Build Outputs, Compilations & Bundles
+dist/
+build/
+out/
+*.tsbuildinfo
+.esbuild/
+
+# 3. Jules Companion Runtime, Sessions & Operational State
 .jules-companion/
 scratch/
+*.patch
+*.diff
+.sessions.lock
+*.sessions.lock
+*.lock
+!package-lock.json
 
-# Planning & temporary working files
+# 4. Generated Reviews, Reports & Evaluation Benchmark Outputs
+docs/jules-reviews/*
+!docs/jules-reviews/.gitkeep
+docs/jules-reports/*
+!docs/jules-reports/.gitkeep
+evals/results.json
+evals/feedback.json
+evals/review.html
+
+# 5. Testing, Code Coverage & Temporary Test Directories
+coverage/
+.nyc_output/
+temp_*/
+tmp/
+
+# 6. AI Agent Scratchpads, Session Brain & Task Planning (Manus/Antigravity)
 task_plan.md
 findings.md
 progress.md
-temp_*/
+.gemini/
+.agents/
+.claude/
+.codex/
+.cursor/
+.cursorrules.local
 
-# Environment variables & secrets
+# 7. Environment Variables, Local Credentials & Secrets
 .env
 .env.local
 .env.*.local
 *.env
+*.pem
+*.key
+*.cert
 
-# Logs and debug files
+# 8. Python Runtime & Cache (Evals Simulation & Grading Suite)
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.venv/
+venv/
+
+# 9. Architectural Sensors & Context Graph Local Caches (Sentrux & Graft)
+/graft/
+.sentrux/cache/
+.sentrux/*.cache
+.sentrux/baseline.json
+
+# 10. Logs & Debug Traces
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# System & Editor files
+# 11. System & OS Metadata
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
 desktop.ini
 *.tmp
 *.bak
 *.swp
+*.swo
+*~
+
+# 12. IDE & Editor Workspaces
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
 .idea/
-
-# graft's local graph cache — regenerable, not committed (run `graft build`).
-/graft/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
