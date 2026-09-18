@@ -189,20 +189,45 @@ Hasil validasi: **`✓ All rules pass (0 violations)`**.
 
 ## 5. Cheatsheet Praktis untuk Pengembang & Agen AI
 
-| Kebutuhan / Workflow | Perintah Cepat | Token Saved |
-| :--- | :--- | :---: |
-| **Orientasi arsitektur repo** | `graft map` | ~99% |
-| **Melihat API file instan** | `graft skeleton <file>` | ~99% |
-| **Cek blast radius perubahan** | `graft callers <simbol> --depth 2` | ~98% |
-| **Cek keselarasan graf kode** | `graft check` | Instant ($0) |
-| **Validasi guardrail arsitektur** | `sentrux check .` | Instant ($0) |
-| **Eksekusi build + auto-sync** | `npm run build` | - |
-| **Menjalankan suite pengujian** | `npm test` (56/56 passed) | - |
-| **Audit dokumentasi TSDoc** | `npx tsx --test tests/doc_coverage.test.ts` | - |
+| Kebutuhan / Workflow | Perintah Cepat | Keterangan & Dampak |
+| :--- | :--- | :--- |
+| **Pipeline Verifikasi Terpadu** | `npm run verify` | Menjalankan `npm test` (56 tests) + `sentrux check .` + `graft check`. |
+| **Visualisasi Graf Interaktif** | `npm run graft:viz` | Membuka antarmuka grafis 2D/3D interaktif di browser lokal (`localhost:4400`). |
+| **Ekspor Graf Visual Mandiri** | `npm run graft:export` | Menghasilkan berkas mandiri [`docs/architecture-graph/index.html`](file:///e:/Data%20Utama/Coding/Antigravity/Jules-Companion/docs/architecture-graph/index.html) (135 nodes). |
+| **Cek Blast Radius Git Diff** | `npm run graft:blast` | Menghitung simbol/area mana yang terpengaruh oleh commit/diff Git terakhir. |
+| **Orientasi Topologi Arsitektur** | `npm run graft:map` | Kluster direktori, hub utama, dan hotspot (hemat ~99% token). |
+| **Melihat API File Instan** | `graft skeleton <file>` | Ekstraksi tanda tangan fungsi & interface (~200 token). |
+| **Cek Blast Radius Simbol** | `graft callers <simbol> --depth 2` | Pelacakan transitive pemanggil sebelum refactoring/rename. |
+| **Cek Keselarasan Graf Kode** | `npm run graft:check` | Memvalidasi keselarasan wiring graph terhadap disk ($0, no LLM). |
+| **Validasi Guardrail Arsitektur** | `npm run sentrux:check` | Audit aturan 6-tier layer arsitektur Sentrux (0 violations). |
+| **Eksekusi Build & Sync Skill** | `npm run build` | Menghasilkan `dist/*.js` dan auto-sync ke IDE skill global. |
+| **Audit Dokumentasi TSDoc** | `npx tsx --test tests/doc_coverage.test.ts` | 100% exported symbol terkomentari TSDoc valid. |
 
 ---
 
-## 6. Panduan Menambahkan Fitur / Tool Baru di Masa Depan
+## 6. Visualisasi Graf Interaktif & Ekspor Mandiri
+
+Arsitektur 42 berkas dan 350 relasi ketergantungan Jules-Companion kini dapat dieksplorasi secara visual:
+1. **Live Local Server**:
+   Jalankan `npm run graft:viz` di terminal Anda. Browser akan otomatis terbuka di port `4400` dengan navigasi graf 2D/3D, filter dependensi, dan tab outline kode.
+2. **Offline Standalone Report**:
+   Jalankan `npm run graft:export` untuk memperbarui berkas HTML mandiri di [`docs/architecture-graph/index.html`](file:///e:/Data%20Utama/Coding/Antigravity/Jules-Companion/docs/architecture-graph/index.html). Berkas ini dapat dibuka langsung dengan browser (klik dua kali) tanpa perlu menjalankan server.
+
+---
+
+## 7. Native MCP Server Tools Graft untuk AI Agent
+
+Alat-alat graf kini terdaftar secara native di katalog MCP IDE (`C:\Users\MABES POLRI_SRENA\.gemini\antigravity-ide\mcp\graft\`) sehingga AI Agent dapat mengakses arsitektur secara terstruktur melalui RPC:
+- `graft_find_code`: Pencarian semantik berperingkat dengan cuplikan baris kode presisi.
+- `graft_trace_calls`: Penelusuran caller, callee, dan blast radius transitif (`depth: "all"`).
+- `graft_file_api`: Pengambilan struktur API dan interface per file (~200 token).
+- `graft_repo_map`: Peta orientasi repositori berbasis alokasi token minimum.
+- `graft_find_all`: Pencarian regex terstruktur berdasarkan enclosing symbol.
+- `graft_check_freshness`: Verifikasi keselarasan graf kode secara real-time.
+
+---
+
+## 8. Panduan Menambahkan Fitur & Roadmap Deep Semantic Layer
 
 1. **Jika Menambahkan Tool MCP Baru**:
    - Cukup tambahkan objek `McpToolDefinition` baru ke dalam salah satu modul di `scripts/mcp/tools/` (`session_tools.ts`, `agent_tools.ts`, atau `system_tools.ts`).
@@ -211,3 +236,6 @@ Hasil validasi: **`✓ All rules pass (0 violations)`**.
    - Tambahkan fungsi typed wrapper di [`scripts/client/jules_api.ts`](file:///e:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/client/jules_api.ts).
 3. **Jika Menambahkan Tipe Data / Status Baru**:
    - Definisikan di [`scripts/core/types.ts`](file:///e:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/core/types.ts) agar konsisten di seluruh lapisan sistem.
+4. **Roadmap Deep Semantic Layer (`graft build --deep`)**:
+   - Jika di masa mendatang Anda ingin menghubungkan API Key LLM (Gemini/OpenAI/Claude), Anda dapat menjalankan `graft build --deep` untuk menghasilkan ringkasan naratif konseptual per simbol. Fitur ini bersifat opsional karena Tier 1 (Wiring Graph) saat ini sudah memberikan akurasi navigasi 100% gratis.
+

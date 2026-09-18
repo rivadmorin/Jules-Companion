@@ -31,6 +31,8 @@ docs/jules-reviews/*
 !docs/jules-reviews/.gitkeep
 docs/jules-reports/*
 !docs/jules-reports/.gitkeep
+docs/architecture-graph/*
+!docs/architecture-graph/.gitkeep
 evals/results.json
 evals/feedback.json
 evals/review.html

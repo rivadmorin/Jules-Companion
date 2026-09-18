@@ -14,7 +14,14 @@
     "merge": "node dist/merge_session.js",
     "client": "node dist/jules_client.js",
     "test": "tsx --test tests/*.test.ts",
-    "mcp": "node dist/mcp_server.js"
+    "mcp": "node dist/mcp_server.js",
+    "graft:check": "graft check",
+    "graft:map": "graft map",
+    "graft:blast": "graft blast",
+    "graft:viz": "graft viz",
+    "graft:export": "graft viz --export docs/architecture-graph --no-open",
+    "sentrux:check": "sentrux check .",
+    "verify": "npm test && npm run sentrux:check && npm run graft:check"
   },
   "keywords": [
     "jules",
