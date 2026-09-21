@@ -6,6 +6,7 @@ echo "🐙 Installing Jules Companion to $INSTALL_DIR..."
 
 if [ -d "$INSTALL_DIR/.git" ]; then
   echo "Updating existing installation..."
+  git -C "$INSTALL_DIR" reset --hard HEAD >/dev/null 2>&1 || true
   git -C "$INSTALL_DIR" pull --ff-only
 else
   if [ -d "$INSTALL_DIR" ]; then

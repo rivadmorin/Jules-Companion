@@ -10,6 +10,7 @@ if (Test-Path "$InstallDir\.env") {
 
 if (Test-Path "$InstallDir\.git") {
     Write-Host "Updating existing installation..." -ForegroundColor Yellow
+    git -C "$InstallDir" reset --hard HEAD | Out-Null
     git -C "$InstallDir" pull --ff-only
 } else {
     if (Test-Path $InstallDir) {
