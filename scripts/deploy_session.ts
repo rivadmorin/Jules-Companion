@@ -1,3 +1,8 @@
+/**
+ * Jules session deployment, prompt fusion, and orchestration engine.
+ * @module deploy_session
+ */
+
 import * as fs from 'fs';
 import * as path from 'path';
 import { request, getApiKey, JulesSource } from './jules_client';

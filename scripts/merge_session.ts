@@ -1,3 +1,8 @@
+/**
+ * Two-stage session merge, safety gate verification, and patch inspection engine.
+ * @module merge_session
+ */
+
 import * as fs from 'fs';
 import * as path from 'path';
 import { request, getApiKey } from './jules_client';

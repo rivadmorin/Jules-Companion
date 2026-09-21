@@ -7,14 +7,27 @@ const SCRIPTS_DIR = path.join(process.cwd(), 'scripts');
 const AGENTS_DIR = path.join(process.cwd(), 'references', 'agents');
 
 describe('Enhanced TSDoc & Agent Documentation Coverage Auditor', () => {
-  test('100% of exported symbols in scripts/ must have valid TSDoc block comments with @param/@returns tags', () => {
-    const files = fs.readdirSync(SCRIPTS_DIR).filter(f => f.endsWith('.ts'));
-    assert.ok(files.length > 0, 'Scripts directory should contain TypeScript source files');
+  function getTsFilesRecursive(dir: string): string[] {
+    let results: string[] = [];
+    for (const item of fs.readdirSync(dir, { withFileTypes: true })) {
+      const fullPath = path.join(dir, item.name);
+      if (item.isDirectory()) {
+        results = results.concat(getTsFilesRecursive(fullPath));
+      } else if (item.name.endsWith('.ts')) {
+        results.push(fullPath);
+      }
+    }
+    return results;
+  }
+
+  test('100% of exported symbols across all scripts/**/*.ts must have valid TSDoc block comments with @param tags', () => {
+    const files = getTsFilesRecursive(SCRIPTS_DIR);
+    assert.ok(files.length >= 15, 'Scripts directory tree should contain all TypeScript source files');
 
     const missingDocs: string[] = [];
 
-    for (const file of files) {
-      const filePath = path.join(SCRIPTS_DIR, file);
+    for (const filePath of files) {
+      const file = path.relative(SCRIPTS_DIR, filePath);
       const content = fs.readFileSync(filePath, 'utf8');
       const lines = content.split('\n');
 
@@ -98,6 +111,24 @@ describe('Enhanced TSDoc & Agent Documentation Coverage Auditor', () => {
       assert.fail(`Missing agent documentation template files:\n${missingAgentDocs.join('\n')}`);
     } else {
       assert.ok(true, `All ${agentKeys.length} agents in registry.json have valid markdown template files.`);
+    }
+  });
+
+  test('100% of TypeScript files in scripts/ must have a top-level @module docblock header', () => {
+    const files = getTsFilesRecursive(SCRIPTS_DIR);
+    const missingModuleHeaders: string[] = [];
+
+    for (const filePath of files) {
+      const content = fs.readFileSync(filePath, 'utf8');
+      if (!content.includes('@module')) {
+        missingModuleHeaders.push(path.relative(SCRIPTS_DIR, filePath));
+      }
+    }
+
+    if (missingModuleHeaders.length > 0) {
+      assert.fail(`Files missing @module header:\n${missingModuleHeaders.join('\n')}`);
+    } else {
+      assert.ok(true, `All ${files.length} TypeScript files have valid @module docblocks.`);
     }
   });
 });

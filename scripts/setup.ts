@@ -1,3 +1,8 @@
+/**
+ * Workspace staging initialization, dependency detection, and self-healing environment setup.
+ * @module setup
+ */
+
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';

@@ -1,3 +1,8 @@
+/**
+ * Dynamic agent template parser and registry compiler.
+ * @module generate_registry
+ */
+
 import * as fs from 'fs';
 import * as path from 'path';
 

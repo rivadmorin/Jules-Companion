@@ -1,5 +1,6 @@
 /**
- * @file sync_global.ts
+ * Global IDE skill and MCP schema synchronizer.
+ * @module sync_global
  * @description Automatically synchronizes local workspace build artifacts, scripts,
  * references, and MCP tool JSON schemas into the global IDE skill directory
  * (~/.gemini/config/skills/jules-companion) and MCP schema repository (~/.gemini/antigravity-ide/mcp/jules-companion).
