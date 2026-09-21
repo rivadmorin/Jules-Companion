@@ -13,8 +13,7 @@ Aplikasi ini berfungsi sebagai ko-pilot pintar untuk mengintegrasikan alur kerja
 * **🔌 Native MCP Server**: Terhubung langsung secara seamless ke klien AI berbasis MCP (Antigravity IDE, Claude Desktop, OpenCode, Cursor) yang menyediakan tools & resource status sesi real-time.
 * **🤖 43 Agen Spesialis**: Agen yang telah dikonfigurasi untuk peran spesifik (misal: *Bolt* untuk performa, *Sentinel* untuk keamanan, *Architect* untuk desain struktur).
 * **🛡️ Penggabungan Patch Dua-Tahap**: Patch dari cloud ditarik ke dalam cabang ulasan (review branch) terisolasi terlebih dahulu. Anda menginspeksi laporan Markdown sebelum menggabungkannya ke `main`.
-* **🔄 Mesin Auto-Process**: Menangani status penahanan sesi Jules cloud secara otomatis (seperti `AWAITING_PLAN_APPROVAL` & `AWAITING_USER_INPUT`).
-* **💻 Konsol TUI Interaktif**: Antarmuka terminal fallback dengan navigasi tombol panah untuk manajemen manual.
+* **⚡ Core Programatik & CLI Bersih**: Eksekusi fungsi bertipe secara langsung tanpa mutasi proses global, plus perintah CLI praktis (`npm run deploy`, `npm run merge`, `npm run setup`).
 
 ---
 

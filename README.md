@@ -13,8 +13,7 @@ It acts as an intelligent co-pilot to orchestrate local workflows (Git + GitHub 
 * **🔌 Native MCP Server**: Connects seamlessly with any MCP-compliant AI client (Antigravity IDE, Claude Desktop, OpenCode, Cursor) exposing high-level native tools & real-time session resources.
 * **🤖 43 Specialist Agents**: Pre-configured agents with specialized domain roles (e.g., *Bolt* for performance, *Sentinel* for security, *Architect* for structural design).
 * **🛡️ Two-Stage Patch Merge**: Cloud patches are pulled into an isolated review branch first. You inspect the generated Markdown report before merging into `main`.
-* **🔄 Auto-Process Engine**: Automatically monitors and resolves Jules cloud session blocking states (such as `AWAITING_PLAN_APPROVAL` & `AWAITING_USER_INPUT`).
-* **💻 Interactive TUI Console**: Fallback terminal UI with arrow-key navigation for direct manual management.
+* **⚡ Clean Programmatic Core & CLI**: Direct typed execution without global process mutations, plus convenient CLI commands (`npm run deploy`, `npm run merge`, `npm run setup`).
 
 ---
 
