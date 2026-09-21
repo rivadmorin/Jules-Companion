@@ -11,7 +11,7 @@ Aplikasi ini berfungsi sebagai ko-pilot pintar untuk mengintegrasikan alur kerja
 ## ⚡ Fitur Utama
 
 * **🔌 Native MCP Server**: Terhubung langsung secara seamless ke klien AI berbasis MCP (Antigravity IDE, Claude Desktop, OpenCode, Cursor) yang menyediakan tools & resource status sesi real-time.
-* **🤖 30 Agen Spesialis**: Agen yang telah dikonfigurasi untuk peran spesifik (misal: *Bolt* untuk performa, *Sentinel* untuk keamanan, *Architect* untuk desain struktur).
+* **🤖 43 Agen Spesialis**: Agen yang telah dikonfigurasi untuk peran spesifik (misal: *Bolt* untuk performa, *Sentinel* untuk keamanan, *Architect* untuk desain struktur).
 * **🛡️ Penggabungan Patch Dua-Tahap**: Patch dari cloud ditarik ke dalam cabang ulasan (review branch) terisolasi terlebih dahulu. Anda menginspeksi laporan Markdown sebelum menggabungkannya ke `main`.
 * **🔄 Mesin Auto-Process**: Menangani status penahanan sesi Jules cloud secara otomatis (seperti `AWAITING_PLAN_APPROVAL` & `AWAITING_USER_INPUT`).
 * **💻 Konsol TUI Interaktif**: Antarmuka terminal fallback dengan navigasi tombol panah untuk manajemen manual.
@@ -86,21 +86,47 @@ Tambahkan `jules-companion` ke konfigurasi MCP di Klien AI Anda (`mcp_config.jso
 
 ---
 
-## 🚀 Instalasi Satu-Baris
+## 🚀 Panduan Instalasi & Memulai Cepat
 
-Instal `jules-companion` secara global pada sistem Anda:
+### Prasyarat
+* **Node.js**: v18.0.0 atau lebih tinggi (teruji pada Node v20 & v24 LTS)
+* **Git** & **GitHub CLI** (`gh` CLI opsional, direkomendasikan untuk pembuatan PR otomatis)
+* **Google Jules API Key**: Dapatkan dari [Google Jules Console](https://jules.google.com/)
 
-### Linux / macOS
-```sh
-curl -sSL https://raw.githubusercontent.com/rivadmorin/Jules-Companion/main/install.sh | bash
+### Langkah 1: Kloning dan Build
+```bash
+# Kloning repositori
+git clone https://github.com/rivadmorin/Jules-Companion.git
+cd Jules-Companion
+
+# Instal dependensi dan build artefak TypeScript
+npm install
+npm run build
+
+# Jalankan penyiapan staging workspace otomatis
+npm run setup
+```
+> [!NOTE]
+> Perintah `npm run build` secara otomatis memicu skrip `postbuild` yang menyinkronkan seluruh artefak terkompilasi, template prompt agen, dan skema MCP langsung ke direktori global IDE (`~/.gemini/config/skills/jules-companion` dan `~/.gemini/antigravity-ide/mcp/jules-companion`).
+
+### Langkah 2: Konfigurasi Environment
+Buat file `.env` pada root repositori:
+```env
+JULES_API_KEY=kunci_api_jules_anda_di_sini
 ```
 
-### Windows (PowerShell)
-```powershell
-powershell -c "irm https://raw.githubusercontent.com/rivadmorin/Jules-Companion/main/install.ps1 | iex"
+### Langkah 3: Daftarkan ke Klien MCP
+Tambahkan `jules-companion` ke file konfigurasi MCP IDE Anda (`mcp_config.json`):
+```json
+{
+  "mcpServers": {
+    "jules-companion": {
+      "command": "node",
+      "args": ["<path-ke-Jules-Companion>/dist/mcp_server.js"]
+    }
+  }
+}
 ```
-
-*Perintah ini mengkloning repositori ke `~/.gemini/config/skills/jules-companion`, membangun artefak TypeScript, menginstal dependensi, dan membuat pintasan global.*
 
 ---
 
@@ -130,14 +156,22 @@ Untuk penjelasan komprehensif mengenai arsitektur aplikasi, peran agen, dan logi
 
 ## 🧹 Hapus Instalasi (Uninstall)
 
-Untuk menghapus `jules-companion` secara bersih:
+Untuk menghapus `jules-companion` secara bersih dari sistem Anda:
 
-### Linux / macOS
-```sh
-curl -sSL https://raw.githubusercontent.com/rivadmorin/Jules-Companion/main/uninstall.sh | bash
-```
+### Langkah 1: Hapus Konfigurasi Server MCP
+Hapus entri `"jules-companion"` dari file `mcp_config.json` atau pengaturan MCP pada IDE Anda.
 
-### Windows (PowerShell)
-```powershell
-powershell -c "irm https://raw.githubusercontent.com/rivadmorin/Jules-Companion/main/uninstall.ps1 | iex"
-```
+### Langkah 2: Hapus Skill & Skema Global IDE
+* **Linux / macOS:**
+  ```bash
+  rm -rf ~/.gemini/config/skills/jules-companion
+  rm -rf ~/.gemini/antigravity-ide/mcp/jules-companion
+  ```
+* **Windows (PowerShell):**
+  ```powershell
+  Remove-Item -Recurse -Force "$HOME\.gemini\config\skills\jules-companion"
+  Remove-Item -Recurse -Force "$HOME\.gemini\antigravity-ide\mcp\jules-companion"
+  ```
+
+### Langkah 3: Hapus Repositori Proyek
+Hapus folder lokal `Jules-Companion` dan folder `.jules-companion/` yang tersimpan pada direktori kerja proyek Anda.
