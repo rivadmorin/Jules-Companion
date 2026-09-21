@@ -37,37 +37,40 @@ export function syncGlobalInstallation(targetWorkspaceDir: string = process.cwd(
     fs.mkdirSync(globalSkillDir, { recursive: true });
   }
 
-  // 1. Sync dist directory
-  const localDist = path.join(targetWorkspaceDir, 'dist');
-  const globalDist = path.join(globalSkillDir, 'dist');
-  if (fs.existsSync(localDist)) {
-    fs.cpSync(localDist, globalDist, { recursive: true });
-    syncedFilesCount += fs.readdirSync(localDist).length;
-  }
+  const isSelf = path.resolve(targetWorkspaceDir).toLowerCase() === path.resolve(globalSkillDir).toLowerCase();
 
+  if (!isSelf) {
+    // 1. Sync dist directory
+    const localDist = path.join(targetWorkspaceDir, 'dist');
+    const globalDist = path.join(globalSkillDir, 'dist');
+    if (fs.existsSync(localDist)) {
+      fs.cpSync(localDist, globalDist, { recursive: true });
+      syncedFilesCount += fs.readdirSync(localDist).length;
+    }
 
-  // 2. Sync scripts directory
-  const localScripts = path.join(targetWorkspaceDir, 'scripts');
-  const globalScripts = path.join(globalSkillDir, 'scripts');
-  if (fs.existsSync(localScripts)) {
-    fs.cpSync(localScripts, globalScripts, { recursive: true });
-    syncedFilesCount += fs.readdirSync(localScripts).length;
-  }
+    // 2. Sync scripts directory
+    const localScripts = path.join(targetWorkspaceDir, 'scripts');
+    const globalScripts = path.join(globalSkillDir, 'scripts');
+    if (fs.existsSync(localScripts)) {
+      fs.cpSync(localScripts, globalScripts, { recursive: true });
+      syncedFilesCount += fs.readdirSync(localScripts).length;
+    }
 
-  // 3. Sync references directory
-  const localRef = path.join(targetWorkspaceDir, 'references');
-  const globalRef = path.join(globalSkillDir, 'references');
-  if (fs.existsSync(localRef)) {
-    fs.cpSync(localRef, globalRef, { recursive: true });
-  }
+    // 3. Sync references directory
+    const localRef = path.join(targetWorkspaceDir, 'references');
+    const globalRef = path.join(globalSkillDir, 'references');
+    if (fs.existsSync(localRef)) {
+      fs.cpSync(localRef, globalRef, { recursive: true });
+    }
 
-  // 4. Sync key root configuration & documentation files
-  const rootFiles = ['SKILL.md', 'README.md', 'README.id.md', 'package.json'];
-  for (const rf of rootFiles) {
-    const src = path.join(targetWorkspaceDir, rf);
-    if (fs.existsSync(src)) {
-      fs.copyFileSync(src, path.join(globalSkillDir, rf));
-      syncedFilesCount++;
+    // 4. Sync key root configuration & documentation files
+    const rootFiles = ['SKILL.md', 'README.md', 'README.id.md', 'package.json'];
+    for (const rf of rootFiles) {
+      const src = path.join(targetWorkspaceDir, rf);
+      if (fs.existsSync(src)) {
+        fs.copyFileSync(src, path.join(globalSkillDir, rf));
+        syncedFilesCount++;
+      }
     }
   }
 
