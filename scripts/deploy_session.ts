@@ -59,21 +59,221 @@ function validateAgents(agentsStr: string, registryPath: string): string[] {
 }
 
 /**
+ * Options for deploying a Jules session.
+ */
+export interface DeploySessionOptions {
+  type: 'interactive' | 'review' | 'start';
+  agents: string;
+  task: string;
+  mode?: 'code' | 'review';
+  branch?: string;
+  targetDir?: string;
+}
+
+/**
+ * Result of deploying a Jules session.
+ */
+export interface DeploySessionResult {
+  success: boolean;
+  output: string;
+  sessions?: any[];
+  error?: string;
+}
+
+/**
+ * Core programmatic deployment function for Jules sessions.
+ *
+ * @param options - Deployment configuration parameters.
+ * @returns Object indicating success status, output logs, and session records.
+ */
+export async function deploySessionCore(options: DeploySessionOptions): Promise<DeploySessionResult> {
+  const modeStr = String(options.mode || 'code').toLowerCase();
+  if (modeStr !== 'code' && modeStr !== 'review') {
+    return {
+      success: false,
+      output: '',
+      error: `Invalid mode '${options.mode}'. Allowed modes are 'code' or 'review'.`
+    };
+  }
+  const mode = modeStr as 'code' | 'review';
+
+  const targetDir = options.targetDir ? String(options.targetDir) : process.cwd();
+  const dirs = getProjectDirs(targetDir);
+
+  const registryPath = path.join(dirs.agentsDir, 'registry.json');
+  const fallbackRegistryPath = path.join(__dirname, '..', 'references', 'agents', 'registry.json');
+  const activeRegistryPath = fs.existsSync(registryPath) ? registryPath : fallbackRegistryPath;
+
+  // 1. Agent Name Validation
+  const invalidAgents = validateAgents(String(options.agents), activeRegistryPath);
+  if (invalidAgents.length > 0) {
+    let errorMsg = `Invalid agent name(s) specified: ${invalidAgents.join(', ')}`;
+    if (fs.existsSync(activeRegistryPath)) {
+      try {
+        const registry = JSON.parse(fs.readFileSync(activeRegistryPath, 'utf8'));
+        errorMsg += `\nAvailable valid agents: ${Object.keys(registry.agents).join(', ')}`;
+      } catch (_) {}
+    }
+    return { success: false, output: '', error: errorMsg };
+  }
+
+  // 2. Git Remote Check
+  const gitRepo = getGitRemoteRepo(targetDir);
+  if (!gitRepo) {
+    return {
+      success: false,
+      output: '',
+      error: 'No git remote origin url configured.\nJules-Companion requires that this repository is pushed to GitHub before deploying cloud sessions.'
+    };
+  }
+
+  const apiKey = getApiKey(targetDir);
+  if (!apiKey) {
+    return {
+      success: false,
+      output: '',
+      error: 'JULES_API_KEY not found in environment or .env file.'
+    };
+  }
+
+  const headers = { 'X-Goog-Api-Key': apiKey };
+  const startingBranch = String(options.branch || getCurrentBranch(targetDir));
+  const outputLogs: string[] = [];
+
+  try {
+    outputLogs.push(`Matching repository '${gitRepo}' with Jules sources...`);
+    const sourcesData = await request('https://jules.googleapis.com/v1alpha/sources', { headers });
+    const sources: JulesSource[] = sourcesData.sources || [];
+
+    let matchedSource: JulesSource | null = null;
+    const searchStr = gitRepo.toLowerCase();
+    matchedSource = sources.find(s => s.name.toLowerCase().includes(searchStr)) || null;
+
+    if (!matchedSource && sources.length > 0) {
+      matchedSource = sources[0];
+      outputLogs.push(`Warning: Exact origin '${gitRepo}' not matched. Falling back to source: ${matchedSource.name}`);
+    }
+
+    if (!matchedSource) {
+      let err = `Could not find any Jules source for repository: ${gitRepo}\nAvailable sources:`;
+      sources.forEach(s => err += `\n - ${s.name}`);
+      return { success: false, output: outputLogs.join('\n'), error: err };
+    }
+
+    const sourceName = matchedSource.name;
+    outputLogs.push(`Using source: ${sourceName}`);
+
+    const typeStr = String(options.type).toLowerCase();
+    const requirePlanApproval = typeStr === 'review' || typeStr === 'interactive';
+    const agentList = String(options.agents).split(',').map(a => a.trim().toLowerCase());
+
+    const localSessions = loadSessions(targetDir);
+    const today = new Date().toISOString().split('T')[0];
+    const taskSlug = options.task ? String(options.task).slice(0, 30).toLowerCase().replace(/[^a-z0-9]+/g, '-') : 'task';
+
+    const deployPromises = agentList.map(async (agent) => {
+      let outputBuffer = `\nPreparing deployment for agent: ${agent} (Mode: ${mode.toUpperCase()})...\n`;
+
+      const templatePaths = [
+        path.join(dirs.agentsDir, `${agent}.md`),
+        path.join(__dirname, '..', 'references', 'agents', `${agent}.md`)
+      ];
+
+      let templateContent = '';
+      for (const tp of templatePaths) {
+        if (fs.existsSync(tp)) {
+          templateContent = fs.readFileSync(tp, 'utf8');
+          break;
+        }
+      }
+
+      const currentDateDDMMYYYY = getFormattedDateDDMMYYYY();
+
+      const dateAndJournalDirective = `⚠️ DATE & JOURNAL STRICT DIRECTIVES:
+1. CURRENT SESSION DATE: ${currentDateDDMMYYYY} (Format: DD-MM-YYYY).
+2. Target Journal File: .jules/${agent}.md
+3. Format entry header strictly as: ## ${currentDateDDMMYYYY} - [Title]
+4. ALWAYS APPEND new entries to the end of .jules/${agent}.md. NEVER overwrite, clear, or delete existing entries.
+5. NEVER invent or hallucinate past dates. Use strictly '${currentDateDDMMYYYY}'.`;
+
+      const reviewFileName = `docs/jules-reviews/${today}-${agent}-${taskSlug}.md`;
+
+      const modeDirective = mode === 'review'
+        ? `⚠️ MODE STRICT DIRECTIVE: REVIEW-ONLY MODE\nYou are operating in REVIEW-ONLY mode.\n1. DO NOT modify, edit, or delete any application code files (.ts, .js, .py, .go, .rs, .json, etc.).\n2. Write ALL your findings, analysis, code snippets, and refactoring recommendations exclusively into a single Markdown file located at:\n   \`${reviewFileName}\`\n3. Provide clear line numbers, problem descriptions, and proposed code fixes inside the Markdown document so the main agent can review them.`
+        : `⚠️ MODE DIRECTIVE: CODE IMPLEMENTATION MODE\nYou are operating in CODE mode. Perform direct code implementation and modifications as required.`;
+
+      const combinedPrompt = `# AGENT SYSTEM & ROLE DIRECTIVES\n${templateContent}\n\n---\n# DATE & JOURNAL DIRECTIVES\n${dateAndJournalDirective}\n\n---\n# USER TASK & SPECIFIC REQUIREMENTS\n${options.task}\n\n---\n# EXECUTION MODE DIRECTIVE\n${modeDirective}`;
+
+      const payload = {
+        prompt: combinedPrompt,
+        title: `${agent}-session-${mode}`,
+        sourceContext: {
+          source: sourceName,
+          githubRepoContext: {
+            startingBranch
+          }
+        },
+        requirePlanApproval
+      };
+
+      outputBuffer += `Sending session request to Google REST API...\n`;
+      const sessionResult = await request('https://jules.googleapis.com/v1alpha/sessions', {
+        method: 'POST',
+        headers
+      }, payload);
+
+      const sessionId = sessionResult.id || (sessionResult.name ? sessionResult.name.split('/').pop() : 'UNKNOWN');
+      outputBuffer += `Session deployed successfully! Session ID: ${sessionId} (Mode: ${mode})`;
+
+      return {
+        agent,
+        output: outputBuffer,
+        sessionRecord: {
+          id: sessionId,
+          agent,
+          mode,
+          task: String(options.task),
+          status: 'launched',
+          timestamp: new Date().toISOString()
+        }
+      };
+    });
+
+    const results = await Promise.all(deployPromises);
+
+    for (const res of results) {
+      outputLogs.push(res.output);
+      localSessions.push(res.sessionRecord);
+    }
+
+    saveSessions(localSessions, targetDir);
+    outputLogs.push(`\nAll sessions registered in .jules-companion/sessions.json`);
+
+    return {
+      success: true,
+      output: outputLogs.join('\n'),
+      sessions: results.map(r => r.sessionRecord)
+    };
+
+  } catch (error: any) {
+    return {
+      success: false,
+      output: outputLogs.join('\n'),
+      error: `Deployment failed: ${error.message}`
+    };
+  }
+}
+
+/**
  * Orchestrates the deployment of a new Jules session by preparing the environment,
  * matching local Git state with Jules cloud sources, formatting the appropriate agent prompt,
  * and executing the API request.
  *
- * This function operates entirely based on parsed CLI arguments (via process.argv).
- * It handles validation of agent names, verification of Git remote origins,
- * and concurrent API dispatching if multiple agents are requested.
- *
- * @returns {Promise<void>}
- * @throws Will exit the process (process.exit(1)) if critical validation fails (e.g., missing API key, missing git remote).
+ * @returns A promise that resolves when deployment is complete.
  */
-export async function deploySession() {
+export async function deploySession(): Promise<void> {
   const params = parseArgs(process.argv.slice(2));
 
-  // Mandate core arguments: target agents, user instructions (task), and execution type
   if (!params.agents || !params.task || !params.type) {
     console.log(`
 Jules Session Deployment Helper (TypeScript)
@@ -91,200 +291,42 @@ Options:
     process.exit(1);
   }
 
-  // Mode validation: Prevent hallucinations by strict limiting.
   const modeStr = String(params.mode || 'code').toLowerCase();
   if (modeStr !== 'code' && modeStr !== 'review') {
     console.error(`Error: Invalid mode '${params.mode}'. Allowed modes are 'code' or 'review'.`);
     process.exit(1);
   }
-  const mode = modeStr as 'code' | 'review';
 
   const targetDir = params.target ? String(params.target) : process.cwd();
-  const dirs = getProjectDirs(targetDir);
+  const res = await deploySessionCore({
+    type: params.type as any,
+    agents: String(params.agents),
+    task: String(params.task),
+    mode: modeStr as any,
+    branch: params.branch ? String(params.branch) : undefined,
+    targetDir
+  });
 
-  // Try local project registry first, fallback to global install registry
-  const registryPath = path.join(dirs.agentsDir, 'registry.json');
-  const fallbackRegistryPath = path.join(__dirname, '..', 'references', 'agents', 'registry.json');
-  const activeRegistryPath = fs.existsSync(registryPath) ? registryPath : fallbackRegistryPath;
-
-  // 1. Agent Name Validation
-  const invalidAgents = validateAgents(String(params.agents), activeRegistryPath);
-  if (invalidAgents.length > 0) {
-    console.error(`Error: Invalid agent name(s) specified: ${invalidAgents.join(', ')}`);
-    // Provide a helpful fallback listing of valid options to the user if registry is readable
-    if (fs.existsSync(activeRegistryPath)) {
-      try {
-        const registry = JSON.parse(fs.readFileSync(activeRegistryPath, 'utf8'));
-        console.log('Available valid agents:', Object.keys(registry.agents).join(', '));
-      } catch (_) {}
-    }
-    process.exit(1);
+  if (res.output) {
+    console.log(res.output);
   }
-
-  // 2. Git Remote Check
-  const gitRepo = getGitRemoteRepo(targetDir);
-  if (!gitRepo) {
-    console.error('Error: No git remote origin url configured.');
-    console.error('Jules-Companion requires that this repository is pushed to GitHub before deploying cloud sessions.');
-    process.exit(1);
-  }
-
-  const apiKey = getApiKey(targetDir);
-  if (!apiKey) {
-    console.error('Error: JULES_API_KEY not found in environment or .env file.');
-    process.exit(1);
-  }
-
-  const headers = { 'X-Goog-Api-Key': apiKey };
-  const startingBranch = String(params.branch || getCurrentBranch(targetDir));
-
-  try {
-    console.log(`Matching repository '${gitRepo}' with Jules sources...`);
-    // Retrieve all active cloud source integrations linked to this Jules account
-    const sourcesData = await request('https://jules.googleapis.com/v1alpha/sources', { headers });
-    const sources: JulesSource[] = sourcesData.sources || [];
-
-    let matchedSource: JulesSource | null = null;
-
-    // Search for a Jules Cloud source that includes the local Git repository's slug (owner/repo).
-    // This mapping is crucial because Jules API expects a predefined cloud source ID (e.g., github.com/user/repo)
-    // rather than just arbitrary local paths, ensuring the cloud agent has access to the correct remote codebase.
-    const searchStr = gitRepo.toLowerCase();
-    matchedSource = sources.find(s => s.name.toLowerCase().includes(searchStr)) || null;
-
-    if (!matchedSource && sources.length > 0) {
-      // Best-effort fallback if exact match isn't found
-      matchedSource = sources[0];
-      console.warn(`Warning: Exact origin '${gitRepo}' not matched. Falling back to source: ${matchedSource.name}`);
-    }
-
-    if (!matchedSource) {
-      console.error(`Error: Could not find any Jules source for repository: ${gitRepo}`);
-      console.log('Available sources:');
-      sources.forEach(s => console.log(` - ${s.name}`));
-      process.exit(1);
-    }
-
-    const sourceName = matchedSource.name;
-    console.log(`Using source: ${sourceName}`);
-
-    const typeStr = String(params.type).toLowerCase();
-    const requirePlanApproval = typeStr === 'review' || typeStr === 'interactive';
-    const agentList = String(params.agents).split(',').map(a => a.trim().toLowerCase());
-
-    const localSessions = loadSessions();
-    const today = new Date().toISOString().split('T')[0];
-
-    // Create a URL-safe, hyphenated slug representation of the user task string for filename usage
-    const taskSlug = params.task ? String(params.task).slice(0, 30).toLowerCase().replace(/[^a-z0-9]+/g, '-') : 'task';
-
-    // We use Promise.all to concurrently deploy multiple specialized agents for the same task.
-    // This dramatically speeds up orchestration compared to sequential deployments,
-    // especially when spinning up teams (e.g., --agents=bolt,sentinel,annotator).
-    const deployPromises = agentList.map(async (agent) => {
-      let outputBuffer = `\nPreparing deployment for agent: ${agent} (Mode: ${mode.toUpperCase()})...\n`;
-
-      // Resolve agent system prompt markdown template
-      const templatePaths = [
-        path.join(dirs.agentsDir, `${agent}.md`),
-        path.join(__dirname, '..', 'references', 'agents', `${agent}.md`)
-      ];
-
-      let templateContent = '';
-      for (const tp of templatePaths) {
-        if (fs.existsSync(tp)) {
-          templateContent = fs.readFileSync(tp, 'utf8');
-          break;
-        }
-      }
-
-      const currentDateDDMMYYYY = getFormattedDateDDMMYYYY();
-
-      // Strict behavioral override injected dynamically to govern AI date formatting
-      const dateAndJournalDirective = `⚠️ DATE & JOURNAL STRICT DIRECTIVES:
-1. CURRENT SESSION DATE: ${currentDateDDMMYYYY} (Format: DD-MM-YYYY).
-2. Target Journal File: .jules/${agent}.md
-3. Format entry header strictly as: ## ${currentDateDDMMYYYY} - [Title]
-4. ALWAYS APPEND new entries to the end of .jules/${agent}.md. NEVER overwrite, clear, or delete existing entries.
-5. NEVER invent or hallucinate past dates. Use strictly '${currentDateDDMMYYYY}'.`;
-
-      const reviewFileName = `docs/jules-reviews/${today}-${agent}-${taskSlug}.md`;
-
-      // Inject restrictive guidelines based on the operational mode
-      const modeDirective = mode === 'review'
-        ? `⚠️ MODE STRICT DIRECTIVE: REVIEW-ONLY MODE\nYou are operating in REVIEW-ONLY mode.\n1. DO NOT modify, edit, or delete any application code files (.ts, .js, .py, .go, .rs, .json, etc.).\n2. Write ALL your findings, analysis, code snippets, and refactoring recommendations exclusively into a single Markdown file located at:\n   \`${reviewFileName}\`\n3. Provide clear line numbers, problem descriptions, and proposed code fixes inside the Markdown document so the main agent can review them.`
-        : `⚠️ MODE DIRECTIVE: CODE IMPLEMENTATION MODE\nYou are operating in CODE mode. Perform direct code implementation and modifications as required.`;
-
-      // Compose the final mega-prompt for the cloud session payload
-      const combinedPrompt = `# AGENT SYSTEM & ROLE DIRECTIVES\n${templateContent}\n\n---\n# DATE & JOURNAL DIRECTIVES\n${dateAndJournalDirective}\n\n---\n# USER TASK & SPECIFIC REQUIREMENTS\n${params.task}\n\n---\n# EXECUTION MODE DIRECTIVE\n${modeDirective}`;
-
-
-      const payload = {
-        prompt: combinedPrompt,
-        title: `${agent}-session-${mode}`,
-        sourceContext: {
-          source: sourceName,
-          githubRepoContext: {
-            startingBranch
-          }
-        },
-        requirePlanApproval
-      };
-
-      outputBuffer += `Sending session request to Google REST API...\n`;
-      // Initiate remote POST request to create cloud session
-      const sessionResult = await request('https://jules.googleapis.com/v1alpha/sessions', {
-        method: 'POST',
-        headers
-      }, payload);
-
-      // Extract unique identifier provided by Jules backend for persistent polling later
-      const sessionId = sessionResult.id || (sessionResult.name ? sessionResult.name.split('/').pop() : 'UNKNOWN');
-      outputBuffer += `Session deployed successfully! Session ID: ${sessionId} (Mode: ${mode})`;
-
-      return {
-        agent,
-        output: outputBuffer,
-        sessionRecord: {
-          id: sessionId,
-          agent,
-          mode,
-          task: String(params.task),
-          status: 'launched',
-          timestamp: new Date().toISOString()
-        }
-      };
-    });
-
-    // Wait for all concurrent deployments to resolve
-    const results = await Promise.all(deployPromises);
-
-    // Persist all deployment metadata sequentially to our local `.jules-companion/sessions.json` registry cache
-    for (const res of results) {
-      console.log(res.output);
-      localSessions.push(res.sessionRecord);
-    }
-
-    saveSessions(localSessions);
-    console.log(`\nAll sessions registered in .jules-companion/sessions.json`);
-
-  } catch (error: any) {
-    console.error('Deployment failed:', error.message);
+  if (!res.success) {
+    console.error(`Error: ${res.error}`);
     process.exit(1);
   }
 }
 
 /**
  * Programmatically deploys a session for specified agents without relying on process.argv CLI inputs.
- * Used internally by the `deploy_team` MCP tool and integration scripts.
+ * Used internally by the deploy_team MCP tool and integration scripts.
  *
- * @param {string} agentsStr - Comma-separated list of agent identifiers.
- * @param {string} task - Detailed task instructions for the agents.
- * @param {'start' | 'review' | 'interactive'} type - Session execution type.
- * @param {'code' | 'review'} [mode='code'] - Execution mode (code implementation vs review-only).
- * @param {string} [branch] - Starting git branch name.
- * @param {string} [targetDir] - Target project root directory.
- * @returns {Promise<any[]>} Array of deployed session results and session IDs.
+ * @param agentsStr - Comma-separated list of agent identifiers.
+ * @param task - Detailed task instructions for the agents.
+ * @param type - Session execution type.
+ * @param mode - Execution mode (code implementation vs review-only).
+ * @param branch - Starting git branch name.
+ * @param targetDir - Target project root directory.
+ * @returns Result of the programmatic session deployment.
  */
 export async function deploySessionWithAgents(
   agentsStr: string,
@@ -293,17 +335,15 @@ export async function deploySessionWithAgents(
   mode: 'code' | 'review' = 'code',
   branch?: string,
   targetDir: string = process.cwd()
-) {
-  const originalArgv = process.argv;
-  const args = ['node', 'dist/deploy_session.js', '--type', type, '--agents', agentsStr, '--task', task, '--mode', mode, '--target', targetDir];
-  if (branch) args.push('--branch', branch);
-
-  process.argv = args;
-  try {
-    await deploySession();
-  } finally {
-    process.argv = originalArgv;
-  }
+): Promise<DeploySessionResult> {
+  return deploySessionCore({
+    agents: agentsStr,
+    task,
+    type,
+    mode,
+    branch,
+    targetDir
+  });
 }
 
 if (require.main === module) {

@@ -7,9 +7,8 @@ import { z } from 'zod';
 import * as path from 'path';
 import * as fs from 'fs';
 import { McpToolDefinition } from '../types';
-import { captureOutput } from '../../utils';
-import { deploySession, deploySessionWithAgents } from '../../deploy_session';
-import { mergeSession, checkoutSessionBranch, rollbackSession } from '../../merge_session';
+import { deploySessionCore, deploySessionWithAgents } from '../../deploy_session';
+import { mergeSessionCore, checkoutSessionBranch, rollbackSession } from '../../merge_session';
 import { loadSessions } from '../../core/storage';
 import { getApiKey, request } from '../../client/http';
 import { cancelSessionApi, sendMessageApi, pullDiffApi } from '../../client/jules_api';
@@ -106,19 +105,11 @@ export const sessionTools: McpToolDefinition[] = [
       const parsed = DeploySessionSchema.safeParse(args);
       if (!parsed.success) return { content: [{ type: 'text', text: `Validation Error: ${parsed.error.message}` }] };
       const { type, agents, task, mode, branch, targetDir } = parsed.data;
-      const cmdArgs = ['node', 'dist/deploy_session.js', '--type', type, '--agents', agents, '--task', task];
-      if (mode) cmdArgs.push('--mode', mode);
-      if (branch) cmdArgs.push('--branch', branch);
-      if (targetDir) cmdArgs.push('--target', targetDir);
-
-      const originalArgv = process.argv;
-      process.argv = cmdArgs;
-      try {
-        const output = await captureOutput(deploySession);
-        return { content: [{ type: 'text', text: output }] };
-      } finally {
-        process.argv = originalArgv;
+      const res = await deploySessionCore({ type, agents, task, mode, branch, targetDir });
+      if (!res.success) {
+        return { content: [{ type: 'text', text: `Error deploying session: ${res.error}` }] };
       }
+      return { content: [{ type: 'text', text: res.output }] };
     }
   },
   {
@@ -137,20 +128,11 @@ export const sessionTools: McpToolDefinition[] = [
       const parsed = MergeSessionSchema.safeParse(args);
       if (!parsed.success) return { content: [{ type: 'text', text: `Validation Error: ${parsed.error.message}` }] };
       const { sessionId, inspect, approve, inspectAll } = parsed.data;
-      const cmdArgs = ['node', 'dist/merge_session.js'];
-      if (sessionId) cmdArgs.push('--id', sessionId);
-      if (inspect) cmdArgs.push('--inspect');
-      if (approve) cmdArgs.push('--approve');
-      if (inspectAll) cmdArgs.push('--inspect-all');
-
-      const originalArgv = process.argv;
-      process.argv = cmdArgs;
-      try {
-        const output = await captureOutput(mergeSession);
-        return { content: [{ type: 'text', text: output }] };
-      } finally {
-        process.argv = originalArgv;
+      const res = await mergeSessionCore({ sessionId, inspect, approve, inspectAll });
+      if (!res.success) {
+        return { content: [{ type: 'text', text: `Error merging session: ${res.error}` }] };
       }
+      return { content: [{ type: 'text', text: res.output }] };
     }
   },
   {
@@ -245,10 +227,11 @@ export const sessionTools: McpToolDefinition[] = [
       const session = sessions.find(s => s.id === sessionId);
       if (!session) return { content: [{ type: 'text', text: `Error: Session ID ${sessionId} not found in state.` }] };
       const task = newTask || session.task || 'Retry task';
-      const output = await captureOutput(() =>
-        deploySessionWithAgents(session.agent, task, 'start', session.mode || 'code', undefined, resolvedDir)
-      );
-      return { content: [{ type: 'text', text: output }] };
+      const res = await deploySessionWithAgents(session.agent, task, 'start', session.mode || 'code', undefined, resolvedDir);
+      if (!res.success) {
+        return { content: [{ type: 'text', text: `Error retrying session: ${res.error}` }] };
+      }
+      return { content: [{ type: 'text', text: res.output }] };
     }
   },
   {
@@ -271,10 +254,11 @@ export const sessionTools: McpToolDefinition[] = [
       const { preset, task, mode, branch, targetDir } = parsed.data;
       const agentListStr = TEAM_PRESETS[preset];
       const resolvedDir = targetDir || process.cwd();
-      const output = await captureOutput(() =>
-        deploySessionWithAgents(agentListStr, task, 'start', mode || 'code', branch, resolvedDir)
-      );
-      return { content: [{ type: 'text', text: output }] };
+      const res = await deploySessionWithAgents(agentListStr, task, 'start', mode || 'code', branch, resolvedDir);
+      if (!res.success) {
+        return { content: [{ type: 'text', text: `Error deploying team: ${res.error}` }] };
+      }
+      return { content: [{ type: 'text', text: res.output }] };
     }
   },
   {

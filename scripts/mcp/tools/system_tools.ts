@@ -6,9 +6,9 @@
 import { z } from 'zod';
 import { spawnSync } from 'child_process';
 import { McpToolDefinition } from '../types';
-import { autoProcess } from '../../auto_process';
+import { autoProcessCore } from '../../auto_process';
 import { runSetup } from '../../setup';
-import { runDoctorChecks, getReviewReports, captureOutput } from '../../utils';
+import { runDoctorChecks, getReviewReports } from '../../utils';
 import { listSourcesApi } from '../../client/jules_api';
 
 const AutoProcessSchema = z.object({
@@ -37,16 +37,16 @@ const GetReviewReportsSchema = z.object({
 });
 
 /**
- * Array of system and diagnostic MCP tool definitions.
+ * Array of system and utility MCP tool definitions.
  */
 export const systemTools: McpToolDefinition[] = [
   {
     name: 'auto_process',
-    description: 'Polls and auto-processes pending Jules cloud sessions (auto-approves plans & auto-replies).',
+    description: 'Auto-approves plans and replies to prompts for active Jules sessions.',
     inputSchema: {
       type: 'object',
       properties: {
-        all: { type: 'boolean', description: 'If true, auto-processes all registered sessions' },
+        all: { type: 'boolean', description: 'Process all active sessions' },
         sessionId: { type: 'string', description: 'Specific session ID to process' },
         reply: { type: 'string', description: 'Optional custom reply message' }
       }
@@ -55,19 +55,11 @@ export const systemTools: McpToolDefinition[] = [
       const parsed = AutoProcessSchema.safeParse(args);
       if (!parsed.success) return { content: [{ type: 'text', text: `Validation Error: ${parsed.error.message}` }] };
       const { all, sessionId, reply } = parsed.data;
-      const cmdArgs = ['node', 'dist/auto_process.js'];
-      if (all) cmdArgs.push('--all');
-      if (sessionId) cmdArgs.push('--session', sessionId);
-      if (reply) cmdArgs.push('--reply', reply);
-
-      const originalArgv = process.argv;
-      process.argv = cmdArgs;
-      try {
-        const output = await captureOutput(autoProcess);
-        return { content: [{ type: 'text', text: output }] };
-      } finally {
-        process.argv = originalArgv;
+      const res = await autoProcessCore({ all, sessionId, reply });
+      if (!res.success) {
+        return { content: [{ type: 'text', text: `Error: ${res.error}` }] };
       }
+      return { content: [{ type: 'text', text: res.output }] };
     }
   },
   {
@@ -76,8 +68,9 @@ export const systemTools: McpToolDefinition[] = [
     inputSchema: { type: 'object', properties: {} },
     execute: async () => {
       try {
-        const output = await captureOutput(runSetup);
-        return { content: [{ type: 'text', text: output }] };
+        const res = await runSetup();
+        const text = `Workspace setup completed with status: [${res.status}]\nPlatform: ${res.os}\nDependencies: ${JSON.stringify(res.dependencies)}\nSynchronized ${res.copiedFiles.length} agent template(s).`;
+        return { content: [{ type: 'text', text }] };
       } catch (error: any) {
         return { content: [{ type: 'text', text: `Error: ${error.message}` }] };
       }

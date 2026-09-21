@@ -34,7 +34,6 @@ graph TD
 
     subgraph Tier_1 ["Tier 1: Interfaces (Entrypoints & Orchestrators)"]
         MCP["scripts/mcp_server.ts (85 LOC)"]
-        MENU["scripts/jules_menu.ts (372 LOC)"]
         SYNC["scripts/sync_global.ts (110 LOC)"]
     end
 
@@ -141,7 +140,6 @@ order = 0
 name = "interfaces"
 paths = [
   "scripts/mcp_server.ts",
-  "scripts/jules_menu.ts",
   "scripts/sync_global.ts"
 ]
 order = 1

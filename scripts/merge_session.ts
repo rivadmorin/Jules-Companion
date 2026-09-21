@@ -344,14 +344,122 @@ export async function approveMerge(
  *
  * @returns {Promise<void>}
  */
-export async function mergeSession() {
+/**
+ * Options for programmatic session merge and inspection operations.
+ */
+export interface MergeSessionOptions {
+  sessionId?: string;
+  inspect?: boolean;
+  approve?: boolean;
+  inspectAll?: boolean;
+  target?: string;
+  targetDir?: string;
+}
+
+/**
+ * Result returned by programmatic session merge and inspection.
+ */
+export interface MergeSessionResult {
+  success: boolean;
+  output: string;
+  error?: string;
+}
+
+/**
+ * Core programmatic execution engine for Jules two-stage inspection and merge.
+ *
+ * @param options - Merge and inspection options.
+ * @returns Object indicating operation success and summary output.
+ */
+export async function mergeSessionCore(options: MergeSessionOptions): Promise<MergeSessionResult> {
+  const isInspect = Boolean(options.inspect);
+  const isApprove = Boolean(options.approve);
+  const isInspectAll = Boolean(options.inspectAll);
+  const sessionId = options.sessionId ? String(options.sessionId).trim() : null;
+
+  if (!isInspect && !isApprove && !isInspectAll) {
+    return {
+      success: false,
+      output: '',
+      error: 'Must specify inspect, approve, or inspectAll option.'
+    };
+  }
+
+  const targetDir = options.targetDir || process.cwd();
+  const apiKey = getApiKey(targetDir);
+  if (!apiKey) {
+    return {
+      success: false,
+      output: '',
+      error: 'JULES_API_KEY not found in environment or .env file.'
+    };
+  }
+
+  const headers = { 'X-Goog-Api-Key': apiKey };
+  const statusRes = runGit(['status', '--porcelain'], targetDir);
+  let didStash = false;
+  if (statusRes.stdout) {
+    console.log('Stashing uncommitted working tree changes...');
+    const stashRes = runGit(['stash', 'push', '-u', '-m', `jules-merge-backup-${Date.now()}`], targetDir);
+    if (!stashRes.success) {
+      return { success: false, output: '', error: 'Git stash failed. Aborting.' };
+    }
+    didStash = true;
+  }
+
+  const originalBranchRes = runGit(['branch', '--show-current'], targetDir);
+  const originalBranch = originalBranchRes.stdout || 'main';
+  const targetBranch = String(options.target || originalBranch);
+
+  try {
+    const safetyGateOk = await checkSafetyGate(headers, targetDir);
+    if (!safetyGateOk) {
+      if (didStash) runGit(['stash', 'pop'], targetDir);
+      return {
+        success: false,
+        output: '',
+        error: 'Execution Blocked: One or more active sessions are still in progress. Please wait until ALL active sessions are COMPLETED to avoid code conflicts.'
+      };
+    }
+
+    if (isInspectAll) {
+      const sessions = loadSessions(targetDir);
+      const completedSessions = sessions.filter(s => s.status === 'completed' || s.status === 'launched' || s.status === 'plan_approved');
+      console.log(`Found ${completedSessions.length} completed session(s) to inspect.`);
+      for (const s of completedSessions) {
+        await inspectSession(s.id, targetBranch, headers, originalBranch);
+      }
+    } else if (isInspect && sessionId) {
+      await inspectSession(sessionId, targetBranch, headers, originalBranch);
+    } else if (isApprove && sessionId) {
+      await approveMerge(sessionId, targetBranch, originalBranch);
+    }
+  } catch (err: any) {
+    console.error(`Execution failed: ${err.message}`);
+    return { success: false, output: '', error: err.message };
+  } finally {
+    if (didStash) {
+      console.log('Restoring stashed changes...');
+      runGit(['stash', 'pop'], targetDir);
+    }
+  }
+
+  return { success: true, output: 'Merge / inspection operation completed.' };
+}
+
+/**
+ * Orchestrates the two-stage session merge and inspection engine from CLI.
+ *
+ * @returns A promise that resolves when operation is finished.
+ */
+export async function mergeSession(): Promise<void> {
   const params = parseArgs(process.argv.slice(2));
   const isInspect = Boolean(params.inspect);
   const isApprove = Boolean(params.approve);
   const isInspectAll = Boolean(params['inspect-all']);
   
   const rawSessionsParam = params.session || params.sessions || params.id;
-  const sessionId = rawSessionsParam ? String(rawSessionsParam).trim() : null;
+  const sessionId = rawSessionsParam ? String(rawSessionsParam).trim() : undefined;
 
   if (!isInspect && !isApprove && !isInspectAll) {
     console.log(`
@@ -370,69 +478,17 @@ Options:
     process.exit(1);
   }
 
-  const apiKey = getApiKey();
-  if (!apiKey) {
-    console.error('Error: JULES_API_KEY not found.');
+  const res = await mergeSessionCore({
+    sessionId,
+    inspect: isInspect,
+    approve: isApprove,
+    inspectAll: isInspectAll,
+    target: params.target ? String(params.target) : undefined
+  });
+
+  if (!res.success) {
+    console.error(`\n❌ ${res.error}`);
     process.exit(1);
-  }
-
-  const headers = { 'X-Goog-Api-Key': apiKey };
-
-  // Git Pre-flight Stash Check
-  // Safety Mechanism: We stash any uncommitted local changes (WIP) before switching branches.
-  // This prevents dirty working tree errors during git checkout and protects the user's uncommitted work.
-  const statusRes = runGit(['status', '--porcelain']);
-  let didStash = false;
-  if (statusRes.stdout) {
-    console.log('Stashing uncommitted working tree changes...');
-    // Create uniquely named stash to avoid conflicting with user's own stashes
-    const stashRes = runGit(['stash', 'push', '-u', '-m', `jules-merge-backup-${Date.now()}`]);
-    if (!stashRes.success) {
-      console.error('Error: Stash failed. Aborting.');
-      process.exit(1);
-    }
-    didStash = true;
-  }
-
-  const originalBranchRes = runGit(['branch', '--show-current']);
-  const originalBranch = originalBranchRes.stdout || 'main';
-  const targetBranch = String(params.target || originalBranch);
-
-  try {
-    // Enforce Safety Gate before any inspect/approve operations
-    // We do not want to merge patches while other agents are concurrently generating code,
-    // which could result in stale baseline states or chaotic merge conflicts.
-    const safetyGateOk = await checkSafetyGate(headers);
-    if (!safetyGateOk) {
-      console.error('\n❌ Execution Blocked: One or more active sessions are still in progress.');
-      console.error('Please wait until ALL active sessions are COMPLETED to avoid code conflicts.');
-      if (didStash) runGit(['stash', 'pop']);
-      process.exit(1);
-    }
-
-    if (isInspectAll) {
-      const sessions = loadSessions();
-      // Find all sessions ready for the Stage 1 inspection process
-      const completedSessions = sessions.filter(s => s.status === 'completed' || s.status === 'launched' || s.status === 'plan_approved');
-      console.log(`Found ${completedSessions.length} completed session(s) to inspect.`);
-      // Run sequentially to ensure isolated branching operations don't collide
-      for (const s of completedSessions) {
-        await inspectSession(s.id, targetBranch, headers, originalBranch);
-      }
-    } else if (isInspect && sessionId) {
-      await inspectSession(sessionId, targetBranch, headers, originalBranch);
-    } else if (isApprove && sessionId) {
-      await approveMerge(sessionId, targetBranch, originalBranch);
-    }
-
-  } catch (err: any) {
-    console.error(`Execution failed: ${err.message}`);
-  }
-
-  if (didStash) {
-    // Safety Mechanism Recovery: Restore the user's uncommitted WIP changes back to their working directory
-    console.log('Restoring stashed changes...');
-    runGit(['stash', 'pop']);
   }
 }
 

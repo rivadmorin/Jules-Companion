@@ -61,7 +61,6 @@ Arsitektur `jules-companion` membagi sistem menjadi lingkungan **Lokal (Local Wo
     *   `auto_process.ts`: Mengelola siklus hidup sesi (otomatisasi *approve* dan membalas pertanyaan dari API).
     *   `merge_session.ts`: Manajemen Git, mengunduh *patch* dari *cloud*, dan menggabungkannya ke repositori lokal.
     *   `jules_client.ts`: Modul yang menangani interaksi langsung dengan REST API Google Jules (seperti GET/POST *request*).
-    *   `jules_menu.ts`: Konsol terminal fallback opsional untuk pengujian manual oleh pengguna (manusia).
     *   `mcp_server.ts`: Server Model Context Protocol (MCP) lengkap dengan 20 tools untuk integrasi otonom dengan AI Agent/IDE (Antigravity IDE, OpenCode, Claude Code, Cursor, Windsurf). Tools mencakup Discovery (`list_agents`, `get_agent_info`, `list_sources`, `run_doctor`, `create_custom_agent`), Session Control (`deploy_session`, `get_session_status`, `cancel_session`, `send_session_message`, `retry_failed_session`), Multi-Agent Orchestration (`auto_process`, `deploy_team`, `setup_workspace`), Git & PR Bridge (`merge_session`, `pull_session_diff`, `checkout_session_branch`, `create_github_pr`), serta Knowledge & Safety (`read_agent_journal`, `get_review_reports`, `rollback_session`).
 3.  **Google Jules REST API**: Layanan *backend* milik Google (`https://jules.googleapis.com/v1alpha/`) yang merespons permintaan dan memberikan metadata hasil perubahan (*git patches*).
 4.  **Agent Templates (`references/agents/*.md`)**: Berisi 30 instruksi sistem (*system prompt*) unik yang memberikan kepribadian dan batasan perilaku untuk berbagai tugas spesifik (contoh: *Bolt* untuk kecepatan, *Sentinel* untuk keamanan, *Critic* untuk *review*).
@@ -130,8 +129,6 @@ Skrip ini beroperasi layaknya *Finite State Machine (FSM)* sederhana dengan tuju
 *   **Otorisasi Otomatis**: Secara terpusat menangani resolusi identitas rahasia (*secret resolving*). Mengekstrak `JULES_API_KEY` dari lingkungan sistem.
 *   **Penyatuan Tanggapan HTTP**: Mendukung resolusi janji-janji (*Promises*) untuk memisahkan pengkodean *header/body/payload* HTTP yang kotor dari skrip perutean lalu lintas level-tinggi.
 
-### F. Konsol Menu Interaktif (`jules_menu.ts`)
-*   **Sistem Degradasi UI (*Fallback UI*)**: Berusaha memanfaatkan dependensi *TUI (Text-Based UI)* modern berbasis *Zig/FFI* (`@opentui/core`). Jika pengikatan ini kandas, misalnya dikarenakan kendala sistem arsitektur langka atau kegagalan pembangunan *node-gyp*, konsol memulihkan diri dengan meniru menu baris perintah *ASCII ANSI* standar dengan rapi (memanfaatkan modul `readline` bawaan Node.js). Tindakan ini menjamin CLI tidak pernah hancur hanya karena permasalahan estetika antar-muka.
 # Alur Eksekusi Secara Detail
 
 Skrip inti `merge_session.ts` menerapkan standar keamanan Git tinggi untuk menghindari konflik. Penggabungan (*merge*) tidak dilakukan dengan paksaan melainkan difasilitasi dalam **Alur Inspeksi Dua Tahap (*Two-Stage Inspection & Merge Engine*)**.

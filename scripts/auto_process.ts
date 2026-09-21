@@ -112,19 +112,111 @@ async function processSingleSession(
  *
  * @returns {Promise<void>} Resolves when all targeted sessions have been processed and state is saved.
  */
-export async function autoProcess() {
-  // Extract key-value dictionaries from raw command line arguments (excluding node runtime and script paths)
-  const params = parseArgs(process.argv.slice(2));
-  // Cast the 'all' parameter to a strict boolean flag for global processing scope
-  const isAll = Boolean(params.all);
-  // Extract the specific target session ID if provided, otherwise default to null
-  const targetId = params.session ? String(params.session) : null;
-  // Extract an optional custom reply string to be used for state unblocking, if provided
-  const customReply = params.reply ? String(params.reply) : undefined;
+/**
+ * Options for programmatic auto_process execution.
+ */
+export interface AutoProcessOptions {
+  all?: boolean;
+  sessionId?: string;
+  reply?: string;
+  targetDir?: string;
+}
 
-  // Enforce required usage constraints: execution must define a target scope (either --all or --session)
+/**
+ * Result returned by programmatic auto_process execution.
+ */
+export interface AutoProcessResult {
+  success: boolean;
+  output: string;
+  updatedCount?: number;
+  error?: string;
+}
+
+/**
+ * Programmatically processes active sessions, auto-approving plans or sending replies.
+ *
+ * @param options - Execution configuration parameters.
+ * @returns Result object indicating success and updated session count.
+ */
+export async function autoProcessCore(options: AutoProcessOptions): Promise<AutoProcessResult> {
+  const isAll = Boolean(options.all);
+  const targetId = options.sessionId ? String(options.sessionId).trim() : null;
+  const customReply = options.reply ? String(options.reply) : undefined;
+  const targetDir = options.targetDir || process.cwd();
+
   if (!isAll && !targetId) {
-    // Print the application header and help documentation to guide the user on proper syntax
+    return {
+      success: false,
+      output: '',
+      error: 'Must specify all or sessionId option.'
+    };
+  }
+
+  const apiKey = getApiKey(targetDir);
+  if (!apiKey) {
+    return {
+      success: false,
+      output: '',
+      error: 'JULES_API_KEY not found in environment or .env file.'
+    };
+  }
+
+  const headers = { 'X-Goog-Api-Key': apiKey };
+  const sessions = loadSessions(targetDir);
+
+  if (sessions.length === 0 && isAll) {
+    return {
+      success: true,
+      output: 'No registered sessions found in .jules-companion/sessions.json',
+      updatedCount: 0
+    };
+  }
+
+  let targets: SessionRecord[] = [];
+  if (isAll) {
+    targets = sessions;
+  } else if (targetId) {
+    const found = sessions.find(s => s.id === targetId);
+    if (found) {
+      targets = [found];
+    } else {
+      const newRecord: SessionRecord = {
+        id: targetId,
+        agent: 'unknown',
+        mode: 'code',
+        task: '',
+        status: 'manual',
+        timestamp: new Date().toISOString()
+      };
+      sessions.push(newRecord);
+      targets = [newRecord];
+    }
+  }
+
+  const results = await Promise.all(targets.map(s => processSingleSession(s, headers, customReply)));
+  const processedCount = results.filter(Boolean).length;
+  saveSessions(sessions, targetDir);
+
+  return {
+    success: true,
+    output: `Auto-process completed: ${processedCount} session(s) updated.`,
+    updatedCount: processedCount
+  };
+}
+
+/**
+ * CLI command entrypoint for auto-processing registered Jules sessions.
+ *
+ * @returns A promise that resolves when processing is complete.
+ */
+export async function autoProcess(): Promise<void> {
+  const params = parseArgs(process.argv.slice(2));
+  const isAll = Boolean(params.all);
+  const targetId = params.session ? String(params.session) : null;
+  const customReply = params.reply ? String(params.reply) : undefined;
+  const targetDir = params.target ? String(params.target) : process.cwd();
+
+  if (!isAll && !targetId) {
     console.log(`
 Jules Session Auto-Approval & Auto-Reply Engine (TypeScript)
 
@@ -137,77 +229,23 @@ Options:
   --session    Poll and auto-process a single specific session ID
   --reply      Optional custom reply message when session is awaiting user input
 `);
-    // Exit with a non-zero status code to indicate the process was aborted due to invalid arguments
     process.exit(1);
   }
 
-  // Ensure necessary credentials (API Key) are setup in the environment before triggering requests
-  const apiKey = getApiKey();
-  // Validate presence of API key to avoid dispatching unauthorized API calls that will fail
-  if (!apiKey) {
-    // Log a fatal error indicating the absence of required authentication
-    console.error('Error: JULES_API_KEY not found in environment or .env file.');
-    // Abort execution and exit with an error code
+  const res = await autoProcessCore({
+    all: isAll,
+    sessionId: targetId || undefined,
+    reply: customReply,
+    targetDir
+  });
+
+  if (res.output) {
+    console.log(res.output);
+  }
+  if (!res.success) {
+    console.error(`Error: ${res.error}`);
     process.exit(1);
   }
-
-  // Pre-construct the shared HTTP headers payload, securely injecting the retrieved API key
-  const headers = { 'X-Goog-Api-Key': apiKey };
-  // Load the local sessions cache database to determine which sessions are actively tracked
-  const sessions = loadSessions();
-
-  // Fast-fail exit branch: if the global '--all' flag was requested but the local session registry is empty
-  if (sessions.length === 0 && isAll) {
-    // Inform the user gracefully that the operation was essentially a no-op
-    console.log('No registered sessions found in .jules-companion/sessions.json');
-    // Exit cleanly with success code since this is a valid operational state
-    process.exit(0);
-  }
-
-  // Initialize an empty array to collect all SessionRecord objects designated for API processing
-  let targets: SessionRecord[] = [];
-  
-  // Resolve the targets based on the determined operational scope flags
-  if (isAll) {
-    // Under bulk scope, alias the loaded sessions collection directly into the targets list
-    targets = sessions;
-  } else if (targetId) {
-    // Under targeted scope, perform a linear search against the local tracking file
-    const found = sessions.find(s => s.id === targetId);
-    
-    // Evaluate if the requested target ID is already tracked locally
-    if (found) {
-      // If a match is found, append the existing record to our processing list
-      targets = [found];
-    } else {
-      // If not found locally, we dynamically create a dummy 'mock' session record.
-      // This forces an API call, allowing users to process a session ID they created remotely on another machine.
-      const newRecord: SessionRecord = {
-        id: targetId,
-        agent: 'unknown', // Default fallback value since origin metadata is unavailable
-        mode: 'code', // Fallback default execution mode
-        task: '', // Initialize with an empty task description 
-        status: 'manual', // Set initial status reflecting manual external injection
-        timestamp: new Date().toISOString() // Generate a fresh ISO 8601 timestamp for the mock record
-      };
-      // Append the mock record to the persistent sessions list so it is tracked moving forward
-      sessions.push(newRecord);
-      // Ensure the mock record is immediately staged for API processing
-      targets = [newRecord];
-    }
-  }
-
-  // Concurrently process all targeted sessions using Promise.all to map the asynchronous check function
-  // This approach minimizes O(N) network latency blockages that occur in sequential polling loops
-  const results = await Promise.all(targets.map(s => processSingleSession(s, headers, customReply)));
-  
-  // Evaluate the parallel execution results: filter the returned booleans to log the exact number of sessions modified
-  const processedCount = results.filter(Boolean).length;
-
-  // Ensure our mutated local status markers (e.g., 'plan_approved', 'replied') are persisted synchronously back to file storage
-  saveSessions(sessions);
-  // Log a final summary report of the orchestration run
-  console.log(`\nAuto-process completed: ${processedCount} session(s) updated.`);
 }
 
 // Bootstrap execution: invoke the async CLI entrypoint only if the module is being run directly as a script

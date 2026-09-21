@@ -5,8 +5,8 @@
   "main": "dist/setup.js",
   "scripts": {
     "build": "esbuild scripts/*.ts scripts/**/*.ts --outdir=dist --platform=node --format=cjs",
-    "postbuild": "npx tsx scripts/sync_global.ts",
-    "sync": "npx tsx scripts/sync_global.ts",
+    "postbuild": "node dist/sync_global.js",
+    "sync": "node dist/sync_global.js",
     "pretest": "npm run build",
     "setup": "node dist/setup.js",
     "registry": "node dist/generate_registry.js",

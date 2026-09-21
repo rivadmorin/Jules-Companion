@@ -122,7 +122,7 @@ function simulateAIAgentCLI(prompt: string): string | null {
   }
 
   if (prompt.startsWith('/jules-doctor')) {
-    return 'node dist/jules_menu.js --doctor';
+    return 'node dist/setup.js';
   }
 
   return null;
