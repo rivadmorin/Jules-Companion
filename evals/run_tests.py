@@ -30,7 +30,7 @@ def run_simulation():
     evals_path = os.path.join(script_dir, "evals.json")
 
     # Load the evaluation definitions
-    with open(evals_path, 'r') as f:
+    with open(evals_path, 'r', encoding='utf-8') as f:
         data = json.load(f)
     
     test_cases = data["test_cases"]
@@ -153,7 +153,7 @@ def run_simulation():
     
     # Persist the evaluation payload to disk for downstream grading
     output_path = os.path.join(script_dir, "results.json")
-    with open(output_path, 'w') as f:
+    with open(output_path, 'w', encoding='utf-8') as f:
         json.dump(results, f, indent=2)
     print(f"Simulation completed. Results written to {output_path}")
 

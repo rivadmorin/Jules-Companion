@@ -6,26 +6,19 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { spawnSync } from 'child_process';
-import { runGit as coreRunGit, GitExecutionResult } from './core/git';
-import {
-  getProjectDirs as coreGetProjectDirs,
-  loadSessions as coreLoadSessions,
-  saveSessions as coreSaveSessions
-} from './core/storage';
+import { runGit, GitExecutionResult } from './core/git';
+import { getProjectDirs, loadSessions, saveSessions } from './core/storage';
 import { ProjectDirs, SessionRecord } from './core/types';
 
-export { ProjectDirs, SessionRecord, GitExecutionResult };
-
-/**
- * Resolves and caches standard directory paths used by the jules-companion ecosystem.
- * This centralizes path management to ensure consistency across different scripts.
- *
- * @param targetDir - The root directory of the user's project (defaults to current working directory).
- * @returns An object containing absolute paths for various internal companion directories.
- */
-export function getProjectDirs(targetDir: string = process.cwd()): ProjectDirs {
-  return coreGetProjectDirs(targetDir);
-}
+export {
+  ProjectDirs,
+  SessionRecord,
+  GitExecutionResult,
+  runGit,
+  getProjectDirs,
+  loadSessions,
+  saveSessions
+};
 
 /**
  * Parses command-line arguments into a key-value dictionary.
@@ -41,53 +34,15 @@ export function parseArgs(args: string[]): Record<string, string | boolean> {
       const key = args[i].slice(2);
       const value = args[i + 1];
 
-      // If the next argument exists and is not another flag, treat it as the value for the current key.
       if (value && !value.startsWith('--')) {
         params[key] = value;
-        // Skip the next argument in the loop since it was consumed as a value.
         i++;
       } else {
-        // If there is no next argument, or the next argument is another flag, treat the current key as a boolean flag.
         params[key] = true;
       }
     }
   }
   return params;
-}
-
-/**
- * Executes a Git command synchronously and returns the structured output.
- *
- * @param args - An array of git command arguments (e.g., ['branch', '--show-current']).
- * @param cwd - The working directory to execute the command in (defaults to current working directory).
- * @returns An object containing the success status, standard output, and standard error.
- */
-export function runGit(
-  args: string[],
-  cwd: string = process.cwd()
-): { success: boolean; stdout: string; stderr: string } {
-  return coreRunGit(args, cwd);
-}
-
-/**
- * Loads the active and historical Jules session records from the local state file.
- * Fails gracefully by returning an empty array if the file doesn't exist or is corrupted.
- *
- * @param targetDir - The root project directory containing the `.jules-companion` folder.
- * @returns An array of parsed SessionRecord objects.
- */
-export function loadSessions(targetDir: string = process.cwd()): SessionRecord[] {
-  return coreLoadSessions(targetDir);
-}
-
-/**
- * Atomically writes an updated array of session records to the local state file.
- *
- * @param sessions - An array of updated SessionRecord objects to persist.
- * @param targetDir - The root project directory containing the `.jules-companion` folder.
- */
-export function saveSessions(sessions: SessionRecord[], targetDir: string = process.cwd()): void {
-  coreSaveSessions(sessions, targetDir);
 }
 
 /**
@@ -100,8 +55,37 @@ export function saveSessions(sessions: SessionRecord[], targetDir: string = proc
 export function getFormattedDateDDMMYYYY(date: Date = new Date()): string {
   const day = String(date.getDate()).padStart(2, '0');
   const month = String(date.getMonth() + 1).padStart(2, '0');
-  const year = date.getFullYear();
-  return `${day}-${month}-${year}`;
+  return `${day}-${month}-${date.getFullYear()}`;
+}
+
+/**
+ * Intercepts stdout/stderr during CLI executions to prevent stdio stream corruption in MCP servers.
+ *
+ * @param fn - Execution callback to capture.
+ * @returns Combined captured output string.
+ */
+export async function captureOutput(fn: () => Promise<any> | any): Promise<string> {
+  const originalStdoutWrite = process.stdout.write;
+  const originalStderrWrite = process.stderr.write;
+  let buffer = '';
+
+  process.stdout.write = (chunk: any) => {
+    buffer += chunk.toString();
+    return true;
+  };
+  process.stderr.write = (chunk: any) => {
+    buffer += chunk.toString();
+    return true;
+  };
+
+  try {
+    await fn();
+  } finally {
+    process.stdout.write = originalStdoutWrite;
+    process.stderr.write = originalStderrWrite;
+  }
+
+  return buffer.trim();
 }
 
 /**

@@ -6,10 +6,9 @@
 import { z } from 'zod';
 import { spawnSync } from 'child_process';
 import { McpToolDefinition } from '../types';
-import { captureOutput } from '../utils';
 import { autoProcess } from '../../auto_process';
 import { runSetup } from '../../setup';
-import { runDoctorChecks, getReviewReports } from '../../utils';
+import { runDoctorChecks, getReviewReports, captureOutput } from '../../utils';
 import { listSourcesApi } from '../../client/jules_api';
 
 const AutoProcessSchema = z.object({

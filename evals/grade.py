@@ -30,7 +30,7 @@ def grade_results():
     results_path = os.path.join(script_dir, "results.json")
 
     # Load the simulation results
-    with open(results_path, 'r') as f:
+    with open(results_path, 'r', encoding='utf-8') as f:
         results = json.load(f)
 
     # Initialize the Markdown report string
@@ -84,7 +84,7 @@ def grade_results():
     
     # Write the Markdown report to disk
     grader_path = os.path.join(script_dir, "grader.md")
-    with open(grader_path, 'w') as f:
+    with open(grader_path, 'w', encoding='utf-8') as f:
         f.write(markdown)
     
     # Save benchmark metrics to a structured JSON file for programmatic access
@@ -100,7 +100,7 @@ def grade_results():
     
     benchmark_path = os.path.join(script_dir, "benchmark.json")
     os.makedirs(os.path.dirname(benchmark_path), exist_ok=True)
-    with open(benchmark_path, 'w') as f:
+    with open(benchmark_path, 'w', encoding='utf-8') as f:
         json.dump(benchmark, f, indent=2)
 
     print(f"Grading completed. Report written to {grader_path}")

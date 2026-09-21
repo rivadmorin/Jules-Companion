@@ -3,20 +3,14 @@
  * @module client/http
  */
 
-import * as https from 'https';
 import * as path from 'path';
 import * as fs from 'fs';
-
-// Network requests to the Google Jules API are optimized using a shared https.Agent
-// to prevent TLS handshake overhead on batch CLI operations.
-const sharedAgent = new https.Agent({ keepAlive: true });
 
 let cachedApiKey: string | null = null;
 
 /**
- * Retrieves the Google Jules API key from either the system environment variables
- * or local .env fallback files in standard locations.
- * Uses a caching mechanism so filesystem isn't hit repeatedly during the same process execution.
+ * Retrieves the Google Jules API key from system environment variables
+ * or local .env fallback files in standard locations with in-memory caching.
  *
  * @param targetDir - Optional directory to check first for `.env` files.
  * @returns The raw API key string if found, otherwise null.
@@ -79,67 +73,57 @@ export function resetApiKeyCache(): void {
 }
 
 /**
- * Low-level promise-based HTTPS request client tailored for Google REST APIs.
+ * High-performance promise-based HTTP request client utilizing native globalThis.fetch().
  *
  * @param url - The full URL for the request.
  * @param options - Request options configuring method and headers.
  * @param body - The request body payload. If it's an object, it will be JSON stringified.
  * @returns A promise that resolves to the parsed response data.
  */
-export function request<T = any>(
+export async function request<T = any>(
   url: string,
   options: { method?: string; headers?: Record<string, string> } = {},
   body: any = null
 ): Promise<T> {
-  return new Promise((resolve, reject) => {
-    const parsedUrl = new URL(url);
-    const reqOptions: https.RequestOptions = {
-      hostname: parsedUrl.hostname,
-      port: parsedUrl.port || 443,
-      path: parsedUrl.pathname + parsedUrl.search,
-      method: options.method || 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'User-Agent': 'Jules-Companion-TS/1.0',
-        ...options.headers
-      },
-      agent: sharedAgent
-    };
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    'User-Agent': 'Jules-Companion-TS/1.0',
+    ...options.headers
+  };
 
-    const req = https.request(reqOptions, (res) => {
-      let data = '';
-      res.on('data', (chunk) => { data += chunk; });
+  const init: RequestInit = {
+    method: options.method || 'GET',
+    headers
+  };
 
-      res.on('end', () => {
-        if (res.statusCode && res.statusCode >= 200 && res.statusCode < 300) {
-          try {
-            resolve(JSON.parse(data));
-          } catch (_e) {
-            resolve(data as unknown as T);
-          }
-        } else {
-          let errMsg = `HTTP ${res.statusCode}: ${res.statusMessage}`;
-          try {
-            const errObj = JSON.parse(data);
-            if (errObj.error && errObj.error.message) {
-              errMsg = `HTTP ${res.statusCode} (${errObj.error.status || 'ERROR'}): ${errObj.error.message}`;
-            }
-          } catch (_) {
-            if (data) errMsg += ` - ${data.slice(0, 200)}`;
-          }
-          reject(new Error(errMsg));
-        }
-      });
-    });
+  if (body) {
+    init.body = typeof body === 'string' ? body : JSON.stringify(body);
+  }
 
-    req.on('error', (e) => {
-      reject(new Error(`Network error connecting to Google Jules API: ${e.message}`));
-    });
+  try {
+    const res = await fetch(url, init);
+    const text = await res.text();
 
-    if (body) {
-      req.write(typeof body === 'string' ? body : JSON.stringify(body));
+    if (res.ok) {
+      try {
+        return JSON.parse(text) as T;
+      } catch (_e) {
+        return text as unknown as T;
+      }
     }
 
-    req.end();
-  });
+    let errMsg = `HTTP ${res.status}: ${res.statusText}`;
+    try {
+      const errObj = JSON.parse(text);
+      if (errObj.error && errObj.error.message) {
+        errMsg = `HTTP ${res.status} (${errObj.error.status || 'ERROR'}): ${errObj.error.message}`;
+      }
+    } catch (_) {
+      if (text) errMsg += ` - ${text.slice(0, 200)}`;
+    }
+    throw new Error(errMsg);
+  } catch (e: any) {
+    if (e.message?.startsWith('HTTP ')) throw e;
+    throw new Error(`Network error connecting to Google Jules API: ${e.message}`);
+  }
 }

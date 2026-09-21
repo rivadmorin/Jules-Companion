@@ -7,7 +7,7 @@ import { z } from 'zod';
 import * as path from 'path';
 import * as fs from 'fs';
 import { McpToolDefinition } from '../types';
-import { captureOutput } from '../utils';
+import { captureOutput } from '../../utils';
 import { deploySession, deploySessionWithAgents } from '../../deploy_session';
 import { mergeSession, checkoutSessionBranch, rollbackSession } from '../../merge_session';
 import { loadSessions } from '../../core/storage';

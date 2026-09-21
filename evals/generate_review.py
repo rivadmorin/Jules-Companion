@@ -4,6 +4,7 @@ This script transforms the structured evaluation results into a visually appeali
 """
 
 import json
+import os
 
 def build_review_html():
     """Parses 'results.json' and injects the evaluation data into a static HTML template.
@@ -23,11 +24,10 @@ def build_review_html():
         FileNotFoundError: If 'results.json' is missing from the specified path.
         json.JSONDecodeError: If 'results.json' is malformed.
     """
-    # Hardcoded absolute path used for robust file discovery in specific local test environments.
-    # Ideally, this should be computed dynamically like in run_tests.py using __file__.
-    results_path = "/media/toor/WD_BLACK1/Data Utama/Coding/Antigravity/Playground/Jules-Companion/evals/results.json"
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    results_path = os.path.join(script_dir, "results.json")
     # Read the raw evaluation results from JSON
-    with open(results_path, 'r') as f:
+    with open(results_path, 'r', encoding='utf-8') as f:
         results = json.load(f)
 
     html_content = """<!DOCTYPE html>
@@ -352,9 +352,9 @@ def build_review_html():
 </html>
 """
 
-    # Hardcoded output path for the review HTML file.
-    review_path = "/media/toor/WD_BLACK1/Data Utama/Coding/Antigravity/Playground/Jules-Companion/evals/review.html"
-    with open(review_path, 'w') as f:
+    # Output path for the review HTML file.
+    review_path = os.path.join(script_dir, "review.html")
+    with open(review_path, 'w', encoding='utf-8') as f:
         f.write(html_content)
     print(f"Review HTML compiled. File saved to {review_path}")
 
