@@ -86,14 +86,28 @@ Add `jules-companion` to your AI Client's MCP configuration (`mcp_config.json` o
 
 ---
 
-## 🚀 Installation & Quick Start
+## 🚀 One-Line Installation
+
+Install and configure `jules-companion` with a single command:
+
+### Linux / macOS
+```bash
+curl -sSL https://raw.githubusercontent.com/rivadmorin/Jules-Companion/main/install.sh | bash
+```
+
+### Windows (PowerShell)
+```powershell
+powershell -c "irm https://raw.githubusercontent.com/rivadmorin/Jules-Companion/main/install.ps1 | iex"
+```
+
+<details>
+<summary><b>🛠️ Manual Installation (Click to expand)</b></summary>
 
 ### Prerequisites
 * **Node.js**: v18.0.0 or higher (tested on Node v20 & v24 LTS)
 * **Git** & **GitHub CLI** (`gh` CLI optional, recommended for automated PRs)
 * **Google Jules API Key**: Obtain from [Google Jules Console](https://jules.google.com/)
 
-### Step 1: Clone and Build
 ```bash
 # Clone the repository
 git clone https://github.com/rivadmorin/Jules-Companion.git
@@ -108,25 +122,24 @@ npm run setup
 ```
 > [!NOTE]
 > `npm run build` automatically triggers the `postbuild` script which synchronizes compiled artifacts, agent prompt templates, and MCP schemas directly to the global IDE directory (`~/.gemini/config/skills/jules-companion` and `~/.gemini/antigravity-ide/mcp/jules-companion`).
+</details>
 
-### Step 2: Configure Environment
-Create a `.env` file in the project root:
-```env
-JULES_API_KEY=your_actual_jules_api_key_here
-```
-
-### Step 3: Register in MCP Client
-Add `jules-companion` to your AI client's MCP configuration (`mcp_config.json`):
-```json
-{
-  "mcpServers": {
-    "jules-companion": {
-      "command": "node",
-      "args": ["<path-to-Jules-Companion>/dist/mcp_server.js"]
-    }
-  }
-}
-```
+### Configuration
+1. Create a `.env` file in the project root:
+   ```env
+   JULES_API_KEY=your_actual_jules_api_key_here
+   ```
+2. Add `jules-companion` to your AI client's MCP configuration (`mcp_config.json`):
+   ```json
+   {
+     "mcpServers": {
+       "jules-companion": {
+         "command": "node",
+         "args": ["<path-to-Jules-Companion>/dist/mcp_server.js"]
+       }
+     }
+   }
+   ```
 
 ---
 
@@ -154,24 +167,20 @@ For a comprehensive breakdown of the application architecture, agent roles, and 
 
 ---
 
-## 🧹 Uninstallation
+## 🧹 One-Line Uninstallation
 
-To cleanly remove `jules-companion` from your environment:
+Cleanly remove `jules-companion` and all exported schemas from your system:
 
-### Step 1: Remove MCP Server Configuration
-Delete the `"jules-companion"` entry from your IDE's `mcp_config.json` or MCP settings.
+### Linux / macOS
+```bash
+curl -sSL https://raw.githubusercontent.com/rivadmorin/Jules-Companion/main/uninstall.sh | bash
+```
 
-### Step 2: Remove Global IDE Skill & Schemas
-* **Linux / macOS:**
-  ```bash
-  rm -rf ~/.gemini/config/skills/jules-companion
-  rm -rf ~/.gemini/antigravity-ide/mcp/jules-companion
-  ```
-* **Windows (PowerShell):**
-  ```powershell
-  Remove-Item -Recurse -Force "$HOME\.gemini\config\skills\jules-companion"
-  Remove-Item -Recurse -Force "$HOME\.gemini\antigravity-ide\mcp\jules-companion"
-  ```
+### Windows (PowerShell)
+```powershell
+powershell -c "irm https://raw.githubusercontent.com/rivadmorin/Jules-Companion/main/uninstall.ps1 | iex"
+```
 
-### Step 3: Remove Cloned Repository
-Delete the local `Jules-Companion` folder and any local `.jules-companion/` state folders.
+> [!TIP]
+> Remember to remove the `"jules-companion"` entry from your IDE's `mcp_config.json` after running the uninstaller.
+

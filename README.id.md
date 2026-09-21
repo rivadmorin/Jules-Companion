@@ -86,14 +86,28 @@ Tambahkan `jules-companion` ke konfigurasi MCP di Klien AI Anda (`mcp_config.jso
 
 ---
 
-## 🚀 Panduan Instalasi & Memulai Cepat
+## 🚀 Instalasi Satu-Baris
+
+Instal dan konfigurasikan `jules-companion` secara instan hanya dengan satu perintah:
+
+### Linux / macOS
+```bash
+curl -sSL https://raw.githubusercontent.com/rivadmorin/Jules-Companion/main/install.sh | bash
+```
+
+### Windows (PowerShell)
+```powershell
+powershell -c "irm https://raw.githubusercontent.com/rivadmorin/Jules-Companion/main/install.ps1 | iex"
+```
+
+<details>
+<summary><b>🛠️ Instalasi Manual (Klik untuk melihat)</b></summary>
 
 ### Prasyarat
 * **Node.js**: v18.0.0 atau lebih tinggi (teruji pada Node v20 & v24 LTS)
 * **Git** & **GitHub CLI** (`gh` CLI opsional, direkomendasikan untuk pembuatan PR otomatis)
 * **Google Jules API Key**: Dapatkan dari [Google Jules Console](https://jules.google.com/)
 
-### Langkah 1: Kloning dan Build
 ```bash
 # Kloning repositori
 git clone https://github.com/rivadmorin/Jules-Companion.git
@@ -108,25 +122,24 @@ npm run setup
 ```
 > [!NOTE]
 > Perintah `npm run build` secara otomatis memicu skrip `postbuild` yang menyinkronkan seluruh artefak terkompilasi, template prompt agen, dan skema MCP langsung ke direktori global IDE (`~/.gemini/config/skills/jules-companion` dan `~/.gemini/antigravity-ide/mcp/jules-companion`).
+</details>
 
-### Langkah 2: Konfigurasi Environment
-Buat file `.env` pada root repositori:
-```env
-JULES_API_KEY=kunci_api_jules_anda_di_sini
-```
-
-### Langkah 3: Daftarkan ke Klien MCP
-Tambahkan `jules-companion` ke file konfigurasi MCP IDE Anda (`mcp_config.json`):
-```json
-{
-  "mcpServers": {
-    "jules-companion": {
-      "command": "node",
-      "args": ["<path-ke-Jules-Companion>/dist/mcp_server.js"]
-    }
-  }
-}
-```
+### Konfigurasi
+1. Buat file `.env` pada root repositori:
+   ```env
+   JULES_API_KEY=kunci_api_jules_anda_di_sini
+   ```
+2. Tambahkan `jules-companion` ke file konfigurasi MCP IDE Anda (`mcp_config.json`):
+   ```json
+   {
+     "mcpServers": {
+       "jules-companion": {
+         "command": "node",
+         "args": ["<path-ke-Jules-Companion>/dist/mcp_server.js"]
+       }
+     }
+   }
+   ```
 
 ---
 
@@ -154,24 +167,20 @@ Untuk penjelasan komprehensif mengenai arsitektur aplikasi, peran agen, dan logi
 
 ---
 
-## 🧹 Hapus Instalasi (Uninstall)
+## 🧹 Hapus Instalasi Satu-Baris (One-Line Uninstall)
 
-Untuk menghapus `jules-companion` secara bersih dari sistem Anda:
+Hapus `jules-companion` dan seluruh skema global secara bersih:
 
-### Langkah 1: Hapus Konfigurasi Server MCP
-Hapus entri `"jules-companion"` dari file `mcp_config.json` atau pengaturan MCP pada IDE Anda.
+### Linux / macOS
+```bash
+curl -sSL https://raw.githubusercontent.com/rivadmorin/Jules-Companion/main/uninstall.sh | bash
+```
 
-### Langkah 2: Hapus Skill & Skema Global IDE
-* **Linux / macOS:**
-  ```bash
-  rm -rf ~/.gemini/config/skills/jules-companion
-  rm -rf ~/.gemini/antigravity-ide/mcp/jules-companion
-  ```
-* **Windows (PowerShell):**
-  ```powershell
-  Remove-Item -Recurse -Force "$HOME\.gemini\config\skills\jules-companion"
-  Remove-Item -Recurse -Force "$HOME\.gemini\antigravity-ide\mcp\jules-companion"
-  ```
+### Windows (PowerShell)
+```powershell
+powershell -c "irm https://raw.githubusercontent.com/rivadmorin/Jules-Companion/main/uninstall.ps1 | iex"
+```
 
-### Langkah 3: Hapus Repositori Proyek
-Hapus folder lokal `Jules-Companion` dan folder `.jules-companion/` yang tersimpan pada direktori kerja proyek Anda.
+> [!TIP]
+> Jangan lupa untuk menghapus entri `"jules-companion"` dari file `mcp_config.json` pada IDE Anda setelah menjalankan uninstaller.
+
