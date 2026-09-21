@@ -8,6 +8,9 @@ if [ -d "$INSTALL_DIR/.git" ]; then
   echo "Updating existing installation..."
   git -C "$INSTALL_DIR" pull --ff-only
 else
+  if [ -d "$INSTALL_DIR" ]; then
+    rm -rf "$INSTALL_DIR"
+  fi
   mkdir -p "$(dirname "$INSTALL_DIR")"
   git clone https://github.com/rivadmorin/Jules-Companion.git "$INSTALL_DIR"
 fi
