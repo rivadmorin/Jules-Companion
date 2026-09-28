@@ -41,7 +41,7 @@ Tambahkan `jules-companion` ke konfigurasi MCP di Klien AI Anda (`mcp_config.jso
 #### 🔹 Group 1: Discovery & Setup
 | Nama Tool | Deskripsi | Contoh Payload |
 | :--- | :--- | :--- |
-| `list_agents` | Mengembalikan daftar JSON dari 30 agen spesialis di `registry.json`. | `{}` |
+| `list_agents` | Mengembalikan daftar JSON dari 43 agen spesialis di `registry.json`. | `{}` |
 | `get_agent_info` | Membaca template markdown instruksi dan batasan agen target. | `{ "agentName": "annotator" }` |
 | `list_sources` | Mengueri repositori GitHub Cloud terhubung di akun Jules ini. | `{}` |
 | `run_doctor` | Menjalankan pemeriksaan integritas lingkungan (.env, API key, git, gh CLI). | `{}` |
@@ -160,9 +160,11 @@ Saat digunakan sebagai Agent Skill di asisten AI seperti **Antigravity IDE** ata
 
 ## 📚 Dokumentasi
 
-Untuk penjelasan komprehensif mengenai arsitektur aplikasi, peran agen, dan logika alur kerja:
+Untuk rincian komprehensif mengenai arsitektur aplikasi, peta kode, standar pengujian, dan peta jalan pengembangan:
 
-👉 **[Dokumentasi Aplikasi Lengkap (Bahasa Indonesia)](docs/penjelasan-aplikasi.md)**
+* 📖 **[Panduan & Dokumentasi Lengkap Aplikasi](docs/penjelasan-aplikasi.md)** — Arsitektur umum, katalog 20 MCP tools, FSM siklus sesi, dan diagnostik.
+* 🗺️ **[Peta Arsitektur & Panduan Codebase](docs/codebase-architecture-map.md)** — Hierarki 6 lapisan, tata kelola Sentrux, topologi Graft, dan pola *programmatic core*.
+* 🛡️ **[Panduan Keberlanjutan Kode, QA & Roadmap](docs/development-and-contribution-guide.md)** — Standar keberlanjutan kode, audit 100% TSDoc, tata cara kontribusi/ekstensi fitur, dan roadmap keberlanjutan.
 
 ---
 

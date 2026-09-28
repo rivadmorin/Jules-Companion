@@ -143,9 +143,9 @@ Salah satu peningkatan arsitektur terpenting untuk kemudahan pemeliharaan (*main
 ## 4. Topologi Graf Kode (Graft Wiring Graph)
 
 Indeks graf semantik **Graft** memetakan seluruh relasi fungsi, berkas, dan interface:
-- **Total Berkas Terindeks**: 35 berkas (TypeScript & Python evals)
-- **Total Simbol (Nodes)**: 110 nodes (55 functions, 35 files, 19 interfaces, 1 type)
-- **Total Relasi Dependensi (Edges)**: 342 edges
+- **Total Berkas Terindeks**: Berkas TypeScript Inti, Client API, Workflow, dan Modul MCP (arsitektur murni TypeScript)
+- **Total Simbol (Nodes)**: 100+ nodes (functions, files, unified interfaces, types)
+- **Total Relasi Dependensi (Edges)**: 300+ edges terpetakan secara deterministik
 
 ### Simbol Hotspot & Fungsi Fondasi:
 | Simbol / Fungsi | Berkas Sumber | Jumlah Pemanggil | Peran Utama |
@@ -320,7 +320,7 @@ Setiap proses penggabungan perubahan kode dari cloud dilindungi oleh pengaman ke
 | Kebutuhan Workflow | Perintah | Deskripsi & Dampak |
 | :--- | :--- | :--- |
 | **Pipeline Verifikasi Lengkap** | `npm run verify` | Menjalankan seluruh pengujian unit (`npm test`) + validasi Sentrux + validasi Graf. |
-| **Test Suite Cepat** | `npm test` | Menjalankan `pretest` (esbuild), `postbuild` (sync), dan 52 unit tests via `tsx --test`. |
+| **Test Suite Cepat** | `npm test` | Menjalankan `pretest` (esbuild), `postbuild` (sync), dan 53 unit tests via `tsx --test` (24 suites, 100% pass). |
 | **Audit Arsitektur Layering** | `npm run sentrux:check` | Memvalidasi kepatuhan 6-tier arsitektur Sentrux (0 violations). |
 | **Visualisasi Graf Semantik** | `npm run graft:viz` | Membuka server navigasi visual graf arsitektur 2D/3D di browser (`localhost:4400`). |
 | **Ekspor Graf Mandiri (HTML)** | `npm run graft:export` | Memperbarui berkas visual mandiri di [`docs/architecture-graph/index.html`](file:///e:/Data%20Utama/Coding/Antigravity/Jules-Companion/docs/architecture-graph/index.html). |
@@ -328,3 +328,11 @@ Setiap proses penggabungan perubahan kode dari cloud dilindungi oleh pengaman ke
 | **Sinkronisasi Global IDE** | `npm run sync` | Menyalin seluruh `dist/*.js`, template agen, dan dokumentasi ke `~/.gemini/config/skills/jules-companion`. |
 | **Kompilasi Ulang Registry Agen** | `npm run registry` | Membaca ulang seluruh markdown di `references/agents/*.md` dan memperbarui `registry.json`. |
 | **Audit Standar TSDoc** | `npx tsx --test tests/doc_coverage.test.ts` | Memastikan 100% simbol yang diekspor di `scripts/` memiliki blok TSDoc ber-tag `@param` dan `@returns`. |
+
+---
+
+## 8. Panduan Terkait
+
+Untuk pemeliharaan jangka panjang, standar kontribusi, dan peta jalan fitur:
+* 🛡️ **[Panduan Keberlanjutan Kode, QA & Roadmap (`docs/development-and-contribution-guide.md`)](development-and-contribution-guide.md)**: Pedoman arsitektur anti-regresi, aturan isolasi handle Windows, dan milestone pengembangan berkelanjutan.
+* 📖 **[Panduan & Dokumentasi Lengkap Aplikasi (`docs/penjelasan-aplikasi.md`)](penjelasan-aplikasi.md)**: Rincian operasional, integrasi IDE, dan pemecahan masalah runtime.

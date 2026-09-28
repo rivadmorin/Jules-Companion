@@ -2,7 +2,7 @@
 
 `jules-companion` adalah sebuah asisten AI ko-pilot dan alat orkestrasi baris perintah (CLI & MCP) yang dibangun dengan TypeScript. Tujuan utamanya adalah menjadi jembatan cerdas dan aman yang mengoordinasikan interaksi antara pengembang (melalui terminal lokal, Git, dan AI Agent) dengan **Google Jules REST API** (lingkungan eksekusi tugas berbasis *cloud sandbox*).
 
-Aplikasi ini mengotomatiskan seluruh siklus hidup sesi cloud (*cloud session lifecycle*), peninjauan kode terisolasi (*isolated branch review*), ekstraksi patch unidiff, penggabungan aman (*safe merge* dengan *git stash*), serta menyediakan katalog 30+ agen AI spesialis (*specialized domain agents*).
+Aplikasi ini mengotomatiskan seluruh siklus hidup sesi cloud (*cloud session lifecycle*), peninjauan kode terisolasi (*isolated branch review*), ekstraksi patch unidiff, penggabungan aman (*safe merge* dengan *git stash*), serta menyediakan katalog 43 agen AI spesialis (*specialized domain agents*).
 
 ---
 
@@ -188,11 +188,12 @@ Struktur penyimpanan lokal dibuat rapi dan tidak mengotori repositori:
 │   ├── config.json               # Konfigurasi platform & versi
 │   ├── sessions.json             # Basis data lokal riwayat sesi (atomic write)
 │   ├── references/               # Salinan template agen lokal
-│   │   └── agents/*.md           # 30+ template prompt agen
+│   │   └── agents/*.md           # 43 template prompt agen
 │   └── scratch/                  # Patch unduhan sementara (*.patch)
 ├── docs/
 │   ├── jules-reviews/            # Laporan audit mode 'review' & hasil Stage 1
-│   └── codebase-architecture-map.md
+│   ├── codebase-architecture-map.md
+│   └── development-and-contribution-guide.md
 └── .gitignore                    # Otomatis ditambahkan '.jules-companion/'
 ```
 
@@ -207,3 +208,11 @@ Struktur penyimpanan lokal dibuat rapi dan tidak mengotori repositori:
 | `Execution Blocked: One or more active sessions...` | Ada sesi agen lain yang masih berjalan di cloud. | Tunggu hingga sesi selesai, batalkan sesi dengan `cancel_session`, atau jalankan `/jules-auto`. |
 | `Git patch dry-run failed` | Konflik baris kode antara patch cloud dengan revisi lokal terbaru. | Periksa perbedaan baris kode pada branch `jules/review-...` dan selesaikan konflik secara manual. |
 | `Missing TSDoc block comment` pada `npm test` | Ada fungsi atau interface baru yang diekspor tanpa komentar TSDoc ber-tag `@param`/`@returns`. | Tambahkan blok dokumentasi `/** ... @param ... @returns ... */` di atas simbol terkait. |
+
+---
+
+## 7. Rujukan Teknis & Panduan Keberlanjutan
+
+Untuk panduan mendalam mengenai struktur kode, hierarki layering Sentrux, dan tata cara ekstensi fitur baru:
+* 🗺️ **[Peta Arsitektur & Panduan Codebase (`docs/codebase-architecture-map.md`)](codebase-architecture-map.md)**: Analisis hierarki 6 lapisan, Graft semantic graph, pola pemisahan *Programmatic Core*, dan governance Sentrux.
+* 🛡️ **[Panduan Keberlanjutan Kode, QA & Roadmap (`docs/development-and-contribution-guide.md`)](development-and-contribution-guide.md)**: Standar TypeScript ketat, checklist PR readiness, testing suite (53 tests), dan roadmap evolusi sistem.

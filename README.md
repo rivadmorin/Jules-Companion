@@ -41,7 +41,7 @@ Add `jules-companion` to your AI Client's MCP configuration (`mcp_config.json` o
 #### 🔹 Group 1: Discovery & Setup
 | Name | Description | Sample Payload |
 | :--- | :--- | :--- |
-| `list_agents` | Returns JSON array of all 30 specialized agent roles from registry.json. | `{}` |
+| `list_agents` | Returns JSON array of all 43 specialized agent roles from registry.json. | `{}` |
 | `get_agent_info` | Reads markdown template directives and boundaries for a target agent. | `{ "agentName": "annotator" }` |
 | `list_sources` | Queries linked GitHub Cloud sources registered under this account. | `{}` |
 | `run_doctor` | Runs environment health checks (.env, API key, git, gh CLI). | `{}` |
@@ -160,9 +160,11 @@ When used as an Agent Skill in assistants like **Antigravity IDE** or **Claude C
 
 ## 📚 Documentation
 
-For a comprehensive breakdown of the application architecture, agent roles, and workflow logic:
+For a comprehensive breakdown of the application architecture, development roadmap, and workflow logic:
 
-👉 **[Complete Application Documentation (Indonesian)](docs/penjelasan-aplikasi.md)**
+* 📖 **[Complete Application Guide (Indonesian)](docs/penjelasan-aplikasi.md)** — Architectural overview, 20 MCP tools, FSM lifecycle, and troubleshooting.
+* 🗺️ **[Codebase Architecture Map](docs/codebase-architecture-map.md)** — 6-tier layering hierarchy, Sentrux governance, and programmatic core patterns.
+* 🛡️ **[Sustainability, QA & Roadmap Guide](docs/development-and-contribution-guide.md)** — Code sustainability principles, 100% TSDoc gate, testing standards, extension protocols, and future milestone roadmap.
 
 ---
 
