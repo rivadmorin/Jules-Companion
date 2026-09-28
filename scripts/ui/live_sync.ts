@@ -6,6 +6,7 @@
 import * as vscode from 'vscode';
 import { listSessionsApi, approvePlanApi } from '../client/jules_api';
 import { SessionRecord } from '../core/types';
+import { isSessionAwaitingApproval, isSessionAwaitingInput } from '../utils';
 
 /**
  * Manages periodic background polling of cloud session states and dispatches notifications on transitions.
@@ -122,7 +123,19 @@ export class LiveSyncManager {
     const idPrefix = session.id.slice(0, 8);
     const agent = session.agent || 'Jules Agent';
 
-    if (nextStatus.includes('AWAITING') || nextStatus.includes('PLAN')) {
+    if (isSessionAwaitingInput(nextStatus)) {
+      vscode.window.showInformationMessage(
+        `💬 Jules Session #${idPrefix} (${agent}) is waiting for your response/input!`,
+        '💬 Reply to Agent',
+        '🧭 Mission Control'
+      ).then(action => {
+        if (action === '💬 Reply to Agent') {
+          vscode.commands.executeCommand('jules.sendMessage', { session });
+        } else if (action === '🧭 Mission Control') {
+          vscode.commands.executeCommand('jules.openMissionControl', { session });
+        }
+      });
+    } else if (isSessionAwaitingApproval(nextStatus)) {
       vscode.window.showWarningMessage(
         `🔔 Jules Session #${idPrefix} (${agent}) is awaiting your Plan Approval!`,
         '✅ Approve Plan',

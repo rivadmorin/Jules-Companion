@@ -186,8 +186,10 @@ describe('Utils Comprehensive Tests', () => {
       assert.strictEqual(isSessionAwaitingInput('AWAITING_USER_INPUT'), true);
       assert.strictEqual(isSessionAwaitingInput('awaiting_user_input'), true);
       assert.strictEqual(isSessionAwaitingInput('awaiting_response'), true);
+      assert.strictEqual(isSessionAwaitingInput('AWAITING_USER_FEEDBACK'), true);
       assert.strictEqual(isSessionAwaitingInput('awaiting_user_feedback'), true);
       assert.strictEqual(isSessionAwaitingApproval('AWAITING_USER_INPUT'), false);
+      assert.strictEqual(isSessionAwaitingApproval('AWAITING_USER_FEEDBACK'), false);
       assert.strictEqual(isSessionAwaitingApproval('awaiting_response'), false);
     });
   });

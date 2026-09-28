@@ -8,7 +8,7 @@ import { request, getApiKey } from './client/http';
  * Utility functions and type definitions for parsing CLI arguments and managing local session state.
  * @module utils
  */
-import { parseArgs, loadSessions, saveSessions, SessionRecord } from './utils';
+import { parseArgs, loadSessions, saveSessions, SessionRecord, isSessionAwaitingApproval, isSessionAwaitingInput } from './utils';
 
 /**
  * Processes a single Jules session by checking its status against the cloud API and taking automatic
@@ -40,7 +40,7 @@ async function processSingleSession(
 
     // Evaluate the retrieved state to determine if autonomous intervention is required
     // Handle state machine transitions automatically to unblock stalled autonomous agents
-    if (state === 'AWAITING_PLAN_APPROVAL') {
+    if (isSessionAwaitingApproval(state)) {
       // The cloud agent has proposed an execution plan and halted, awaiting human approval.
       // We automatically send the 'approvePlan' API request to unblock the agent immediately.
       console.log(`⚡ Session ${sessionId} is awaiting plan approval. Sending auto-approval request...`);
@@ -57,7 +57,7 @@ async function processSingleSession(
       // Return true to indicate that a state-mutating action was successfully performed
       return true;
 
-    } else if (state === 'AWAITING_USER_INPUT') {
+    } else if (isSessionAwaitingInput(state)) {
       // The cloud agent has requested clarification or input before proceeding.
       // We send a generic authorization to continue (or custom user flag) to prevent it from stalling indefinitely.
       // Determine the payload message: fallback to the default directive if no custom reply was supplied via CLI
