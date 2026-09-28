@@ -1,6 +1,7 @@
 # Peta Arsitektur & Panduan Pengembangan Codebase Jules-Companion
 > *Dokumen Arsitektur & Panduan Pemeliharaan Menggunakan **Sentrux** (Architectural Sensor & Governance) dan **Graft** (Semantic Context Graph)*  
-> *Status Terkini: Arsitektur Modular Berorientasi Domain (52 Unit Tests 100% Passed, 0 Sentrux Violations)*
+> *Dokumentasi Lengkap 28 Modul Skrip: Silakan baca [**Indeks Dokumentasi Kodebase Komprehensif**](codebase/README.md)*  
+> *Status Terkini: 106 Unit Tests 100% Passed, 100% TSDoc Coverage, Zero Regressions*
 
 ---
 
