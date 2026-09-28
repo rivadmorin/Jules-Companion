@@ -24,6 +24,48 @@ function getCurrentBranch(targetDir?: string): string {
 }
 
 /**
+ * Resolves the primary default remote branch on origin (typically 'main' or 'master').
+ *
+ * @param {string} [targetDir] - Optional directory path to execute the git command within.
+ * @returns {string} The remote default branch name, defaulting to 'main'.
+ */
+export function getDefaultRemoteBranch(targetDir?: string): string {
+  const headRes = runGit(['rev-parse', '--abbrev-ref', 'origin/HEAD'], targetDir);
+  if (headRes.success && headRes.stdout) {
+    const branch = headRes.stdout.replace(/^origin\//, '').trim();
+    if (branch && branch !== 'HEAD') return branch;
+  }
+  const mainCheck = runGit(['rev-parse', '--verify', 'origin/main'], targetDir);
+  if (mainCheck.success) return 'main';
+  const masterCheck = runGit(['rev-parse', '--verify', 'origin/master'], targetDir);
+  if (masterCheck.success) return 'master';
+  return 'main';
+}
+
+/**
+ * Verifies whether a given branch exists on the remote repository ('origin').
+ * Checks local remote-tracking branch first, then queries remote heads.
+ *
+ * @param {string} branch - The branch name to verify.
+ * @param {string} [targetDir] - Optional directory path.
+ * @returns {boolean} True if the branch exists on remote origin.
+ */
+export function isBranchOnRemote(branch: string, targetDir?: string): boolean {
+  if (!branch) return false;
+  // 1. Instant check against local remote tracking branch (origin/<branch>)
+  const localRef = runGit(['rev-parse', '--verify', `origin/${branch}`], targetDir);
+  if (localRef.success) return true;
+
+  // 2. Query remote heads via ls-remote for newly created remote branches
+  const lsRes = runGit(['ls-remote', '--heads', 'origin', branch], targetDir);
+  if (lsRes.success && lsRes.stdout && lsRes.stdout.trim().length > 0) {
+    return true;
+  }
+
+  return false;
+}
+
+/**
  * Parses the Git remote origin URL to extract the `owner/repository` slug.
  * This is critical for matching local repositories to their corresponding Jules Cloud sources.
  *
@@ -143,8 +185,31 @@ export async function deploySessionCore(options: DeploySessionOptions): Promise<
   }
 
   const headers = { 'X-Goog-Api-Key': apiKey };
-  const startingBranch = String(options.branch || getCurrentBranch(targetDir));
   const outputLogs: string[] = [];
+
+  let startingBranch: string;
+  if (options.branch) {
+    const requested = String(options.branch).trim();
+    if (!isBranchOnRemote(requested, targetDir)) {
+      return {
+        success: false,
+        output: '',
+        error: `Branch '${requested}' was not found on remote origin (GitHub).\nJules Cloud Agent requires that the branch exists on GitHub before deploying.`
+      };
+    }
+    startingBranch = requested;
+  } else {
+    const currentLocal = getCurrentBranch(targetDir);
+    if (isBranchOnRemote(currentLocal, targetDir)) {
+      startingBranch = currentLocal;
+    } else {
+      const defaultBranch = getDefaultRemoteBranch(targetDir);
+      outputLogs.push(
+        `Warning: Current local branch '${currentLocal}' is not found on remote 'origin'. Defaulting to '${defaultBranch}'.`
+      );
+      startingBranch = defaultBranch;
+    }
+  }
 
   try {
     outputLogs.push(`Matching repository '${gitRepo}' with Jules sources...`);
