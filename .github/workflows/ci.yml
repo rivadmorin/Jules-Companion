@@ -34,11 +34,11 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      - name: Setup Workspace Structure
-        run: npm run setup
-
       - name: Compile TypeScript Scripts
         run: npm run build
+
+      - name: Setup Workspace Structure
+        run: npm run setup
 
       - name: Run Test Suite & TSDoc Coverage Audit
         run: npm test
