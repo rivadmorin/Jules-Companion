@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.2.0] - 2026-09-28
+
+### 🚀 Highlights
+- 1-Click Installer for Antigravity IDE and VS Code, GitHub Issue/PR Templates, Community Guidelines, and Automated CI/CD Release Pipeline
+
+---
+
 ## [1.1.0] - 2026-09-29
 
 ### 🚀 Added

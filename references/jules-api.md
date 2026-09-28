@@ -105,7 +105,7 @@ A **Session** is an active or completed task VM execution sandbox for a specific
   - **Request Body**:
     ```json
     {
-      "message": "User feedback: Please write tests in Python instead of Node.js"
+      "prompt": "User feedback: Please write tests in Python instead of Node.js"
     }
     ```
   - **Example Request**:
@@ -113,7 +113,7 @@ A **Session** is an active or completed task VM execution sandbox for a specific
     curl -X POST \
       -H "x-goog-api-key: $JULES_API_KEY" \
       -H "Content-Type: application/json" \
-      -d '{"message": "User feedback: please change X to Y"}' \
+      -d '{"prompt": "User feedback: please change X to Y"}' \
       "https://jules.googleapis.com/v1alpha/sessions/{sessionId}:sendMessage"
     ```
 

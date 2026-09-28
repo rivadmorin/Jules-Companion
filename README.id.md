@@ -48,14 +48,22 @@ Aplikasi ini berfungsi sebagai ko-pilot pintar untuk mengintegrasikan alur kerja
 * **Mission Control Webview**: Antarmuka visual lengkap dengan kepatuhan CSP ketat (nonces kriptografis & event delegation `data-action`).
 * **Native Diff Integration**: Membuka perubahan kode berdampingan (*side-by-side*) menggunakan diff editor bawaan IDE via `vscode.diff`.
 
-### 📦 Build & Instalasi
-```bash
-# 1. Package menjadi file installer .vsix
-npm run package
+### 📦 Cara Instalasi Mudah (Untuk Siapa Saja)
 
-# 2. Pasang langsung di VS Code / Antigravity IDE
-code --install-extension jules-companion-1.1.0.vsix
-```
+#### 🚀 Opsi 1: Paling Mudah (1-Klik Tanpa Perlu Buka Terminal)
+* **Windows**: Cukup **dobel-klik file `install.bat`**.
+* **macOS / Linux**: Jalankan `./install.sh` di terminal.
+* Script ini otomatis memasang ekstensi ke VS Code / Cursor, mendaftarkan 20 Tools MCP Server, dan memeriksa Google API Key Anda.
+
+#### 🛠️ Opsi 2: Instalasi Manual / Developer
+1. Pasang ekstensi VS Code langsung dari paket `.vsix`:
+   ```bash
+   code --install-extension jules-companion-1.1.0.vsix
+   ```
+2. Atau jalankan wizard installer via npm:
+   ```bash
+   npm run installer
+   ```
 
 ---
 

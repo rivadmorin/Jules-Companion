@@ -82,15 +82,25 @@ export function parseDiffFiles(diffText: string): ParsedDiffFile[] {
  * @returns A promise resolving when the diff viewer is launched.
  */
 export async function openVisualDiff(sessionId: string, targetDir: string): Promise<void> {
-  const diffContent = await pullDiffApi(sessionId, targetDir);
+  let diffContent = '';
+  try {
+    diffContent = await pullDiffApi(sessionId, targetDir);
+  } catch (err: any) {
+    if (err.message?.includes('No git patch found')) {
+      vscode.window.showInformationMessage(`No code changes or git patch found for session #${sessionId.slice(0, 8)}.`);
+      return;
+    }
+    throw err;
+  }
+
   if (!diffContent || !diffContent.trim()) {
-    vscode.window.showInformationMessage(`No diff changes found for session #${sessionId}.`);
+    vscode.window.showInformationMessage(`No diff changes found for session #${sessionId.slice(0, 8)}.`);
     return;
   }
 
   const files = parseDiffFiles(diffContent);
   if (files.length === 0) {
-    vscode.window.showInformationMessage(`No modified files detected in diff for session #${sessionId}.`);
+    vscode.window.showInformationMessage(`No modified files detected in diff for session #${sessionId.slice(0, 8)}.`);
     return;
   }
 

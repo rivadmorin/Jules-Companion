@@ -92,6 +92,11 @@ Continuous Integration (CI) and automated releases ([`.github/workflows/`](file:
 * **Runtime & Tooling Compatibility**: Extension packaging via `@vscode/vsce` v4 requires Node.js >= 20.0.0. Ensure CI matrices and developer instructions target modern active Node.js LTS (20.x, 22.x).
 * **Green CI Gate Before Release**: Never publish a release, tag a version, or merge PRs without verifying that all CI matrix jobs pass cleanly (`gh run list` / `gh run view`).
 
+### Invariant 9: Strict Truth in CLI Documentation & Agent Roster Alignment
+* **No Phantom Agents**: Never invent, guess, or document hypothetical agent personas (such as `architect`, `coder`, `deployer`, `auditor`, or `strategist`). The sole authority for agent identity is [`references/agents/registry.json`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/references/agents/registry.json), which strictly registers the **44 specialist agents** (26 coding + 18 advisory).
+* **Executable CLI Commands**: Every CLI fallback command documented in [`SKILL.md`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/SKILL.md), [`AGENT.md`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/AGENT.md), and [`README.md`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/README.md) must be 100% syntactically valid and runnable by Node.js. If a command uses `--team <preset>`, `--inspect <id>`, `--approve <id>`, or `--diff <id>`, the underlying CLI argument parsers ([`scripts/deploy_session.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/deploy_session.ts), [`scripts/merge_session.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/merge_session.ts)) must support them without throwing unknown parameter or validation errors.
+* **Automatic MCP Schema Refresh**: The global IDE MCP schema repository (`~/.gemini/antigravity-ide/mcp/jules-companion/`) must be systematically refreshed and overwritten on every build/sync ([`scripts/sync_global.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/sync_global.ts)) to avoid stale schema drift between local code tools and IDE agent capabilities.
+
 ---
 
 ## 🛠️ 3. Contributor & AI Agent Tooling Suite: Ponytail & Sentrux
@@ -170,7 +175,7 @@ Jules-Companion/
 │   │   ├── mission_control.ts       # Real-time Webview dashboard & CSP event router
 │   │   ├── sessions_provider.ts     # TreeDataProvider for Jules Sessions explorer
 │   │   ├── scheduled_provider.ts    # TreeDataProvider for Scheduled Tasks explorer
-│   │   ├── agents_provider.ts       # TreeDataProvider for 30 Specialist Agents
+│   │   ├── agents_provider.ts       # TreeDataProvider for 44 Specialist Agents
 │   │   ├── workspace_provider.ts    # TreeDataProvider for Workspace health & Git context
 │   │   ├── visual_diff.ts           # Unified diff parser & Gemini AI explanation panel
 │   │   ├── live_sync.ts             # Background polling engine with adaptive backoff
@@ -183,9 +188,9 @@ Jules-Companion/
 │   └── utils.ts                     # Tier 5: Shared utilities, Doctor checks, status helpers
 ├── references/                      # Specialist Agent Markdown definitions
 │   └── agents/
-│       ├── registry.json            # Compiled catalog of 30 specialist agents
-│       └── *.md                     # 30 individual agent prompt definitions
-├── tests/                           # Tier 0: Native Node.js Test Suite (106 tests)
+│       ├── registry.json            # Compiled catalog of 44 specialist agents
+│       └── *.md                     # 44 individual agent prompt definitions
+├── tests/                           # Tier 0: Native Node.js Test Suite (115 tests across 36 suites)
 │   ├── doc_coverage.test.ts         # 100% TSDoc coverage enforcement
 │   ├── scheduler.test.ts            # Task Scheduler test suite
 │   ├── mission_control.test.ts      # Webview rendering & CSP test suite
@@ -242,88 +247,136 @@ npm run sync
 Jules Companion exposes **20 native MCP tools**. When interacting as an AI agent via MCP, use these exact schemas:
 
 ### 1. `deploy_session`
-Deploys a new autonomous session to Google Jules Cloud. Supports 4 distinct launch modes:
+Deploys a new autonomous session to Google Jules Cloud:
 ```json
 {
-  "prompt": "Refactor authentication middleware to use JWT standard library",
-  "agent": "architect",
-  "launch_mode": "plan_approval",
-  "auto_pr": false
+  "type": "start",
+  "agents": "bolt",
+  "task": "Optimize database query memoization and reduce latency",
+  "mode": "code"
 }
 ```
-* `launch_mode` options:
-  - `"one_shot"`: Autonomous execution with auto-merge upon completion.
-  - `"plan_approval"`: Agent halts after planning and requires explicit user authorization.
-  - `"scheduled"`: Session is registered in the Task Scheduler to execute at a specific timestamp.
-  - `"chat"`: Interactive multi-turn conversational session.
+* `type` options:
+  - `"start"`: Autonomous execution without pausing for plan approval (`requirePlanApproval: false`).
+  - `"review"`: Pauses in `AWAITING_PLAN_APPROVAL` requiring developer plan authorization.
+  - `"interactive"`: Pauses in `AWAITING_USER_FEEDBACK` for conversational requirements clarification.
 
-### 2. `merge_session`
-Inspects and merges the code changes from a completed Jules session:
+### 2. `deploy_team`
+Deploys coordinated multi-agent team presets:
 ```json
 {
-  "session_id": "sessions/20260928-auth-refactor"
+  "preset": "github-ops",
+  "task": "Automate CI/CD release workflow and author release changelogs",
+  "mode": "code"
+}
+```
+* Available presets: `"github-ops"`, `"full-audit"`, `"feature-sprint"`, `"refactor-boost"`.
+
+### 3. `merge_session`
+Verifies cloud Safety Gate and inspects or merges session branches:
+```json
+{
+  "sessionId": "4146717219164004717",
+  "inspect": true
+}
+```
+* Options:
+  - `"inspect": true`: Stage 1 inspection (applies patch to review branch and writes report).
+  - `"approve": true`: Stage 2 approval (merges review branch into target branch).
+  - `"inspectAll": true`: Batch inspects all completed sessions.
+
+### 4. `pull_session_diff`
+Extracts raw unified Git `.diff` and verifies patch conflict status (`git apply --check`):
+```json
+{
+  "sessionId": "4146717219164004717"
 }
 ```
 
-### 3. `send_session_message`
+### 5. `send_session_message`
 Replies to an agent waiting in `AWAITING_USER_INPUT` or `AWAITING_USER_FEEDBACK`:
 ```json
 {
-  "session_id": "sessions/20260928-auth-refactor",
+  "sessionId": "4146717219164004717",
   "message": "Use HMAC-SHA256 for the token signature algorithm."
 }
 ```
 
-### 4. `get_session_status`
-Polls current live session status and plan steps:
+### 6. `get_session_status`
+Polls real-time live session status from Google Jules Cloud REST API:
 ```json
 {
-  "session_id": "sessions/20260928-auth-refactor"
+  "sessionId": "4146717219164004717"
 }
 ```
 
-### 5. `auto_process`
-Dispatches an autonomous team workflow across multiple agent personas:
+### 7. `auto_process`
+Dispatches an autonomous pipeline (poll -> auto-approve plan -> auto-reply -> auto-merge):
 ```json
 {
-  "task": "Perform end-to-end security audit and patch vulnerabilities",
-  "agents": ["sentinel", "inspector", "scribe"],
-  "launch_mode": "one_shot"
+  "all": true
 }
 ```
 
 ---
 
-## 📋 7. Specialist Agent Roster Reference (30 Personas)
+## 📋 7. Specialist Agent Roster Reference (44 Personas)
 
-The repository provides 30 specialized agent personas located in [`references/agents/`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/references/agents/) and indexed in [`references/agents/registry.json`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/references/agents/registry.json):
+The repository provides **44 specialized agent personas** located in [`references/agents/`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/references/agents/) and indexed in [`references/agents/registry.json`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/references/agents/registry.json):
+
+### 💻 Coding & Architecture Group (26 Personas)
 
 | Role ID | Title & Emoji | Primary Specialty |
 |---|---|---|
-| `architect` | Architect 🏛️ | High-level system design, modularity, boundary contracts |
-| `coder` | Coder 💻 | Clean, idiomatic business logic implementation |
-| `inspector` | Inspector 🧪 | Unit, integration, and E2E test suites, 100% test coverage |
-| `sentinel` | Sentinel 🛡️ | Security hardening, input validation, CSP, dependency auditing |
-| `curator` | Curator 📚 | Architecture documentation, codebase map, developer gotchas |
-| `scribe` | Scribe 📝 | 100% TSDoc coverage, markdown guides, API references |
-| `scaler` | Scaler 📈 | Performance profiling, concurrency tuning, memory efficiency |
-| `janitor` | Janitor 🧹 | Dead code elimination, lint cleanup, dependency pruning |
-| `gatekeeper` | Gatekeeper 🚪 | Pre-merge verification, branch protection, safety gates |
-| `nexus` | Nexus 🔗 | Model Context Protocol (MCP) server & client integration |
-| `sleuth` | Sleuth 🕵️ | Deep crash dump forensics, memory leak tracing |
-| `innovator` | Innovator 💡 | Greenfield feature prototypes and architectural spikes |
-| `modernizer` | Modernizer 🔄 | Legacy code refactoring, modern TypeScript idiom adoption |
-| `netrunner` | Netrunner 🌐 | Network protocols, HTTP/HTTPS client tuning, retry backoffs |
-| `proteus` | Proteus 🎭 | Dynamic bespoke roles and specialized domain analysis |
-| `revenant` | Revenant 🧟 | Cross-platform persistence, process recovery, OS boot hooks |
-| `smith` | Smith 🧰 | Developer experience (DevEx), build tooling, CLI automation |
-| `synapse` | Synapse 🧠 | LLM orchestration, structured prompt engineering, embeddings |
-| `watcher` | Watcher 👁️ | Data schema validation, type integrity, boundary sanitization |
-| `green` | Green 🌱 | Carbon footprint reduction, CPU/memory energy optimization |
-| `localizer` | Localizer 🌍 | Internationalization (i18n), multi-language resources, RTL layouts |
-| `nomad` | Nomad 🏕️ | Cross-platform portability (Windows, macOS, Linux, containers) |
+| `adapter` | Adapter 🔌 | Cross-Platform Compatibility (Windows/Linux/macOS) |
+| `alchemist` | Alchemist 🧪 | Database Migrations & SQL Optimization |
+| `benchmarker` | Benchmarker ⏱️ | Stress-Testing & Latency Audits |
+| `bolt` | Bolt ⚡ | Performance, Memoization & Caching |
+| `bridge` | Bridge 🧲 | Third-Party API Integration & Test Mocks |
+| `builder` | Builder 🧱 | Frontend Component Scaffolding |
+| `chameleon` | Chameleon 🦎 | Language & Stack Porting |
+| `conduit` | Conduit 🔌 | Backend API Routing & Middleware |
+| `dockerist` | Dockerist 🐳 | Containerization & CI/CD Pipelines |
+| `enforcer` | Enforcer 📏 | Coding Standards & Architectural Boundaries |
+| `exterminator` | Exterminator 🐛 | Bug Hunting & Crash Log Resolution |
+| `gatekeeper` | Gatekeeper 🔑 | Authentication & RBAC Authorization |
+| `innovator` | Innovator 💡 | Greenfield Feature Implementation |
+| `inspector` | Inspector 🔎 | Unit, Integration & E2E Testing Suites |
+| `janitor` | Janitor 🧹 | Code Cleanup, Linting & Dead Code Elimination |
+| `logger` | Logger 🪵 | Structured JSON Logging & Observability Metrics |
+| `materialist` | Materialist 🎴 | Google Material Design 3 Styling |
+| `modernizer` | Modernizer ⚙️ | Legacy Code Refactoring & TypeScript Upgrades |
+| `netrunner` | Netrunner 🌐 | Network & Web-Server Configurations |
+| `nomad` | Nomad 🎒 | Local & 100% Offline Portability |
+| `octo` | Octo 🐙 | GitHub Workflows, Actions & Repository Operations |
+| `packager` | Packager 💿 | Clean Installers, Uninstaller Routines & Bundlers |
+| `palette` | Palette 🎨 | UX & Frontend Accessibility (WCAG/ARIA) |
+| `partisan` | Partisan 🛰️ | Decentralized & P2P Architectures |
+| `sentinel` | Sentinel 🛡️ | Code Security Audits & Input Sanitization |
+| `watcher` | Watcher 👁️ | Data Integrity & Runtime Schema Validation |
 
-*(See [`docs/codebase/07-agents-and-customization.md`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/docs/codebase/07-agents-and-customization.md) for the complete list of all 30 personas).*
+### 📋 Advisory, Review & Documentation Group (18 Personas)
+
+| Role ID | Title & Emoji | Primary Specialty |
+|---|---|---|
+| `annotator` | Annotator 🏷️ | Inline Documentation & Code Clarity (TSDoc/JSDoc) |
+| `archivist` | Archivist 📜 | Changelogs, Release Notes & Deprecation Guides |
+| `cartographer` | Cartographer 🗺️ | Codebase Structures & ASCII Layout Mapping |
+| `consultant` | Consultant 🧠 | Framework Recommendations & ADRs |
+| `critic` | Critic 🗣️ | Senior Code Review & Anti-Pattern Analysis |
+| `curator` | Curator 📚 | Internal Knowledge Base & Developer Guides |
+| `datasmith` | Datasmith 🗄️ | SQLite Database Design & Query Indexing |
+| `grader` | Grader 📊 | Code Health Metrics & Technical Debt Audits |
+| `green` | Green 🌱 | Carbon Footprint Reduction & Energy Efficiency |
+| `localizer` | Localizer 🌍 | Internationalization (i18n) & RTL Layouts |
+| `nexus` | Nexus 🔗 | Model Context Protocol (MCP) Server Integration |
+| `proteus` | Proteus 🎭 | Custom Dynamic Analysis & Advisory |
+| `revenant` | Revenant 🧟 | Cross-Platform Background Service Persistence |
+| `scaler` | Scaler 📈 | High Availability, Caching & Concurrency Spikes |
+| `scribe` | Scribe ✍️ | README.md & Technical Documentation |
+| `sleuth` | Sleuth 🕵️ | Forensics, Crash Dump & Memory Leak Tracing |
+| `smith` | Smith 🧰 | Developer Experience (DevEx) & Git Tooling |
+| `synapse` | Synapse 🧠 | AI Integration, RAG Pipelines & Token Optimization |
 
 ---
 
@@ -335,7 +388,7 @@ The repository provides 30 specialized agent personas located in [`references/ag
    - Do not depend on CRLF vs LF in regexes; use `\r?\n`.
 
 2. **Atomic JSON File Persistence**:
-   - Never write partial JSON to `.jules/sessions.json` or `.jules-companion/schedules.json`. Always read, update the in-memory array, and write atomically via [`saveSessions`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/core/storage.ts) or [`saveScheduledTasks`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/core/scheduler.ts).
+   - Never write partial JSON to `.jules-companion/sessions.json` or `.jules-companion/schedules.json`. Always read, update the in-memory array, and write atomically via [`saveSessions`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/core/storage.ts) or [`saveScheduledTasks`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/core/scheduler.ts).
 
 3. **No Unhandled Promise Rejections**:
    - All async operations in commands and MCP handlers must be wrapped in structured `try ... catch` blocks with descriptive error feedback.
@@ -354,6 +407,28 @@ The repository provides 30 specialized agent personas located in [`references/ag
 7. **Validation Order Precedence (Offline Test Safety)**:
    - When authoring core functions (such as [`deploySessionCore`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/deploy_session.ts)), always validate user parameters and options *before* accessing network or secret credentials. This ensures unit tests testing invalid parameters pass without requiring external API keys.
 
+8. **CLI Argument Parser Multi-Mapping (`parseArgs`)**:
+   - When users invoke CLI commands like `--inspect <sessionId>` or `--approve <sessionId>`, `parseArgs` places the session ID directly into `params.inspect` or `params.approve`.
+   - Never assume `params.session` is populated. Always extract `sessionId` using:
+     ```typescript
+     const inspectId = typeof params.inspect === 'string' ? params.inspect : undefined;
+     const approveId = typeof params.approve === 'string' ? params.approve : undefined;
+     const sessionId = params.session || params.sessions || params.id || inspectId || approveId;
+     ```
+
+9. **Google Jules REST API Request Body Field (`prompt` vs `message`)**:
+   - The cloud REST endpoint `POST /sessions/{sessionId}:sendMessage` requires the request body `{ "prompt": "<text>" }`. Sending `{ "message": "<text>" }` will be rejected by Google's API gateway.
+
+10. **Global IDE MCP Schema Freshness**:
+    - Build and synchronization routines ([`scripts/sync_global.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/sync_global.ts)) must **unconditionally overwrite** JSON schema definitions in `~/.gemini/antigravity-ide/mcp/jules-companion/` to prevent version drift between local tool code and IDE capabilities.
+
+11. **Isolated TSDoc Blocks for Exported Constants**:
+    - Every exported constant (e.g. `export const TEAM_PRESETS = ...`) must have its own dedicated TSDoc comment immediately preceding it. Placing a constant immediately above an exported function without its own comment causes `tests/doc_coverage.test.ts` to fail.
+
+12. **Automatic Scratch & Residual File Cleanup**:
+    - When archiving or deleting sessions, always call [`cleanSessionScratch`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/core/storage.ts) to purge temporary `.patch`, `.diff`, and `visual_diff/` folders in `.jules-companion/scratch/`.
+    - Ensure global sync cleans obsolete residual files (like `.ignore`).
+
 ---
 
 ## ✅ 9. Pre-Completion Agent Checklist
@@ -363,11 +438,13 @@ Before completing any task in this repository, verify every item:
 - [ ] No speculative or unused abstractions were added (YAGNI).
 - [ ] Zero new external npm dependencies were added unless explicitly authorized.
 - [ ] All new or modified exported functions, classes, and types have 100% TSDoc blocks.
+- [ ] No phantom agents were introduced; all personas align with `references/agents/registry.json`.
 - [ ] Code strictly respects [Ponytail](https://github.com/DietrichGebert/ponytail) principles (stdlib first, shortest working diff).
 - [ ] Architecture passes [Sentrux](https://github.com/sentrux/sentrux) verification (`sentrux check .` or `npm run sentrux:check`) with 0 cycle violations.
 - [ ] Build script compiles cleanly cross-platform without shell glob dependencies (`npm run build`).
-- [ ] `npm test` runs and passes 115/115 tests with 0 failures in headless/offline environment.
+- [ ] `npm test` runs and passes 115/115 tests with 0 failures across all 36 test suites.
 - [ ] `npm run package` succeeds cleanly, producing `jules-companion-1.1.0.vsix`.
 - [ ] CI pipeline ([`.github/workflows/ci.yml`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/.github/workflows/ci.yml)) is confirmed green across all matrix runners (Ubuntu & Windows, Node 20.x & 22.x).
-- [ ] All relevant documentation (`README.md`, `README.id.md`, `docs/codebase/`, `CHANGELOG.md`, `AGENT.md`) has been updated and synchronized with latest changes.
+- [ ] All documented CLI commands have been tested and verified against actual script parsers.
+- [ ] All relevant documentation (`README.md`, `README.id.md`, `SKILL.md`, `references/prompt-templates.md`, `AGENT.md`) has been updated and synchronized.
 - [ ] Git status is clean and all changes are accounted for.

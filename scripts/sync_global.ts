@@ -66,12 +66,20 @@ export function syncGlobalInstallation(targetWorkspaceDir: string = process.cwd(
     }
 
     // 4. Sync key root configuration & documentation files
-    const rootFiles = ['SKILL.md', 'README.md', 'README.id.md', 'package.json'];
+    const rootFiles = ['SKILL.md', 'README.md', 'README.id.md', 'package.json', 'AGENT.md'];
     for (const rf of rootFiles) {
       const src = path.join(targetWorkspaceDir, rf);
       if (fs.existsSync(src)) {
         fs.copyFileSync(src, path.join(globalSkillDir, rf));
         syncedFilesCount++;
+      }
+    }
+    // Purge obsolete residue if present
+    const obsoleteResidues = ['.ignore'];
+    for (const ob of obsoleteResidues) {
+      const obPath = path.join(globalSkillDir, ob);
+      if (fs.existsSync(obPath)) {
+        try { fs.unlinkSync(obPath); } catch (_) {}
       }
     }
   }
@@ -83,13 +91,11 @@ export function syncGlobalInstallation(targetWorkspaceDir: string = process.cwd(
 
   for (const tool of getAllTools()) {
     const schemaFile = path.join(globalMcpDir, `${tool.name}.json`);
-    if (!fs.existsSync(schemaFile)) {
-      fs.writeFileSync(schemaFile, JSON.stringify({
-        name: tool.name,
-        description: tool.description,
-        inputSchema: tool.inputSchema
-      }, null, 2), 'utf8');
-    }
+    fs.writeFileSync(schemaFile, JSON.stringify({
+      name: tool.name,
+      description: tool.description,
+      inputSchema: tool.inputSchema
+    }, null, 2), 'utf8');
   }
 
   console.log(`✅ Global Sync Complete: ${syncedFilesCount} files updated in ${globalSkillDir}`);

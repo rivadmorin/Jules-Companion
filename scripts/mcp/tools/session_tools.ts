@@ -6,18 +6,11 @@
 import * as path from 'path';
 import * as fs from 'fs';
 import { McpToolDefinition } from '../../core/types';
-import { deploySessionCore } from '../../deploy_session';
+import { deploySessionCore, TEAM_PRESETS } from '../../deploy_session';
 import { mergeSessionCore, checkoutSessionBranch, rollbackSession } from '../../merge_session';
 import { loadSessions } from '../../core/storage';
 import { getApiKey, request } from '../../client/http';
 import { cancelSessionApi, sendMessageApi, pullDiffApi } from '../../client/jules_api';
-
-const TEAM_PRESETS: Record<string, string> = {
-  'full-audit': 'sentinel,janitor,annotator,grader',
-  'feature-sprint': 'innovator,builder,inspector',
-  'refactor-boost': 'modernizer,bolt,inspector',
-  'github-ops': 'octo,smith,scribe,archivist'
-};
 
 /**
  * Array of session lifecycle MCP tool definitions.

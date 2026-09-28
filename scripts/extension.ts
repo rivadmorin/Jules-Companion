@@ -1326,7 +1326,11 @@ function getAgentQuickPickList(extensionPath: string, root: string): AgentPickIt
           try {
             await openVisualDiff(sessionId!, root);
           } catch (err: any) {
-            vscode.window.showErrorMessage(`Failed to open visual diff: ${err.message}`);
+            if (err.message?.includes('No git patch found')) {
+              vscode.window.showInformationMessage(`No code changes or git patch found for session #${sessionId!.slice(0, 8)}.`);
+            } else {
+              vscode.window.showErrorMessage(`Failed to open visual diff: ${err.message}`);
+            }
           }
         }
       );
@@ -1387,7 +1391,11 @@ function getAgentQuickPickList(extensionPath: string, root: string): AgentPickIt
               );
             }
           } catch (err: any) {
-            vscode.window.showErrorMessage(`Failed to pull .diff: ${err.message}`);
+            if (err.message?.includes('No git patch found')) {
+              vscode.window.showInformationMessage(`No code changes or git patch found for session #${sessionId!.slice(0, 8)}.`);
+            } else {
+              vscode.window.showErrorMessage(`Failed to pull .diff: ${err.message}`);
+            }
           }
         }
       );
@@ -1552,6 +1560,12 @@ function getAgentQuickPickList(extensionPath: string, root: string): AgentPickIt
     })
   );
 
+  /**
+   * Displays quick pick actions for managing a specific scheduled task.
+   *
+   * @param taskId - The ID of the task to manage.
+   * @param root - Workspace root path.
+   */
   async function showScheduledTaskActions(taskId: string, root: string) {
     const tasks = loadScheduledTasks(root);
     const t = tasks.find(x => x.id === taskId);

@@ -1,0 +1,46 @@
+name: 💡 Feature Request or Agent Proposal
+description: Suggest an idea, enhancement, new workflow, or custom specialist agent.
+title: "[FEAT]: "
+labels: ["enhancement", "proposal"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        We welcome proposals for new features, GUI enhancements, and new specialist agents!
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Proposal Category
+      options:
+        - "New Specialist Agent (Proposal for 45th+ agent)"
+        - "VS Code / Antigravity IDE UI Enhancement"
+        - "New MCP Tool or API Integration"
+        - "Task Scheduler & Automation Workflow"
+        - "Developer Experience (DevEx) & Performance"
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Statement or Use Case
+      description: Is your feature request related to a problem? What workflow does this solve?
+      placeholder: "I'm always frustrated when..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution or Implementation
+      description: Describe what you would like to see happen.
+      placeholder: "Add a new button in Mission Control that allows..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternative Solutions Considered
+      description: Describe any alternative solutions or features you've considered.

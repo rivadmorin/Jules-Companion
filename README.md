@@ -47,11 +47,11 @@ It acts as an intelligent co-pilot to orchestrate local developer workflows (Git
 
 ### Install VSIX in VS Code or Antigravity IDE
 ```bash
-# 1. Build and package
-npm run build
-npm run package
+# Option A: 1-Click Auto Installer (Recommended for non-technical users)
+# On Windows: Double-click install.bat
+# On macOS/Linux: ./install.sh
 
-# 2. Install the resulting jules-companion-1.1.0.vsix in your IDE:
+# Option B: Manual Installation
 code --install-extension jules-companion-1.1.0.vsix
 ```
 

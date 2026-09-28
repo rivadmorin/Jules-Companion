@@ -52,6 +52,18 @@ describe('Mission Control Webview Renderer Unit Tests', () => {
     assert.ok(!html.includes('User Response Required'));
   });
 
+  test('should render plan approval banner and mark steps pending when planGenerated exists without planApproved even if status is COMPLETED', () => {
+    const completedSession = {
+      ...mockSession,
+      status: 'COMPLETED'
+    };
+    const html = renderMissionControlHtml(completedSession, mockActivities);
+    assert.ok(html.includes('Plan Approval Required'));
+    assert.ok(html.includes('Approve Plan Now'));
+    assert.ok(html.includes('Awaiting Plan Approval'));
+    assert.ok(html.includes('Pending'));
+  });
+
   test('should render user response banner and NOT plan approval when status is AWAITING_USER_INPUT', () => {
     const inputSession = {
       ...mockSession,

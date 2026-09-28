@@ -32,7 +32,7 @@ When deploying a specialized agent session, the assistant **MUST** construct the
 
 Example prompt format:
 ```markdown
-[Contents of references/agents/architect.md]
+[Contents of references/agents/innovator.md]
 
 ---
 ## Specific Task Requirements for this Session:
@@ -44,18 +44,15 @@ Example prompt format:
 
 ## 🛠️ The 44 Specialist Agents Roster
 
-### 💻 Coding & Architecture Group (25 Agents)
+### 💻 Coding & Architecture Group (26 Agents)
 - **adapter 🔌**: Cross-Platform Compatibility (Windows/Linux/macOS) ensuring zero path resolution or shell failures.
 - **alchemist 🧪**: Database migrations, model relationships, indexing lookup columns, and SQL query tuning.
-- **architect 🏛️**: Senior Systems Architect designing high-level boundaries, clean contracts, and modular interfaces.
 - **benchmarker ⏱️**: Stress testing scripts, concurrent traffic simulation, and latency profiling under load.
 - **bolt ⚡**: Algorithmic performance, memoization, caching, and execution speed optimizations.
 - **bridge 🧲**: Third-party API provider integrations, webhook contracts, and mock test servers.
 - **builder 🧱**: Clean, modular, reusable, and responsive frontend UI component scaffolding.
 - **chameleon 🦎**: Language and stack porting, translating modules idiomatically between ecosystems.
-- **coder 💻**: Core feature implementation, business logic refactoring, and bug fixes.
 - **conduit 🔌**: Backend API routing, middleware, RESTful/GraphQL endpoints, and response models.
-- **deployer 🚀**: CI/CD pipelines, release automation, Docker/containerization, and deployment scripting.
 - **dockerist 🐳**: Dockerfiles, modular docker-compose environments, and containerized test execution.
 - **enforcer 📏**: Coding standards, directory conventions, SOLID principles, and architectural boundaries.
 - **exterminator 🐛**: Deep-dive bug investigation, crash log analysis, and regression-free patches.
@@ -75,10 +72,9 @@ Example prompt format:
 - **sentinel 🛡️**: Code security audits, input sanitization, and SQL injection/XSS prevention.
 - **watcher 👁️**: Data integrity, incoming/outgoing schema validations, and runtime type safety constraints.
 
-### 📋 Advisory, Review & Documentation Group (19 Agents)
+### 📋 Advisory, Review & Documentation Group (18 Agents)
 - **annotator 🏷️**: Precise inline code comments, block documentation (TSDoc/JSDoc), and code clarity.
 - **archivist 📜**: Structured changelogs, release documentation, deprecated API tracking, and migration guides.
-- **auditor 📋**: Compliance auditing, software licensing, dependency vulnerabilities, and security risks.
 - **cartographer 🗺️**: Codebase directory mapping, dependency flowcharts, and Mermaid/ASCII topology layouts.
 - **consultant 🧠**: Framework evaluations and Architectural Decision Records (ADRs).
 - **critic 🗣️**: Senior code review, critiquing diffs, design anti-patterns, and logic efficiency.
@@ -94,7 +90,6 @@ Example prompt format:
 - **scribe ✍️**: README.md authoring, technical documentation, API specifications, and developer guides.
 - **sleuth 🕵️**: Forensics, memory leak tracing, crash dump analysis, and deep production log inspection.
 - **smith 🧰**: Developer Experience (DevEx), internal tooling, Git hooks, and developer workflow tuning.
-- **strategist ♟️**: Development roadmaps, technical feasibility analysis, and risk mitigation.
 - **synapse 🧠**: AI integration, prompt engineering, RAG pipelines, and LLM token optimization.
 
 ---
@@ -141,9 +136,13 @@ When operating in an MCP-compliant host environment (Antigravity IDE, Claude Cod
 ## 🛠️ Secondary Execution Fallback: CLI Node Scripts
 
 If the host environment does not support native MCP tool invocation:
-* **Workspace Setup**: `npm run setup`
-* **Session Deployment**: `node dist/deploy_session.js --type start --agents architect --task "Task description" --mode code`
+* **Workspace Setup**: `node dist/setup.js`
+* **Session Deployment**: `node dist/deploy_session.js --type start --agents bolt --task "Optimize query caching" --mode code`
 * **Team Deployment**: `node dist/deploy_session.js --type start --team github-ops --task "Set up CI/CD matrix"`
-* **Session Merge**: `node dist/merge_session.js --session <sessionId>`
-* **Status Check**: `node dist/jules_client.js list`
+* **Session Review Deployment**: `node dist/deploy_session.js --type review --agents sentinel --task "Security audit" --mode review`
+* **Session Inspection (Stage 1)**: `node dist/merge_session.js --inspect <sessionId>`
+* **Session Approval & Merge (Stage 2)**: `node dist/merge_session.js --approve <sessionId>`
+* **Inspect All Completed Sessions**: `node dist/merge_session.js --inspect-all`
 * **Pull Unified Diff**: `node dist/merge_session.js --diff <sessionId>`
+* **Auto-Process Pipeline**: `node dist/auto_process.js --all`
+* **Status Check**: `node dist/jules_client.js list`

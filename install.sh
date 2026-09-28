@@ -1,25 +1,18 @@
 #!/usr/bin/env bash
-set -e
+# Jules Companion 1-Click Installer for macOS and Linux
 
-INSTALL_DIR="$HOME/.gemini/config/skills/jules-companion"
-echo "🐙 Installing Jules Companion to $INSTALL_DIR..."
+echo "============================================================"
+echo "       Jules Companion - 1-Click Installer (Linux/macOS)    "
+echo "============================================================"
+echo ""
 
-if [ -d "$INSTALL_DIR/.git" ]; then
-  echo "Updating existing installation..."
-  git -C "$INSTALL_DIR" reset --hard HEAD >/dev/null 2>&1 || true
-  git -C "$INSTALL_DIR" pull --ff-only
-else
-  if [ -d "$INSTALL_DIR" ]; then
-    rm -rf "$INSTALL_DIR"
-  fi
-  mkdir -p "$(dirname "$INSTALL_DIR")"
-  git clone https://github.com/rivadmorin/Jules-Companion.git "$INSTALL_DIR"
+if ! command -v node &> /dev/null; then
+    echo "[ERROR] Node.js is not installed!"
+    echo "Please download and install Node.js from https://nodejs.org"
+    exit 1
 fi
 
-cd "$INSTALL_DIR"
-npm install
-npm run build
-npm run setup
+echo "[OK] Node.js detected. Running installer..."
+echo ""
 
-echo "✅ Jules Companion installed successfully!"
-echo "👉 Configure your JULES_API_KEY in $INSTALL_DIR/.env"
+node scripts/installer.js

@@ -1,13 +1,9 @@
 /**
- * Jules API client utilities for executing authenticated network requests.
- * @module jules_client
+ * Core engine for automatically processing Jules sessions (approving plans, replying to prompts).
+ * @module auto_process
  */
-import { request, getApiKey } from './client/http';
 
-/**
- * Utility functions and type definitions for parsing CLI arguments and managing local session state.
- * @module utils
- */
+import { request, getApiKey } from './client/http';
 import { parseArgs, loadSessions, saveSessions, SessionRecord, isSessionAwaitingApproval, isSessionAwaitingInput } from './utils';
 
 /**

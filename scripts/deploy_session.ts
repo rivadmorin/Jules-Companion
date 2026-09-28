@@ -346,6 +346,16 @@ export async function deploySessionCore(options: DeploySessionOptions): Promise<
 }
 
 /**
+ * Predefined multi-agent team presets mapping to comma-separated agent lists.
+ */
+export const TEAM_PRESETS: Record<string, string> = {
+  'full-audit': 'sentinel,janitor,annotator,grader',
+  'feature-sprint': 'innovator,builder,inspector',
+  'refactor-boost': 'modernizer,bolt,inspector',
+  'github-ops': 'octo,smith,scribe,archivist'
+};
+
+/**
  * Orchestrates the deployment of a new Jules session by preparing the environment,
  * matching local Git state with Jules cloud sources, formatting the appropriate agent prompt,
  * and executing the API request.
@@ -355,16 +365,28 @@ export async function deploySessionCore(options: DeploySessionOptions): Promise<
 export async function deploySession(): Promise<void> {
   const params = parseArgs(process.argv.slice(2));
 
-  if (!params.agents || !params.task || !params.type) {
+  let agents = params.agents ? String(params.agents) : undefined;
+  if (!agents && params.team) {
+    const presetKey = String(params.team).toLowerCase();
+    agents = TEAM_PRESETS[presetKey];
+    if (!agents) {
+      console.error(`Error: Invalid team preset '${params.team}'. Available presets: ${Object.keys(TEAM_PRESETS).join(', ')}`);
+      process.exit(1);
+    }
+  }
+
+  if (!agents || !params.task || !params.type) {
     console.log(`
 Jules Session Deployment Helper (TypeScript)
 
 Usage:
   node dist/deploy_session.js --type <interactive|review|start> --agents <agent1,agent2> --task "<task description>" [--mode <code|review>] [--branch <branch>]
+  node dist/deploy_session.js --type <interactive|review|start> --team <preset> --task "<task description>" [--mode <code|review>] [--branch <branch>]
 
 Options:
   --type      Session type: 'interactive' (interactive plan), 'review' (require plan approval), 'start' (auto-approve plan and execute)
   --agents    Comma-separated list of agent names (e.g. bolt,sentinel)
+  --team      Predefined multi-agent team preset (full-audit, feature-sprint, refactor-boost, github-ops)
   --task      Specific task instructions for the agents
   --mode      Execution mode: 'code' (direct code implementation, default) or 'review' (audit-only, writes report to docs/jules-reviews/)
   --branch    Repository branch to start from (defaults to current git branch)
@@ -381,7 +403,7 @@ Options:
   const targetDir = params.target ? String(params.target) : process.cwd();
   const res = await deploySessionCore({
     type: params.type as any,
-    agents: String(params.agents),
+    agents,
     task: String(params.task),
     mode: modeStr as any,
     branch: params.branch ? String(params.branch) : undefined,

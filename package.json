@@ -1,7 +1,7 @@
 {
   "name": "jules-companion",
-  "version": "1.1.0",
-  "description": "Google Jules CLI & REST API companion skill with 30 specialized agents",
+  "version": "1.2.0",
+  "description": "Google Jules CLI & REST API companion skill with 44 specialized agents",
   "displayName": "Jules Companion",
   "publisher": "RivadMorinrivadmorin",
   "icon": "media/logo.png",
@@ -432,6 +432,7 @@
     "sync": "node dist/sync_global.js",
     "pretest": "npm run build",
     "setup": "node dist/setup.js",
+    "installer": "node scripts/installer.js",
     "registry": "node dist/generate_registry.js",
     "deploy": "node dist/deploy_session.js",
     "merge": "node dist/merge_session.js",
@@ -439,6 +440,9 @@
     "test": "node scripts/run_tests.js",
     "mcp": "node dist/mcp_server.js",
     "package": "vsce package --no-dependencies",
+    "ship": "node scripts/ship.js",
+    "commit": "node scripts/ship.js",
+    "release": "node scripts/release.js",
     "sentrux:check": "sentrux check .",
     "verify": "npm test && npm run sentrux:check"
   },

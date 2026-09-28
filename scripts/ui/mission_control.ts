@@ -145,7 +145,6 @@ export function renderMissionControlHtml(
   const agent = escapeHtml(cleanAgentName(session.agent || session.title?.split('-')[0] || 'Agent'));
   const rawStatus = session.state || session.status || (isLoading ? 'SYNCING...' : 'UNKNOWN');
   const status = escapeHtml(String(rawStatus).toUpperCase());
-  const statusDisplay = escapeHtml(formatStatusDisplay(status));
   const branch = escapeHtml(session.branch || session.sourceContext?.githubRepoContext?.startingBranch || 'main');
   const repoSlug = escapeHtml(
     session.repo ||
@@ -154,8 +153,15 @@ export function renderMissionControlHtml(
     'rivadmorin/Jules-Companion'
   );
   const task = escapeHtml(extractTaskSummary(session));
-  const isAwaitingApproval = isSessionAwaitingApproval(status);
+
   const isAwaitingInput = isSessionAwaitingInput(status);
+  const hasPlanGenerated = activities.some(act => !!act.planGenerated);
+  const hasPlanApproved = activities.some(act => !!act.planApproved);
+  const isPlanPendingApproval = hasPlanGenerated && !hasPlanApproved && !isAwaitingInput;
+  const isAwaitingApproval = isSessionAwaitingApproval(status) || isPlanPendingApproval;
+  const statusDisplay = escapeHtml(
+    isPlanPendingApproval ? 'Awaiting Plan Approval' : formatStatusDisplay(status)
+  );
 
   // 1. Extract plan steps
   let planSteps: Array<{ index: number; title: string }> = [];
@@ -235,8 +241,26 @@ export function renderMissionControlHtml(
     ? `
       <div class="stepper-timeline">
         ${planSteps.map((s, idx) => {
-          const isCompleted = idx < planSteps.length - 1 || status === 'COMPLETED' || status === 'SUCCEEDED';
-          const isCurrent = !isCompleted && (status === 'IN_PROGRESS' || status === 'RUNNING');
+          let isCompleted = false;
+          let isCurrent = false;
+
+          if (isPlanPendingApproval) {
+            isCompleted = false;
+            isCurrent = false;
+          } else if (hasPlanApproved) {
+            if (status === 'COMPLETED' || status === 'SUCCEEDED') {
+              isCompleted = true;
+            } else if (status === 'IN_PROGRESS' || status === 'RUNNING') {
+              isCompleted = idx < planSteps.length - 1;
+              isCurrent = !isCompleted;
+            }
+          } else if (status === 'COMPLETED' || status === 'SUCCEEDED') {
+            isCompleted = true;
+          } else if (status === 'IN_PROGRESS' || status === 'RUNNING') {
+            isCompleted = idx < planSteps.length - 1;
+            isCurrent = !isCompleted;
+          }
+
           const stepStatusText = isCompleted ? 'Completed' : (isCurrent ? 'In Progress' : 'Pending');
           const stepStatusClass = isCompleted ? 'completed' : (isCurrent ? 'active' : 'pending');
 
@@ -374,7 +398,7 @@ export function renderMissionControlHtml(
       `).join('')
     : '<div class="empty-state">No terminal command activities logged yet.</div>';
 
-  const statusClass = status.toLowerCase().replace(/[^a-z0-9]/g, '-');
+  const statusClass = (isPlanPendingApproval ? 'awaiting_plan_approval' : status).toLowerCase().replace(/[^a-z0-9]/g, '-');
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -1288,7 +1312,15 @@ export function renderMissionControlHtml(
 
   <!-- Action Bar -->
   <div class="action-bar">
-    <button class="pill-btn btn-primary" data-action="createPR">
+    ${(isAwaitingApproval && !isAwaitingInput) ? `
+      <button class="pill-btn btn-primary" data-action="approvePlan" style="background:#fdd663;color:#202124;">
+        <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
+          <path fill-rule="evenodd" d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"/>
+        </svg>
+        <span>Approve Plan</span>
+      </button>
+    ` : ''}
+    <button class="pill-btn ${(isAwaitingApproval && !isAwaitingInput) ? 'btn-secondary' : 'btn-primary'}" data-action="createPR">
       <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
         <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
       </svg>
@@ -1619,10 +1651,24 @@ export async function openMissionControlWebview(
         break;
       }
       case 'visualDiff': {
+        const hasPatch = activities.some((act: any) =>
+          act.artifacts?.some((art: any) => art.changeSet?.gitPatch?.unidiffPatch)
+        );
+        if (!hasPatch) {
+          vscode.window.showInformationMessage(`Session #${sessionId.slice(0, 8)} does not contain any code changes or git patch.`);
+          break;
+        }
         vscode.commands.executeCommand('jules.viewVisualDiff', sessionId);
         break;
       }
       case 'pullDiff': {
+        const hasPatch = activities.some((act: any) =>
+          act.artifacts?.some((art: any) => art.changeSet?.gitPatch?.unidiffPatch)
+        );
+        if (!hasPatch) {
+          vscode.window.showInformationMessage(`Session #${sessionId.slice(0, 8)} does not contain any code changes or git patch to pull.`);
+          break;
+        }
         vscode.commands.executeCommand('jules.pullSessionDiff', sessionId);
         break;
       }

@@ -1,0 +1,80 @@
+name: 🐛 Bug Report
+description: Report a reproducible bug, defect, or unexpected behavior in Jules Companion.
+title: "[BUG]: "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting an issue! Please provide as much detail as possible to help us diagnose and resolve the bug quickly.
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: Affected Component
+      description: Which part of Jules Companion is having issues?
+      options:
+        - "VS Code Extension (GUI / Webview / Sidebar)"
+        - "Antigravity IDE Extension / Skills"
+        - "MCP Server (Tools / JSON-RPC)"
+        - "Task Scheduler Engine"
+        - "CLI Scripts (deploy_session / merge_session / auto_process)"
+        - "Specialist Agents & Prompts"
+        - "1-Click Installer (install.bat / install.sh)"
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Jules Companion Version
+      description: What version of Jules Companion are you running? (e.g. 1.1.0)
+      placeholder: "1.1.0"
+    validations:
+      required: true
+
+  - type: input
+    id: environment
+    attributes:
+      label: Operating System & Host IDE
+      description: Your OS and IDE environment (e.g. Windows 11, VS Code 1.93.0, Antigravity IDE 1.107, Node.js 20.15)
+      placeholder: "Windows 11, VS Code 1.93, Node 20.x"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: A clear and concise description of what the bug is.
+      placeholder: "When opening Mission Control for session #12345, the stepper shows..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce
+      description: How can we reproduce the issue?
+      value: |
+        1. Open VS Code with Jules Companion installed
+        2. Click on '...'
+        3. Execute command '...'
+        4. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What did you expect to happen instead?
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant Logs or Error Output
+      description: Paste any terminal logs, developer tools console errors, or doctor output (`npm run client doctor`).
+      render: shell

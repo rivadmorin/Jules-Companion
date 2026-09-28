@@ -446,10 +446,35 @@ export async function mergeSession(): Promise<void> {
   const isApprove = Boolean(params.approve);
   const isInspectAll = Boolean(params['inspect-all']);
   
-  const rawSessionsParam = params.session || params.sessions || params.id;
+  const inspectId = typeof params.inspect === 'string' ? params.inspect : undefined;
+  const approveId = typeof params.approve === 'string' ? params.approve : undefined;
+  const rawSessionsParam = params.session || params.sessions || params.id || inspectId || approveId;
   const sessionId = rawSessionsParam ? String(rawSessionsParam).trim() : undefined;
 
-  if (!isInspect && !isApprove && !isInspectAll) {
+  if (params.diff) {
+    const diffId = typeof params.diff === 'string' ? params.diff : (sessionId || '');
+    if (!diffId) {
+      console.error('Error: Session ID required for --diff');
+      process.exit(1);
+    }
+    const targetDir = params.target ? String(params.target) : process.cwd();
+    try {
+      const patchContent = await pullDiffApi(diffId, targetDir);
+      const scratchDir = path.join(targetDir, '.jules-companion', 'scratch');
+      fs.mkdirSync(scratchDir, { recursive: true });
+      const diffPath = path.join(scratchDir, `${diffId}.diff`);
+      fs.writeFileSync(diffPath, patchContent, 'utf8');
+      console.log(`Successfully pulled diff for session ${diffId} to ${diffPath}`);
+      return;
+    } catch (err: any) {
+      console.error(`Error pulling diff: ${err.message}`);
+      process.exit(1);
+    }
+  }
+
+  const effectiveInspect = isInspect || (!isApprove && !isInspectAll && Boolean(sessionId));
+
+  if (!effectiveInspect && !isApprove && !isInspectAll) {
     console.log(`
 Jules Two-Stage Merge & Inspection Engine
 
@@ -457,18 +482,20 @@ Usage:
   node dist/merge_session.js --inspect <sessionId>
   node dist/merge_session.js --approve <sessionId>
   node dist/merge_session.js --inspect-all
+  node dist/merge_session.js --diff <sessionId>
 
 Options:
   --inspect     Stage 1: Apply patch to review branch and generate Markdown report
   --approve     Stage 2: Merge inspected review branch into target branch
   --inspect-all Stage 1: Inspect all completed registered sessions
+  --diff        Pull raw unified diff patch and save to .jules-companion/scratch/
 `);
     process.exit(1);
   }
 
   const res = await mergeSessionCore({
     sessionId,
-    inspect: isInspect,
+    inspect: effectiveInspect,
     approve: isApprove,
     inspectAll: isInspectAll,
     target: params.target ? String(params.target) : undefined
