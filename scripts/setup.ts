@@ -305,6 +305,29 @@ export async function runSetup(targetDir: string = process.cwd()): Promise<Setup
     fs.writeFileSync(sessionsPath, JSON.stringify([], null, 2), 'utf8');
   }
 
+  // Ensure headless vscode mock exists for CI testing
+  const vsCodeDir = path.join(targetDir, 'node_modules', 'vscode');
+  if (!fs.existsSync(vsCodeDir)) {
+    fs.mkdirSync(vsCodeDir, { recursive: true });
+  }
+  const vsCodePkg = path.join(vsCodeDir, 'package.json');
+  if (!fs.existsSync(vsCodePkg)) {
+    fs.writeFileSync(vsCodePkg, JSON.stringify({ name: 'vscode', version: '1.0.0', main: 'index.js' }));
+  }
+  const vsCodeIndex = path.join(vsCodeDir, 'index.js');
+  if (!fs.existsSync(vsCodeIndex)) {
+    fs.writeFileSync(vsCodeIndex, `
+class TreeItem { constructor(label, collapsibleState) { this.label = label; this.collapsibleState = collapsibleState; } }
+class EventEmitter { constructor() { this.event = () => ({ dispose: () => {} }); } fire() {} }
+class ThemeIcon { constructor(id, color) { this.id = id; this.color = color; } }
+class ThemeColor { constructor(id) { this.id = id; } }
+const TreeItemCollapsibleState = { None: 0, Collapsed: 1, Expanded: 2 };
+const Uri = { file: (p) => ({ fsPath: p, path: p, scheme: 'file' }), parse: (u) => ({ toString: () => u, scheme: 'https' }) };
+class MarkdownString { constructor(val = '') { this.value = val; this.isTrusted = false; this.supportHtml = false; } appendMarkdown(v) { this.value += v; } appendText(v) { this.value += v; } }
+module.exports = { TreeItem, TreeItemCollapsibleState, EventEmitter, ThemeIcon, ThemeColor, Uri, MarkdownString };
+`);
+  }
+
   // Evaluate final status by verifying critical path tools
   // git, gh and a configured git identity are explicitly required to consider the setup successful
   const allCriticalDepsOk = depStatus['git'] && depStatus['gh'] && gitIdentityOk;
