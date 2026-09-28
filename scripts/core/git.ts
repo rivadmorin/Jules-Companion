@@ -33,7 +33,13 @@ export function runGit(
   cwd: string = process.cwd()
 ): GitExecutionResult {
   const resolvedCwd = path.resolve(cwd);
-  const res = spawnSync('git', args, { encoding: 'utf8', cwd: resolvedCwd });
+  let res = spawnSync('git', args, { encoding: 'utf8', cwd: resolvedCwd });
+  if (res.error && (res.error as any).code === 'ENOENT' && process.platform === 'win32') {
+    const fallbackGit = 'C:\\Program Files\\Git\\cmd\\git.exe';
+    if (fs.existsSync(fallbackGit)) {
+      res = spawnSync(fallbackGit, args, { encoding: 'utf8', cwd: resolvedCwd });
+    }
+  }
   return {
     success: res.status === 0,
     stdout: res.stdout ? res.stdout.trim() : '',
