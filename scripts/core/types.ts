@@ -24,8 +24,6 @@ export interface ProjectDirs {
   targetDir: string;
   /** The root companion directory, typically `.jules-companion` */
   julesDir: string;
-  /** Primary companion metadata directory alias */
-  companionDir?: string;
   /** Directory containing general reference materials */
   refDir: string;
   /** Directory containing specialized agent definitions */
@@ -34,8 +32,6 @@ export interface ProjectDirs {
   scratchDir: string;
   /** Directory for storing generated reviews */
   docsReviewsDir: string;
-  /** Alias for reviews directory */
-  reviewsDir?: string;
   /** Path to persistent sessions.json storage file */
   sessionsFile?: string;
   /** Path to local configuration file */
@@ -86,47 +82,19 @@ export interface JulesSource {
 }
 
 /**
- * Structured result returned by safety gate verification.
+ * Metadata definition and schema for an individual Model Context Protocol tool.
  */
-export interface SafetyGateCheckResult {
-  /** Whether the session is safe to merge */
-  passed: boolean;
-  /** Detailed human-readable explanation of the safety determination */
-  reason: string;
-  /** Current authoritative status from the API */
-  sessionStatus?: string;
-  /** Warnings or actionable recommendations */
-  warnings?: string[];
-}
-
-/**
- * Structured outcome returned by a session deployment workflow.
- */
-export interface DeployResult {
-  /** Whether deployment succeeded */
-  success: boolean;
-  /** Unique session ID if created */
-  sessionId?: string;
-  /** Git branch name created */
-  branch?: string;
-  /** Message or error details */
-  message: string;
-  /** Task prompt deployed */
-  prompt?: string;
-}
-
-/**
- * Structured outcome returned by a session merge workflow.
- */
-export interface MergeResult {
-  /** Whether merge succeeded */
-  success: boolean;
-  /** Session ID processed */
-  sessionId: string;
-  /** Branch name merged */
-  branch: string;
-  /** Message or error details */
-  message: string;
-  /** Raw diff content if retrieved */
-  diff?: string;
+export interface McpToolDefinition {
+  /** Unique snake_case identifier matching tool name */
+  name: string;
+  /** Clear human-readable description for LLM capability selection */
+  description: string;
+  /** JSON-Schema representation of acceptable tool arguments */
+  inputSchema: {
+    type: 'object';
+    properties: Record<string, any>;
+    required?: string[];
+  };
+  /** Execution callback invoked when the tool is called */
+  execute: (args: any) => Promise<{ content: Array<{ type: 'text'; text: string }> }>;
 }

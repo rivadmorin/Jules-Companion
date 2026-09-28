@@ -5,7 +5,8 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import { request, getApiKey, JulesSource } from './jules_client';
+import { request, getApiKey } from './client/http';
+import { JulesSource } from './core/types';
 import { parseArgs, getProjectDirs, runGit, loadSessions, saveSessions, getFormattedDateDDMMYYYY } from './utils';
 
 /**
@@ -321,35 +322,6 @@ Options:
   }
 }
 
-/**
- * Programmatically deploys a session for specified agents without relying on process.argv CLI inputs.
- * Used internally by the deploy_team MCP tool and integration scripts.
- *
- * @param agentsStr - Comma-separated list of agent identifiers.
- * @param task - Detailed task instructions for the agents.
- * @param type - Session execution type.
- * @param mode - Execution mode (code implementation vs review-only).
- * @param branch - Starting git branch name.
- * @param targetDir - Target project root directory.
- * @returns Result of the programmatic session deployment.
- */
-export async function deploySessionWithAgents(
-  agentsStr: string,
-  task: string,
-  type: 'start' | 'review' | 'interactive',
-  mode: 'code' | 'review' = 'code',
-  branch?: string,
-  targetDir: string = process.cwd()
-): Promise<DeploySessionResult> {
-  return deploySessionCore({
-    agents: agentsStr,
-    task,
-    type,
-    mode,
-    branch,
-    targetDir
-  });
-}
 
 if (require.main === module) {
   deploySession();

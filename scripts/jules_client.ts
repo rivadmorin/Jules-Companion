@@ -7,12 +7,12 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { getApiKey, resetApiKeyCache, request } from './client/http';
 import {
-  getSessions,
   cancelSessionApi,
   sendMessageApi,
   listSourcesApi,
   pullDiffApi
 } from './client/jules_api';
+import { loadSessions } from './core/storage';
 import { JulesSource, SessionRecord } from './core/types';
 
 export {
@@ -21,7 +21,6 @@ export {
   getApiKey,
   resetApiKeyCache,
   request,
-  getSessions,
   cancelSessionApi,
   sendMessageApi,
   listSourcesApi,
@@ -63,7 +62,7 @@ Usage:
       const data = await request('https://jules.googleapis.com/v1alpha/sources', { headers });
       console.log(JSON.stringify(data, null, 2));
     } else if (command === 'list') {
-      const sessionsList = getSessions();
+      const sessionsList = loadSessions();
       if (sessionsList.length === 0) {
         if (isJson) {
           console.log(JSON.stringify([]));

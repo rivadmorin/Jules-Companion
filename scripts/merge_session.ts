@@ -5,7 +5,8 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import { request, getApiKey } from './jules_client';
+import { request, getApiKey } from './client/http';
+import { pullDiffApi } from './client/jules_api';
 import { parseArgs, getProjectDirs, runGit, loadSessions, saveSessions, ProjectDirs } from './utils';
 
 /**
@@ -63,33 +64,8 @@ export async function checkSafetyGate(
  * @returns {string} Formatted markdown list of touched files and change operations.
  */
 function generateDiffSummary(patchContent: string): string {
-    // Split the raw patch string into individual lines for sequential parsing
-    const lines = patchContent.split('\n');
-    
-    // Initialize an array to accumulate the formatted markdown list items
-    const summary: string[] = [];
-    
-    // Iterate over each line of the diff to extract file modification paths
-    for (const line of lines) {
-        // Look for the standard diff prefix indicating a file header
-        if (line.startsWith('diff --git')) {
-            // Split the line into segments to isolate the file path arguments
-            const parts = line.split(' ');
-            
-            // Ensure the diff line has the expected format (diff --git a/file b/file)
-            if (parts.length >= 4) {
-               // Extrapolate raw target file path (dropping standard a/ or b/ prefixes)
-               // parts[3] corresponds to the destination file path, we strip the 'b/' prefix
-               const file = parts[3].replace(/^b\//, '');
-               
-               // Append the formatted file path to our markdown summary array
-               summary.push(`- **Modified:** \`${file}\``);
-            }
-        }
-    }
-    
-    // Return the joined summary list, or a fallback message if the patch was empty/unparseable
-    return summary.length > 0 ? summary.join('\n') : '- No identifiable file changes found in patch.';
+    const matches = Array.from(patchContent.matchAll(/^diff --git a\/.* b\/(.*)$/gm), m => `- **Modified:** \`${m[1]}\``);
+    return matches.length > 0 ? matches.join('\n') : '- No identifiable file changes found in patch.';
 }
 
 /**
@@ -523,7 +499,6 @@ export async function checkoutSessionBranch(
   }
 
   // Pull diff and apply to the newly created branch
-  const { pullDiffApi } = await import('./jules_client.js');
   const patchContent = await pullDiffApi(sessionId, targetDir);
 
   const scratchDir = path.join(targetDir, '.jules-companion', 'scratch');

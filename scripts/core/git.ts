@@ -29,7 +29,7 @@ export interface GitExecutionResult {
 export function runGit(
   args: string[],
   cwd: string = process.cwd()
-): { success: boolean; stdout: string; stderr: string } {
+): GitExecutionResult {
   const resolvedCwd = path.resolve(cwd);
   const res = spawnSync('git', args, { encoding: 'utf8', cwd: resolvedCwd });
   return {

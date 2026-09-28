@@ -3,11 +3,10 @@
  * @module mcp/tools/session_tools
  */
 
-import { z } from 'zod';
 import * as path from 'path';
 import * as fs from 'fs';
-import { McpToolDefinition } from '../types';
-import { deploySessionCore, deploySessionWithAgents } from '../../deploy_session';
+import { McpToolDefinition } from '../../core/types';
+import { deploySessionCore } from '../../deploy_session';
 import { mergeSessionCore, checkoutSessionBranch, rollbackSession } from '../../merge_session';
 import { loadSessions } from '../../core/storage';
 import { getApiKey, request } from '../../client/http';
@@ -18,69 +17,6 @@ const TEAM_PRESETS: Record<string, string> = {
   'feature-sprint': 'innovator,builder,inspector',
   'refactor-boost': 'modernizer,bolt,inspector'
 };
-
-const DeploySessionSchema = z.object({
-  type: z.enum(['interactive', 'review', 'start']),
-  agents: z.string(),
-  task: z.string(),
-  mode: z.enum(['code', 'review']).optional(),
-  branch: z.string().optional(),
-  targetDir: z.string().optional()
-});
-
-const MergeSessionSchema = z.object({
-  sessionId: z.string().optional(),
-  inspect: z.boolean().optional(),
-  approve: z.boolean().optional(),
-  inspectAll: z.boolean().optional()
-});
-
-const GetSessionStatusSchema = z.object({
-  sessionId: z.string(),
-  targetDir: z.string().optional()
-});
-
-const CancelSessionSchema = z.object({
-  sessionId: z.string(),
-  targetDir: z.string().optional()
-});
-
-const SendSessionMessageSchema = z.object({
-  sessionId: z.string(),
-  message: z.string(),
-  targetDir: z.string().optional()
-});
-
-const RetryFailedSessionSchema = z.object({
-  sessionId: z.string(),
-  newTask: z.string().optional(),
-  targetDir: z.string().optional()
-});
-
-const DeployTeamSchema = z.object({
-  preset: z.enum(['full-audit', 'feature-sprint', 'refactor-boost']),
-  task: z.string(),
-  mode: z.enum(['code', 'review']).optional(),
-  branch: z.string().optional(),
-  targetDir: z.string().optional()
-});
-
-const PullSessionDiffSchema = z.object({
-  sessionId: z.string(),
-  outputPath: z.string().optional(),
-  targetDir: z.string().optional()
-});
-
-const CheckoutSessionBranchSchema = z.object({
-  sessionId: z.string(),
-  branchName: z.string().optional(),
-  targetDir: z.string().optional()
-});
-
-const RollbackSessionSchema = z.object({
-  sessionId: z.string().optional(),
-  targetDir: z.string().optional()
-});
 
 /**
  * Array of session lifecycle MCP tool definitions.
@@ -102,9 +38,10 @@ export const sessionTools: McpToolDefinition[] = [
       required: ['type', 'agents', 'task']
     },
     execute: async (args: any) => {
-      const parsed = DeploySessionSchema.safeParse(args);
-      if (!parsed.success) return { content: [{ type: 'text', text: `Validation Error: ${parsed.error.message}` }] };
-      const { type, agents, task, mode, branch, targetDir } = parsed.data;
+      if (!args?.type || !args?.agents || !args?.task) {
+        return { content: [{ type: 'text', text: 'Validation Error: Required fields (type, agents, task) are missing.' }] };
+      }
+      const { type, agents, task, mode, branch, targetDir } = args;
       const res = await deploySessionCore({ type, agents, task, mode, branch, targetDir });
       if (!res.success) {
         return { content: [{ type: 'text', text: `Error deploying session: ${res.error}` }] };
@@ -125,9 +62,7 @@ export const sessionTools: McpToolDefinition[] = [
       }
     },
     execute: async (args: any) => {
-      const parsed = MergeSessionSchema.safeParse(args);
-      if (!parsed.success) return { content: [{ type: 'text', text: `Validation Error: ${parsed.error.message}` }] };
-      const { sessionId, inspect, approve, inspectAll } = parsed.data;
+      const { sessionId, inspect, approve, inspectAll } = args || {};
       const res = await mergeSessionCore({ sessionId, inspect, approve, inspectAll });
       if (!res.success) {
         return { content: [{ type: 'text', text: `Error merging session: ${res.error}` }] };
@@ -144,9 +79,10 @@ export const sessionTools: McpToolDefinition[] = [
       required: ['sessionId']
     },
     execute: async (args: any) => {
-      const parsed = GetSessionStatusSchema.safeParse(args);
-      if (!parsed.success) return { content: [{ type: 'text', text: `Validation Error: ${parsed.error.message}` }] };
-      const { sessionId, targetDir } = parsed.data;
+      if (!args?.sessionId) {
+        return { content: [{ type: 'text', text: 'Validation Error: Required field "sessionId" is missing.' }] };
+      }
+      const { sessionId, targetDir } = args;
       const apiKey = getApiKey(targetDir);
       if (!apiKey) return { content: [{ type: 'text', text: 'Error: JULES_API_KEY not found.' }] };
       try {
@@ -171,9 +107,10 @@ export const sessionTools: McpToolDefinition[] = [
       required: ['sessionId']
     },
     execute: async (args: any) => {
-      const parsed = CancelSessionSchema.safeParse(args);
-      if (!parsed.success) return { content: [{ type: 'text', text: `Validation Error: ${parsed.error.message}` }] };
-      const { sessionId, targetDir } = parsed.data;
+      if (!args?.sessionId) {
+        return { content: [{ type: 'text', text: 'Validation Error: Required field "sessionId" is missing.' }] };
+      }
+      const { sessionId, targetDir } = args;
       try {
         const res = await cancelSessionApi(sessionId, targetDir);
         return { content: [{ type: 'text', text: `Session ${sessionId} cancelled: ${JSON.stringify(res)}` }] };
@@ -195,9 +132,10 @@ export const sessionTools: McpToolDefinition[] = [
       required: ['sessionId', 'message']
     },
     execute: async (args: any) => {
-      const parsed = SendSessionMessageSchema.safeParse(args);
-      if (!parsed.success) return { content: [{ type: 'text', text: `Validation Error: ${parsed.error.message}` }] };
-      const { sessionId, message, targetDir } = parsed.data;
+      if (!args?.sessionId || !args?.message) {
+        return { content: [{ type: 'text', text: 'Validation Error: Required fields "sessionId" and "message" are missing.' }] };
+      }
+      const { sessionId, message, targetDir } = args;
       try {
         const res = await sendMessageApi(sessionId, message, targetDir);
         return { content: [{ type: 'text', text: JSON.stringify(res, null, 2) }] };
@@ -219,15 +157,22 @@ export const sessionTools: McpToolDefinition[] = [
       required: ['sessionId']
     },
     execute: async (args: any) => {
-      const parsed = RetryFailedSessionSchema.safeParse(args);
-      if (!parsed.success) return { content: [{ type: 'text', text: `Validation Error: ${parsed.error.message}` }] };
-      const { sessionId, newTask, targetDir } = parsed.data;
+      if (!args?.sessionId) {
+        return { content: [{ type: 'text', text: 'Validation Error: Required field "sessionId" is missing.' }] };
+      }
+      const { sessionId, newTask, targetDir } = args;
       const resolvedDir = targetDir || process.cwd();
       const sessions = loadSessions(resolvedDir);
       const session = sessions.find(s => s.id === sessionId);
       if (!session) return { content: [{ type: 'text', text: `Error: Session ID ${sessionId} not found in state.` }] };
       const task = newTask || session.task || 'Retry task';
-      const res = await deploySessionWithAgents(session.agent, task, 'start', session.mode || 'code', undefined, resolvedDir);
+      const res = await deploySessionCore({
+        agents: session.agent,
+        task,
+        type: 'start',
+        mode: session.mode || 'code',
+        targetDir: resolvedDir
+      });
       if (!res.success) {
         return { content: [{ type: 'text', text: `Error retrying session: ${res.error}` }] };
       }
@@ -249,12 +194,23 @@ export const sessionTools: McpToolDefinition[] = [
       required: ['preset', 'task']
     },
     execute: async (args: any) => {
-      const parsed = DeployTeamSchema.safeParse(args);
-      if (!parsed.success) return { content: [{ type: 'text', text: `Validation Error: ${parsed.error.message}` }] };
-      const { preset, task, mode, branch, targetDir } = parsed.data;
+      if (!args?.preset || !args?.task) {
+        return { content: [{ type: 'text', text: 'Validation Error: Required fields "preset" and "task" are missing.' }] };
+      }
+      const { preset, task, mode, branch, targetDir } = args;
       const agentListStr = TEAM_PRESETS[preset];
+      if (!agentListStr) {
+        return { content: [{ type: 'text', text: `Validation Error: Invalid preset "${preset}". Valid options: ${Object.keys(TEAM_PRESETS).join(', ')}` }] };
+      }
       const resolvedDir = targetDir || process.cwd();
-      const res = await deploySessionWithAgents(agentListStr, task, 'start', mode || 'code', branch, resolvedDir);
+      const res = await deploySessionCore({
+        agents: agentListStr,
+        task,
+        type: 'start',
+        mode: mode || 'code',
+        branch,
+        targetDir: resolvedDir
+      });
       if (!res.success) {
         return { content: [{ type: 'text', text: `Error deploying team: ${res.error}` }] };
       }
@@ -274,9 +230,10 @@ export const sessionTools: McpToolDefinition[] = [
       required: ['sessionId']
     },
     execute: async (args: any) => {
-      const parsed = PullSessionDiffSchema.safeParse(args);
-      if (!parsed.success) return { content: [{ type: 'text', text: `Validation Error: ${parsed.error.message}` }] };
-      const { sessionId, outputPath, targetDir } = parsed.data;
+      if (!args?.sessionId) {
+        return { content: [{ type: 'text', text: 'Validation Error: Required field "sessionId" is missing.' }] };
+      }
+      const { sessionId, outputPath, targetDir } = args;
       try {
         const patchContent = await pullDiffApi(sessionId, targetDir);
         if (outputPath) {
@@ -304,9 +261,10 @@ export const sessionTools: McpToolDefinition[] = [
       required: ['sessionId']
     },
     execute: async (args: any) => {
-      const parsed = CheckoutSessionBranchSchema.safeParse(args);
-      if (!parsed.success) return { content: [{ type: 'text', text: `Validation Error: ${parsed.error.message}` }] };
-      const { sessionId, branchName, targetDir } = parsed.data;
+      if (!args?.sessionId) {
+        return { content: [{ type: 'text', text: 'Validation Error: Required field "sessionId" is missing.' }] };
+      }
+      const { sessionId, branchName, targetDir } = args;
       try {
         const res = await checkoutSessionBranch(sessionId, branchName, targetDir);
         return { content: [{ type: 'text', text: res }] };
@@ -326,10 +284,13 @@ export const sessionTools: McpToolDefinition[] = [
       }
     },
     execute: async (args: any) => {
-      const parsed = RollbackSessionSchema.safeParse(args);
-      const { sessionId, targetDir } = parsed.success ? parsed.data : { sessionId: undefined, targetDir: undefined };
-      const res = await rollbackSession(sessionId, targetDir);
-      return { content: [{ type: 'text', text: res }] };
+      const { sessionId, targetDir } = args || {};
+      try {
+        const res = await rollbackSession(sessionId, targetDir);
+        return { content: [{ type: 'text', text: res }] };
+      } catch (error: any) {
+        return { content: [{ type: 'text', text: `Error rolling back session: ${error.message}` }] };
+      }
     }
   }
 ];

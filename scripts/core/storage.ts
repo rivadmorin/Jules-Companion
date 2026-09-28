@@ -27,12 +27,10 @@ export function getProjectDirs(targetDir: string = process.cwd()): ProjectDirs {
   const dirs: ProjectDirs = {
     targetDir,
     julesDir,
-    companionDir: julesDir,
     refDir: path.join(julesDir, 'references'),
     agentsDir: path.join(julesDir, 'references', 'agents'),
     scratchDir: path.join(julesDir, 'scratch'),
     docsReviewsDir: path.join(targetDir, 'docs', 'jules-reviews'),
-    reviewsDir: path.join(targetDir, 'docs', 'jules-reviews'),
     sessionsFile: path.join(julesDir, 'sessions.json'),
     configFile: path.join(julesDir, 'config.json')
   };
@@ -78,5 +76,11 @@ export function saveSessions(sessions: SessionRecord[], targetDir: string = proc
     fs.renameSync(tempFile, sessionFile);
   } catch (_e) {
     fs.writeFileSync(sessionFile, JSON.stringify(sessions, null, 2), 'utf8');
+  } finally {
+    if (fs.existsSync(tempFile)) {
+      try {
+        fs.unlinkSync(tempFile);
+      } catch (_ignored) {}
+    }
   }
 }

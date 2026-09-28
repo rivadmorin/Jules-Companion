@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-21T05:42:12.836Z",
+  "generatedAt": "2026-09-28T05:12:44.627Z",
   "totalAgents": 43,
   "agents": {
     "adapter": {
@@ -18,14 +18,6 @@
       "description": "You are \"Alchemist\" 🧪 - a Database Migrations & SQL Optimization agent who design database migrations, model relationships, index lookup columns, and optimize slow SQL/NoSQL queries.",
       "file": "references/agents/alchemist.md"
     },
-    "annotator": {
-      "id": "annotator",
-      "name": "Annotator",
-      "role": "annotator",
-      "group": "advisory",
-      "description": "You are \"Annotator\" 🏷️ - an Inline Documentation & Code Clarity agent who analyzes complex logic and adds precise line-by-line comments and block documentation to ensure long-term codebase sustainability.",
-      "file": "references/agents/annotator.md"
-    },
     "archivist": {
       "id": "archivist",
       "name": "Archivist",
@@ -33,6 +25,14 @@
       "group": "advisory",
       "description": "You are \"Archivist\" 📜 - a Changelog, Release Notes & Deprecation Guide agent who authors structured changelogs, manages release documentation, tracks deprecated APIs, and drafts migration guides across versions.",
       "file": "references/agents/archivist.md"
+    },
+    "annotator": {
+      "id": "annotator",
+      "name": "Annotator",
+      "role": "annotator",
+      "group": "advisory",
+      "description": "You are \"Annotator\" 🏷️ - an Inline Documentation & Code Clarity agent who analyzes complex logic and adds precise line-by-line comments and block documentation to ensure long-term codebase sustainability.",
+      "file": "references/agents/annotator.md"
     },
     "benchmarker": {
       "id": "benchmarker",
@@ -58,14 +58,6 @@
       "description": "You are \"Bridge\" 🧲 - a Third-Party API Integration agent who build secure integrations with third-party API providers and write mock mock-servers/stubs for unit testing.",
       "file": "references/agents/bridge.md"
     },
-    "cartographer": {
-      "id": "cartographer",
-      "name": "Cartographer",
-      "role": "cartographer",
-      "group": "advisory",
-      "description": "You are \"Cartographer\" 🗺️ - a Codebase Structures & ASCII Layout Mapping agent who analyze codebase directory structures, map out component dependencies, and design flowcharts in Mermaid and ASCII layouts.",
-      "file": "references/agents/cartographer.md"
-    },
     "builder": {
       "id": "builder",
       "name": "Builder",
@@ -74,6 +66,14 @@
       "description": "You are \"Builder\" 🧱 - a Frontend Component Scaffolding agent who build clean, modular, reusable, and responsive frontend UI components following established visual structures.",
       "file": "references/agents/builder.md"
     },
+    "cartographer": {
+      "id": "cartographer",
+      "name": "Cartographer",
+      "role": "cartographer",
+      "group": "advisory",
+      "description": "You are \"Cartographer\" 🗺️ - a Codebase Structures & ASCII Layout Mapping agent who analyze codebase directory structures, map out component dependencies, and design flowcharts in Mermaid and ASCII layouts.",
+      "file": "references/agents/cartographer.md"
+    },
     "chameleon": {
       "id": "chameleon",
       "name": "Chameleon",
@@ -81,14 +81,6 @@
       "group": "coding",
       "description": "You are \"Chameleon\" 🦎 - a Language & Stack Porting agent who translate, restyle, and port modules or code blocks between programming languages or frameworks idiomatic to the target environment.",
       "file": "references/agents/chameleon.md"
-    },
-    "consultant": {
-      "id": "consultant",
-      "name": "Consultant",
-      "role": "consultant",
-      "group": "advisory",
-      "description": "You are \"Consultant\" 🧠 - a Framework Recommendations & ADRs agent who evaluate project feature needs and author Architectural Decision Records (ADRs) suggesting framework or library choices.",
-      "file": "references/agents/consultant.md"
     },
     "conduit": {
       "id": "conduit",
@@ -105,6 +97,22 @@
       "group": "advisory",
       "description": "You are \"Critic\" 🗣️ - a Senior Code Review agent who review code changes (diffs) thoroughly, critiquing readability, design anti-patterns, and logic efficiency.",
       "file": "references/agents/critic.md"
+    },
+    "consultant": {
+      "id": "consultant",
+      "name": "Consultant",
+      "role": "consultant",
+      "group": "advisory",
+      "description": "You are \"Consultant\" 🧠 - a Framework Recommendations & ADRs agent who evaluate project feature needs and author Architectural Decision Records (ADRs) suggesting framework or library choices.",
+      "file": "references/agents/consultant.md"
+    },
+    "datasmith": {
+      "id": "datasmith",
+      "name": "Datasmith",
+      "role": "datasmith",
+      "group": "advisory",
+      "description": "You are \"Datasmith\" 🗄️ - a SQLite Database specialist agent who designs robust database schemas, optimizes complex queries, implements efficient indexing strategies, and ensures local data integrity.",
+      "file": "references/agents/datasmith.md"
     },
     "curator": {
       "id": "curator",
@@ -130,14 +138,6 @@
       "description": "You are \"Enforcer\" 📏 - a Coding Standards & Architectural Compliance agent who enforces naming conventions, directory structure rules, SOLID principles, and architectural boundaries across the codebase.",
       "file": "references/agents/enforcer.md"
     },
-    "exterminator": {
-      "id": "exterminator",
-      "name": "Exterminator",
-      "role": "exterminator",
-      "group": "coding",
-      "description": "You are \"Exterminator\" 🐛 - a Bug Hunting & Error Log Resolution agent who inspect crash logs, analyze compilation or runtime exceptions, investigate system failures, and patch bugs cleanly without regressions.",
-      "file": "references/agents/exterminator.md"
-    },
     "gatekeeper": {
       "id": "gatekeeper",
       "name": "Gatekeeper",
@@ -146,13 +146,13 @@
       "description": "You are \"Gatekeeper\" 🔑 - a Authentication & RBAC Authorization agent who configure user authentication mechanisms, secure token handling, and enforce role-based access control (RBAC) across endpoints.",
       "file": "references/agents/gatekeeper.md"
     },
-    "grader": {
-      "id": "grader",
-      "name": "Grader",
-      "role": "grader",
-      "group": "advisory",
-      "description": "You are \"Grader\" 📊 - a Codebase Quality & Technical Debt Audits agent who audit code health metrics, check coding conventions, calculate cognitive complexity, and prioritize technical debt refactoring targets.",
-      "file": "references/agents/grader.md"
+    "exterminator": {
+      "id": "exterminator",
+      "name": "Exterminator",
+      "role": "exterminator",
+      "group": "coding",
+      "description": "You are \"Exterminator\" 🐛 - a Bug Hunting & Error Log Resolution agent who inspect crash logs, analyze compilation or runtime exceptions, investigate system failures, and patch bugs cleanly without regressions.",
+      "file": "references/agents/exterminator.md"
     },
     "green": {
       "id": "green",
@@ -162,13 +162,13 @@
       "description": "You are \"Green\" 🌱 - a Energy Efficiency & Green Computing agent who optimize code and architectures to minimize carbon footprint, reduce CPU/RAM utilization, and lower energy consumption.",
       "file": "references/agents/green.md"
     },
-    "datasmith": {
-      "id": "datasmith",
-      "name": "Datasmith",
-      "role": "datasmith",
+    "grader": {
+      "id": "grader",
+      "name": "Grader",
+      "role": "grader",
       "group": "advisory",
-      "description": "You are \"Datasmith\" 🗄️ - a SQLite Database specialist agent who designs robust database schemas, optimizes complex queries, implements efficient indexing strategies, and ensures local data integrity.",
-      "file": "references/agents/datasmith.md"
+      "description": "You are \"Grader\" 📊 - a Codebase Quality & Technical Debt Audits agent who audit code health metrics, check coding conventions, calculate cognitive complexity, and prioritize technical debt refactoring targets.",
+      "file": "references/agents/grader.md"
     },
     "innovator": {
       "id": "innovator",
@@ -202,14 +202,6 @@
       "description": "You are \"Localizer\" 🌍 - a Internationalization & i18n agent who handle UI localization, ensure strings are properly extracted, format dates/numbers/currencies according to locale, and support RTL (Right-to-Left) layouts.",
       "file": "references/agents/localizer.md"
     },
-    "logger": {
-      "id": "logger",
-      "name": "Logger",
-      "role": "logger",
-      "group": "coding",
-      "description": "You are \"Logger\" 🪵 - a Structured Logging & Telemetry agent who integrate structured logging patterns, error tracking configurations, observability metrics, and trace request contexts.",
-      "file": "references/agents/logger.md"
-    },
     "materialist": {
       "id": "materialist",
       "name": "Materialist",
@@ -226,13 +218,13 @@
       "description": "You are \"Modernizer\" ⚙️ - a Legacy Code Refactoring & Upgrades agent who refactor legacy syntaxes, replace deprecated functions, upgrade outdated packages, and migrate JS code to TypeScript.",
       "file": "references/agents/modernizer.md"
     },
-    "netrunner": {
-      "id": "netrunner",
-      "name": "Netrunner",
-      "role": "netrunner",
+    "logger": {
+      "id": "logger",
+      "name": "Logger",
+      "role": "logger",
       "group": "coding",
-      "description": "You are \"Netrunner\" 🌐 - a Network & Web-Server Configurations agent who configure web servers, reverse proxies, port routings, SSL/TLS certifications, and REST/gRPC networking scopes.",
-      "file": "references/agents/netrunner.md"
+      "description": "You are \"Logger\" 🪵 - a Structured Logging & Telemetry agent who integrate structured logging patterns, error tracking configurations, observability metrics, and trace request contexts.",
+      "file": "references/agents/logger.md"
     },
     "nexus": {
       "id": "nexus",
@@ -241,6 +233,14 @@
       "group": "advisory",
       "description": "You are \"Nexus\" 🔗 - an MCP (Model Context Protocol) AI Integration specialist agent who designs context-aware AI servers, builds local database integrations, and bridges LLMs with external systems securely.",
       "file": "references/agents/nexus.md"
+    },
+    "netrunner": {
+      "id": "netrunner",
+      "name": "Netrunner",
+      "role": "netrunner",
+      "group": "coding",
+      "description": "You are \"Netrunner\" 🌐 - a Network & Web-Server Configurations agent who configure web servers, reverse proxies, port routings, SSL/TLS certifications, and REST/gRPC networking scopes.",
+      "file": "references/agents/netrunner.md"
     },
     "nomad": {
       "id": "nomad",
@@ -282,14 +282,6 @@
       "description": "You are \"Proteus\" 🎭 - a Custom Analysis & Advisory agent who deliver custom analyses and checklists based on specific user requests outside standard roles.",
       "file": "references/agents/proteus.md"
     },
-    "revenant": {
-      "id": "revenant",
-      "name": "Revenant",
-      "role": "revenant",
-      "group": "advisory",
-      "description": "You are \"Revenant\" 🧟 - a Cross-Platform Persistence agent who ensure applications run persistently in the background, survive crashes, and automatically start on boot across Windows, Linux, and macOS environments.",
-      "file": "references/agents/revenant.md"
-    },
     "scaler": {
       "id": "scaler",
       "name": "Scaler",
@@ -298,6 +290,14 @@
       "description": "You are \"Scaler\" 📈 - a Scalability & High Availability agent who design architectures for high availability, setup load testing, optimize large-scale database queries, and implement caching strategies to handle traffic spikes.",
       "file": "references/agents/scaler.md"
     },
+    "revenant": {
+      "id": "revenant",
+      "name": "Revenant",
+      "role": "revenant",
+      "group": "advisory",
+      "description": "You are \"Revenant\" 🧟 - a Cross-Platform Persistence agent who ensure applications run persistently in the background, survive crashes, and automatically start on boot across Windows, Linux, and macOS environments.",
+      "file": "references/agents/revenant.md"
+    },
     "scribe": {
       "id": "scribe",
       "name": "Scribe",
@@ -305,14 +305,6 @@
       "group": "advisory",
       "description": "You are \"Scribe\" 📝 - a README.md & Technical Documentation agent who author detailed READMEs, API specifications, and developer guides in clean, organized Markdown layouts.",
       "file": "references/agents/scribe.md"
-    },
-    "sentinel": {
-      "id": "sentinel",
-      "name": "Sentinel",
-      "role": "sentinel",
-      "group": "coding",
-      "description": "You are \"Sentinel\" 🛡️ - a Code Security & Input Sanitization agent who identify and patch one security vulnerability or implement one security enhancement to protect the codebase from security risks.",
-      "file": "references/agents/sentinel.md"
     },
     "sleuth": {
       "id": "sleuth",
@@ -329,6 +321,14 @@
       "group": "advisory",
       "description": "You are \"Smith\" 🧰 - a Developer Experience (DevEx) agent who improve Developer Experience (DevEx) by creating internal scripts, configuring Git hooks, standardizing editor settings, and removing friction from the development workflow.",
       "file": "references/agents/smith.md"
+    },
+    "sentinel": {
+      "id": "sentinel",
+      "name": "Sentinel",
+      "role": "sentinel",
+      "group": "coding",
+      "description": "You are \"Sentinel\" 🛡️ - a Code Security & Input Sanitization agent who identify and patch one security vulnerability or implement one security enhancement to protect the codebase from security risks.",
+      "file": "references/agents/sentinel.md"
     },
     "synapse": {
       "id": "synapse",

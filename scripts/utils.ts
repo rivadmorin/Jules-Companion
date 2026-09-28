@@ -53,40 +53,9 @@ export function parseArgs(args: string[]): Record<string, string | boolean> {
  * @returns Formatted date string in DD-MM-YYYY format
  */
 export function getFormattedDateDDMMYYYY(date: Date = new Date()): string {
-  const day = String(date.getDate()).padStart(2, '0');
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  return `${day}-${month}-${date.getFullYear()}`;
+  return `${String(date.getDate()).padStart(2, '0')}-${String(date.getMonth() + 1).padStart(2, '0')}-${date.getFullYear()}`;
 }
 
-/**
- * Intercepts stdout/stderr during CLI executions to prevent stdio stream corruption in MCP servers.
- *
- * @param fn - Execution callback to capture.
- * @returns Combined captured output string.
- */
-export async function captureOutput(fn: () => Promise<any> | any): Promise<string> {
-  const originalStdoutWrite = process.stdout.write;
-  const originalStderrWrite = process.stderr.write;
-  let buffer = '';
-
-  process.stdout.write = (chunk: any) => {
-    buffer += chunk.toString();
-    return true;
-  };
-  process.stderr.write = (chunk: any) => {
-    buffer += chunk.toString();
-    return true;
-  };
-
-  try {
-    await fn();
-  } finally {
-    process.stdout.write = originalStdoutWrite;
-    process.stderr.write = originalStderrWrite;
-  }
-
-  return buffer.trim();
-}
 
 /**
  * Runs comprehensive diagnostic environment integrity checks.

@@ -2,7 +2,7 @@
  * Jules API client utilities for executing authenticated network requests.
  * @module jules_client
  */
-import { request, getApiKey } from './jules_client';
+import { request, getApiKey } from './client/http';
 
 /**
  * Utility functions and type definitions for parsing CLI arguments and managing local session state.

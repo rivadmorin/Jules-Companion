@@ -3,38 +3,12 @@
  * @module mcp/tools/system_tools
  */
 
-import { z } from 'zod';
 import { spawnSync } from 'child_process';
-import { McpToolDefinition } from '../types';
+import { McpToolDefinition } from '../../core/types';
 import { autoProcessCore } from '../../auto_process';
 import { runSetup } from '../../setup';
 import { runDoctorChecks, getReviewReports } from '../../utils';
 import { listSourcesApi } from '../../client/jules_api';
-
-const AutoProcessSchema = z.object({
-  all: z.boolean().optional(),
-  sessionId: z.string().optional(),
-  reply: z.string().optional()
-});
-
-const ListSourcesSchema = z.object({
-  targetDir: z.string().optional()
-});
-
-const RunDoctorSchema = z.object({
-  targetDir: z.string().optional()
-});
-
-const CreateGithubPrSchema = z.object({
-  sessionId: z.string(),
-  title: z.string().optional(),
-  base: z.string().optional(),
-  targetDir: z.string().optional()
-});
-
-const GetReviewReportsSchema = z.object({
-  targetDir: z.string().optional()
-});
 
 /**
  * Array of system and utility MCP tool definitions.
@@ -52,9 +26,7 @@ export const systemTools: McpToolDefinition[] = [
       }
     },
     execute: async (args: any) => {
-      const parsed = AutoProcessSchema.safeParse(args);
-      if (!parsed.success) return { content: [{ type: 'text', text: `Validation Error: ${parsed.error.message}` }] };
-      const { all, sessionId, reply } = parsed.data;
+      const { all, sessionId, reply } = args || {};
       const res = await autoProcessCore({ all, sessionId, reply });
       if (!res.success) {
         return { content: [{ type: 'text', text: `Error: ${res.error}` }] };
@@ -84,8 +56,7 @@ export const systemTools: McpToolDefinition[] = [
       properties: { targetDir: { type: 'string', description: 'Target repository root directory' } }
     },
     execute: async (args: any) => {
-      const parsed = ListSourcesSchema.safeParse(args);
-      const targetDir = parsed.success ? parsed.data.targetDir : undefined;
+      const targetDir = args?.targetDir ? String(args.targetDir) : undefined;
       try {
         const sources = await listSourcesApi(targetDir);
         return { content: [{ type: 'text', text: JSON.stringify(sources, null, 2) }] };
@@ -102,8 +73,7 @@ export const systemTools: McpToolDefinition[] = [
       properties: { targetDir: { type: 'string', description: 'Target repository root directory' } }
     },
     execute: async (args: any) => {
-      const parsed = RunDoctorSchema.safeParse(args);
-      const targetDir = parsed.success && parsed.data.targetDir ? parsed.data.targetDir : process.cwd();
+      const targetDir = args?.targetDir ? String(args.targetDir) : process.cwd();
       const report = runDoctorChecks(targetDir);
       return { content: [{ type: 'text', text: JSON.stringify(report, null, 2) }] };
     }
@@ -122,9 +92,10 @@ export const systemTools: McpToolDefinition[] = [
       required: ['sessionId']
     },
     execute: async (args: any) => {
-      const parsed = CreateGithubPrSchema.safeParse(args);
-      if (!parsed.success) return { content: [{ type: 'text', text: `Validation Error: ${parsed.error.message}` }] };
-      const { sessionId, title, base, targetDir } = parsed.data;
+      if (!args?.sessionId) {
+        return { content: [{ type: 'text', text: 'Validation Error: Required field "sessionId" is missing.' }] };
+      }
+      const { sessionId, title, base, targetDir } = args;
       const resolvedDir = targetDir || process.cwd();
       const prTitle = title || `Jules Companion Patch (Session ${sessionId})`;
       const baseBranch = base || 'main';
@@ -150,8 +121,7 @@ export const systemTools: McpToolDefinition[] = [
       properties: { targetDir: { type: 'string', description: 'Target repository root directory' } }
     },
     execute: async (args: any) => {
-      const parsed = GetReviewReportsSchema.safeParse(args);
-      const targetDir = parsed.success && parsed.data.targetDir ? parsed.data.targetDir : process.cwd();
+      const targetDir = args?.targetDir ? String(args.targetDir) : process.cwd();
       const reports = getReviewReports(targetDir);
       return { content: [{ type: 'text', text: JSON.stringify(reports, null, 2) }] };
     }

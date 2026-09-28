@@ -3,34 +3,10 @@
  * @module mcp/tools/agent_tools
  */
 
-import { z } from 'zod';
 import * as fs from 'fs';
 import * as path from 'path';
-import { McpToolDefinition } from '../types';
+import { McpToolDefinition } from '../../core/types';
 import { getProjectDirs, readAgentJournal, createCustomAgentScaffold } from '../../utils';
-
-const ListAgentsSchema = z.object({
-  targetDir: z.string().optional()
-});
-
-const GetAgentInfoSchema = z.object({
-  agentName: z.string(),
-  targetDir: z.string().optional()
-});
-
-const CreateCustomAgentSchema = z.object({
-  name: z.string(),
-  role: z.string(),
-  directives: z.string(),
-  boundariesDo: z.array(z.string()),
-  boundariesDont: z.array(z.string()),
-  targetDir: z.string().optional()
-});
-
-const ReadAgentJournalSchema = z.object({
-  agentName: z.string(),
-  targetDir: z.string().optional()
-});
 
 /**
  * Array of agent management MCP tool definitions.
@@ -44,8 +20,7 @@ export const agentTools: McpToolDefinition[] = [
       properties: { targetDir: { type: 'string', description: 'Target repository root directory' } }
     },
     execute: async (args: any) => {
-      const parsed = ListAgentsSchema.safeParse(args);
-      const targetDir = parsed.success && parsed.data.targetDir ? parsed.data.targetDir : process.cwd();
+      const targetDir = args?.targetDir ? String(args.targetDir) : process.cwd();
       const dirs = getProjectDirs(targetDir);
       const registryPath = fs.existsSync(path.join(dirs.agentsDir, 'registry.json'))
         ? path.join(dirs.agentsDir, 'registry.json')
@@ -69,10 +44,11 @@ export const agentTools: McpToolDefinition[] = [
       required: ['agentName']
     },
     execute: async (args: any) => {
-      const parsed = GetAgentInfoSchema.safeParse(args);
-      if (!parsed.success) return { content: [{ type: 'text', text: `Validation Error: ${parsed.error.message}` }] };
-      const { agentName, targetDir } = parsed.data;
-      const resolvedDir = targetDir || process.cwd();
+      if (!args?.agentName) {
+        return { content: [{ type: 'text', text: 'Validation Error: Required field "agentName" is missing.' }] };
+      }
+      const agentName = String(args.agentName);
+      const resolvedDir = args.targetDir ? String(args.targetDir) : process.cwd();
       const dirs = getProjectDirs(resolvedDir);
       const agentPath = path.join(dirs.agentsDir, `${agentName.toLowerCase()}.md`);
       const fallbackPath = path.join(__dirname, '..', '..', '..', 'references', 'agents', `${agentName.toLowerCase()}.md`);
@@ -100,9 +76,10 @@ export const agentTools: McpToolDefinition[] = [
       required: ['name', 'role', 'directives', 'boundariesDo', 'boundariesDont']
     },
     execute: async (args: any) => {
-      const parsed = CreateCustomAgentSchema.safeParse(args);
-      if (!parsed.success) return { content: [{ type: 'text', text: `Validation Error: ${parsed.error.message}` }] };
-      const { name, role, directives, boundariesDo, boundariesDont, targetDir } = parsed.data;
+      if (!args?.name || !args?.role || !args?.directives || !Array.isArray(args?.boundariesDo) || !Array.isArray(args?.boundariesDont)) {
+        return { content: [{ type: 'text', text: 'Validation Error: Missing required fields (name, role, directives, boundariesDo, boundariesDont).' }] };
+      }
+      const { name, role, directives, boundariesDo, boundariesDont, targetDir } = args;
       const res = createCustomAgentScaffold(name, role, directives, boundariesDo, boundariesDont, targetDir);
       return { content: [{ type: 'text', text: `Successfully scaffolded custom agent template at: ${res.agentFile}` }] };
     }
@@ -119,9 +96,10 @@ export const agentTools: McpToolDefinition[] = [
       required: ['agentName']
     },
     execute: async (args: any) => {
-      const parsed = ReadAgentJournalSchema.safeParse(args);
-      if (!parsed.success) return { content: [{ type: 'text', text: `Validation Error: ${parsed.error.message}` }] };
-      const { agentName, targetDir } = parsed.data;
+      if (!args?.agentName) {
+        return { content: [{ type: 'text', text: 'Validation Error: Required field "agentName" is missing.' }] };
+      }
+      const { agentName, targetDir } = args;
       const content = readAgentJournal(agentName, targetDir);
       return { content: [{ type: 'text', text: content }] };
     }

@@ -12,7 +12,6 @@ order = 0
 name = "interfaces"
 paths = [
   "scripts/mcp_server.ts",
-  "scripts/jules_menu.ts",
   "scripts/sync_global.ts"
 ]
 order = 1
@@ -28,7 +27,6 @@ order = 2
 [[layers]]
 name = "workflows"
 paths = [
-  "scripts/workflows/*",
   "scripts/deploy_session.ts",
   "scripts/merge_session.ts",
   "scripts/auto_process.ts",

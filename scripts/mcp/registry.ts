@@ -3,7 +3,7 @@
  * @module mcp/registry
  */
 
-import { McpToolDefinition } from './types';
+import { McpToolDefinition } from '../core/types';
 import { sessionTools } from './tools/session_tools';
 import { agentTools } from './tools/agent_tools';
 import { systemTools } from './tools/system_tools';

@@ -10,6 +10,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
+import { getAllTools } from './mcp/registry';
 
 /**
  * Interface representing the result of the global sync operation.
@@ -80,18 +81,14 @@ export function syncGlobalInstallation(targetWorkspaceDir: string = process.cwd(
     fs.mkdirSync(globalMcpDir, { recursive: true });
   }
 
-  const toolsList = [
-    'deploy_session', 'merge_session', 'auto_process', 'setup_workspace', 'get_session_status',
-    'list_agents', 'get_agent_info', 'list_sources', 'run_doctor', 'create_custom_agent',
-    'cancel_session', 'send_session_message', 'retry_failed_session', 'deploy_team',
-    'pull_session_diff', 'checkout_session_branch', 'create_github_pr', 'read_agent_journal',
-    'get_review_reports', 'rollback_session'
-  ];
-
-  for (const toolName of toolsList) {
-    const schemaFile = path.join(globalMcpDir, `${toolName}.json`);
+  for (const tool of getAllTools()) {
+    const schemaFile = path.join(globalMcpDir, `${tool.name}.json`);
     if (!fs.existsSync(schemaFile)) {
-      fs.writeFileSync(schemaFile, JSON.stringify({ name: toolName, description: `${toolName} tool` }, null, 2), 'utf8');
+      fs.writeFileSync(schemaFile, JSON.stringify({
+        name: tool.name,
+        description: tool.description,
+        inputSchema: tool.inputSchema
+      }, null, 2), 'utf8');
     }
   }
 

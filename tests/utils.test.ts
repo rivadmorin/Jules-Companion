@@ -20,16 +20,20 @@ const TEST_DIR = path.join(process.cwd(), 'temp_test_dir_utils');
 
 describe('Utils Comprehensive Tests', () => {
   before(() => {
-    if (fs.existsSync(TEST_DIR)) {
-      fs.rmSync(TEST_DIR, { recursive: true, force: true });
-    }
+    try {
+      if (fs.existsSync(TEST_DIR)) {
+        fs.rmSync(TEST_DIR, { recursive: true, force: true, maxRetries: 5, retryDelay: 50 });
+      }
+    } catch {}
     fs.mkdirSync(TEST_DIR, { recursive: true });
   });
 
   after(() => {
-    if (fs.existsSync(TEST_DIR)) {
-      fs.rmSync(TEST_DIR, { recursive: true, force: true });
-    }
+    try {
+      if (fs.existsSync(TEST_DIR)) {
+        fs.rmSync(TEST_DIR, { recursive: true, force: true, maxRetries: 5, retryDelay: 50 });
+      }
+    } catch {}
   });
 
   describe('runGit', () => {

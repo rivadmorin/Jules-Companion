@@ -4,20 +4,9 @@
  */
 
 import { getApiKey, request } from './http';
-import { loadSessions } from '../core/storage';
 import { JulesSource, SessionRecord } from '../core/types';
 
 export { JulesSource, SessionRecord };
-
-/**
- * Returns the tracked sessions loaded from local state persistence.
- *
- * @param targetDir - The root project directory containing the `.jules-companion` folder.
- * @returns An array of parsed SessionRecord objects.
- */
-export function getSessions(targetDir: string = process.cwd()): SessionRecord[] {
-  return loadSessions(targetDir);
-}
 
 /**
  * Cancels an active or queued Google Jules cloud session via HTTP DELETE.

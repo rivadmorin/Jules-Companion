@@ -8,18 +8,22 @@ const TEST_DIR = path.join(process.cwd(), 'temp_test_dir_setup');
 
 describe('Setup Workspace Unit Tests', () => {
   before(() => {
-    if (fs.existsSync(TEST_DIR)) {
-      fs.rmSync(TEST_DIR, { recursive: true, force: true });
-    }
+    try {
+      if (fs.existsSync(TEST_DIR)) {
+        fs.rmSync(TEST_DIR, { recursive: true, force: true, maxRetries: 5, retryDelay: 50 });
+      }
+    } catch {}
     fs.mkdirSync(TEST_DIR, { recursive: true });
 
     runGit(['init'], TEST_DIR);
   });
 
   after(() => {
-    if (fs.existsSync(TEST_DIR)) {
-      fs.rmSync(TEST_DIR, { recursive: true, force: true });
-    }
+    try {
+      if (fs.existsSync(TEST_DIR)) {
+        fs.rmSync(TEST_DIR, { recursive: true, force: true, maxRetries: 5, retryDelay: 50 });
+      }
+    } catch {}
   });
 
   test('setup.js should scaffold staging directory structure', async () => {
