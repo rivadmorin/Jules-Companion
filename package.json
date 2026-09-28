@@ -1,6 +1,6 @@
 {
   "name": "jules-companion",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Google Jules CLI & REST API companion skill with 30 specialized agents",
   "displayName": "Jules Companion",
   "publisher": "RivadMorinrivadmorin",

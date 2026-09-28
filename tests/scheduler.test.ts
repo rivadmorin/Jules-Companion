@@ -11,7 +11,9 @@ import {
   deleteScheduledTask,
   getDueScheduledTasks,
   executeDueTasks,
-  runScheduledTaskNow
+  runScheduledTaskNow,
+  setTaskExecutor,
+  TaskExecutor
 } from '../scripts/core/scheduler';
 
 describe('Jules Task Scheduler Unit Tests', () => {
@@ -152,5 +154,57 @@ describe('Jules Task Scheduler Unit Tests', () => {
     const loaded = loadScheduledTasks(tempDir);
     assert.strictEqual(loaded.length, 1);
     assert.strictEqual(loaded[0].task, 'Optimize bundle size');
+  });
+
+  test('executeDueTasks should execute due tasks using registered task executor', async () => {
+    const pastDate = new Date(Date.now() - 60 * 1000).toISOString();
+    const created = addScheduledTask(
+      {
+        agent: 'developer',
+        mode: 'code',
+        type: 'start',
+        task: 'Auto fix bug',
+        scheduledAt: pastDate
+      },
+      tempDir
+    );
+
+    const mockExecutor: TaskExecutor = async (options) => {
+      assert.strictEqual(options.task, 'Auto fix bug');
+      return { success: true, sessionId: 'session-mock-123' };
+    };
+
+    const count = await executeDueTasks(tempDir, undefined, mockExecutor);
+    assert.strictEqual(count, 1);
+
+    const loaded = loadScheduledTasks(tempDir);
+    assert.strictEqual(loaded[0].status, 'completed');
+    assert.strictEqual(loaded[0].sessionId, 'session-mock-123');
+  });
+
+  test('runScheduledTaskNow should force execute specific task immediately', async () => {
+    const futureDate = new Date(Date.now() + 3600 * 1000).toISOString();
+    const created = addScheduledTask(
+      {
+        agent: 'tester',
+        mode: 'code',
+        type: 'start',
+        task: 'Immediate verification',
+        scheduledAt: futureDate
+      },
+      tempDir
+    );
+
+    const mockExecutor: TaskExecutor = async (options) => {
+      return { success: true, sessionId: 'sess-now-999' };
+    };
+
+    const result = await runScheduledTaskNow(created.id, tempDir, mockExecutor);
+    assert.strictEqual(result.success, true);
+    assert.strictEqual(result.sessionId, 'sess-now-999');
+
+    const loaded = loadScheduledTasks(tempDir);
+    assert.strictEqual(loaded[0].status, 'completed');
+    assert.strictEqual(loaded[0].sessionId, 'sess-now-999');
   });
 });

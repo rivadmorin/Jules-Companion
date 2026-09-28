@@ -17,7 +17,10 @@ import {
   deleteScheduledTask,
   getDueScheduledTasks,
   executeDueTasks,
-  runScheduledTaskNow
+  runScheduledTaskNow,
+  setTaskExecutor,
+  getTaskExecutor,
+  TaskExecutor
 } from './core/scheduler';
 
 export {
@@ -37,7 +40,10 @@ export {
   deleteScheduledTask,
   getDueScheduledTasks,
   executeDueTasks,
-  runScheduledTaskNow
+  runScheduledTaskNow,
+  setTaskExecutor,
+  getTaskExecutor,
+  TaskExecutor
 };
 
 /**

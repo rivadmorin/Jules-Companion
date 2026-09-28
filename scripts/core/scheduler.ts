@@ -7,7 +7,6 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { ScheduledTask } from './types';
 import { getProjectDirs } from './storage';
-import { deploySessionCore } from '../deploy_session';
 
 /**
  * Loads scheduled tasks from local companion storage.
@@ -115,18 +114,61 @@ export function getDueScheduledTasks(
 }
 
 /**
+ * Executor function signature for scheduled task deployment.
+ */
+export type TaskExecutor = (options: {
+  task: string;
+  agents?: string;
+  mode?: any;
+  type?: 'start' | 'review' | 'interactive';
+  branch?: string;
+  targetDir?: string;
+}) => Promise<{
+  success: boolean;
+  sessions?: Array<{ id: string }>;
+  sessionId?: string;
+  output?: string;
+  error?: string;
+}>;
+
+let activeTaskExecutor: TaskExecutor | null = null;
+
+/**
+ * Sets the global task executor handler used by the scheduler.
+ *
+ * @param executor - The task executor implementation.
+ */
+export function setTaskExecutor(executor: TaskExecutor): void {
+  activeTaskExecutor = executor;
+}
+
+/**
+ * Retrieves the currently registered task executor handler.
+ *
+ * @returns The active TaskExecutor or null if none is registered.
+ */
+export function getTaskExecutor(): TaskExecutor | null {
+  return activeTaskExecutor;
+}
+
+/**
  * Inspects all pending schedules and executes any that are due.
  *
  * @param targetDir - The root project directory path.
  * @param onExecute - Optional callback fired when a task executes with its result.
+ * @param executor - Optional task executor override.
  * @returns Promise resolving to the number of successfully triggered tasks.
  */
 export function executeDueTasks(
   targetDir: string = process.cwd(),
-  onExecute?: (task: ScheduledTask, result: any) => void
+  onExecute?: (task: ScheduledTask, result: any) => void,
+  executor?: TaskExecutor
 ): Promise<number> {
   const due = getDueScheduledTasks(targetDir);
   if (due.length === 0) return Promise.resolve(0);
+
+  const runner = executor || activeTaskExecutor;
+  if (!runner) return Promise.resolve(0);
 
   const tasks = loadScheduledTasks(targetDir);
   let executedCount = 0;
@@ -140,7 +182,7 @@ export function executeDueTasks(
       saveScheduledTasks(tasks, targetDir);
 
       try {
-        const deployRes = await deploySessionCore({
+        const deployRes = await runner({
           task: d.task,
           agents: d.agent,
           mode: d.mode,
@@ -178,12 +220,19 @@ export function executeDueTasks(
  *
  * @param taskId - The unique ID of the scheduled task.
  * @param targetDir - The root project directory path.
+ * @param executor - Optional task executor override.
  * @returns Promise resolving to execution result.
  */
 export async function runScheduledTaskNow(
   taskId: string,
-  targetDir: string = process.cwd()
+  targetDir: string = process.cwd(),
+  executor?: TaskExecutor
 ): Promise<{ success: boolean; sessionId?: string; error?: string }> {
+  const runner = executor || activeTaskExecutor;
+  if (!runner) {
+    return { success: false, error: 'No task executor registered' };
+  }
+
   const tasks = loadScheduledTasks(targetDir);
   const taskRecord = tasks.find(t => t.id === taskId);
   if (!taskRecord) {
@@ -193,7 +242,7 @@ export async function runScheduledTaskNow(
   saveScheduledTasks(tasks, targetDir);
 
   try {
-    const deployRes = await deploySessionCore({
+    const deployRes = await runner({
       task: taskRecord.task,
       agents: taskRecord.agent,
       mode: taskRecord.mode,

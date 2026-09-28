@@ -35,7 +35,8 @@ import {
   cancelScheduledTask,
   deleteScheduledTask,
   executeDueTasks,
-  runScheduledTaskNow
+  runScheduledTaskNow,
+  setTaskExecutor
 } from './utils';
 import { openVisualDiff } from './ui/visual_diff';
 import { LiveSyncManager } from './ui/live_sync';
@@ -118,6 +119,9 @@ export function resolveSessionId(arg?: any): string | undefined {
  * @param context - The VS Code extension context provided by the runtime.
  */
 export function activate(context: vscode.ExtensionContext): void {
+  // Wire task executor into scheduler to maintain clean layer separation
+  setTaskExecutor((opts) => deploySessionCore(opts as any));
+
   outputChannel = vscode.window.createOutputChannel('Jules Companion');
   context.subscriptions.push(outputChannel);
 

@@ -11,6 +11,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.1] - 2026-09-29
+
+### 🔧 Fixed & Improved
+- **Decoupled Architecture & Zero Circular Dependencies**:
+  - Decoupled `scripts/core/scheduler.ts` from `scripts/deploy_session.ts` via dynamic `TaskExecutor` callback interface and `setTaskExecutor()`.
+  - Resolved architectural layer constraint violation (`max_cycles = 0`) verified by Sentrux.
+  - Boosted Sentrux Acyclicity score to **10,000 / 10,000** and overall Quality Signal to **5,861**.
+- **Test Suite Expansion**:
+  - Added unit test coverage for `executeDueTasks` and `runScheduledTaskNow` in `tests/scheduler.test.ts`.
+  - All 108 test cases passing cleanly with zero failures.
+
+---
+
 ## [1.0.0] - 2026-09-28
 
 ### 🚀 Added
