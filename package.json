@@ -2,7 +2,368 @@
   "name": "jules-companion",
   "version": "1.0.0",
   "description": "Google Jules CLI & REST API companion skill with 30 specialized agents",
-  "main": "dist/setup.js",
+  "displayName": "Jules Companion",
+  "publisher": "rivadmorin",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "AI",
+    "Programming Languages",
+    "SCM Providers"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rivadmorin/Jules-Companion.git"
+  },
+  "main": "dist/extension.js",
+  "activationEvents": [
+    "onStartupFinished",
+    "onView:jules.workspaceView",
+    "onView:jules.sessionsView",
+    "onView:jules.agentsView",
+    "onView:jules.journalsView",
+    "onCommand:jules.refreshSessions",
+    "onCommand:jules.deploySession",
+    "onCommand:jules.deleteSession",
+    "onCommand:jules.sendMessage",
+    "onCommand:jules.approvePlan",
+    "onCommand:jules.openInWeb",
+    "onCommand:jules.viewActivities",
+    "onCommand:jules.openAgentDoc",
+    "onCommand:jules.viewVisualDiff",
+    "onCommand:jules.openMissionControl",
+    "onCommand:jules.toggleLiveSync",
+    "onCommand:jules.createGitHubPR",
+    "onCommand:jules.createCustomAgent",
+    "onCommand:jules.retryFailedSession",
+    "onCommand:jules.archiveSession",
+    "onCommand:jules.unarchiveSession",
+    "onCommand:jules.copySessionUrl"
+  ],
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "jules-companion",
+          "title": "Jules Companion",
+          "icon": "media/jules-icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "jules-companion": [
+        {
+          "id": "jules.workspaceView",
+          "name": "Workspace & Git Context",
+          "contextualTitle": "Jules Workspace Context"
+        },
+        {
+          "id": "jules.sessionsView",
+          "name": "Sessions",
+          "contextualTitle": "Jules Sessions"
+        },
+        {
+          "id": "jules.agentsView",
+          "name": "Agent Roster",
+          "contextualTitle": "Jules Agents"
+        },
+        {
+          "id": "jules.journalsView",
+          "name": "Journals & Reports",
+          "contextualTitle": "Jules Journals"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "jules.refreshSessions",
+        "title": "Refresh Sessions",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "jules.deploySession",
+        "title": "Deploy New Session",
+        "icon": "$(cloud-upload)"
+      },
+      {
+        "command": "jules.mergeSession",
+        "title": "Merge Session to Current Branch",
+        "icon": "$(git-merge)"
+      },
+      {
+        "command": "jules.viewSessionDiff",
+        "title": "View Session Diff",
+        "icon": "$(diff)"
+      },
+      {
+        "command": "jules.cancelSession",
+        "title": "Cancel Session",
+        "icon": "$(close)"
+      },
+      {
+        "command": "jules.rollbackSession",
+        "title": "Rollback Session",
+        "icon": "$(discard)"
+      },
+      {
+        "command": "jules.runDoctor",
+        "title": "Run System Doctor",
+        "icon": "$(pulse)"
+      },
+      {
+        "command": "jules.showTaskDetail",
+        "title": "Show Full Task Details",
+        "icon": "$(note)"
+      },
+      {
+        "command": "jules.openJournal",
+        "title": "Open Journal File",
+        "icon": "$(book)"
+      },
+      {
+        "command": "jules.deployWithAgent",
+        "title": "Deploy Session with this Agent",
+        "icon": "$(cloud-upload)"
+      },
+      {
+        "command": "jules.setApiKey",
+        "title": "Set Google Jules API Key",
+        "icon": "$(key)"
+      },
+      {
+        "command": "jules.refreshWorkspace",
+        "title": "Refresh Workspace Context",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "jules.checkoutSessionBranch",
+        "title": "Checkout Session Review Branch",
+        "icon": "$(git-branch)"
+      },
+      {
+        "command": "jules.deleteSession",
+        "title": "Delete Session (Cloud & Local)",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "jules.sendMessage",
+        "title": "Send Message / Instruction to Agent",
+        "icon": "$(comment)"
+      },
+      {
+        "command": "jules.approvePlan",
+        "title": "Approve Proposed Plan",
+        "icon": "$(pass)"
+      },
+      {
+        "command": "jules.openInWeb",
+        "title": "Open Session in Jules Web",
+        "icon": "$(globe)"
+      },
+      {
+        "command": "jules.viewActivities",
+        "title": "View Activities & Plan Logs",
+        "icon": "$(history)"
+      },
+      {
+        "command": "jules.openAgentDoc",
+        "title": "View Agent Directives & Boundaries",
+        "icon": "$(book)"
+      },
+      {
+        "command": "jules.viewVisualDiff",
+        "title": "Inspect Visual Diff (Side-by-Side)",
+        "icon": "$(diff)"
+      },
+      {
+        "command": "jules.openMissionControl",
+        "title": "Open Mission Control Dashboard",
+        "icon": "$(dashboard)"
+      },
+      {
+        "command": "jules.toggleLiveSync",
+        "title": "Toggle Live Sync & Alerts",
+        "icon": "$(radio-tower)"
+      },
+      {
+        "command": "jules.createGitHubPR",
+        "title": "Create GitHub Pull Request",
+        "icon": "$(git-pull-request)"
+      },
+      {
+        "command": "jules.createCustomAgent",
+        "title": "Create Custom Specialized Agent",
+        "icon": "$(plus)"
+      },
+      {
+        "command": "jules.retryFailedSession",
+        "title": "Retry Failed Session",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "jules.archiveSession",
+        "title": "Archive Session",
+        "icon": "$(archive)"
+      },
+      {
+        "command": "jules.unarchiveSession",
+        "title": "Unarchive Session",
+        "icon": "$(package)"
+      },
+      {
+        "command": "jules.copySessionUrl",
+        "title": "Copy Session Web URL",
+        "icon": "$(copy)"
+      }
+    ],
+    "configuration": {
+      "title": "Jules Companion",
+      "properties": {
+        "jules.apiKey": {
+          "type": "string",
+          "default": "",
+          "description": "Google Jules API Key for cloud agent execution."
+        }
+      }
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "jules.refreshWorkspace",
+          "when": "view == jules.workspaceView",
+          "group": "navigation@1"
+        },
+        {
+          "command": "jules.setApiKey",
+          "when": "view == jules.workspaceView",
+          "group": "navigation@2"
+        },
+        {
+          "command": "jules.setApiKey",
+          "when": "view == jules.sessionsView",
+          "group": "navigation@0"
+        },
+        {
+          "command": "jules.toggleLiveSync",
+          "when": "view == jules.sessionsView",
+          "group": "navigation@1"
+        },
+        {
+          "command": "jules.refreshSessions",
+          "when": "view == jules.sessionsView",
+          "group": "navigation@2"
+        },
+        {
+          "command": "jules.deploySession",
+          "when": "view == jules.sessionsView",
+          "group": "navigation@3"
+        },
+        {
+          "command": "jules.runDoctor",
+          "when": "view == jules.sessionsView",
+          "group": "navigation@4"
+        },
+        {
+          "command": "jules.createCustomAgent",
+          "when": "view == jules.agentsView",
+          "group": "navigation@1"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "jules.openMissionControl",
+          "when": "view == jules.sessionsView && viewItem =~ /^session/",
+          "group": "inline@0"
+        },
+        {
+          "command": "jules.viewVisualDiff",
+          "when": "view == jules.sessionsView && viewItem =~ /^session/",
+          "group": "inline@1"
+        },
+        {
+          "command": "jules.createGitHubPR",
+          "when": "view == jules.sessionsView && viewItem =~ /succeeded/",
+          "group": "inline@2"
+        },
+        {
+          "command": "jules.sendMessage",
+          "when": "view == jules.sessionsView && viewItem =~ /^session/",
+          "group": "inline@3"
+        },
+        {
+          "command": "jules.checkoutSessionBranch",
+          "when": "view == jules.sessionsView && viewItem =~ /^session/",
+          "group": "inline@4"
+        },
+        {
+          "command": "jules.approvePlan",
+          "when": "view == jules.sessionsView && (viewItem =~ /awaiting/ || viewItem =~ /plan/)",
+          "group": "inline@5"
+        },
+        {
+          "command": "jules.mergeSession",
+          "when": "view == jules.sessionsView && viewItem =~ /succeeded/",
+          "group": "inline@6"
+        },
+        {
+          "command": "jules.retryFailedSession",
+          "when": "view == jules.sessionsView && viewItem =~ /failed/",
+          "group": "inline@7"
+        },
+        {
+          "command": "jules.copySessionUrl",
+          "when": "view == jules.sessionsView && viewItem =~ /^session/",
+          "group": "navigation@0"
+        },
+        {
+          "command": "jules.archiveSession",
+          "when": "view == jules.sessionsView && viewItem =~ /^session/ && viewItem != session-archived",
+          "group": "archive@1"
+        },
+        {
+          "command": "jules.unarchiveSession",
+          "when": "view == jules.sessionsView && viewItem == session-archived",
+          "group": "archive@1"
+        },
+        {
+          "command": "jules.openInWeb",
+          "when": "view == jules.sessionsView && viewItem =~ /^session/",
+          "group": "navigation@1"
+        },
+        {
+          "command": "jules.viewActivities",
+          "when": "view == jules.sessionsView && viewItem =~ /^session/",
+          "group": "navigation@2"
+        },
+        {
+          "command": "jules.cancelSession",
+          "when": "view == jules.sessionsView && viewItem =~ /running/",
+          "group": "danger@1"
+        },
+        {
+          "command": "jules.deleteSession",
+          "when": "view == jules.sessionsView && viewItem =~ /^session/",
+          "group": "danger@2"
+        },
+        {
+          "command": "jules.rollbackSession",
+          "when": "view == jules.sessionsView && viewItem =~ /^session/",
+          "group": "danger@3"
+        },
+        {
+          "command": "jules.deployWithAgent",
+          "when": "view == jules.agentsView && viewItem == agent-item",
+          "group": "inline@1"
+        },
+        {
+          "command": "jules.openAgentDoc",
+          "when": "view == jules.agentsView && viewItem == agent-item",
+          "group": "inline@2"
+        }
+      ]
+    }
+  },
   "scripts": {
     "build": "esbuild scripts/*.ts scripts/**/*.ts --outdir=dist --platform=node --format=cjs",
     "postbuild": "node dist/sync_global.js",
@@ -13,8 +374,9 @@
     "deploy": "node dist/deploy_session.js",
     "merge": "node dist/merge_session.js",
     "client": "node dist/jules_client.js",
-    "test": "tsx --test tests/*.test.ts",
+    "test": "tsx --test --test-concurrency=1 tests/*.test.ts",
     "mcp": "node dist/mcp_server.js",
+    "package": "vsce package --no-dependencies",
     "graft:check": "graft check",
     "graft:map": "graft map",
     "graft:blast": "graft blast",
@@ -33,6 +395,8 @@
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^20.11.0",
+    "@types/vscode": "^1.90.0",
+    "@vscode/vsce": "^4.0.0",
     "esbuild": "^0.28.1",
     "tsx": "^4.23.1",
     "typescript": "^5.9.3"

@@ -10,10 +10,36 @@ Aplikasi ini berfungsi sebagai ko-pilot pintar untuk mengintegrasikan alur kerja
 
 ## ⚡ Fitur Utama
 
+* **💻 Native VS Code / IDE Extension**: Sidebar TreeView untuk Sessions, Direktori 43 Agen Spesialis, dan Jurnal Keputusan, plus inspeksi git diff native side-by-side dan status bar counter real-time.
 * **🔌 Native MCP Server**: Terhubung langsung secara seamless ke klien AI berbasis MCP (Antigravity IDE, Claude Desktop, OpenCode, Cursor) yang menyediakan tools & resource status sesi real-time.
 * **🤖 43 Agen Spesialis**: Agen yang telah dikonfigurasi untuk peran spesifik (misal: *Bolt* untuk performa, *Sentinel* untuk keamanan, *Architect* untuk desain struktur).
 * **🛡️ Penggabungan Patch Dua-Tahap**: Patch dari cloud ditarik ke dalam cabang ulasan (review branch) terisolasi terlebih dahulu. Anda menginspeksi laporan Markdown sebelum menggabungkannya ke `main`.
 * **⚡ Core Programatik & CLI Bersih**: Eksekusi fungsi bertipe secara langsung tanpa mutasi proses global, plus perintah CLI praktis (`npm run deploy`, `npm run merge`, `npm run setup`).
+
+---
+
+## 💻 Ekstensi VS Code / IDE
+
+`jules-companion` menyertakan ekstensi GUI terintegrasi untuk VS Code, Cursor, dan Antigravity IDE!
+
+### 🌟 Fitur Antarmuka (UI)
+* **Sidebar Activity Bar**:
+  * **Sessions View**: Daftar real-time sesi cloud yang aktif, selesai, maupun gagal, lengkap dengan tombol aksi inline (`Diff`, `Merge`, `Cancel`, `Rollback`).
+  * **Agent Roster**: Direktori terkategori dari 43 agen spesialis beserta deskripsi peran dan batasannya.
+  * **Journals & Reports**: Akses 1-klik ke file catatan keputusan dan ulasan kode (Markdown).
+* **Native Diff Integration**: Membuka perubahan kode dari sesi Jules berdampingan (side-by-side) menggunakan diff editor bawaan VS Code sebelum di-merge.
+* **Indikator Status Bar**: Counter minimalis di pojok kiri bawah yang menampilkan jumlah sesi yang sedang berjalan.
+* **Dukungan Command Palette**: Akses cepat via `Ctrl+Shift+P` (`Jules: Deploy New Session`, `Jules: Run System Doctor`, dll.).
+
+### 📦 Build & Instalasi
+```bash
+# 1. Package menjadi file installer .vsix
+npm run package
+
+# 2. Pasang langsung di VS Code / Cursor
+code --install-extension jules-companion-1.0.0.vsix
+```
+*Untuk pengembangan atau debugging lokal, buka direktori ini di VS Code lalu tekan `F5` untuk menjalankan Extension Development Host.*
 
 ---
 

@@ -56,6 +56,124 @@ export function getFormattedDateDDMMYYYY(date: Date = new Date()): string {
   return `${String(date.getDate()).padStart(2, '0')}-${String(date.getMonth() + 1).padStart(2, '0')}-${date.getFullYear()}`;
 }
 
+/**
+ * Determines whether a session status represents an active/running/in-progress task.
+ *
+ * @param status - The raw session status string.
+ * @returns True if the session is currently active or queued.
+ */
+export function isSessionActive(status?: string): boolean {
+  if (!status) return false;
+  const s = status.trim().toLowerCase();
+  return (
+    s === 'active' ||
+    s === 'running' ||
+    s === 'pending' ||
+    s === 'in_progress' ||
+    s === 'in-progress' ||
+    s === 'queued' ||
+    s === 'starting' ||
+    s === 'planning' ||
+    s === 'launched' ||
+    s === 'awaiting_plan_approval' ||
+    s.includes('awaiting')
+  );
+}
+
+/**
+ * Determines whether a session status represents a successful completion terminal state.
+ *
+ * @param status - The raw session status string.
+ * @returns True if the session is completed or succeeded.
+ */
+export function isSessionCompleted(status?: string): boolean {
+  if (!status) return false;
+  const s = status.trim().toLowerCase();
+  return s === 'completed' || s === 'succeeded' || s === 'merged' || s === 'success' || s === 'done';
+}
+
+/**
+ * Determines whether a session status represents a failed, error, or cancelled terminal state.
+ *
+ * @param status - The raw session status string.
+ * @returns True if the session failed or was cancelled.
+ */
+export function isSessionFailed(status?: string): boolean {
+  if (!status) return false;
+  const s = status.trim().toLowerCase();
+  return s === 'failed' || s === 'error' || s === 'rejected' || s === 'cancelled' || s === 'canceled';
+}
+
+/**
+ * Determines whether a session is currently awaiting user plan authorization.
+ *
+ * @param status - The raw session status string.
+ * @returns True if the session is awaiting plan approval.
+ */
+export function isSessionAwaitingApproval(status?: string): boolean {
+  if (!status) return false;
+  const s = status.trim().toLowerCase();
+  return s.includes('awaiting') || s.includes('plan');
+}
+
+/**
+ * Archives a session locally, moving it to the archived sessions collection.
+ *
+ * @param sessionId - Unique identifier of the session to archive.
+ * @param targetDir - Optional workspace root directory path.
+ * @returns Object indicating success and notification message.
+ */
+export function archiveSession(
+  sessionId: string,
+  targetDir: string = process.cwd()
+): { success: boolean; message: string } {
+  const sessions = loadSessions(targetDir);
+  let found = false;
+  const updated = sessions.map(s => {
+    if (s.id === sessionId) {
+      found = true;
+      return { ...s, archived: true };
+    }
+    return s;
+  });
+  if (found) {
+    saveSessions(updated, targetDir);
+  }
+  return {
+    success: found,
+    message: found ? `Session #${sessionId} archived.` : `Session #${sessionId} not found.`
+  };
+}
+
+/**
+ * Restores an archived session back to the active sessions collection.
+ *
+ * @param sessionId - Unique identifier of the session to unarchive.
+ * @param targetDir - Optional workspace root directory path.
+ * @returns Object indicating success and notification message.
+ */
+export function unarchiveSession(
+  sessionId: string,
+  targetDir: string = process.cwd()
+): { success: boolean; message: string } {
+  const sessions = loadSessions(targetDir);
+  let found = false;
+  const updated = sessions.map(s => {
+    if (s.id === sessionId) {
+      found = true;
+      return { ...s, archived: false };
+    }
+    return s;
+  });
+  if (found) {
+    saveSessions(updated, targetDir);
+  }
+  return {
+    success: found,
+    message: found ? `Session #${sessionId} restored from archive.` : `Session #${sessionId} not found.`
+  };
+}
+
 
 /**
  * Runs comprehensive diagnostic environment integrity checks.

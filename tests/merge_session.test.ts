@@ -24,7 +24,11 @@ describe('Merge Session Unit Tests', () => {
 
   after(() => {
     if (fs.existsSync(TEST_DIR)) {
-      fs.rmSync(TEST_DIR, { recursive: true, force: true });
+      try {
+        fs.rmSync(TEST_DIR, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
+      } catch {
+        // Ignore residual lock on Windows test teardown
+      }
     }
   });
 

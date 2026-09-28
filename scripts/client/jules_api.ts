@@ -5,6 +5,7 @@
 
 import { getApiKey, request } from './http';
 import { JulesSource, SessionRecord } from '../core/types';
+import { loadSessions, saveSessions } from '../core/storage';
 
 export { JulesSource, SessionRecord };
 
@@ -78,7 +79,8 @@ export async function pullDiffApi(sessionId: string, targetDir?: string): Promis
   const headers = { 'X-Goog-Api-Key': apiKey };
   const data = await request(`https://jules.googleapis.com/v1alpha/sessions/${sessionId}/activities`, { headers });
   const activities = data.activities || [];
-  for (const act of activities) {
+  for (let i = activities.length - 1; i >= 0; i--) {
+    const act = activities[i];
     if (act.artifacts) {
       for (const art of act.artifacts) {
         if (art.changeSet && art.changeSet.gitPatch && art.changeSet.gitPatch.unidiffPatch) {
@@ -88,4 +90,124 @@ export async function pullDiffApi(sessionId: string, targetDir?: string): Promis
     }
   }
   throw new Error(`No git patch found in activities for session ${sessionId}`);
+}
+
+/**
+ * Fetches full metadata details for a specific Google Jules session.
+ *
+ * @param sessionId - The unique ID of the target session.
+ * @param targetDir - Optional directory context to resolve API credentials.
+ * @returns A promise resolving to the session details object.
+ * @throws {Error} Throws an error if API key is missing or request fails.
+ */
+export async function getSessionApi(sessionId: string, targetDir?: string): Promise<any> {
+  const apiKey = getApiKey(targetDir);
+  if (!apiKey) throw new Error('JULES_API_KEY not found in environment or .env file.');
+  const headers = { 'X-Goog-Api-Key': apiKey };
+  return await request(`https://jules.googleapis.com/v1alpha/sessions/${sessionId}`, { headers });
+}
+
+/**
+ * Fetches execution activities, proposed plans, steps, and logs for a Jules session.
+ *
+ * @param sessionId - The unique ID of the target session.
+ * @param targetDir - Optional directory context to resolve API credentials.
+ * @returns A promise resolving to an array of session activities.
+ * @throws {Error} Throws an error if API key is missing or request fails.
+ */
+export async function getActivitiesApi(sessionId: string, targetDir?: string): Promise<any[]> {
+  const apiKey = getApiKey(targetDir);
+  if (!apiKey) throw new Error('JULES_API_KEY not found in environment or .env file.');
+  const headers = { 'X-Goog-Api-Key': apiKey };
+  const data = await request(`https://jules.googleapis.com/v1alpha/sessions/${sessionId}/activities`, { headers });
+  return data.activities || [];
+}
+
+/**
+ * Approves a proposed execution plan for a session that is awaiting human plan approval.
+ *
+ * @param sessionId - The unique ID of the target session.
+ * @param targetDir - Optional directory context to resolve API credentials.
+ * @returns A promise resolving to the approval response.
+ * @throws {Error} Throws an error if API key is missing or request fails.
+ */
+export async function approvePlanApi(sessionId: string, targetDir?: string): Promise<any> {
+  const apiKey = getApiKey(targetDir);
+  if (!apiKey) throw new Error('JULES_API_KEY not found in environment or .env file.');
+  const headers = { 'X-Goog-Api-Key': apiKey };
+  return await request(`https://jules.googleapis.com/v1alpha/sessions/${sessionId}:approvePlan`, {
+    method: 'POST',
+    headers
+  });
+}
+
+/**
+ * Permanently deletes a session from Google Jules cloud and cleans up local storage records.
+ *
+ * @param sessionId - The unique ID of the target session to delete.
+ * @param targetDir - Optional directory context to resolve API credentials and local storage.
+ * @returns A promise resolving to an object indicating success.
+ */
+export async function deleteSessionApi(
+  sessionId: string,
+  targetDir?: string
+): Promise<{ success: boolean; message: string }> {
+  const apiKey = getApiKey(targetDir);
+  if (apiKey) {
+    const headers = { 'X-Goog-Api-Key': apiKey };
+    try {
+      await request(`https://jules.googleapis.com/v1alpha/sessions/${sessionId}`, {
+        method: 'DELETE',
+        headers
+      });
+    } catch {
+      // Remote session might already be gone or unreachable; continue to clean local
+    }
+  }
+
+  // Purge from local .jules-companion/sessions.json
+  const root = targetDir || process.cwd();
+  const localSessions = loadSessions(root);
+  const updated = localSessions.filter(s => s.id !== sessionId);
+  saveSessions(updated, root);
+
+  return { success: true, message: `Session #${sessionId} deleted.` };
+}
+
+/**
+ * Fetches cloud sessions from the Google Jules API and formats them as SessionRecord objects.
+ *
+ * @param targetDir - Optional directory context to resolve API credentials.
+ * @returns A promise resolving to an array of SessionRecord instances.
+ */
+export async function listSessionsApi(targetDir?: string): Promise<SessionRecord[]> {
+  const apiKey = getApiKey(targetDir);
+  if (!apiKey) return [];
+  const headers = { 'X-Goog-Api-Key': apiKey };
+  try {
+    const data = await request('https://jules.googleapis.com/v1alpha/sessions', { headers });
+    const cloudSessions = data.sessions || [];
+    return cloudSessions.map((s: any) => {
+      const id = s.name ? s.name.replace(/^sessions\//, '') : s.id;
+      let agent = 'agent';
+      if (s.title && s.title.includes('-')) {
+        agent = s.title.split('-')[0];
+      }
+      const webUrl = s.url || `https://jules.google.com/session/${id}`;
+      return {
+        id,
+        agent,
+        mode: 'code' as const,
+        task: s.title || (s.prompt ? s.prompt.slice(0, 60) : 'Jules Cloud Session'),
+        status: s.state || 'UNKNOWN',
+        timestamp: s.createTime || new Date().toISOString(),
+        branch: s.sourceContext?.githubRepoContext?.startingBranch || 'main',
+        createdAt: s.createTime,
+        updatedAt: s.updateTime,
+        url: webUrl
+      };
+    });
+  } catch {
+    return [];
+  }
 }

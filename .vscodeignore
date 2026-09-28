@@ -1,0 +1,16 @@
+.vscode/**
+.vscode-test/**
+tests/**
+src/**
+scripts/**
+scratch/**
+evals/**
+temp_test_dir*/**
+.env*
+.gitignore
+.ignore
+tsconfig.json
+*.ps1
+*.sh
+dist/sync_global.js
+docs/**

@@ -10,11 +10,37 @@ It acts as an intelligent co-pilot to orchestrate local workflows (Git + GitHub 
 
 ## ⚡ Key Capabilities
 
+* **💻 Native VS Code / IDE Extension**: Sidebar TreeViews for Sessions, Agent Roster (43 agents), and Journals, plus native side-by-side git diff review and status bar indicator.
 * **🔌 Native MCP Server**: Connects seamlessly with any MCP-compliant AI client (Antigravity IDE, Claude Desktop, OpenCode, Cursor) exposing high-level native tools & real-time session resources.
 * **🤖 43 Specialist Agents**: Pre-configured agents with specialized domain roles (e.g., *Bolt* for performance, *Sentinel* for security, *Architect* for structural design).
 * **🛡️ Two-Stage Patch Merge**: Cloud patches are pulled into an isolated review branch first. You inspect the generated Markdown report before merging into `main`.
 * **⚡ Clean Programmatic Core & CLI**: Direct typed execution without global process mutations, plus convenient CLI commands (`npm run deploy`, `npm run merge`, `npm run setup`).
 
+---
+ 
+## 💻 VS Code / IDE Extension
+ 
+`jules-companion` includes an integrated GUI extension for VS Code, Cursor, and Antigravity IDE!
+ 
+### 🌟 UI Features
+* **Sidebar Activity Bar**:
+  * **Sessions View**: Real-time list of active, completed, and failed cloud sessions with inline action buttons (`Diff`, `Merge`, `Cancel`, `Rollback`).
+  * **Agent Roster**: Categorized directory of all 43 specialist agents with role descriptions and directives.
+  * **Journals & Reports**: 1-click access to generated decision journals and code review markdown documents.
+* **Native Diff Integration**: Inspect incoming session patches side-by-side inside VS Code's native diff editor before applying or merging.
+* **Status Bar Indicator**: Minimalist live counter at the bottom left showing active running sessions.
+* **Command Palette Support**: Quick access via `Ctrl+Shift+P` (`Jules: Deploy New Session`, `Jules: Run System Doctor`, etc.).
+ 
+### 📦 Build & Installation
+```bash
+# 1. Package into .vsix installer
+npm run package
+ 
+# 2. Install directly in VS Code / Cursor
+code --install-extension jules-companion-1.0.0.vsix
+```
+*For local development/debugging, open this repository in VS Code and press `F5` to start the Extension Development Host.*
+ 
 ---
 
 ## 🔌 Primary Interaction Standard: MCP Integration

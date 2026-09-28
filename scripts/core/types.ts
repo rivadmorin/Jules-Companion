@@ -64,8 +64,12 @@ export interface SessionRecord {
   updatedAt?: string;
   /** Optional GitHub or Jules PR / merge URL */
   prUrl?: string;
+  /** Optional direct web URL to view session on Google Jules web console */
+  url?: string;
   /** Optional detailed message or reason */
   message?: string;
+  /** Whether the session has been archived */
+  archived?: boolean;
 }
 
 /**

@@ -15,6 +15,7 @@ build/
 out/
 *.tsbuildinfo
 .esbuild/
+*.vsix
 
 # 3. Jules Companion Runtime, Sessions & Operational State
 .jules-companion/

@@ -1,0 +1,1406 @@
+/**
+ * VS Code extension main entrypoint for Jules Companion.
+ * @module extension
+ */
+
+import * as vscode from 'vscode';
+import * as path from 'path';
+import * as fs from 'fs';
+import { WorkspaceTreeDataProvider } from './ui/workspace_provider';
+import { SessionsTreeDataProvider, SessionTreeItem } from './ui/sessions_provider';
+import { AgentsTreeDataProvider, AgentTreeItem } from './ui/agents_provider';
+import { JournalsTreeDataProvider } from './ui/journals_provider';
+import { deploySessionCore } from './deploy_session';
+import { mergeSessionCore, rollbackSession, checkoutSessionBranch } from './merge_session';
+import {
+  cancelSessionApi,
+  deleteSessionApi,
+  sendMessageApi,
+  approvePlanApi,
+  pullDiffApi,
+  getActivitiesApi
+} from './client/jules_api';
+import { loadSessions } from './core/storage';
+import {
+  runDoctorChecks,
+  isSessionActive,
+  isSessionCompleted,
+  isSessionFailed,
+  isSessionAwaitingApproval,
+  archiveSession,
+  unarchiveSession
+} from './utils';
+import { openVisualDiff } from './ui/visual_diff';
+import { LiveSyncManager } from './ui/live_sync';
+import { openMissionControlWebview } from './ui/mission_control';
+import { runCustomAgentWizard } from './ui/custom_agent_wizard';
+import { runGit } from './core/git';
+
+let statusBarItem: vscode.StatusBarItem;
+let liveSyncBarItem: vscode.StatusBarItem;
+let liveSyncManager: LiveSyncManager;
+let outputChannel: vscode.OutputChannel;
+
+/**
+ * Resolves the primary workspace root folder path.
+ */
+function getWorkspaceRoot(): string {
+  if (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length > 0) {
+    return vscode.workspace.workspaceFolders[0].uri.fsPath;
+  }
+  return process.cwd();
+}
+
+/**
+ * Updates the Jules status bar item with active session metrics.
+ */
+function updateStatusBar(): void {
+  const root = getWorkspaceRoot();
+  try {
+    const sessions = loadSessions(root);
+    const awaitingSessions = sessions.filter(s => isSessionAwaitingApproval(s.status));
+    const activeSessions = sessions.filter(s => isSessionActive(s.status));
+
+    if (awaitingSessions.length > 0) {
+      statusBarItem.text = `$(bell-dot) Jules: ${awaitingSessions.length} Action Needed`;
+      statusBarItem.tooltip = `${awaitingSessions.length} Jules session(s) awaiting your plan approval. Click to view.`;
+      statusBarItem.backgroundColor = new vscode.ThemeColor('statusBarItem.warningBackground');
+    } else if (activeSessions.length > 0) {
+      statusBarItem.text = `$(sync~spin) Jules: ${activeSessions.length} Active`;
+      statusBarItem.tooltip = `${activeSessions.length} active Jules session(s) in progress. Click to refresh.`;
+      statusBarItem.backgroundColor = new vscode.ThemeColor('statusBarItem.warningBackground');
+    } else {
+      statusBarItem.text = `$(check) Jules`;
+      statusBarItem.tooltip = `Jules Companion ready. ${sessions.length} session(s) recorded.`;
+      statusBarItem.backgroundColor = undefined;
+    }
+    statusBarItem.show();
+  } catch {
+    statusBarItem.text = `$(hubot) Jules`;
+    statusBarItem.show();
+  }
+}
+
+/**
+ * Resolves target session ID cleanly from various invocation contexts:
+ * - SessionTreeItem (arg.session.id)
+ * - SessionRecord (arg.id)
+ * - Wrapper object ({ session: { id } } or { session: SessionRecord })
+ * - Direct string identifier
+ *
+ * @param arg - Command argument from TreeView, menus, webview, or code.
+ * @returns Clean session ID or undefined if cannot be extracted.
+ */
+export function resolveSessionId(arg?: any): string | undefined {
+  if (!arg) return undefined;
+  if (typeof arg === 'string') return arg.trim() || undefined;
+  if (typeof arg.session === 'object' && arg.session !== null) {
+    if (typeof arg.session.id === 'string') return arg.session.id.trim();
+  }
+  if (typeof arg.id === 'string') return arg.id.trim();
+  return undefined;
+}
+
+/**
+ * Extension activation entrypoint.
+ * @param context - The VS Code extension context provided by the runtime.
+ */
+export function activate(context: vscode.ExtensionContext): void {
+  outputChannel = vscode.window.createOutputChannel('Jules Companion');
+  context.subscriptions.push(outputChannel);
+
+  // Status Bar Item
+  statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 10);
+  statusBarItem.command = 'jules.refreshSessions';
+  context.subscriptions.push(statusBarItem);
+  updateStatusBar();
+
+  // Live Sync Background Manager & Status Bar Item
+  liveSyncManager = new LiveSyncManager(getWorkspaceRoot, () => refreshAll());
+  liveSyncBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 9);
+  liveSyncBarItem.command = 'jules.toggleLiveSync';
+  context.subscriptions.push(liveSyncBarItem);
+
+  const updateLiveSyncBar = () => {
+    if (liveSyncManager.isActive()) {
+      liveSyncBarItem.text = '$(radio-tower) Jules Live: ON';
+      liveSyncBarItem.tooltip = 'Jules Live Sync: ACTIVE (click to pause)';
+    } else {
+      liveSyncBarItem.text = '$(circle-slash) Jules Live: OFF';
+      liveSyncBarItem.tooltip = 'Jules Live Sync: PAUSED (click to activate)';
+    }
+    liveSyncBarItem.show();
+  };
+  updateLiveSyncBar();
+
+  // Sidebar Tree Data Providers
+  const workspaceProvider = new WorkspaceTreeDataProvider(getWorkspaceRoot);
+  const sessionsProvider = new SessionsTreeDataProvider(getWorkspaceRoot);
+  const agentsProvider = new AgentsTreeDataProvider(context.extensionPath, getWorkspaceRoot);
+  const journalsProvider = new JournalsTreeDataProvider(getWorkspaceRoot);
+
+  context.subscriptions.push(
+    vscode.window.registerTreeDataProvider('jules.workspaceView', workspaceProvider),
+    vscode.window.registerTreeDataProvider('jules.sessionsView', sessionsProvider),
+    vscode.window.registerTreeDataProvider('jules.agentsView', agentsProvider),
+    vscode.window.registerTreeDataProvider('jules.journalsView', journalsProvider)
+  );
+
+  const refreshAll = () => {
+    workspaceProvider.refresh();
+    sessionsProvider.refresh();
+    agentsProvider.refresh();
+    journalsProvider.refresh();
+    updateStatusBar();
+    updateLiveSyncBar();
+  };
+
+  // Synchronize API key from settings or secrets on activate
+  const configApiKey = vscode.workspace.getConfiguration('jules').get<string>('apiKey');
+  if (configApiKey && configApiKey.trim()) {
+    process.env.JULES_API_KEY = configApiKey.trim();
+  } else {
+    context.secrets.get('jules.apiKey').then(secretKey => {
+      if (secretKey && secretKey.trim() && !process.env.JULES_API_KEY) {
+        process.env.JULES_API_KEY = secretKey.trim();
+      }
+    });
+  }
+
+  // 1. Refresh Command
+  context.subscriptions.push(
+    vscode.commands.registerCommand('jules.refreshSessions', () => {
+      refreshAll();
+      vscode.window.showInformationMessage('Jules Companion state refreshed.');
+    })
+  );
+
+  // Refresh Workspace Context Command
+  context.subscriptions.push(
+    vscode.commands.registerCommand('jules.refreshWorkspace', () => {
+      workspaceProvider.refresh();
+      vscode.window.showInformationMessage('Jules workspace context refreshed.');
+    })
+  );
+
+  // Show Full Task Detail Command
+  context.subscriptions.push(
+    vscode.commands.registerCommand('jules.showTaskDetail', async (taskText: string) => {
+      if (!taskText) return;
+      if (taskText.length > 200 || taskText.includes('\n')) {
+        const doc = await vscode.workspace.openTextDocument({
+          content: `# Jules Session Task Detail\n\n${taskText}\n`,
+          language: 'markdown'
+        });
+        await vscode.window.showTextDocument(doc, { preview: true });
+      } else {
+        vscode.window.showInformationMessage(taskText, { modal: true });
+      }
+    })
+  );
+
+  // Checkout Session Review Branch Command
+  context.subscriptions.push(
+    vscode.commands.registerCommand('jules.checkoutSessionBranch', async (item?: any) => {
+      const root = getWorkspaceRoot();
+      const sessionId = resolveSessionId(item);
+      if (!sessionId) {
+        vscode.window.showWarningMessage('No session selected for checkout.');
+        return;
+      }
+
+      await vscode.window.withProgress(
+        {
+          location: vscode.ProgressLocation.Notification,
+          title: `Checking out review branch for session #${sessionId}...`,
+          cancellable: false
+        },
+        async () => {
+          try {
+            const msg = await checkoutSessionBranch(sessionId, undefined, root);
+            vscode.window.showInformationMessage(`🌿 ${msg}`);
+            refreshAll();
+          } catch (err: any) {
+            vscode.window.showErrorMessage(`Checkout failed: ${err.message}`);
+          }
+        }
+      );
+    })
+  );
+
+  // Set API Key Command
+  context.subscriptions.push(
+    vscode.commands.registerCommand('jules.setApiKey', async () => {
+      const root = getWorkspaceRoot();
+      const currentKey = process.env.JULES_API_KEY || '';
+      const masked = currentKey ? `${currentKey.slice(0, 6)}...${currentKey.slice(-4)}` : 'None';
+
+      const apiKey = await vscode.window.showInputBox({
+        title: 'Configure Google Jules API Key',
+        prompt: `Current Key: [${masked}]. Enter your Google Jules API Key:`,
+        placeHolder: 'AIzaSy...',
+        password: true,
+        ignoreFocusOut: true
+      });
+
+      if (apiKey === undefined) return;
+
+      const trimmed = apiKey.trim();
+      if (!trimmed) {
+        vscode.window.showWarningMessage('API Key cannot be empty.');
+        return;
+      }
+
+      // 1. In-memory env
+      process.env.JULES_API_KEY = trimmed;
+
+      // 2. Secret Storage
+      await context.secrets.store('jules.apiKey', trimmed);
+
+      // 3. Write to local .env in workspace root for CLI & MCP interoperability
+      try {
+        const envPath = path.join(root, '.env');
+        let envContent = '';
+        if (fs.existsSync(envPath)) {
+          envContent = fs.readFileSync(envPath, 'utf8');
+        }
+
+        if (envContent.includes('JULES_API_KEY=')) {
+          envContent = envContent.replace(/JULES_API_KEY\s*=\s*.*/g, `JULES_API_KEY=${trimmed}`);
+        } else {
+          envContent = envContent ? `${envContent.trim()}\nJULES_API_KEY=${trimmed}\n` : `JULES_API_KEY=${trimmed}\n`;
+        }
+        fs.writeFileSync(envPath, envContent, 'utf8');
+      } catch {
+        // Fallback silently if disk write not permitted
+      }
+
+      vscode.window.showInformationMessage('✅ Google Jules API Key saved successfully.');
+      refreshAll();
+    })
+  );
+
+interface AgentPickItem extends vscode.QuickPickItem {
+  agentValue: string;
+}
+
+/**
+ * Loads all 43 agents and team presets into QuickPick items.
+ */
+function getAgentQuickPickList(extensionPath: string, root: string): AgentPickItem[] {
+  const candidates = [
+    path.join(root, 'references', 'agents', 'registry.json'),
+    path.join(extensionPath, 'references', 'agents', 'registry.json')
+  ];
+
+  let rawAgents: Record<string, any> = {};
+  for (const p of candidates) {
+    if (fs.existsSync(p)) {
+      try {
+        const parsed = JSON.parse(fs.readFileSync(p, 'utf8'));
+        rawAgents = parsed.agents || parsed;
+        break;
+      } catch {
+        // fallback
+      }
+    }
+  }
+
+  const items: AgentPickItem[] = [
+    {
+      label: '$(organization) Team: Full Audit',
+      description: 'sentinel, janitor, annotator, grader',
+      detail: 'Comprehensive multi-agent code hygiene, linting, and security audit',
+      agentValue: 'sentinel,janitor,annotator,grader'
+    },
+    {
+      label: '$(organization) Team: Feature Sprint',
+      description: 'innovator, builder, inspector',
+      detail: 'Rapid prototype and implementation team',
+      agentValue: 'innovator,builder,inspector'
+    },
+    {
+      label: '$(organization) Team: Refactor Boost',
+      description: 'modernizer, bolt, inspector',
+      detail: 'Code modernization and performance optimization team',
+      agentValue: 'modernizer,bolt,inspector'
+    },
+    {
+      kind: vscode.QuickPickItemKind.Separator,
+      label: `Specialist Agents (${Object.keys(rawAgents).length || 43})`,
+      agentValue: ''
+    }
+  ];
+
+  const agentList = Object.values(rawAgents).sort((a: any, b: any) =>
+    (a.name || a.id).localeCompare(b.name || b.id)
+  );
+
+  for (const a of agentList) {
+    items.push({
+      label: `$(sparkle) ${a.name || a.id}`,
+      description: `[${(a.group || 'general').toUpperCase()}] ${a.role || ''}`,
+      detail: a.description || `Specialist agent: ${a.id}`,
+      agentValue: a.id
+    });
+  }
+
+  return items;
+}
+
+  // 2. Deploy Session Command
+  context.subscriptions.push(
+    vscode.commands.registerCommand('jules.deploySession', async () => {
+      const root = getWorkspaceRoot();
+
+      if (!process.env.JULES_API_KEY) {
+        const setKey = await vscode.window.showErrorMessage(
+          'Google Jules API Key is missing. Please configure your API key first.',
+          'Configure API Key'
+        );
+        if (setKey === 'Configure API Key') {
+          vscode.commands.executeCommand('jules.setApiKey');
+        }
+        return;
+      }
+
+      let defaultPrompt = '';
+      const editor = vscode.window.activeTextEditor;
+      if (editor && !editor.selection.isEmpty) {
+        const selectedText = editor.document.getText(editor.selection);
+        const fileName = path.basename(editor.document.fileName);
+        const choice = await vscode.window.showQuickPick(
+          [
+            { label: '$(code) Include Selected Code Context', description: `From ${fileName} (${selectedText.split('\n').length} lines)`, include: true },
+            { label: '$(edit) Fresh Task Prompt Only', description: 'Enter instructions without code snippet', include: false }
+          ],
+          { title: 'Step 1/3: Task Context & Code Selection' }
+        );
+        if (choice === undefined) return;
+        if (choice.include) {
+          defaultPrompt = `Refactor or improve ${fileName}:\n\`\`\`\n${selectedText.slice(0, 1000)}\n\`\`\`\n\nTask: `;
+        }
+      }
+
+      const taskPrompt = await vscode.window.showInputBox({
+        title: 'Step 1/3: Task Description & Prompt',
+        prompt: 'Describe the task or feature for Jules to execute in the cloud',
+        placeHolder: 'e.g. Refactor authentication middleware to use JWT and add unit tests',
+        value: defaultPrompt
+      });
+
+      if (!taskPrompt || !taskPrompt.trim()) return;
+
+      const agentItems = getAgentQuickPickList(context.extensionPath, root);
+      const agentSelection = await vscode.window.showQuickPick(agentItems, {
+        title: 'Step 2/3: Select Primary Agent or Team Preset',
+        placeHolder: 'Search across 43 specialized agents or select a team preset...',
+        matchOnDescription: true,
+        matchOnDetail: true
+      });
+
+      if (!agentSelection || !agentSelection.agentValue) return;
+      const agent = agentSelection.agentValue;
+
+      const modeChoice = await vscode.window.showQuickPick(
+        [
+          {
+            label: '$(zap) Autonomous Execution (Recommended)',
+            description: 'Directly execute code edits, run tests, and prepare review PR',
+            type: 'start' as const
+          },
+          {
+            label: '$(shield) Interactive Plan Approval',
+            description: 'Generate step-by-step plan first and pause for your review & approval',
+            type: 'interactive' as const
+          }
+        ],
+        { title: 'Step 3/3: Execution Mode' }
+      );
+
+      if (!modeChoice) return;
+
+      await vscode.window.withProgress(
+        {
+          location: vscode.ProgressLocation.Notification,
+          title: `Deploying Jules session (${agent})...`,
+          cancellable: false
+        },
+        async () => {
+          try {
+            const res = await deploySessionCore({
+              type: modeChoice.type,
+              task: taskPrompt.trim(),
+              agents: agent,
+              targetDir: root
+            });
+
+            const created = res.sessions && res.sessions.length > 0 ? res.sessions[0] : null;
+            const sessionId = created ? created.id : (res as any).sessionId;
+
+            if (res.success && sessionId) {
+              const webUrl = `https://jules.google.com/session/${sessionId}`;
+              const action = await vscode.window.showInformationMessage(
+                `🚀 Jules Session #${sessionId.slice(0, 8)} deployed (${agent})!`,
+                '🌐 Open in Web',
+                '💬 Send Follow-up',
+                '📋 Copy ID'
+              );
+
+              if (action === '🌐 Open in Web') {
+                vscode.env.openExternal(vscode.Uri.parse(webUrl));
+              } else if (action === '💬 Send Follow-up') {
+                vscode.commands.executeCommand('jules.sendMessage', { session: { id: sessionId } });
+              } else if (action === '📋 Copy ID') {
+                vscode.env.clipboard.writeText(sessionId);
+              }
+            } else {
+              vscode.window.showErrorMessage(`Failed to deploy session: ${res.error || 'Unknown error'}`);
+            }
+          } catch (err: any) {
+            vscode.window.showErrorMessage(`Deploy error: ${err.message}`);
+          } finally {
+            refreshAll();
+          }
+        }
+      );
+    })
+  );
+
+  // Deploy directly from Agent Roster selection
+  context.subscriptions.push(
+    vscode.commands.registerCommand('jules.deployWithAgent', async (item?: AgentTreeItem) => {
+      const root = getWorkspaceRoot();
+      const agentId = item?.agent?.id;
+      if (!agentId) return;
+
+      if (!process.env.JULES_API_KEY) {
+        const setKey = await vscode.window.showErrorMessage(
+          'Google Jules API Key is missing. Please configure your API key first.',
+          'Configure API Key'
+        );
+        if (setKey === 'Configure API Key') {
+          vscode.commands.executeCommand('jules.setApiKey');
+        }
+        return;
+      }
+
+      const taskPrompt = await vscode.window.showInputBox({
+        title: `Deploy Session with Agent: ${item.agent?.name || agentId}`,
+        prompt: `Describe the task for ${item.agent?.name || agentId} to execute`,
+        placeHolder: `e.g. ${item.agent?.role || 'Execute specialized task'}`
+      });
+
+      if (!taskPrompt || !taskPrompt.trim()) return;
+
+      const modeChoice = await vscode.window.showQuickPick(
+        [
+          {
+            label: '$(zap) Autonomous Execution (Recommended)',
+            description: 'Directly execute code edits, run tests, and prepare review PR',
+            type: 'start' as const
+          },
+          {
+            label: '$(shield) Interactive Plan Approval',
+            description: 'Generate step-by-step plan first and pause for your review & approval',
+            type: 'interactive' as const
+          }
+        ],
+        { title: 'Select Execution Mode' }
+      );
+
+      if (!modeChoice) return;
+
+      await vscode.window.withProgress(
+        {
+          location: vscode.ProgressLocation.Notification,
+          title: `Deploying Jules session (${agentId})...`,
+          cancellable: false
+        },
+        async () => {
+          try {
+            const res = await deploySessionCore({
+              type: modeChoice.type,
+              task: taskPrompt.trim(),
+              agents: agentId,
+              targetDir: root
+            });
+
+            const created = res.sessions && res.sessions.length > 0 ? res.sessions[0] : null;
+            const sessionId = created ? created.id : (res as any).sessionId;
+
+            if (res.success && sessionId) {
+              const webUrl = `https://jules.google.com/session/${sessionId}`;
+              const action = await vscode.window.showInformationMessage(
+                `🚀 Jules Session #${sessionId.slice(0, 8)} deployed (${agentId})!`,
+                '🌐 Open in Web',
+                '💬 Send Follow-up',
+                '📋 Copy ID'
+              );
+
+              if (action === '🌐 Open in Web') {
+                vscode.env.openExternal(vscode.Uri.parse(webUrl));
+              } else if (action === '💬 Send Follow-up') {
+                vscode.commands.executeCommand('jules.sendMessage', { session: { id: sessionId } });
+              } else if (action === '📋 Copy ID') {
+                vscode.env.clipboard.writeText(sessionId);
+              }
+            } else {
+              vscode.window.showErrorMessage(`Failed to deploy session: ${res.error || 'Unknown error'}`);
+            }
+          } catch (err: any) {
+            vscode.window.showErrorMessage(`Deploy error: ${err.message}`);
+          } finally {
+            refreshAll();
+          }
+        }
+      );
+    })
+  );
+
+  // 3. Merge Session Command
+  context.subscriptions.push(
+    vscode.commands.registerCommand('jules.mergeSession', async (item?: any) => {
+      const root = getWorkspaceRoot();
+      let sessionId = resolveSessionId(item);
+
+      if (!sessionId) {
+        const sessions = loadSessions(root);
+        const candidates = sessions.filter(s => isSessionCompleted(s.status));
+
+        if (candidates.length === 0) {
+          vscode.window.showInformationMessage('No completed sessions available to merge.');
+          return;
+        }
+
+        const picked = await vscode.window.showQuickPick(
+          candidates.map(s => ({
+            label: `#${s.id}`,
+            description: `${s.agent} - ${s.task || ''}`,
+            id: s.id
+          })),
+          { title: 'Select Session to Merge' }
+        );
+
+        if (!picked) return;
+        sessionId = picked.id;
+      }
+
+      await vscode.window.withProgress(
+        {
+          location: vscode.ProgressLocation.Notification,
+          title: `Merging Jules session #${sessionId}...`,
+          cancellable: false
+        },
+        async () => {
+          try {
+            const res = await mergeSessionCore({
+              sessionId,
+              targetDir: root
+            });
+
+            if (res.success) {
+              vscode.window.showInformationMessage(`Session #${sessionId} merged successfully.`);
+            } else {
+              vscode.window.showErrorMessage(`Merge failed: ${res.error}`);
+            }
+          } catch (err: any) {
+            vscode.window.showErrorMessage(`Merge error: ${err.message}`);
+          } finally {
+            refreshAll();
+          }
+        }
+      );
+    })
+  );
+
+  // 4. View Session Diff Command
+  context.subscriptions.push(
+    vscode.commands.registerCommand('jules.viewSessionDiff', async (item?: any) => {
+      const root = getWorkspaceRoot();
+      let sessionId = resolveSessionId(item);
+
+      if (!sessionId) {
+        const sessions = loadSessions(root);
+        if (sessions.length === 0) {
+          vscode.window.showInformationMessage('No sessions found.');
+          return;
+        }
+
+        const picked = await vscode.window.showQuickPick(
+          sessions.map(s => ({
+            label: `#${s.id}`,
+            description: `[${s.status}] ${s.agent} - ${s.task || ''}`,
+            id: s.id
+          })),
+          { title: 'Select Session to View Diff' }
+        );
+
+        if (!picked) return;
+        sessionId = picked.id;
+      }
+
+      await vscode.window.withProgress(
+        {
+          location: vscode.ProgressLocation.Notification,
+          title: `Fetching diff for session #${sessionId}...`,
+          cancellable: false
+        },
+        async () => {
+          try {
+            const diffContent = await pullDiffApi(sessionId!, root);
+            if (!diffContent || !diffContent.trim()) {
+              vscode.window.showInformationMessage(`No diff changes found for session #${sessionId}.`);
+              return;
+            }
+
+            const scratchDir = path.join(root, '.jules-companion', 'scratch');
+            fs.mkdirSync(scratchDir, { recursive: true });
+            const diffPath = path.join(scratchDir, `${sessionId}.diff`);
+            fs.writeFileSync(diffPath, diffContent, 'utf8');
+
+            const doc = await vscode.workspace.openTextDocument(vscode.Uri.file(diffPath));
+            await vscode.window.showTextDocument(doc, { preview: true });
+          } catch (err: any) {
+            vscode.window.showErrorMessage(`Failed to pull diff: ${err.message}`);
+          }
+        }
+      );
+    })
+  );
+
+  // 5. Cancel Session Command
+  context.subscriptions.push(
+    vscode.commands.registerCommand('jules.cancelSession', async (item?: any) => {
+      const root = getWorkspaceRoot();
+      const sessionId = resolveSessionId(item);
+      if (!sessionId) return;
+
+      const confirm = await vscode.window.showWarningMessage(
+        `Are you sure you want to cancel session #${sessionId}?`,
+        { modal: true },
+        'Cancel Session'
+      );
+
+      if (confirm !== 'Cancel Session') return;
+
+      try {
+        await cancelSessionApi(sessionId, root);
+        vscode.window.showInformationMessage(`Session #${sessionId} cancelled.`);
+      } catch (err: any) {
+        vscode.window.showErrorMessage(`Failed to cancel session: ${err.message}`);
+      } finally {
+        refreshAll();
+      }
+    })
+  );
+
+  // 6. Delete Session Command (Cloud & Local)
+  context.subscriptions.push(
+    vscode.commands.registerCommand('jules.deleteSession', async (item?: any) => {
+      const root = getWorkspaceRoot();
+      let sessionId = resolveSessionId(item);
+
+      if (!sessionId) {
+        const sessions = loadSessions(root);
+        if (sessions.length === 0) {
+          vscode.window.showInformationMessage('No sessions available to delete.');
+          return;
+        }
+
+        const picked = await vscode.window.showQuickPick(
+          sessions.map(s => ({
+            label: `#${s.id.slice(0, 8)} • ${s.agent}`,
+            description: `[${s.status}] ${s.task || ''}`,
+            id: s.id
+          })),
+          { title: 'Select Session to Delete' }
+        );
+
+        if (!picked) return;
+        sessionId = picked.id;
+      }
+
+      const confirm = await vscode.window.showWarningMessage(
+        `Are you sure you want to permanently delete session #${sessionId}? This will remove it from Google Jules cloud and local registry.`,
+        { modal: true },
+        'Delete Session'
+      );
+
+      if (confirm !== 'Delete Session') return;
+
+      await vscode.window.withProgress(
+        {
+          location: vscode.ProgressLocation.Notification,
+          title: `Deleting session #${sessionId}...`,
+          cancellable: false
+        },
+        async () => {
+          try {
+            await deleteSessionApi(sessionId!, root);
+            vscode.window.showInformationMessage(`🗑️ Session #${sessionId} permanently deleted.`);
+          } catch (err: any) {
+            vscode.window.showErrorMessage(`Failed to delete session: ${err.message}`);
+          } finally {
+            refreshAll();
+          }
+        }
+      );
+    })
+  );
+
+  // 6b. Archive Session Command
+  context.subscriptions.push(
+    vscode.commands.registerCommand('jules.archiveSession', async (item?: any) => {
+      const root = getWorkspaceRoot();
+      let sessionId = resolveSessionId(item);
+
+      if (!sessionId) {
+        const sessions = loadSessions(root);
+        const candidates = sessions.filter(s => !s.archived);
+        if (candidates.length === 0) {
+          vscode.window.showInformationMessage('No active sessions available to archive.');
+          return;
+        }
+
+        const picked = await vscode.window.showQuickPick(
+          candidates.map(s => ({
+            label: `#${s.id.slice(0, 8)} • ${s.agent}`,
+            description: `[${s.status}] ${s.task || ''}`,
+            id: s.id
+          })),
+          { title: 'Select Session to Archive' }
+        );
+
+        if (!picked) return;
+        sessionId = picked.id;
+      }
+
+      const res = archiveSession(sessionId!, root);
+      if (res.success) {
+        vscode.window.showInformationMessage(`📦 Session #${sessionId.slice(0, 8)} archived.`);
+      } else {
+        vscode.window.showWarningMessage(res.message);
+      }
+      refreshAll();
+    })
+  );
+
+  // 6c. Unarchive Session Command
+  context.subscriptions.push(
+    vscode.commands.registerCommand('jules.unarchiveSession', async (item?: any) => {
+      const root = getWorkspaceRoot();
+      let sessionId = resolveSessionId(item);
+
+      if (!sessionId) {
+        const sessions = loadSessions(root);
+        const candidates = sessions.filter(s => s.archived);
+        if (candidates.length === 0) {
+          vscode.window.showInformationMessage('No archived sessions to restore.');
+          return;
+        }
+
+        const picked = await vscode.window.showQuickPick(
+          candidates.map(s => ({
+            label: `#${s.id.slice(0, 8)} • ${s.agent}`,
+            description: `[${s.status}] ${s.task || ''}`,
+            id: s.id
+          })),
+          { title: 'Select Archived Session to Restore' }
+        );
+
+        if (!picked) return;
+        sessionId = picked.id;
+      }
+
+      const res = unarchiveSession(sessionId!, root);
+      if (res.success) {
+        vscode.window.showInformationMessage(`📤 Session #${sessionId.slice(0, 8)} restored from archive.`);
+      } else {
+        vscode.window.showWarningMessage(res.message);
+      }
+      refreshAll();
+    })
+  );
+
+  // 6d. Copy Session URL Command
+  context.subscriptions.push(
+    vscode.commands.registerCommand('jules.copySessionUrl', async (item?: any) => {
+      const sessionId = resolveSessionId(item);
+      if (!sessionId) {
+        vscode.window.showWarningMessage('No session selected to copy URL.');
+        return;
+      }
+      const url = item?.session?.url || item?.url || `https://jules.google.com/session/${sessionId}`;
+      await vscode.env.clipboard.writeText(url);
+      vscode.window.showInformationMessage(`📋 Copied session URL: ${url}`);
+    })
+  );
+
+  // 6e. Retry Failed Session Command
+  context.subscriptions.push(
+    vscode.commands.registerCommand('jules.retryFailedSession', async (item?: any) => {
+      const root = getWorkspaceRoot();
+      let sessionId = resolveSessionId(item);
+
+      const sessions = loadSessions(root);
+      if (!sessionId) {
+        const failedSessions = sessions.filter(s => isSessionFailed(s.status));
+        if (failedSessions.length === 0) {
+          vscode.window.showInformationMessage('No failed sessions found to retry.');
+          return;
+        }
+
+        const picked = await vscode.window.showQuickPick(
+          failedSessions.map(s => ({
+            label: `#${s.id.slice(0, 8)} • ${s.agent}`,
+            description: `[${s.status}] ${s.task || ''}`,
+            id: s.id
+          })),
+          { title: 'Select Failed Session to Retry' }
+        );
+
+        if (!picked) return;
+        sessionId = picked.id;
+      }
+
+      const session = sessions.find(s => s.id === sessionId);
+      if (!session) {
+        vscode.window.showErrorMessage(`Session #${sessionId} not found.`);
+        return;
+      }
+
+      const newTask = await vscode.window.showInputBox({
+        title: `Retry Session #${sessionId.slice(0, 8)}`,
+        prompt: 'Update task instructions for retry (leave as is to use original prompt)',
+        value: session.task || ''
+      });
+
+      if (newTask === undefined) return;
+
+      const taskToRun = newTask.trim() || session.task || 'Retry task';
+
+      await vscode.window.withProgress(
+        {
+          location: vscode.ProgressLocation.Notification,
+          title: `Retrying session #${sessionId.slice(0, 8)} with ${session.agent}...`,
+          cancellable: false
+        },
+        async () => {
+          try {
+            const res = await deploySessionCore({
+              agents: session.agent,
+              task: taskToRun,
+              type: 'start',
+              mode: session.mode || 'code',
+              targetDir: root
+            });
+
+            if (res.success) {
+              vscode.window.showInformationMessage(`🚀 Retried session deployed successfully!`);
+            } else {
+              vscode.window.showErrorMessage(`Retry failed: ${res.error}`);
+            }
+          } catch (err: any) {
+            vscode.window.showErrorMessage(`Retry failed: ${err.message}`);
+          } finally {
+            refreshAll();
+          }
+        }
+      );
+    })
+  );
+
+  // 7. Send Message / Follow-up Instruction Command
+  context.subscriptions.push(
+    vscode.commands.registerCommand('jules.sendMessage', async (item?: any) => {
+      const root = getWorkspaceRoot();
+      let sessionId = resolveSessionId(item);
+
+      if (!sessionId) {
+        const sessions = loadSessions(root);
+        if (sessions.length === 0) {
+          vscode.window.showInformationMessage('No sessions found.');
+          return;
+        }
+
+        const picked = await vscode.window.showQuickPick(
+          sessions.map(s => ({
+            label: `#${s.id.slice(0, 8)} • ${s.agent}`,
+            description: `[${s.status}] ${s.task || ''}`,
+            id: s.id
+          })),
+          { title: 'Select Session to Send Instruction' }
+        );
+
+        if (!picked) return;
+        sessionId = picked.id;
+      }
+
+      const message = await vscode.window.showInputBox({
+        title: `Send Instruction to Jules Session #${sessionId.slice(0, 8)}`,
+        prompt: 'Enter follow-up instruction, clarification, or feedback for the agent:',
+        placeHolder: 'e.g. Also make sure to add comprehensive unit tests and error handling'
+      });
+
+      if (!message || !message.trim()) return;
+
+      await vscode.window.withProgress(
+        {
+          location: vscode.ProgressLocation.Notification,
+          title: `Sending instruction to session #${sessionId}...`,
+          cancellable: false
+        },
+        async () => {
+          try {
+            await sendMessageApi(sessionId!, message.trim(), root);
+            vscode.window.showInformationMessage(`💬 Message sent to Jules session #${sessionId.slice(0, 8)}.`);
+          } catch (err: any) {
+            vscode.window.showErrorMessage(`Failed to send message: ${err.message}`);
+          } finally {
+            refreshAll();
+          }
+        }
+      );
+    })
+  );
+
+  // 8. Approve Proposed Plan Command
+  context.subscriptions.push(
+    vscode.commands.registerCommand('jules.approvePlan', async (item?: any) => {
+      const root = getWorkspaceRoot();
+      let sessionId = resolveSessionId(item);
+
+      if (!sessionId) {
+        const sessions = loadSessions(root);
+        const candidates = sessions.filter(s => isSessionAwaitingApproval(s.status));
+
+        if (candidates.length === 0) {
+          vscode.window.showInformationMessage('No sessions currently awaiting plan approval.');
+          return;
+        }
+
+        const picked = await vscode.window.showQuickPick(
+          candidates.map(s => ({
+            label: `#${s.id.slice(0, 8)} • ${s.agent}`,
+            description: s.task || '',
+            id: s.id
+          })),
+          { title: 'Select Session to Approve Plan' }
+        );
+
+        if (!picked) return;
+        sessionId = picked.id;
+      }
+
+      await vscode.window.withProgress(
+        {
+          location: vscode.ProgressLocation.Notification,
+          title: `Approving execution plan for session #${sessionId}...`,
+          cancellable: false
+        },
+        async () => {
+          try {
+            await approvePlanApi(sessionId!, root);
+            vscode.window.showInformationMessage(`✅ Execution plan for session #${sessionId.slice(0, 8)} approved!`);
+          } catch (err: any) {
+            vscode.window.showErrorMessage(`Failed to approve plan: ${err.message}`);
+          } finally {
+            refreshAll();
+          }
+        }
+      );
+    })
+  );
+
+  // 9. Open Session in Jules Web Command
+  context.subscriptions.push(
+    vscode.commands.registerCommand('jules.openInWeb', (item?: any) => {
+      const sessionId = resolveSessionId(item);
+      if (!sessionId) {
+        vscode.env.openExternal(vscode.Uri.parse('https://jules.google.com'));
+        return;
+      }
+      const targetUrl = item?.session?.url || item?.url || `https://jules.google.com/session/${sessionId}`;
+      vscode.env.openExternal(vscode.Uri.parse(targetUrl));
+    })
+  );
+
+  // 10. View Activities & Plan Logs Command
+  context.subscriptions.push(
+    vscode.commands.registerCommand('jules.viewActivities', async (item?: any) => {
+      const root = getWorkspaceRoot();
+      let sessionId = resolveSessionId(item);
+
+      if (!sessionId) {
+        const sessions = loadSessions(root);
+        if (sessions.length === 0) {
+          vscode.window.showInformationMessage('No sessions found.');
+          return;
+        }
+
+        const picked = await vscode.window.showQuickPick(
+          sessions.map(s => ({
+            label: `#${s.id.slice(0, 8)} • ${s.agent}`,
+            description: `[${s.status}] ${s.task || ''}`,
+            id: s.id
+          })),
+          { title: 'Select Session to View Activities' }
+        );
+
+        if (!picked) return;
+        sessionId = picked.id;
+      }
+
+      await vscode.window.withProgress(
+        {
+          location: vscode.ProgressLocation.Notification,
+          title: `Loading activities for session #${sessionId}...`,
+          cancellable: false
+        },
+        async () => {
+          try {
+            const activities = await getActivitiesApi(sessionId!, root);
+            if (!activities || activities.length === 0) {
+              vscode.window.showInformationMessage(`No activities logged yet for session #${sessionId}.`);
+              return;
+            }
+
+            let md = `# 📋 Jules Session Activities: \`#${sessionId}\`\n\n`;
+            md += `Generated at: ${new Date().toISOString()}\n\n---\n\n`;
+
+            for (const act of activities) {
+              const time = act.createTime ? new Date(act.createTime).toLocaleTimeString() : '';
+              if (act.planGenerated && act.planGenerated.plan) {
+                md += `## 🧭 Plan Generated (${time})\n\n`;
+                const steps = act.planGenerated.plan.steps || [];
+                for (let i = 0; i < steps.length; i++) {
+                  md += `${i + 1}. ${steps[i].title}\n`;
+                }
+                md += '\n---\n\n';
+              } else if (act.planApproved) {
+                md += `## ✅ Plan Approved (${time})\n\n---\n\n`;
+              } else if (act.progressUpdated) {
+                md += `### ⚡ Progress Update (${time})\n\n`;
+                if (act.artifacts) {
+                  for (const art of act.artifacts) {
+                    if (art.bashOutput) {
+                      md += `**Command:** \`${art.bashOutput.command || ''}\`\n\n\`\`\`bash\n${art.bashOutput.stdout || ''}\n\`\`\`\n\n`;
+                    }
+                    if (art.changeSet) {
+                      md += `**ChangeSet:** Source: \`${art.changeSet.source || ''}\`\n\n`;
+                      if (art.changeSet.suggestedCommitMessage) {
+                        md += `Commit: *${art.changeSet.suggestedCommitMessage}*\n\n`;
+                      }
+                    }
+                  }
+                }
+              } else if (act.sessionCompleted) {
+                md += `## 🏁 Session Completed (${time})\n\n---\n\n`;
+              }
+            }
+
+            const doc = await vscode.workspace.openTextDocument({
+              content: md,
+              language: 'markdown'
+            });
+            await vscode.window.showTextDocument(doc, { preview: true });
+          } catch (err: any) {
+            vscode.window.showErrorMessage(`Failed to fetch activities: ${err.message}`);
+          }
+        }
+      );
+    })
+  );
+
+  // 11. Open Agent Documentation Command
+  context.subscriptions.push(
+    vscode.commands.registerCommand('jules.openAgentDoc', async (agent?: any) => {
+      const root = getWorkspaceRoot();
+      const agentId = agent?.id || agent;
+      if (!agentId) return;
+
+      const candidates = [
+        path.join(root, '.jules-companion', 'references', 'agents', `${agentId}.md`),
+        path.join(root, 'references', 'agents', `${agentId}.md`),
+        path.join(context.extensionPath, 'references', 'agents', `${agentId}.md`)
+      ];
+
+      for (const p of candidates) {
+        if (fs.existsSync(p)) {
+          const doc = await vscode.workspace.openTextDocument(vscode.Uri.file(p));
+          await vscode.window.showTextDocument(doc, { preview: true });
+          return;
+        }
+      }
+
+      vscode.window.showWarningMessage(`No documentation template found for agent: ${agentId}`);
+    })
+  );
+
+  // 6. Rollback Session Command
+  context.subscriptions.push(
+    vscode.commands.registerCommand('jules.rollbackSession', async (item?: any) => {
+      const root = getWorkspaceRoot();
+      const sessionId = resolveSessionId(item);
+
+      const confirm = await vscode.window.showWarningMessage(
+        `Are you sure you want to rollback ${sessionId ? `session #${sessionId}` : 'the last session'}? Uncommitted changes will be restored to checkpoint.`,
+        { modal: true },
+        'Rollback'
+      );
+
+      if (confirm !== 'Rollback') return;
+
+      try {
+        const msg = await rollbackSession(sessionId, root);
+        vscode.window.showInformationMessage(msg);
+      } catch (err: any) {
+        vscode.window.showErrorMessage(`Rollback failed: ${err.message}`);
+      } finally {
+        refreshAll();
+      }
+    })
+  );
+
+  // 7. Run Doctor Command
+  context.subscriptions.push(
+    vscode.commands.registerCommand('jules.runDoctor', () => {
+      const root = getWorkspaceRoot();
+      outputChannel.clear();
+      outputChannel.show(true);
+      outputChannel.appendLine('=== Jules Companion System Doctor ===');
+      outputChannel.appendLine(`Timestamp: ${new Date().toISOString()}`);
+      outputChannel.appendLine(`Target Directory: ${root}\n`);
+
+      const res = runDoctorChecks(root);
+      for (const [key, msg] of Object.entries(res.checks)) {
+        outputChannel.appendLine(`[${key}]: ${msg}`);
+      }
+      outputChannel.appendLine('\n' + (res.ok ? '✔ All critical checks passed.' : '⚠ Some checks failed. Review details above.'));
+    })
+  );
+
+  // 9. View Visual Side-by-Side Diff Command
+  context.subscriptions.push(
+    vscode.commands.registerCommand('jules.viewVisualDiff', async (item?: any) => {
+      const root = getWorkspaceRoot();
+      let sessionId = resolveSessionId(item);
+
+      if (!sessionId) {
+        const sessions = loadSessions(root);
+        if (sessions.length === 0) {
+          vscode.window.showInformationMessage('No sessions found.');
+          return;
+        }
+
+        const picked = await vscode.window.showQuickPick(
+          sessions.map(s => ({
+            label: `#${s.id.slice(0, 8)} • ${s.agent}`,
+            description: `[${s.status}] ${s.task || ''}`,
+            id: s.id
+          })),
+          { title: 'Select Session to View Visual Diff' }
+        );
+
+        if (!picked) return;
+        sessionId = picked.id;
+      }
+
+      await vscode.window.withProgress(
+        {
+          location: vscode.ProgressLocation.Notification,
+          title: `Loading visual diff for session #${sessionId}...`,
+          cancellable: false
+        },
+        async () => {
+          try {
+            await openVisualDiff(sessionId!, root);
+          } catch (err: any) {
+            vscode.window.showErrorMessage(`Failed to open visual diff: ${err.message}`);
+          }
+        }
+      );
+    })
+  );
+
+  // 10. Open Mission Control Webview Command
+  context.subscriptions.push(
+    vscode.commands.registerCommand('jules.openMissionControl', async (item?: any) => {
+      const root = getWorkspaceRoot();
+      let sessionId = resolveSessionId(item);
+
+      if (!sessionId) {
+        const sessions = loadSessions(root);
+        if (sessions.length === 0) {
+          vscode.window.showInformationMessage('No sessions found.');
+          return;
+        }
+
+        const picked = await vscode.window.showQuickPick(
+          sessions.map(s => ({
+            label: `#${s.id.slice(0, 8)} • ${s.agent}`,
+            description: `[${s.status}] ${s.task || ''}`,
+            id: s.id
+          })),
+          { title: 'Select Session to Open Mission Control' }
+        );
+
+        if (!picked) return;
+        sessionId = picked.id;
+      }
+
+      await openMissionControlWebview(sessionId!, context, root, () => refreshAll());
+    })
+  );
+
+  // 11. Toggle Live Sync Command
+  context.subscriptions.push(
+    vscode.commands.registerCommand('jules.toggleLiveSync', () => {
+      const active = liveSyncManager.toggle();
+      updateLiveSyncBar();
+      if (active) {
+        vscode.window.showInformationMessage('📡 Jules Live Sync activated (polling cloud sessions every 15s).');
+      } else {
+        vscode.window.showInformationMessage('⏸️ Jules Live Sync paused.');
+      }
+    })
+  );
+
+  // 12. 1-Click Create GitHub PR Command
+  context.subscriptions.push(
+    vscode.commands.registerCommand('jules.createGitHubPR', async (item?: any) => {
+      const root = getWorkspaceRoot();
+      let sessionId = resolveSessionId(item);
+
+      if (!sessionId) {
+        const sessions = loadSessions(root);
+        const candidates = sessions.filter(s => isSessionCompleted(s.status));
+
+        if (candidates.length === 0) {
+          vscode.window.showInformationMessage('No completed sessions available to create PR.');
+          return;
+        }
+
+        const picked = await vscode.window.showQuickPick(
+          candidates.map(s => ({
+            label: `#${s.id.slice(0, 8)} • ${s.agent}`,
+            description: s.task || '',
+            id: s.id,
+            session: s
+          })),
+          { title: 'Select Completed Session to Create PR' }
+        );
+
+        if (!picked) return;
+        sessionId = picked.id;
+      }
+
+      const sessions = loadSessions(root);
+      const session = sessions.find(s => s.id === sessionId) || item?.session;
+      const baseBranch = session?.branch || 'main';
+      const headBranch = `jules/${sessionId}`;
+      const defaultTitle = session?.task
+        ? `Jules [${session.agent}]: ${session.task.slice(0, 60)}`
+        : `Jules Patch for Session #${sessionId.slice(0, 8)}`;
+
+      const prTitle = await vscode.window.showInputBox({
+        title: 'Create GitHub Pull Request',
+        prompt: 'Enter PR Title:',
+        value: defaultTitle
+      });
+
+      if (!prTitle || !prTitle.trim()) return;
+
+      await vscode.window.withProgress(
+        {
+          location: vscode.ProgressLocation.Notification,
+          title: `Creating GitHub PR for session #${sessionId}...`,
+          cancellable: false
+        },
+        async () => {
+          try {
+            await checkoutSessionBranch(sessionId!, undefined, root);
+          } catch {
+            // continue
+          }
+
+          runGit(['push', '-u', 'origin', headBranch], root);
+
+          const ghRes = runGit(
+            [
+              'pr',
+              'create',
+              '--title',
+              prTitle.trim(),
+              '--body',
+              `Automated Pull Request generated by Jules Companion agent (\`${session?.agent || 'specialist'}\`) for session #${sessionId}.\n\n### Task\n${session?.task || 'N/A'}`,
+              '--head',
+              headBranch,
+              '--base',
+              baseBranch
+            ],
+            root
+          );
+
+          if (ghRes.success) {
+            const prUrl = ghRes.stdout.trim();
+            const action = await vscode.window.showInformationMessage(
+              `🎉 Pull Request created: ${prUrl}`,
+              'Open in Browser'
+            );
+            if (action === 'Open in Browser') {
+              vscode.env.openExternal(vscode.Uri.parse(prUrl));
+            }
+          } else {
+            const remoteRes = runGit(['config', '--get', 'remote.origin.url'], root);
+            const match = remoteRes.stdout.match(/github\.com[/:]([^/]+)\/([^.]+)/);
+            if (match) {
+              const slug = `${match[1]}/${match[2]}`.replace(/\.git$/, '');
+              const webPrUrl = `https://github.com/${slug}/compare/${baseBranch}...${headBranch}?expand=1&title=${encodeURIComponent(prTitle.trim())}&body=${encodeURIComponent(`Automated PR from Jules session #${sessionId}`)}`;
+              const action = await vscode.window.showWarningMessage(
+                'GitHub CLI (gh) was not found or failed. Open GitHub in browser to submit PR?',
+                'Open in Browser'
+              );
+              if (action === 'Open in Browser') {
+                vscode.env.openExternal(vscode.Uri.parse(webPrUrl));
+              }
+            } else {
+              vscode.window.showErrorMessage(`Failed to create PR: ${ghRes.stderr || ghRes.stdout}`);
+            }
+          }
+        }
+      );
+    })
+  );
+
+  // 13. Create Custom Agent Wizard Command
+  context.subscriptions.push(
+    vscode.commands.registerCommand('jules.createCustomAgent', async () => {
+      const root = getWorkspaceRoot();
+      await runCustomAgentWizard(context.extensionPath, root, () => refreshAll());
+    })
+  );
+
+  // File watcher to auto-refresh UI when .jules/sessions.json changes
+  const watcher = vscode.workspace.createFileSystemWatcher('**/.jules*/**/sessions.json');
+  watcher.onDidChange(() => refreshAll());
+  watcher.onDidCreate(() => refreshAll());
+  watcher.onDidDelete(() => refreshAll());
+  context.subscriptions.push(watcher);
+}
+
+/**
+ * Extension deactivation cleanup hook.
+ */
+export function deactivate(): void {
+  if (liveSyncManager) {
+    liveSyncManager.stop();
+  }
+  if (statusBarItem) {
+    statusBarItem.dispose();
+  }
+  if (liveSyncBarItem) {
+    liveSyncBarItem.dispose();
+  }
+}

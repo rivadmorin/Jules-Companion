@@ -17,13 +17,11 @@ let cachedApiKey: string | null = null;
  */
 export function getApiKey(targetDir?: string): string | null {
   if (process.env.JULES_API_KEY === '') return null;
-  if (cachedApiKey) return cachedApiKey;
-
-  // 1. Check system-level environment variable first
   if (process.env.JULES_API_KEY && !process.env.JULES_API_KEY.includes('your_jules_api_key_here')) {
     cachedApiKey = process.env.JULES_API_KEY;
     return cachedApiKey;
   }
+  if (cachedApiKey) return cachedApiKey;
 
   // 2. Define fallback paths where a `.env` file might be stored locally
   const envPaths: string[] = [];

@@ -7,7 +7,16 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { request, getApiKey } from './client/http';
 import { pullDiffApi } from './client/jules_api';
-import { parseArgs, getProjectDirs, runGit, loadSessions, saveSessions, ProjectDirs } from './utils';
+import {
+  parseArgs,
+  getProjectDirs,
+  runGit,
+  loadSessions,
+  saveSessions,
+  ProjectDirs,
+  isSessionActive,
+  isSessionCompleted
+} from './utils';
 
 /**
  * Validates the safety constraints before executing branch manipulations.
@@ -23,9 +32,7 @@ export async function checkSafetyGate(
   targetDir: string = process.cwd()
 ): Promise<boolean> {
   const sessions = loadSessions(targetDir);
-  const activeSessions = sessions.filter(
-    s => s.status !== 'completed' && s.status !== 'merged' && s.status !== 'error'
-  );
+  const activeSessions = sessions.filter(s => isSessionActive(s.status));
 
   if (activeSessions.length === 0) return true;
 
@@ -41,7 +48,7 @@ export async function checkSafetyGate(
         if (state !== 'COMPLETED' && state !== 'ERROR' && state !== 'CANCELLED') {
           console.log(`- Session ${s.id} (${s.agent}) is still ${state}`);
           hasRunning = true;
-        } else if (state === 'COMPLETED' && s.status !== 'completed' && s.status !== 'inspected') {
+        } else if (isSessionCompleted(state) && !isSessionCompleted(s.status) && s.status !== 'inspected') {
           s.status = 'completed';
         }
       } catch (_e) {
