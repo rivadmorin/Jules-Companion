@@ -74,6 +74,14 @@ Before triggering any automated or manual Git merge ([`mergeSessionCore`](file:/
 2. Local working tree is completely clean (`git status --porcelain` returns an empty string).
 * If either check fails, the merge operation must abort safely without modifying local branches.
 
+### Invariant 7: Always Synchronize & Update Relevant Documentation on Every Change
+Documentation is a mandatory first-class invariant of this repository, **not an afterthought**. Every code change, refactoring, architectural update, or feature addition MUST immediately update all corresponding documentation:
+* **User & Installation Guides**: [`README.md`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/README.md) and [`README.id.md`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/README.id.md) when CLI commands, extension configuration, or VSIX artifact versions change.
+* **Architecture & Subsystems**: Files in [`docs/codebase/`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/docs/codebase/) and [`docs/codebase-architecture-map.md`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/docs/codebase-architecture-map.md) whenever function signatures, method catalogs, sequence diagrams, dependency structures, or Sentrux quality metrics change.
+* **Release Records**: [`CHANGELOG.md`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/CHANGELOG.md) under the appropriate version header.
+* **Agent Manuals**: [`AGENT.md`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/AGENT.md) and [`CONTRIBUTING.md`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/CONTRIBUTING.md) whenever test counts, invariants, or checklists evolve.
+* **Rule**: Never declare a task, commit, or pull request complete if the surrounding documentation remains stale or desynchronized.
+
 ---
 
 ## 🛠️ 3. Contributor & AI Agent Tooling Suite: Ponytail & Sentrux
@@ -340,4 +348,5 @@ Before completing any task in this repository, verify every item:
 - [ ] Architecture passes [Sentrux](https://github.com/sentrux/sentrux) verification (`sentrux check .` or `npm run sentrux:check`) with 0 cycle violations.
 - [ ] `npm test` runs and passes 108/108 tests with 0 failures.
 - [ ] `npm run package` succeeds cleanly, producing `jules-companion-1.0.1.vsix`.
+- [ ] All relevant documentation (`README.md`, `README.id.md`, `docs/codebase/`, `CHANGELOG.md`, `AGENT.md`) has been updated and synchronized with latest changes.
 - [ ] Git status is clean and all changes are accounted for.
