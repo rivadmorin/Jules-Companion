@@ -16,7 +16,7 @@ This manual defines the **non-negotiable operating invariants, architectural bou
 
 ## ⚡ 2. The Golden Invariants (Non-Negotiable)
 
-When inspecting, modifying, refactoring, or extending this codebase, you must adhere to these five core invariants:
+When inspecting, modifying, refactoring, or extending this codebase, you must adhere to these eight core invariants:
 
 ### Invariant 1: Ponytail Mode is Permanently Active (Lazy Senior Developer)
 * **Governing Engine**: [**Ponytail** (`DietrichGebert/ponytail`)](https://github.com/DietrichGebert/ponytail) — Anti-overengineering ruleset for AI coding agents.
@@ -81,6 +81,16 @@ Documentation is a mandatory first-class invariant of this repository, **not an 
 * **Release Records**: [`CHANGELOG.md`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/CHANGELOG.md) under the appropriate version header.
 * **Agent Manuals**: [`AGENT.md`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/AGENT.md) and [`CONTRIBUTING.md`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/CONTRIBUTING.md) whenever test counts, invariants, or checklists evolve.
 * **Rule**: Never declare a task, commit, or pull request complete if the surrounding documentation remains stale or desynchronized.
+
+### Invariant 8: Cross-Platform Build & CI/CD Pipeline Integrity
+Continuous Integration (CI) and automated releases ([`.github/workflows/`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/.github/workflows/)) run on both **Ubuntu Linux** and **Windows** across modern LTS Node.js runtimes (20.x, 22.x). To maintain build reliability:
+* **Zero Shell Globbing Dependencies**: Never invoke commands in `package.json` that rely on shell-specific globbing syntax (e.g. `scripts/**/*.ts` fails in Linux bash). Always use Node.js script orchestrators like [`scripts/build.js`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/build.js) that recursively walk directories in a cross-platform manner.
+* **Strict Build-Before-Run Ordering**: Never execute compiled artifacts in `dist/` (e.g., `dist/setup.js` or `npm run setup`) before `npm run build` has produced them. Clean CI checkouts have empty/non-existent `dist/` directories.
+* **Headless & Offline Test Resilience**: Test suites and CLI commands must execute reliably without a live graphical VS Code window or live API credentials:
+  - Mock environments (e.g., `node_modules/vscode`) must be scaffolded automatically by setup and test runner scripts ([`scripts/run_tests.js`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/run_tests.js), [`scripts/setup.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/setup.ts)).
+  - Parameter and branch validations must execute **before** credential checks (e.g., in [`scripts/deploy_session.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/deploy_session.ts)) so unit tests can validate bad inputs without needing `JULES_API_KEY`.
+* **Runtime & Tooling Compatibility**: Extension packaging via `@vscode/vsce` v4 requires Node.js >= 20.0.0. Ensure CI matrices and developer instructions target modern active Node.js LTS (20.x, 22.x).
+* **Green CI Gate Before Release**: Never publish a release, tag a version, or merge PRs without verifying that all CI matrix jobs pass cleanly (`gh run list` / `gh run view`).
 
 ---
 
@@ -204,7 +214,7 @@ Execute the native test runner via PowerShell:
 ```powershell
 npm test
 ```
-* **Success Criteria**: 106 tests across 35 suites must pass with `0 failures`.
+* **Success Criteria**: 108 tests across 35 suites must pass with `0 failures`.
 * If any test fails, analyze the failure root cause immediately and patch it.
 
 ### Step 4: Recompile & Verify Packaging
@@ -335,6 +345,15 @@ The repository provides 30 specialized agent personas located in [`references/ag
    - In MCP standalone mode and CLI scripts, API keys fall back to `process.env.JULES_API_KEY` and `process.env.GEMINI_API_KEY`.
    - Never commit `.env` or plaintext API keys to git.
 
+5. **Cross-Platform Globbing & Shell Divergence**:
+   - Linux Bash shells do not recursively expand `**/*.ts` without explicit shell options (`globstar`). Never run build commands in `package.json` that rely on shell glob expansion. Always route multi-file TypeScript compilation through [`scripts/build.js`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/build.js).
+
+6. **Headless VS Code Mocking in CI**:
+   - The test runner [`scripts/run_tests.js`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/run_tests.js) and [`scripts/setup.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/setup.ts) automatically scaffold a headless mock for `node_modules/vscode`. Do not rely on VS Code runtime APIs being available in bare Node.js CLI or CI runner environments.
+
+7. **Validation Order Precedence (Offline Test Safety)**:
+   - When authoring core functions (such as [`deploySessionCore`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/deploy_session.ts)), always validate user parameters and options *before* accessing network or secret credentials. This ensures unit tests testing invalid parameters pass without requiring external API keys.
+
 ---
 
 ## ✅ 9. Pre-Completion Agent Checklist
@@ -346,7 +365,9 @@ Before completing any task in this repository, verify every item:
 - [ ] All new or modified exported functions, classes, and types have 100% TSDoc blocks.
 - [ ] Code strictly respects [Ponytail](https://github.com/DietrichGebert/ponytail) principles (stdlib first, shortest working diff).
 - [ ] Architecture passes [Sentrux](https://github.com/sentrux/sentrux) verification (`sentrux check .` or `npm run sentrux:check`) with 0 cycle violations.
-- [ ] `npm test` runs and passes 108/108 tests with 0 failures.
+- [ ] Build script compiles cleanly cross-platform without shell glob dependencies (`npm run build`).
+- [ ] `npm test` runs and passes 108/108 tests with 0 failures in headless/offline environment.
 - [ ] `npm run package` succeeds cleanly, producing `jules-companion-1.0.1.vsix`.
+- [ ] CI pipeline ([`.github/workflows/ci.yml`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/.github/workflows/ci.yml)) is confirmed green across all matrix runners (Ubuntu & Windows, Node 20.x & 22.x).
 - [ ] All relevant documentation (`README.md`, `README.id.md`, `docs/codebase/`, `CHANGELOG.md`, `AGENT.md`) has been updated and synchronized with latest changes.
 - [ ] Git status is clean and all changes are accounted for.

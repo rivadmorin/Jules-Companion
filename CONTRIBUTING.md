@@ -39,7 +39,7 @@ Our project strictly adheres to the [**Ponytail (`DietrichGebert/ponytail`)**](h
 ## 💻 Development Environment Setup
 
 ### 1. Prerequisites
-* **Node.js**: Version 18.0.0 or higher (LTS recommended).
+* **Node.js**: Version 20.0.0 or higher (Active LTS Node 20 or 22 recommended; `@vscode/vsce` v4 packaging requires Node 20+).
 * **npm**: Version 9.0.0 or higher.
 * **Git**: Installed and accessible in your system `PATH`.
 * **VS Code** or **Google Antigravity IDE**: Recommended IDE with the TypeScript language service.
@@ -58,11 +58,11 @@ npm install
 cp .env.example .env
 # Edit .env and insert your JULES_API_KEY and GEMINI_API_KEY
 
-# 4. Verify workspace setup
-npm run setup
-
-# 5. Build the TypeScript codebase
+# 4. Build the TypeScript codebase (must be run before setup to produce dist/)
 npm run build
+
+# 5. Verify workspace setup & agent registry
+npm run setup
 ```
 
 ### 3. Running & Debugging in VS Code
@@ -286,7 +286,7 @@ To ensure that every human contributor and autonomous AI coding agent works with
 We use the native Node.js test runner (`node:test`) for zero-overhead, ultra-fast test execution.
 
 ```bash
-# Run all 106 tests across 35 test suites
+# Run all 108 tests across 35 test suites
 npm test
 
 # Run a specific test suite directly
@@ -328,14 +328,14 @@ test(mcp): add unit tests for dynamic tool registration
 
 To build and verify the VSIX package locally:
 ```bash
-# Package into jules-companion-1.0.0.vsix
+# Package into jules-companion-1.0.1.vsix
 npm run package
 
 # Install directly into VS Code
-code --install-extension jules-companion-1.0.0.vsix
+code --install-extension jules-companion-1.0.1.vsix
 
 # Install directly into Antigravity IDE (if installed)
-antigravity --install-extension jules-companion-1.0.0.vsix
+antigravity --install-extension jules-companion-1.0.1.vsix
 ```
 
 ---
@@ -345,10 +345,10 @@ antigravity --install-extension jules-companion-1.0.0.vsix
 Our release pipeline is fully automated via GitHub Actions:
 
 1. **Pull Request Validation** ([`.github/workflows/ci.yml`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/.github/workflows/ci.yml)):
-   - Runs on Ubuntu & Windows matrix across Node.js 18 and 20.
-   - Verifies TypeScript compilation, runs all 106 tests, enforces 100% TSDoc coverage, and validates VSIX packaging.
+   - Runs on Ubuntu & Windows matrix across Node.js 20 and 22.
+   - Verifies cross-platform TypeScript compilation via [`scripts/build.js`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/build.js), runs all 108 tests in headless CI environments, enforces 100% TSDoc coverage, and validates VSIX packaging.
 2. **Automated Release** ([`.github/workflows/release.yml`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/.github/workflows/release.yml)):
-   - Triggered by pushing a version tag (e.g. `git tag -a v1.0.0 -m "Release v1.0.0"`).
+   - Triggered by pushing a version tag (e.g. `git tag -a v1.0.1 -m "Release v1.0.1"`).
    - Generates release notes from [`CHANGELOG.md`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/CHANGELOG.md).
    - Publishes a GitHub Release with the compiled `.vsix` binary attached as an asset.
 

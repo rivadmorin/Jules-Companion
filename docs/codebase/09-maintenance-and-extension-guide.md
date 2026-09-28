@@ -115,7 +115,7 @@ Before committing and packaging releases, run the full verification pipeline:
 # 1. Compile TypeScript to dist/ and sync registry
 npm run build
 
-# 2. Run full unit test suite (100+ tests)
+# 2. Run full unit test suite (108 tests across 35 suites in headless mode)
 npm test
 
 # 3. Package extension into VSIX archive
@@ -127,6 +127,7 @@ npm run package
 - **`tests/scheduler.test.ts`**: Tests scheduled task persistence, due evaluation, cancellation, and execution.
 - **`tests/mission_control.test.ts`**: Validates CSP compliance, event delegation, and plan approval vs user feedback banner separation.
 - **`tests/sessions_provider.test.ts`**: Tests TreeView generation and universal session ID resolution.
+- **`scripts/build.js` & CI Pipeline**: Cross-platform Node compilation and GitHub Actions matrix tests ([`.github/workflows/ci.yml`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/.github/workflows/ci.yml)) across Ubuntu & Windows.
 
 ---
 
