@@ -294,6 +294,31 @@ describe('SessionsTreeDataProvider & SessionTreeItem Unit Tests', () => {
       assert.strictEqual(approveItem.command?.command, 'jules.approvePlan');
     });
 
+    test('should assign session-awaiting-input contextValue and provide Reply to Agent item when awaiting user input', async () => {
+      const inputSession: SessionRecord = {
+        id: 'sess-input-test',
+        agent: 'sentinel',
+        mode: 'code',
+        task: 'Confirm deletion of legacy certificates',
+        status: 'AWAITING_USER_INPUT',
+        timestamp: new Date().toISOString()
+      };
+
+      const inputItem = new SessionTreeItem('label', 1, inputSession);
+      assert.strictEqual(inputItem.contextValue, 'session-awaiting-input');
+      assert.strictEqual((inputItem.iconPath as any).id, 'comment-discussion');
+
+      const provider = new SessionsTreeDataProvider(() => tempDir);
+      const subItems = await provider.getChildren(inputItem);
+      const replyItem = subItems.find(c => c.detailKey === 'Reply to Agent');
+      assert.ok(replyItem, 'Reply to Agent item should exist when awaiting user input');
+      assert.strictEqual((replyItem.iconPath as any).id, 'comment-discussion');
+      assert.strictEqual(replyItem.command?.command, 'jules.sendMessage');
+
+      const approveItem = subItems.find(c => c.detailKey === 'Approve Plan');
+      assert.strictEqual(approveItem, undefined, 'Approve Plan item should NOT exist when session is awaiting input');
+    });
+
     test('should provide Retry Session item when session is failed', async () => {
       const failedSession: SessionRecord = {
         id: 'sess-failed-test',

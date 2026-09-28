@@ -6,7 +6,7 @@
 
 import * as vscode from 'vscode';
 import { getSessionApi, getActivitiesApi, approvePlanApi, sendMessageApi } from '../client/jules_api';
-import { loadSessions } from '../utils';
+import { loadSessions, isSessionAwaitingApproval, isSessionAwaitingInput } from '../utils';
 import { cleanAgentName } from './sessions_provider';
 
 /**
@@ -55,7 +55,18 @@ function extractTaskSummary(session: any): string {
  */
 function formatStatusDisplay(rawStatus: string): string {
   const upper = String(rawStatus || '').toUpperCase();
-  if (upper.includes('AWAITING') || upper.includes('PLAN')) {
+  if (
+    upper.includes('USER_INPUT') ||
+    upper.includes('RESPONSE') ||
+    upper.includes('FEEDBACK') ||
+    (upper.includes('AWAITING') && (upper.includes('INPUT') || upper.includes('REPLY')))
+  ) {
+    return 'Awaiting User Response';
+  }
+  if (
+    upper === 'AWAITING_PLAN_APPROVAL' ||
+    (upper.includes('PLAN') && (upper.includes('APPROVAL') || upper.includes('AWAITING')))
+  ) {
     return 'Awaiting Plan Approval';
   }
   if (upper === 'COMPLETED' || upper === 'SUCCEEDED') {
@@ -140,7 +151,8 @@ export function renderMissionControlHtml(
     'rivadmorin/Jules-Companion'
   );
   const task = escapeHtml(extractTaskSummary(session));
-  const isAwaitingApproval = status.includes('AWAITING') || status.includes('PLAN');
+  const isAwaitingApproval = isSessionAwaitingApproval(status);
+  const isAwaitingInput = isSessionAwaitingInput(status);
 
   // 1. Extract plan steps
   let planSteps: Array<{ index: number; title: string }> = [];
@@ -440,7 +452,12 @@ export function renderMissionControlHtml(
       color: var(--google-blue);
       border: 1px solid rgba(138, 180, 248, 0.3);
     }
-    .status-pill.awaiting-plan-approval, .status-pill.awaiting {
+    .status-pill.awaiting-user-response, .status-pill.awaiting-user-input {
+      background: var(--google-blue-container);
+      color: var(--google-blue);
+      border: 1px solid rgba(138, 180, 248, 0.4);
+    }
+    .status-pill.awaiting-plan-approval {
       background: var(--google-yellow-container);
       color: var(--google-yellow);
       border: 1px solid rgba(253, 214, 99, 0.3);
@@ -556,6 +573,55 @@ export function renderMissionControlHtml(
     }
     .approve-btn:hover {
       background: #a8dab5;
+    }
+    .response-banner {
+      background: var(--google-blue-container);
+      border: 1px solid rgba(138, 180, 248, 0.4);
+      border-radius: 16px;
+      padding: 16px 20px;
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .response-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .response-icon-box {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(138, 180, 248, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .response-heading {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--google-blue);
+    }
+    .response-desc {
+      margin-top: 2px;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+    .response-btn {
+      background: var(--google-blue);
+      color: #041e49;
+      border: 1px solid var(--google-blue);
+      font-size: 13px;
+      padding: 9px 20px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .response-btn:hover {
+      background: #aecbfa;
     }
 
     .sync-banner {
@@ -1074,6 +1140,28 @@ export function renderMissionControlHtml(
     </div>
   ` : ''}
 
+  ${isAwaitingInput ? `
+    <div class="response-banner">
+      <div class="response-left">
+        <div class="response-icon-box">
+          <svg viewBox="0 0 16 16" width="20" height="20" fill="#8ab4f8">
+            <path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4.414a1 1 0 0 0-.707.293L1.354 14.646A.5.5 0 0 1 .5 14.293V12H2a2 2 0 0 1-2-2V2z"/>
+          </svg>
+        </div>
+        <div class="response-text">
+          <div class="response-heading">User Response Required</div>
+          <div class="response-desc">Jules cloud agent is waiting for your reply or instruction to proceed. Type your message below.</div>
+        </div>
+      </div>
+      <button class="pill-btn response-btn" data-action="focusInput">
+        <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
+          <path d="M15.854.146a.5.5 0 0 1 .11.54l-5.8 14.5a.5.5 0 0 1-.928 0l-2.47-6.177L.589 6.54a.5.5 0 0 1 0-.928l14.5-5.8a.5.5 0 0 1 .54.11z"/>
+        </svg>
+        <span>Reply to Jules</span>
+      </button>
+    </div>
+  ` : ''}
+
   ${isAwaitingApproval ? `
     <div class="approval-banner">
       <div class="approval-left">
@@ -1273,6 +1361,14 @@ export function renderMissionControlHtml(
       const action = btn.getAttribute('data-action');
       if (action === 'sendFollowUp') {
         sendFollowUp();
+      } else if (action === 'focusInput') {
+        const convTab = document.querySelector('.nav-tab[data-tab="conversation"]');
+        if (convTab) convTab.click();
+        const inp = document.getElementById('msgInput');
+        if (inp) {
+          inp.focus();
+          inp.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
       } else if (action) {
         sendCmd(action);
       }

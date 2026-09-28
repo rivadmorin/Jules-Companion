@@ -113,7 +113,32 @@ export function isSessionFailed(status?: string): boolean {
 export function isSessionAwaitingApproval(status?: string): boolean {
   if (!status) return false;
   const s = status.trim().toLowerCase();
-  return s.includes('awaiting') || s.includes('plan');
+  return (
+    s === 'awaiting_plan_approval' ||
+    s === 'awaiting-plan-approval' ||
+    s === 'plan_approval' ||
+    (s.includes('plan') && (s.includes('approval') || s.includes('awaiting')))
+  );
+}
+
+/**
+ * Determines whether a session is currently awaiting user feedback, response, or instruction.
+ *
+ * @param status - The raw session status string.
+ * @returns True if the session is awaiting user input or reply.
+ */
+export function isSessionAwaitingInput(status?: string): boolean {
+  if (!status) return false;
+  const s = status.trim().toLowerCase();
+  return (
+    s === 'awaiting_user_input' ||
+    s === 'awaiting-user-input' ||
+    s === 'awaiting_input' ||
+    s === 'awaiting_response' ||
+    s === 'awaiting_user_feedback' ||
+    s === 'waiting_for_user_input' ||
+    (s.includes('awaiting') && (s.includes('input') || s.includes('feedback') || s.includes('response') || s.includes('reply') || s.includes('user')))
+  );
 }
 
 /**

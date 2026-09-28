@@ -298,7 +298,7 @@
         },
         {
           "command": "jules.approvePlan",
-          "when": "view == jules.sessionsView && (viewItem =~ /awaiting/ || viewItem =~ /plan/)",
+          "when": "view == jules.sessionsView && (viewItem =~ /awaiting-plan/ || viewItem =~ /plan/)",
           "group": "inline@5"
         },
         {

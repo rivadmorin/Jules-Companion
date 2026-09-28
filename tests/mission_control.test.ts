@@ -49,6 +49,20 @@ describe('Mission Control Webview Renderer Unit Tests', () => {
     const html = renderMissionControlHtml(mockSession, mockActivities);
     assert.ok(html.includes('Plan Approval Required'));
     assert.ok(html.includes('Approve Plan Now'));
+    assert.ok(!html.includes('User Response Required'));
+  });
+
+  test('should render user response banner and NOT plan approval when status is AWAITING_USER_INPUT', () => {
+    const inputSession = {
+      ...mockSession,
+      status: 'AWAITING_USER_INPUT'
+    };
+    const html = renderMissionControlHtml(inputSession, mockActivities);
+    assert.ok(html.includes('User Response Required'));
+    assert.ok(html.includes('Reply to Jules'));
+    assert.ok(!html.includes('Plan Approval Required'));
+    assert.ok(!html.includes('Approve Plan Now'));
+    assert.ok(html.includes('Awaiting User Response'));
   });
 
   test('should render plan steps and command outputs', () => {

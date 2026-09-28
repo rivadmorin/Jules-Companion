@@ -11,7 +11,8 @@ import {
   isSessionActive,
   isSessionCompleted,
   isSessionFailed,
-  isSessionAwaitingApproval
+  isSessionAwaitingApproval,
+  isSessionAwaitingInput
 } from '../utils';
 
 /**
@@ -153,6 +154,9 @@ export class SessionTreeItem extends vscode.TreeItem {
       if (session.archived) {
         this.iconPath = new vscode.ThemeIcon('archive', new vscode.ThemeColor('disabledForeground'));
         this.contextValue = 'session-archived';
+      } else if (isSessionAwaitingInput(session.status)) {
+        this.iconPath = new vscode.ThemeIcon('comment-discussion', new vscode.ThemeColor('testing.iconQueued'));
+        this.contextValue = 'session-awaiting-input';
       } else if (isSessionAwaitingApproval(session.status)) {
         this.iconPath = new vscode.ThemeIcon('bell-dot', new vscode.ThemeColor('testing.iconQueued'));
         this.contextValue = 'session-awaiting-plan';
@@ -310,6 +314,20 @@ export class SessionTreeItem extends vscode.TreeItem {
           this.command = {
             command: 'jules.viewActivities',
             title: 'View Activities & Plan Logs',
+            arguments: [session]
+          };
+          break;
+        }
+        case 'reply':
+        case 'reply to agent':
+        case 'respond':
+        case 'send response': {
+          this.description = detailValue;
+          this.iconPath = new vscode.ThemeIcon('comment-discussion', new vscode.ThemeColor('testing.iconQueued'));
+          this.tooltip = new vscode.MarkdownString('Click to send response / instructions to agent');
+          this.command = {
+            command: 'jules.sendMessage',
+            title: 'Send Response / Follow-up',
             arguments: [session]
           };
           break;
@@ -640,7 +658,12 @@ export class SessionsTreeDataProvider implements vscode.TreeDataProvider<Session
         details.push(new SessionTreeItem('Publish PR', vscode.TreeItemCollapsibleState.None, s, 'Publish PR', 'Create GitHub Pull Request'));
       }
 
-      // 14. 🛡️ Plan Approval (if awaiting)
+      // 14. 💬 User Response Needed (if awaiting user input)
+      if (isSessionAwaitingInput(s.status)) {
+        details.push(new SessionTreeItem('Reply to Agent', vscode.TreeItemCollapsibleState.None, s, 'Reply to Agent', 'Click to respond to agent question'));
+      }
+
+      // 15. 🛡️ Plan Approval (if awaiting plan approval)
       if (isSessionAwaitingApproval(s.status)) {
         details.push(new SessionTreeItem('Approve Plan', vscode.TreeItemCollapsibleState.None, s, 'Approve Plan', 'Click to approve proposed plan'));
       }

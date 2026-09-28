@@ -13,7 +13,9 @@ import {
   runDoctorChecks,
   readAgentJournal,
   getReviewReports,
-  createCustomAgentScaffold
+  createCustomAgentScaffold,
+  isSessionAwaitingApproval,
+  isSessionAwaitingInput
 } from '../scripts/utils';
 
 const TEST_DIR = path.join(process.cwd(), 'temp_test_dir_utils');
@@ -172,6 +174,21 @@ describe('Utils Comprehensive Tests', () => {
 
       const loadedSessions = loadSessions(TEST_DIR);
       assert.deepStrictEqual(loadedSessions, mockSessions);
+    });
+
+    test('isSessionAwaitingApproval vs isSessionAwaitingInput must not conflate plan approval with user response', () => {
+      // Plan approval states
+      assert.strictEqual(isSessionAwaitingApproval('AWAITING_PLAN_APPROVAL'), true);
+      assert.strictEqual(isSessionAwaitingApproval('awaiting_plan_approval'), true);
+      assert.strictEqual(isSessionAwaitingInput('AWAITING_PLAN_APPROVAL'), false);
+
+      // User response / input states
+      assert.strictEqual(isSessionAwaitingInput('AWAITING_USER_INPUT'), true);
+      assert.strictEqual(isSessionAwaitingInput('awaiting_user_input'), true);
+      assert.strictEqual(isSessionAwaitingInput('awaiting_response'), true);
+      assert.strictEqual(isSessionAwaitingInput('awaiting_user_feedback'), true);
+      assert.strictEqual(isSessionAwaitingApproval('AWAITING_USER_INPUT'), false);
+      assert.strictEqual(isSessionAwaitingApproval('awaiting_response'), false);
     });
   });
 });

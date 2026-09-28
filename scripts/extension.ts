@@ -27,6 +27,7 @@ import {
   isSessionCompleted,
   isSessionFailed,
   isSessionAwaitingApproval,
+  isSessionAwaitingInput,
   archiveSession,
   unarchiveSession
 } from './utils';
@@ -58,12 +59,17 @@ function updateStatusBar(): void {
   const root = getWorkspaceRoot();
   try {
     const sessions = loadSessions(root);
-    const awaitingSessions = sessions.filter(s => isSessionAwaitingApproval(s.status));
+    const awaitingInputSessions = sessions.filter(s => isSessionAwaitingInput(s.status));
+    const awaitingPlanSessions = sessions.filter(s => isSessionAwaitingApproval(s.status));
     const activeSessions = sessions.filter(s => isSessionActive(s.status));
 
-    if (awaitingSessions.length > 0) {
-      statusBarItem.text = `$(bell-dot) Jules: ${awaitingSessions.length} Action Needed`;
-      statusBarItem.tooltip = `${awaitingSessions.length} Jules session(s) awaiting your plan approval. Click to view.`;
+    if (awaitingInputSessions.length > 0) {
+      statusBarItem.text = `$(comment-discussion) Jules: ${awaitingInputSessions.length} Response Needed`;
+      statusBarItem.tooltip = `${awaitingInputSessions.length} Jules session(s) waiting for your response/input. Click to view.`;
+      statusBarItem.backgroundColor = new vscode.ThemeColor('statusBarItem.warningBackground');
+    } else if (awaitingPlanSessions.length > 0) {
+      statusBarItem.text = `$(shield) Jules: ${awaitingPlanSessions.length} Plan Approval Needed`;
+      statusBarItem.tooltip = `${awaitingPlanSessions.length} Jules session(s) awaiting your plan approval. Click to view.`;
       statusBarItem.backgroundColor = new vscode.ThemeColor('statusBarItem.warningBackground');
     } else if (activeSessions.length > 0) {
       statusBarItem.text = `$(sync~spin) Jules: ${activeSessions.length} Active`;
