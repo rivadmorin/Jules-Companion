@@ -12,7 +12,8 @@ import {
   isSessionCompleted,
   isSessionFailed,
   isSessionAwaitingApproval,
-  isSessionAwaitingInput
+  isSessionAwaitingInput,
+  loadScheduledTasks
 } from '../utils';
 
 /**
@@ -563,6 +564,21 @@ export class SessionsTreeDataProvider implements vscode.TreeDataProvider<Session
           ));
         }
 
+        // Collapsible section for scheduled tasks if any exist
+        const scheduledTasks = loadScheduledTasks(rootPath).filter(t => t.status === 'pending');
+        if (scheduledTasks.length > 0) {
+          const schedGroup = new SessionTreeItem(
+            `⏰ Scheduled Tasks (${scheduledTasks.length})`,
+            vscode.TreeItemCollapsibleState.Collapsed,
+            undefined,
+            'scheduled-tasks-group',
+            `${scheduledTasks.length} pending`
+          );
+          schedGroup.iconPath = new vscode.ThemeIcon('clock');
+          schedGroup.contextValue = 'scheduled-tasks-group';
+          items.push(schedGroup);
+        }
+
         // Collapsible section for archived sessions if any exist
         if (archivedSessions.length > 0) {
           const archiveGroup = new SessionTreeItem(
@@ -581,6 +597,26 @@ export class SessionsTreeDataProvider implements vscode.TreeDataProvider<Session
       } catch (err: any) {
         return [new SessionTreeItem(`Error loading sessions: ${err.message}`, vscode.TreeItemCollapsibleState.None)];
       }
+    } else if (element.detailKey === 'scheduled-tasks-group') {
+      const scheduledTasks = loadScheduledTasks(rootPath).filter(t => t.status === 'pending');
+      return scheduledTasks.map(t => {
+        const item = new SessionTreeItem(
+          `#sched • ${cleanAgentName(t.agent)} (${cleanTaskString(t.task, 24)})`,
+          vscode.TreeItemCollapsibleState.None,
+          undefined,
+          `sched-${t.id}`,
+          `At ${new Date(t.scheduledAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
+        );
+        item.iconPath = new vscode.ThemeIcon('clock');
+        item.contextValue = 'scheduled-task-item';
+        item.tooltip = `Scheduled Jules Task\nAgent: ${t.agent}\nTarget Time: ${t.scheduledAt}\nPrompt: ${t.task}`;
+        item.command = {
+          command: 'jules.viewScheduledTaskDetail',
+          title: 'Manage Scheduled Task',
+          arguments: [t.id]
+        };
+        return item;
+      });
     } else if (element.detailKey === 'archived-sessions-group') {
       // Sub-level: show all archived sessions
       const sessions = loadSessions(rootPath);

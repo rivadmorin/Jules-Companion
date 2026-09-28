@@ -1,0 +1,156 @@
+import { test, describe, beforeEach, afterEach } from 'node:test';
+import * as assert from 'node:assert';
+import * as fs from 'fs';
+import * as path from 'path';
+import * as os from 'os';
+import {
+  loadScheduledTasks,
+  saveScheduledTasks,
+  addScheduledTask,
+  cancelScheduledTask,
+  deleteScheduledTask,
+  getDueScheduledTasks,
+  executeDueTasks,
+  runScheduledTaskNow
+} from '../scripts/core/scheduler';
+
+describe('Jules Task Scheduler Unit Tests', () => {
+  let tempDir: string;
+
+  beforeEach(() => {
+    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'jules-scheduler-test-'));
+  });
+
+  afterEach(() => {
+    try {
+      fs.rmSync(tempDir, { recursive: true, force: true });
+    } catch {}
+  });
+
+  test('loadScheduledTasks should return empty array when no schedules file exists', () => {
+    const tasks = loadScheduledTasks(tempDir);
+    assert.deepStrictEqual(tasks, []);
+  });
+
+  test('addScheduledTask should persist new task with pending status and valid ID', () => {
+    const futureDate = new Date(Date.now() + 3600 * 1000).toISOString();
+    const created = addScheduledTask(
+      {
+        agent: 'architect',
+        mode: 'code',
+        type: 'start',
+        task: 'Refactor database models',
+        scheduledAt: futureDate
+      },
+      tempDir
+    );
+
+    assert.ok(created.id.startsWith('sched-'));
+    assert.strictEqual(created.agent, 'architect');
+    assert.strictEqual(created.status, 'pending');
+    assert.strictEqual(created.task, 'Refactor database models');
+    assert.strictEqual(created.scheduledAt, futureDate);
+
+    const loaded = loadScheduledTasks(tempDir);
+    assert.strictEqual(loaded.length, 1);
+    assert.strictEqual(loaded[0].id, created.id);
+  });
+
+  test('cancelScheduledTask should mark pending task as cancelled', () => {
+    const futureDate = new Date(Date.now() + 3600 * 1000).toISOString();
+    const task = addScheduledTask(
+      {
+        agent: 'security',
+        mode: 'code',
+        type: 'start',
+        task: 'Perform auth audit',
+        scheduledAt: futureDate
+      },
+      tempDir
+    );
+
+    const cancelled = cancelScheduledTask(task.id, tempDir);
+    assert.strictEqual(cancelled, true);
+
+    const loaded = loadScheduledTasks(tempDir);
+    assert.strictEqual(loaded[0].status, 'cancelled');
+
+    // Cancelling already cancelled task returns false
+    const cancelAgain = cancelScheduledTask(task.id, tempDir);
+    assert.strictEqual(cancelAgain, false);
+  });
+
+  test('deleteScheduledTask should completely remove task from storage', () => {
+    const futureDate = new Date(Date.now() + 3600 * 1000).toISOString();
+    const task = addScheduledTask(
+      {
+        agent: 'tester',
+        mode: 'code',
+        type: 'start',
+        task: 'Run end-to-end suite',
+        scheduledAt: futureDate
+      },
+      tempDir
+    );
+
+    assert.strictEqual(loadScheduledTasks(tempDir).length, 1);
+    const deleted = deleteScheduledTask(task.id, tempDir);
+    assert.strictEqual(deleted, true);
+    assert.strictEqual(loadScheduledTasks(tempDir).length, 0);
+
+    // Deleting nonexistent task returns false
+    const deleteAgain = deleteScheduledTask('nonexistent-id', tempDir);
+    assert.strictEqual(deleteAgain, false);
+  });
+
+  test('getDueScheduledTasks should only filter pending tasks that are due', () => {
+    const pastDate = new Date(Date.now() - 60 * 1000).toISOString();
+    const futureDate = new Date(Date.now() + 3600 * 1000).toISOString();
+
+    const dueTask = addScheduledTask(
+      {
+        agent: 'default',
+        mode: 'code',
+        type: 'start',
+        task: 'Due task now',
+        scheduledAt: pastDate
+      },
+      tempDir
+    );
+
+    const futureTask = addScheduledTask(
+      {
+        agent: 'default',
+        mode: 'code',
+        type: 'start',
+        task: 'Future task',
+        scheduledAt: futureDate
+      },
+      tempDir
+    );
+
+    const dueList = getDueScheduledTasks(tempDir);
+    assert.strictEqual(dueList.length, 1);
+    assert.strictEqual(dueList[0].id, dueTask.id);
+  });
+
+  test('saveScheduledTasks should persist task array correctly', () => {
+    const dummy = [
+      {
+        id: 'test-1',
+        agent: 'frontend',
+        mode: 'code' as const,
+        type: 'start' as const,
+        task: 'Optimize bundle size',
+        scheduledAt: new Date().toISOString(),
+        createdAt: new Date().toISOString(),
+        status: 'pending' as const
+      }
+    ];
+
+    saveScheduledTasks(dummy, tempDir);
+    const loaded = loadScheduledTasks(tempDir);
+    assert.strictEqual(loaded.length, 1);
+    assert.strictEqual(loaded[0].task, 'Optimize bundle size');
+  });
+});

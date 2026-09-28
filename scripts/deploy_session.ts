@@ -273,7 +273,16 @@ export async function deploySessionCore(options: DeploySessionOptions): Promise<
         ? `⚠️ MODE STRICT DIRECTIVE: REVIEW-ONLY MODE\nYou are operating in REVIEW-ONLY mode.\n1. DO NOT modify, edit, or delete any application code files (.ts, .js, .py, .go, .rs, .json, etc.).\n2. Write ALL your findings, analysis, code snippets, and refactoring recommendations exclusively into a single Markdown file located at:\n   \`${reviewFileName}\`\n3. Provide clear line numbers, problem descriptions, and proposed code fixes inside the Markdown document so the main agent can review them.`
         : `⚠️ MODE DIRECTIVE: CODE IMPLEMENTATION MODE\nYou are operating in CODE mode. Perform direct code implementation and modifications as required.`;
 
-      const combinedPrompt = `# AGENT SYSTEM & ROLE DIRECTIVES\n${templateContent}\n\n---\n# DATE & JOURNAL DIRECTIVES\n${dateAndJournalDirective}\n\n---\n# USER TASK & SPECIFIC REQUIREMENTS\n${options.task}\n\n---\n# EXECUTION MODE DIRECTIVE\n${modeDirective}`;
+      let interactiveDirective = '';
+      if (typeStr === 'interactive') {
+        interactiveDirective = `\n\n---\n# INTERACTIVE PLANNING & GOAL CLARIFICATION DIRECTIVE\n` +
+          `⚠️ YOU ARE IN INTERACTIVE PLAN MODE.\n` +
+          `1. Chat with the user to understand goals, technical constraints, and priorities before creating the final execution plan.\n` +
+          `2. Formulate your clarifying questions directly and wait for user response.\n` +
+          `3. Do not proceed to code modifications until the user confirms the plan.`;
+      }
+
+      const combinedPrompt = `# AGENT SYSTEM & ROLE DIRECTIVES\n${templateContent}\n\n---\n# DATE & JOURNAL DIRECTIVES\n${dateAndJournalDirective}\n\n---\n# USER TASK & SPECIFIC REQUIREMENTS\n${options.task}\n\n---\n# EXECUTION MODE DIRECTIVE\n${modeDirective}${interactiveDirective}`;
 
       const payload = {
         prompt: combinedPrompt,

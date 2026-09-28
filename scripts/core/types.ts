@@ -102,3 +102,36 @@ export interface McpToolDefinition {
   /** Execution callback invoked when the tool is called */
   execute: (args: any) => Promise<{ content: Array<{ type: 'text'; text: string }> }>;
 }
+
+/**
+ * Official launch and execution modes supported by Google Jules.
+ */
+export type LaunchMode = 'start' | 'review' | 'interactive' | 'scheduled';
+
+/**
+ * Represents a task scheduled to execute automatically at a designated future time.
+ */
+export interface ScheduledTask {
+  /** Unique scheduled task identifier */
+  id: string;
+  /** Primary agent identifier */
+  agent: string;
+  /** Operational mode: code implementation or code review */
+  mode: 'code' | 'review';
+  /** Execution plan mode: start, review, or interactive */
+  type: 'start' | 'review' | 'interactive';
+  /** Specific task prompt or instruction */
+  task: string;
+  /** ISO timestamp when the task should execute */
+  scheduledAt: string;
+  /** Optional cron expression for recurring tasks */
+  cron?: string;
+  /** Optional target Git branch */
+  branch?: string;
+  /** Lifecycle status of the scheduled task */
+  status: 'pending' | 'running' | 'completed' | 'cancelled';
+  /** ISO timestamp when the schedule was created */
+  createdAt: string;
+  /** Dispatched Jules session ID once triggered */
+  sessionId?: string;
+}

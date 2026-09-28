@@ -39,7 +39,12 @@
     "onCommand:jules.retryFailedSession",
     "onCommand:jules.archiveSession",
     "onCommand:jules.unarchiveSession",
-    "onCommand:jules.copySessionUrl"
+    "onCommand:jules.copySessionUrl",
+    "onCommand:jules.scheduleTask",
+    "onCommand:jules.viewScheduledTasks",
+    "onCommand:jules.viewScheduledTaskDetail",
+    "onCommand:jules.runScheduledTaskNow",
+    "onCommand:jules.cancelScheduledTask"
   ],
   "contributes": {
     "viewsContainers": {
@@ -215,6 +220,31 @@
         "command": "jules.copySessionUrl",
         "title": "Copy Session Web URL",
         "icon": "$(copy)"
+      },
+      {
+        "command": "jules.scheduleTask",
+        "title": "Schedule Task for Jules",
+        "icon": "$(clock)"
+      },
+      {
+        "command": "jules.viewScheduledTasks",
+        "title": "View Scheduled Tasks",
+        "icon": "$(calendar)"
+      },
+      {
+        "command": "jules.viewScheduledTaskDetail",
+        "title": "Manage Scheduled Task",
+        "icon": "$(info)"
+      },
+      {
+        "command": "jules.runScheduledTaskNow",
+        "title": "Run Scheduled Task Now",
+        "icon": "$(play)"
+      },
+      {
+        "command": "jules.cancelScheduledTask",
+        "title": "Cancel Scheduled Task",
+        "icon": "$(close)"
       }
     ],
     "configuration": {
@@ -258,6 +288,11 @@
           "command": "jules.deploySession",
           "when": "view == jules.sessionsView",
           "group": "navigation@3"
+        },
+        {
+          "command": "jules.scheduleTask",
+          "when": "view == jules.sessionsView",
+          "group": "navigation@3.5"
         },
         {
           "command": "jules.runDoctor",
@@ -360,6 +395,21 @@
           "command": "jules.openAgentDoc",
           "when": "view == jules.agentsView && viewItem == agent-item",
           "group": "inline@2"
+        },
+        {
+          "command": "jules.runScheduledTaskNow",
+          "when": "view == jules.sessionsView && viewItem == scheduled-task-item",
+          "group": "inline@1"
+        },
+        {
+          "command": "jules.cancelScheduledTask",
+          "when": "view == jules.sessionsView && viewItem == scheduled-task-item",
+          "group": "inline@2"
+        },
+        {
+          "command": "jules.scheduleTask",
+          "when": "view == jules.sessionsView && viewItem == scheduled-tasks-group",
+          "group": "inline@1"
         }
       ]
     }

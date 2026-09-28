@@ -29,7 +29,13 @@ import {
   isSessionAwaitingApproval,
   isSessionAwaitingInput,
   archiveSession,
-  unarchiveSession
+  unarchiveSession,
+  loadScheduledTasks,
+  addScheduledTask,
+  cancelScheduledTask,
+  deleteScheduledTask,
+  executeDueTasks,
+  runScheduledTaskNow
 } from './utils';
 import { openVisualDiff } from './ui/visual_diff';
 import { LiveSyncManager } from './ui/live_sync';
@@ -411,20 +417,103 @@ function getAgentQuickPickList(extensionPath: string, root: string): AgentPickIt
       const modeChoice = await vscode.window.showQuickPick(
         [
           {
-            label: '$(zap) Autonomous Execution (Recommended)',
-            description: 'Directly execute code edits, run tests, and prepare review PR',
+            label: '$(rocket) Start',
+            description: 'Get started without plan approval',
+            detail: 'Jules begins autonomous code implementation immediately.',
             type: 'start' as const
           },
           {
-            label: '$(shield) Interactive Plan Approval',
-            description: 'Generate step-by-step plan first and pause for your review & approval',
+            label: '$(checklist) Review',
+            description: 'Generate plan and wait for approval',
+            detail: 'Jules formulates a comprehensive step-by-step plan and pauses for your authorization.',
+            type: 'review' as const
+          },
+          {
+            label: '$(comment-discussion) Interactive plan',
+            description: 'Chat with Jules to understand goals before planning and approval',
+            detail: 'Jules engages in a conversational dialogue to clarify goals before drafting the plan.',
             type: 'interactive' as const
+          },
+          {
+            label: '$(clock) Scheduled task [NEW!]',
+            description: 'Create tasks for Jules to work on when you\'re not there!',
+            detail: 'Schedule this task to run automatically at a specific time or delay.',
+            type: 'scheduled' as const
           }
         ],
         { title: 'Step 3/3: Execution Mode' }
       );
 
       if (!modeChoice) return;
+
+      if (modeChoice.type === 'scheduled') {
+        const scheduleChoice = await vscode.window.showQuickPick(
+          [
+            { label: '$(clock) In 15 minutes', minutes: 15 },
+            { label: '$(clock) In 30 minutes', minutes: 30 },
+            { label: '$(clock) In 1 hour', minutes: 60 },
+            { label: '$(clock) In 2 hours', minutes: 120 },
+            { label: '$(clock) Tonight at 23:00', special: 'tonight' },
+            { label: '$(clock) Tomorrow morning at 09:00', special: 'tomorrow' },
+            { label: '$(edit) Custom delay (minutes)', special: 'custom' }
+          ],
+          { title: 'Select Schedule Timing for Jules' }
+        );
+
+        if (!scheduleChoice) return;
+
+        let delayMs = 15 * 60 * 1000;
+        const now = new Date();
+
+        if (scheduleChoice.minutes) {
+          delayMs = scheduleChoice.minutes * 60 * 1000;
+        } else if (scheduleChoice.special === 'tonight') {
+          const target = new Date();
+          target.setHours(23, 0, 0, 0);
+          if (target.getTime() <= now.getTime()) {
+            target.setDate(target.getDate() + 1);
+          }
+          delayMs = target.getTime() - now.getTime();
+        } else if (scheduleChoice.special === 'tomorrow') {
+          const target = new Date();
+          target.setDate(target.getDate() + 1);
+          target.setHours(9, 0, 0, 0);
+          delayMs = target.getTime() - now.getTime();
+        } else if (scheduleChoice.special === 'custom') {
+          const val = await vscode.window.showInputBox({
+            title: 'Enter Delay in Minutes',
+            prompt: 'e.g. 45 for 45 minutes, or 180 for 3 hours',
+            value: '30'
+          });
+          if (!val) return;
+          const mins = parseInt(val, 10);
+          if (isNaN(mins) || mins <= 0) {
+            vscode.window.showErrorMessage('Invalid delay minutes entered.');
+            return;
+          }
+          delayMs = mins * 60 * 1000;
+        }
+
+        const scheduledTime = new Date(Date.now() + delayMs);
+        const scheduledIso = scheduledTime.toISOString();
+
+        addScheduledTask(
+          {
+            agent,
+            mode: 'code',
+            type: 'start',
+            task: taskPrompt.trim(),
+            scheduledAt: scheduledIso
+          },
+          root
+        );
+
+        vscode.window.showInformationMessage(
+          `⏰ Jules task scheduled for ${scheduledTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}! Jules will run this autonomously.`
+        );
+        refreshAll();
+        return;
+      }
 
       await vscode.window.withProgress(
         {
@@ -1388,8 +1477,298 @@ function getAgentQuickPickList(extensionPath: string, root: string): AgentPickIt
     })
   );
 
-  // File watcher to auto-refresh UI when .jules/sessions.json changes
-  const watcher = vscode.workspace.createFileSystemWatcher('**/.jules*/**/sessions.json');
+  async function showScheduledTaskActions(taskId: string, root: string) {
+    const tasks = loadScheduledTasks(root);
+    const t = tasks.find(x => x.id === taskId);
+    if (!t) {
+      vscode.window.showErrorMessage(`Scheduled task ${taskId} not found.`);
+      return;
+    }
+
+    const timeStr = new Date(t.scheduledAt).toLocaleString();
+    const actions: vscode.QuickPickItem[] = [];
+
+    if (t.status === 'pending') {
+      actions.push({
+        label: '$(play) Run Task Now',
+        description: 'Immediately deploy this scheduled task to Jules'
+      });
+      actions.push({
+        label: '$(close) Cancel Scheduled Task',
+        description: 'Mark this task as cancelled'
+      });
+    }
+
+    actions.push({
+      label: '$(trash) Delete Task',
+      description: 'Remove this scheduled task permanently'
+    });
+
+    actions.push({
+      label: '$(info) View Details',
+      description: `Target Time: ${timeStr} | Agent: ${t.agent}`
+    });
+
+    const action = await vscode.window.showQuickPick(actions, {
+      title: `Task ${t.id} (${t.status.toUpperCase()})`
+    });
+    if (!action) return;
+
+    if (action.label.includes('Run Task Now')) {
+      await vscode.window.withProgress(
+        {
+          location: vscode.ProgressLocation.Notification,
+          title: `Executing scheduled Jules task (${t.agent})...`,
+          cancellable: false
+        },
+        async () => {
+          const res = await runScheduledTaskNow(t.id, root);
+          if (res.success) {
+            vscode.window.showInformationMessage(
+              `🚀 Scheduled task deployed successfully!${res.sessionId ? ` (Session: ${res.sessionId})` : ''}`
+            );
+          } else {
+            vscode.window.showErrorMessage(`Failed to deploy task: ${res.error || 'Unknown error'}`);
+          }
+          refreshAll();
+        }
+      );
+    } else if (action.label.includes('Cancel Scheduled Task')) {
+      cancelScheduledTask(t.id, root);
+      vscode.window.showInformationMessage(`Scheduled task ${t.id} has been cancelled.`);
+      refreshAll();
+    } else if (action.label.includes('Delete Task')) {
+      deleteScheduledTask(t.id, root);
+      vscode.window.showInformationMessage(`Scheduled task ${t.id} deleted.`);
+      refreshAll();
+    } else if (action.label.includes('View Details')) {
+      vscode.window.showInformationMessage(
+        `Task Details:\n\nPrompt: ${t.task}\nAgent: ${t.agent}\nScheduled At: ${timeStr}\nStatus: ${t.status}${t.sessionId ? `\nSession: ${t.sessionId}` : ''}`
+      );
+    }
+  }
+
+  // 14. Scheduler Commands
+  context.subscriptions.push(
+    vscode.commands.registerCommand('jules.scheduleTask', async () => {
+      const root = getWorkspaceRoot();
+      const taskPrompt = await vscode.window.showInputBox({
+        title: 'Schedule a Task for Jules',
+        prompt: 'Describe what you want Jules to accomplish',
+        placeHolder: 'e.g. Refactor API error handling and write comprehensive tests'
+      });
+      if (!taskPrompt || !taskPrompt.trim()) return;
+
+      const agent = (await vscode.window.showInputBox({
+        title: 'Agent to Assign (Optional)',
+        prompt: 'Agent name or specialization (leave blank for default)',
+        value: 'default'
+      })) || 'default';
+
+      const scheduleChoice = await vscode.window.showQuickPick(
+        [
+          { label: '$(clock) In 15 minutes', minutes: 15 },
+          { label: '$(clock) In 30 minutes', minutes: 30 },
+          { label: '$(clock) In 1 hour', minutes: 60 },
+          { label: '$(clock) In 2 hours', minutes: 120 },
+          { label: '$(clock) Tonight at 23:00', special: 'tonight' },
+          { label: '$(clock) Tomorrow morning at 09:00', special: 'tomorrow' },
+          { label: '$(edit) Custom delay (minutes)', special: 'custom' }
+        ],
+        { title: 'Select Schedule Timing for Jules' }
+      );
+      if (!scheduleChoice) return;
+
+      let delayMs = 15 * 60 * 1000;
+      const now = new Date();
+
+      if (scheduleChoice.minutes) {
+        delayMs = scheduleChoice.minutes * 60 * 1000;
+      } else if (scheduleChoice.special === 'tonight') {
+        const target = new Date();
+        target.setHours(23, 0, 0, 0);
+        if (target.getTime() <= now.getTime()) {
+          target.setDate(target.getDate() + 1);
+        }
+        delayMs = target.getTime() - now.getTime();
+      } else if (scheduleChoice.special === 'tomorrow') {
+        const target = new Date();
+        target.setDate(target.getDate() + 1);
+        target.setHours(9, 0, 0, 0);
+        delayMs = target.getTime() - now.getTime();
+      } else if (scheduleChoice.special === 'custom') {
+        const val = await vscode.window.showInputBox({
+          title: 'Enter Delay in Minutes',
+          prompt: 'e.g. 45 for 45 minutes, or 180 for 3 hours',
+          value: '30'
+        });
+        if (!val) return;
+        const mins = parseInt(val, 10);
+        if (isNaN(mins) || mins <= 0) {
+          vscode.window.showErrorMessage('Invalid delay minutes entered.');
+          return;
+        }
+        delayMs = mins * 60 * 1000;
+      }
+
+      const scheduledTime = new Date(Date.now() + delayMs);
+      const scheduledIso = scheduledTime.toISOString();
+
+      addScheduledTask(
+        {
+          agent: agent.trim(),
+          mode: 'code',
+          type: 'start',
+          task: taskPrompt.trim(),
+          scheduledAt: scheduledIso
+        },
+        root
+      );
+
+      vscode.window.showInformationMessage(
+        `⏰ Jules task scheduled for ${scheduledTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}! Jules will run this autonomously.`
+      );
+      refreshAll();
+    })
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand('jules.viewScheduledTasks', async () => {
+      const root = getWorkspaceRoot();
+      const tasks = loadScheduledTasks(root);
+      if (tasks.length === 0) {
+        const ans = await vscode.window.showInformationMessage(
+          'No scheduled tasks currently configured.',
+          'Schedule New Task'
+        );
+        if (ans === 'Schedule New Task') {
+          vscode.commands.executeCommand('jules.scheduleTask');
+        }
+        return;
+      }
+
+      const items = tasks.map(t => {
+        const timeStr = new Date(t.scheduledAt).toLocaleString();
+        const statusIcon =
+          t.status === 'pending'
+            ? '$(clock)'
+            : t.status === 'completed'
+            ? '$(check)'
+            : t.status === 'running'
+            ? '$(sync~spin)'
+            : '$(x)';
+        return {
+          label: `${statusIcon} ${t.agent}: ${t.task.slice(0, 40)}`,
+          description: `[${t.status.toUpperCase()}] Due: ${timeStr}`,
+          detail: `ID: ${t.id} | Task: ${t.task}`,
+          taskId: t.id
+        };
+      });
+
+      const selected = await vscode.window.showQuickPick(items, {
+        title: 'Scheduled Jules Tasks',
+        placeHolder: 'Select a task to manage or view details'
+      });
+      if (!selected) return;
+
+      await showScheduledTaskActions(selected.taskId, root);
+    })
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand('jules.viewScheduledTaskDetail', async (taskIdArg?: any) => {
+      const root = getWorkspaceRoot();
+      let taskId = typeof taskIdArg === 'string' ? taskIdArg : undefined;
+      if (!taskId && taskIdArg && typeof taskIdArg.detailKey === 'string' && taskIdArg.detailKey.startsWith('sched-')) {
+        taskId = taskIdArg.detailKey.replace('sched-', '');
+      }
+      if (!taskId) {
+        vscode.commands.executeCommand('jules.viewScheduledTasks');
+        return;
+      }
+      await showScheduledTaskActions(taskId, root);
+    })
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand('jules.runScheduledTaskNow', async (item?: any) => {
+      const root = getWorkspaceRoot();
+      let taskId: string | undefined;
+      if (typeof item === 'string') {
+        taskId = item;
+      } else if (item && typeof item.detailKey === 'string' && item.detailKey.startsWith('sched-')) {
+        taskId = item.detailKey.replace('sched-', '');
+      }
+      if (!taskId) {
+        const tasks = loadScheduledTasks(root).filter(t => t.status === 'pending');
+        if (tasks.length === 0) {
+          vscode.window.showInformationMessage('No pending scheduled tasks.');
+          return;
+        }
+        const choice = await vscode.window.showQuickPick(
+          tasks.map(t => ({ label: `${t.agent}: ${t.task.slice(0, 40)}`, id: t.id })),
+          { title: 'Select Task to Run Now' }
+        );
+        if (!choice) return;
+        taskId = choice.id;
+      }
+
+      await vscode.window.withProgress(
+        {
+          location: vscode.ProgressLocation.Notification,
+          title: `Executing scheduled Jules task...`,
+          cancellable: false
+        },
+        async () => {
+          const res = await runScheduledTaskNow(taskId!, root);
+          if (res.success) {
+            vscode.window.showInformationMessage(
+              `🚀 Scheduled task deployed!${res.sessionId ? ` (Session: ${res.sessionId})` : ''}`
+            );
+          } else {
+            vscode.window.showErrorMessage(`Failed to run task: ${res.error || 'Unknown error'}`);
+          }
+          refreshAll();
+        }
+      );
+    })
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand('jules.cancelScheduledTask', async (item?: any) => {
+      const root = getWorkspaceRoot();
+      let taskId: string | undefined;
+      if (typeof item === 'string') {
+        taskId = item;
+      } else if (item && typeof item.detailKey === 'string' && item.detailKey.startsWith('sched-')) {
+        taskId = item.detailKey.replace('sched-', '');
+      }
+      if (!taskId) {
+        const tasks = loadScheduledTasks(root).filter(t => t.status === 'pending');
+        if (tasks.length === 0) {
+          vscode.window.showInformationMessage('No pending scheduled tasks.');
+          return;
+        }
+        const choice = await vscode.window.showQuickPick(
+          tasks.map(t => ({ label: `${t.agent}: ${t.task.slice(0, 40)}`, id: t.id })),
+          { title: 'Select Task to Cancel' }
+        );
+        if (!choice) return;
+        taskId = choice.id;
+      }
+
+      const ok = cancelScheduledTask(taskId, root);
+      if (ok) {
+        vscode.window.showInformationMessage(`Scheduled task cancelled.`);
+      } else {
+        vscode.window.showWarningMessage(`Could not cancel scheduled task (already completed or not found).`);
+      }
+      refreshAll();
+    })
+  );
+
+  // File watcher to auto-refresh UI when .jules state files change
+  const watcher = vscode.workspace.createFileSystemWatcher('**/.jules*/**/*.{json}');
   watcher.onDidChange(() => refreshAll());
   watcher.onDidCreate(() => refreshAll());
   watcher.onDidDelete(() => refreshAll());

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-28T09:40:27.430Z",
+  "generatedAt": "2026-09-28T12:16:40.006Z",
   "totalAgents": 43,
   "agents": {
     "adapter": {
@@ -18,6 +18,14 @@
       "description": "You are \"Alchemist\" 🧪 - a Database Migrations & SQL Optimization agent who design database migrations, model relationships, index lookup columns, and optimize slow SQL/NoSQL queries.",
       "file": "references/agents/alchemist.md"
     },
+    "annotator": {
+      "id": "annotator",
+      "name": "Annotator",
+      "role": "annotator",
+      "group": "advisory",
+      "description": "You are \"Annotator\" 🏷️ - an Inline Documentation & Code Clarity agent who analyzes complex logic and adds precise line-by-line comments and block documentation to ensure long-term codebase sustainability.",
+      "file": "references/agents/annotator.md"
+    },
     "bolt": {
       "id": "bolt",
       "name": "Bolt",
@@ -25,14 +33,6 @@
       "group": "coding",
       "description": "You are \"Bolt\" ⚡ - a Performance, Memoization & Caching agent who identify and implement one performance improvement to make the application measurably faster, memory-efficient, or optimized.",
       "file": "references/agents/bolt.md"
-    },
-    "archivist": {
-      "id": "archivist",
-      "name": "Archivist",
-      "role": "archivist",
-      "group": "advisory",
-      "description": "You are \"Archivist\" 📜 - a Changelog, Release Notes & Deprecation Guide agent who authors structured changelogs, manages release documentation, tracks deprecated APIs, and drafts migration guides across versions.",
-      "file": "references/agents/archivist.md"
     },
     "benchmarker": {
       "id": "benchmarker",
@@ -42,13 +42,21 @@
       "description": "You are \"Benchmarker\" ⏱️ - a Stress-Testing & Latency Audits agent who write stress testing scripts, simulate concurrent traffic, profile memory utilization, and analyze latencies under load.",
       "file": "references/agents/benchmarker.md"
     },
-    "annotator": {
-      "id": "annotator",
-      "name": "Annotator",
-      "role": "annotator",
+    "archivist": {
+      "id": "archivist",
+      "name": "Archivist",
+      "role": "archivist",
       "group": "advisory",
-      "description": "You are \"Annotator\" 🏷️ - an Inline Documentation & Code Clarity agent who analyzes complex logic and adds precise line-by-line comments and block documentation to ensure long-term codebase sustainability.",
-      "file": "references/agents/annotator.md"
+      "description": "You are \"Archivist\" 📜 - a Changelog, Release Notes & Deprecation Guide agent who authors structured changelogs, manages release documentation, tracks deprecated APIs, and drafts migration guides across versions.",
+      "file": "references/agents/archivist.md"
+    },
+    "cartographer": {
+      "id": "cartographer",
+      "name": "Cartographer",
+      "role": "cartographer",
+      "group": "advisory",
+      "description": "You are \"Cartographer\" 🗺️ - a Codebase Structures & ASCII Layout Mapping agent who analyze codebase directory structures, map out component dependencies, and design flowcharts in Mermaid and ASCII layouts.",
+      "file": "references/agents/cartographer.md"
     },
     "builder": {
       "id": "builder",
@@ -66,22 +74,6 @@
       "description": "You are \"Bridge\" 🧲 - a Third-Party API Integration agent who build secure integrations with third-party API providers and write mock mock-servers/stubs for unit testing.",
       "file": "references/agents/bridge.md"
     },
-    "cartographer": {
-      "id": "cartographer",
-      "name": "Cartographer",
-      "role": "cartographer",
-      "group": "advisory",
-      "description": "You are \"Cartographer\" 🗺️ - a Codebase Structures & ASCII Layout Mapping agent who analyze codebase directory structures, map out component dependencies, and design flowcharts in Mermaid and ASCII layouts.",
-      "file": "references/agents/cartographer.md"
-    },
-    "chameleon": {
-      "id": "chameleon",
-      "name": "Chameleon",
-      "role": "chameleon",
-      "group": "coding",
-      "description": "You are \"Chameleon\" 🦎 - a Language & Stack Porting agent who translate, restyle, and port modules or code blocks between programming languages or frameworks idiomatic to the target environment.",
-      "file": "references/agents/chameleon.md"
-    },
     "conduit": {
       "id": "conduit",
       "name": "Conduit",
@@ -98,6 +90,14 @@
       "description": "You are \"Consultant\" 🧠 - a Framework Recommendations & ADRs agent who evaluate project feature needs and author Architectural Decision Records (ADRs) suggesting framework or library choices.",
       "file": "references/agents/consultant.md"
     },
+    "chameleon": {
+      "id": "chameleon",
+      "name": "Chameleon",
+      "role": "chameleon",
+      "group": "coding",
+      "description": "You are \"Chameleon\" 🦎 - a Language & Stack Porting agent who translate, restyle, and port modules or code blocks between programming languages or frameworks idiomatic to the target environment.",
+      "file": "references/agents/chameleon.md"
+    },
     "critic": {
       "id": "critic",
       "name": "Critic",
@@ -105,6 +105,14 @@
       "group": "advisory",
       "description": "You are \"Critic\" 🗣️ - a Senior Code Review agent who review code changes (diffs) thoroughly, critiquing readability, design anti-patterns, and logic efficiency.",
       "file": "references/agents/critic.md"
+    },
+    "curator": {
+      "id": "curator",
+      "name": "Curator",
+      "role": "curator",
+      "group": "advisory",
+      "description": "You are \"Curator\" 📚 - an Internal Knowledge Base & Tribal Knowledge Curator agent who captures domain knowledge, architectural rationale, developer onboarding notes, and gotchas into a searchable repository knowledge base.",
+      "file": "references/agents/curator.md"
     },
     "datasmith": {
       "id": "datasmith",
@@ -129,14 +137,6 @@
       "group": "coding",
       "description": "You are \"Enforcer\" 📏 - a Coding Standards & Architectural Compliance agent who enforces naming conventions, directory structure rules, SOLID principles, and architectural boundaries across the codebase.",
       "file": "references/agents/enforcer.md"
-    },
-    "curator": {
-      "id": "curator",
-      "name": "Curator",
-      "role": "curator",
-      "group": "advisory",
-      "description": "You are \"Curator\" 📚 - an Internal Knowledge Base & Tribal Knowledge Curator agent who captures domain knowledge, architectural rationale, developer onboarding notes, and gotchas into a searchable repository knowledge base.",
-      "file": "references/agents/curator.md"
     },
     "exterminator": {
       "id": "exterminator",
@@ -178,6 +178,22 @@
       "description": "You are \"Innovator\" 💡 - a New Feature Implementation agent who design, implement, and integrate new functional features into the codebase following established architectural patterns.",
       "file": "references/agents/innovator.md"
     },
+    "inspector": {
+      "id": "inspector",
+      "name": "Inspector",
+      "role": "inspector",
+      "group": "coding",
+      "description": "You are \"Inspector\" 🔎 - a Unit & Integration Testing agent who write unit, integration, and end-to-end (E2E) tests across codebase modules to maintain application reliability.",
+      "file": "references/agents/inspector.md"
+    },
+    "localizer": {
+      "id": "localizer",
+      "name": "Localizer",
+      "role": "localizer",
+      "group": "advisory",
+      "description": "You are \"Localizer\" 🌍 - a Internationalization & i18n agent who handle UI localization, ensure strings are properly extracted, format dates/numbers/currencies according to locale, and support RTL (Right-to-Left) layouts.",
+      "file": "references/agents/localizer.md"
+    },
     "janitor": {
       "id": "janitor",
       "name": "Janitor",
@@ -194,21 +210,13 @@
       "description": "You are \"Logger\" 🪵 - a Structured Logging & Telemetry agent who integrate structured logging patterns, error tracking configurations, observability metrics, and trace request contexts.",
       "file": "references/agents/logger.md"
     },
-    "localizer": {
-      "id": "localizer",
-      "name": "Localizer",
-      "role": "localizer",
-      "group": "advisory",
-      "description": "You are \"Localizer\" 🌍 - a Internationalization & i18n agent who handle UI localization, ensure strings are properly extracted, format dates/numbers/currencies according to locale, and support RTL (Right-to-Left) layouts.",
-      "file": "references/agents/localizer.md"
-    },
-    "inspector": {
-      "id": "inspector",
-      "name": "Inspector",
-      "role": "inspector",
+    "materialist": {
+      "id": "materialist",
+      "name": "Materialist",
+      "role": "materialist",
       "group": "coding",
-      "description": "You are \"Inspector\" 🔎 - a Unit & Integration Testing agent who write unit, integration, and end-to-end (E2E) tests across codebase modules to maintain application reliability.",
-      "file": "references/agents/inspector.md"
+      "description": "You are \"Materialist\" 🎴 - a Google Material Design 3 Styling agent who arrange, modify, and style UI designs to strictly follow Google Material Design 3 guidelines.",
+      "file": "references/agents/materialist.md"
     },
     "modernizer": {
       "id": "modernizer",
@@ -226,14 +234,6 @@
       "description": "You are \"Netrunner\" 🌐 - a Network & Web-Server Configurations agent who configure web servers, reverse proxies, port routings, SSL/TLS certifications, and REST/gRPC networking scopes.",
       "file": "references/agents/netrunner.md"
     },
-    "materialist": {
-      "id": "materialist",
-      "name": "Materialist",
-      "role": "materialist",
-      "group": "coding",
-      "description": "You are \"Materialist\" 🎴 - a Google Material Design 3 Styling agent who arrange, modify, and style UI designs to strictly follow Google Material Design 3 guidelines.",
-      "file": "references/agents/materialist.md"
-    },
     "nexus": {
       "id": "nexus",
       "name": "Nexus",
@@ -241,14 +241,6 @@
       "group": "advisory",
       "description": "You are \"Nexus\" 🔗 - an MCP (Model Context Protocol) AI Integration specialist agent who designs context-aware AI servers, builds local database integrations, and bridges LLMs with external systems securely.",
       "file": "references/agents/nexus.md"
-    },
-    "packager": {
-      "id": "packager",
-      "name": "Packager",
-      "role": "packager",
-      "group": "coding",
-      "description": "You are \"Packager\" 💿 - a Installer, Uninstaller & Setup Scripts agent who design clean setup scripts, uninstallation routines, portable bundler configurations, and automate initial project installations.",
-      "file": "references/agents/packager.md"
     },
     "nomad": {
       "id": "nomad",
@@ -258,6 +250,22 @@
       "description": "You are \"Nomad\" 🎒 - a Local & Offline Portability agent who ensure the application can be installed, run 100% locally and offline without internet, and is ready for distribution on USB drives.",
       "file": "references/agents/nomad.md"
     },
+    "packager": {
+      "id": "packager",
+      "name": "Packager",
+      "role": "packager",
+      "group": "coding",
+      "description": "You are \"Packager\" 💿 - a Installer, Uninstaller & Setup Scripts agent who design clean setup scripts, uninstallation routines, portable bundler configurations, and automate initial project installations.",
+      "file": "references/agents/packager.md"
+    },
+    "palette": {
+      "id": "palette",
+      "name": "Palette",
+      "role": "palette",
+      "group": "coding",
+      "description": "You are \"Palette\" 🎨 - a UX & Frontend Accessibility agent who identify and implement one micro-UX and accessibility (WCAG/ARIA) improvement on the user interface to make it more intuitive, accessible, and delightful.",
+      "file": "references/agents/palette.md"
+    },
     "partisan": {
       "id": "partisan",
       "name": "Partisan",
@@ -265,14 +273,6 @@
       "group": "coding",
       "description": "You are \"Partisan\" 🛰️ - a Decentralized & P2P Architectures agent who design decentralized architectures, integrate peer-to-peer (P2P) communications, and enforce censor-resistance rules to keep services active.",
       "file": "references/agents/partisan.md"
-    },
-    "revenant": {
-      "id": "revenant",
-      "name": "Revenant",
-      "role": "revenant",
-      "group": "advisory",
-      "description": "You are \"Revenant\" 🧟 - a Cross-Platform Persistence agent who ensure applications run persistently in the background, survive crashes, and automatically start on boot across Windows, Linux, and macOS environments.",
-      "file": "references/agents/revenant.md"
     },
     "proteus": {
       "id": "proteus",
@@ -282,6 +282,14 @@
       "description": "You are \"Proteus\" 🎭 - a Custom Analysis & Advisory agent who deliver custom analyses and checklists based on specific user requests outside standard roles.",
       "file": "references/agents/proteus.md"
     },
+    "revenant": {
+      "id": "revenant",
+      "name": "Revenant",
+      "role": "revenant",
+      "group": "advisory",
+      "description": "You are \"Revenant\" 🧟 - a Cross-Platform Persistence agent who ensure applications run persistently in the background, survive crashes, and automatically start on boot across Windows, Linux, and macOS environments.",
+      "file": "references/agents/revenant.md"
+    },
     "scaler": {
       "id": "scaler",
       "name": "Scaler",
@@ -289,14 +297,6 @@
       "group": "advisory",
       "description": "You are \"Scaler\" 📈 - a Scalability & High Availability agent who design architectures for high availability, setup load testing, optimize large-scale database queries, and implement caching strategies to handle traffic spikes.",
       "file": "references/agents/scaler.md"
-    },
-    "palette": {
-      "id": "palette",
-      "name": "Palette",
-      "role": "palette",
-      "group": "coding",
-      "description": "You are \"Palette\" 🎨 - a UX & Frontend Accessibility agent who identify and implement one micro-UX and accessibility (WCAG/ARIA) improvement on the user interface to make it more intuitive, accessible, and delightful.",
-      "file": "references/agents/palette.md"
     },
     "scribe": {
       "id": "scribe",

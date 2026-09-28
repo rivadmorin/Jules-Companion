@@ -8,16 +8,36 @@ import * as path from 'path';
 import { spawnSync } from 'child_process';
 import { runGit, GitExecutionResult } from './core/git';
 import { getProjectDirs, loadSessions, saveSessions } from './core/storage';
-import { ProjectDirs, SessionRecord } from './core/types';
+import { ProjectDirs, SessionRecord, ScheduledTask, LaunchMode } from './core/types';
+import {
+  loadScheduledTasks,
+  saveScheduledTasks,
+  addScheduledTask,
+  cancelScheduledTask,
+  deleteScheduledTask,
+  getDueScheduledTasks,
+  executeDueTasks,
+  runScheduledTaskNow
+} from './core/scheduler';
 
 export {
   ProjectDirs,
   SessionRecord,
+  ScheduledTask,
+  LaunchMode,
   GitExecutionResult,
   runGit,
   getProjectDirs,
   loadSessions,
-  saveSessions
+  saveSessions,
+  loadScheduledTasks,
+  saveScheduledTasks,
+  addScheduledTask,
+  cancelScheduledTask,
+  deleteScheduledTask,
+  getDueScheduledTasks,
+  executeDueTasks,
+  runScheduledTaskNow
 };
 
 /**
