@@ -104,7 +104,11 @@ export async function getSessionApi(sessionId: string, targetDir?: string): Prom
   const apiKey = getApiKey(targetDir);
   if (!apiKey) throw new Error('JULES_API_KEY not found in environment or .env file.');
   const headers = { 'X-Goog-Api-Key': apiKey };
-  return await request(`https://jules.googleapis.com/v1alpha/sessions/${sessionId}`, { headers });
+  const data = await request(`https://jules.googleapis.com/v1alpha/sessions/${sessionId}`, { headers });
+  if (data && data.state && !data.status) {
+    data.status = data.state;
+  }
+  return data;
 }
 
 /**

@@ -6,7 +6,7 @@
 
 import * as vscode from 'vscode';
 import { getSessionApi, getActivitiesApi, approvePlanApi, sendMessageApi } from '../client/jules_api';
-import { loadSessions, isSessionAwaitingApproval, isSessionAwaitingInput } from '../utils';
+import { loadSessions, saveSessions, isSessionAwaitingApproval, isSessionAwaitingInput } from '../utils';
 import { cleanAgentName } from './sessions_provider';
 
 /**
@@ -140,7 +140,7 @@ export function renderMissionControlHtml(
 ): string {
   const sessionId = escapeHtml(session.id || 'Unknown');
   const agent = escapeHtml(cleanAgentName(session.agent || session.title?.split('-')[0] || 'Agent'));
-  const rawStatus = session.status || session.state || (isLoading ? 'SYNCING...' : 'UNKNOWN');
+  const rawStatus = session.state || session.status || (isLoading ? 'SYNCING...' : 'UNKNOWN');
   const status = escapeHtml(String(rawStatus).toUpperCase());
   const statusDisplay = escapeHtml(formatStatusDisplay(status));
   const branch = escapeHtml(session.branch || session.sourceContext?.githubRepoContext?.startingBranch || 'main');
@@ -1162,7 +1162,7 @@ export function renderMissionControlHtml(
     </div>
   ` : ''}
 
-  ${isAwaitingApproval ? `
+  ${(isAwaitingApproval && !isAwaitingInput) ? `
     <div class="approval-banner">
       <div class="approval-left">
         <div class="approval-icon-box">
@@ -1438,7 +1438,19 @@ export async function openMissionControlWebview(
   const fetchCloudData = async () => {
     try {
       const cloudSession = await getSessionApi(sessionId, targetDir);
-      sessionData = { ...sessionData, ...cloudSession };
+      const liveStatus = cloudSession.state || cloudSession.status || sessionData.status;
+      sessionData = {
+        ...sessionData,
+        ...cloudSession,
+        status: liveStatus
+      };
+
+      const currentSessions = loadSessions(targetDir);
+      const idx = currentSessions.findIndex(s => s.id === sessionId);
+      if (idx !== -1) {
+        currentSessions[idx].status = liveStatus;
+        saveSessions(currentSessions, targetDir);
+      }
     } catch (err: any) {
       if (!sessionData.task) {
         sessionData.task = `Notice: Local preview mode (${err.message})`;
