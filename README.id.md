@@ -105,6 +105,16 @@ Tambahkan `jules-companion` ke konfigurasi MCP di Klien AI Anda (`claude_desktop
 
 ---
 
+## 🛠️ Kakas Pengembang & Agen AI (Ponytail & Sentrux)
+
+Jules Companion menerapkan standar rekayasa ketat menggunakan dua kakas open-source terintegrasi:
+* **[Ponytail](https://github.com/DietrichGebert/ponytail)**: Panduan anti-overengineering bagi pengembang dan agen AI (YAGNI, utamakan standard library, diff minimal).
+* **[Sentrux](https://github.com/sentrux/sentrux)**: Linter batas arsitektur yang menegakkan hierarki dependensi 6-tier satu arah (`npm run sentrux:check`).
+
+Lihat [**CONTRIBUTING.md**](CONTRIBUTING.md) dan [**AGENT.md**](AGENT.md) untuk panduan instalasi dan penggunaan lengkap.
+
+---
+
 ## 📚 Dokumentasi Arsitektur Lengkap
 
 Dokumentasi arsitektur komprehensif untuk seluruh 28 modul skrip tersedia dalam Bahasa Inggris:

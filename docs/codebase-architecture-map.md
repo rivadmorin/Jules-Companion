@@ -1,5 +1,6 @@
 # Jules Companion - Codebase Architecture Map & Governance Guide
-> *Architecture Documentation & Maintenance Guide Powered by **Sentrux** (Architectural Governance) and **Graft** (Semantic Context Graph)*  
+> *Architecture Documentation & Maintenance Guide Powered by [**Sentrux**](https://github.com/sentrux/sentrux) (Architectural Governance) and [**Graft**](https://github.com/alexphelps/graft) (Semantic Context Graph)*  
+> *Developer Pragmatism & Anti-Overengineering Powered by [**Ponytail**](https://github.com/DietrichGebert/ponytail)*  
 > *Complete 28 Scripts Reference: See [**Comprehensive Codebase Documentation Index**](codebase/README.md)*  
 > *Current Status: 106 Unit Tests 100% Passed, 100% TSDoc Coverage, Zero Regressions, Zero Architectural Violations*
 
@@ -12,9 +13,10 @@ The `Jules-Companion` codebase is built upon a **clean domain-driven layered arc
 ### Architecture Quality Scorecard
 | Architecture Metric | Score / Status | Quality Analysis & Assurance |
 | :--- | :---: | :--- |
-| **Acyclicity** | 🟢 Perfect (`10000`) | **0 circular dependencies**. Verified and enforced by `.sentrux/rules.toml`. |
+| **Acyclicity** | 🟢 Perfect (`10000`) | **0 circular dependencies**. Verified and enforced by [`.sentrux/rules.toml`](.sentrux/rules.toml) via [Sentrux](https://github.com/sentrux/sentrux). |
 | **Redundancy** | 🟢 Perfect (`10000`) | No structural duplication. Shared domain logic is centralized in `scripts/core/` and `scripts/client/`. |
-| **Layering & Boundaries** | 🟢 Perfect (0 Violations) | 6 Tiers strictly controlled via Sentrux (`tests` ➔ `interfaces` ➔ `mcp_modules` ➔ `workflows` ➔ `client` ➔ `foundation`). |
+| **Layering & Boundaries** | 🟢 Perfect (0 Violations) | 6 Tiers strictly controlled via [Sentrux](https://github.com/sentrux/sentrux) (`tests` ➔ `interfaces` ➔ `mcp_modules` ➔ `workflows` ➔ `client` ➔ `foundation`). |
+| **Pragmatic Implementation** | 🟢 Ponytail Compliant | Minimum necessary complexity, standard library preference, zero unrequested abstractions ([Ponytail](https://github.com/DietrichGebert/ponytail)). |
 | **Clean Interfaces** | 🟢 Programmatic Core | Core functions (`deploySessionCore`, `mergeSessionCore`, `autoProcessCore`) are modularly invokable without mutating `process.argv` or hijacking `stdout`. |
 | **Equality & God-Files** | 🟢 Lightweight | [`mcp_server.ts`](file:///e:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/mcp_server.ts) is only **85 lines**, [`jules_client.ts`](file:///e:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/jules_client.ts) **185 lines**, divided into isolated tool handlers. |
 | **Modularity & Coupling** | 🟢 Clean Distribution | Dependency load of core hotspot callers is evenly distributed across `core/`, `client/`, and `mcp/`. |
@@ -173,9 +175,20 @@ npm run build
 # Run all 106 unit tests with 100% TSDoc coverage verification
 npm test
 
+# Run Sentrux architectural compliance check
+npm run sentrux:check
+# (or directly via CLI: sentrux check .)
+
+# Full pre-commit / pre-submission verification gate:
+npm run verify
+
 # Package VSIX extension
 npm run package
 ```
+
+### Contributor & AI Agent Tooling Links:
+* **[Ponytail (`DietrichGebert/ponytail`)](https://github.com/DietrichGebert/ponytail)**: Anti-overengineering rules and slash commands (`/ponytail-review`, `/ponytail-audit`).
+* **[Sentrux (`sentrux/sentrux`)](https://github.com/sentrux/sentrux)**: Architectural firewall and quality sensor.
 
 ---
 

@@ -189,3 +189,11 @@ stateDiagram-v2
    - `mergeSessionCore` rejects branch merges if the session is not verified as `SUCCEEDED` on Google Jules Cloud.
 4. **Atomic Disk Writes**:
    - Modifications to `.jules/sessions.json` and `.jules-companion/schedules.json` use synchronous atomic persistence to avoid race conditions across processes.
+
+---
+
+## 6. Architectural Governance & Quality Tooling
+
+The integrity and simplicity of this codebase is continuously guarded by two open-source developer tools:
+1. **[Sentrux](https://github.com/sentrux/sentrux)**: Automated architectural linter enforcing strict acyclic downward layering via [`.sentrux/rules.toml`](../../.sentrux/rules.toml). Validated via `npm run sentrux:check` and `sentrux check .`.
+2. **[Ponytail](https://github.com/DietrichGebert/ponytail)**: Pragmatic senior developer ruleset for human contributors and AI coding assistants, enforcing YAGNI, standard library prioritization, and minimal surgical diffs. Runs via `/ponytail full` and `/ponytail-review`.

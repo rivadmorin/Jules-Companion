@@ -10,22 +10,23 @@ This guide outlines our architecture, engineering principles, development workfl
 1. [Core Development Philosophy (Ponytail)](#-core-development-philosophy)
 2. [Development Environment Setup](#-development-environment-setup)
 3. [Architecture Invariants & Governance](#-architecture-invariants--governance)
-4. [Coding Standards & Style Guide](#-coding-standards--style-guide)
-5. [Step-by-Step Developer Playbooks](#-step-by-step-developer-playbooks)
+4. [Contributor & AI Agent Tooling (Ponytail & Sentrux)](#-contributor--ai-agent-tooling-ponytail--sentrux)
+5. [Coding Standards & Style Guide](#-coding-standards--style-guide)
+6. [Step-by-Step Developer Playbooks](#-step-by-step-developer-playbooks)
    - [Adding a New VS Code Command](#1-adding-a-new-vs-code-command)
    - [Implementing a New MCP Tool](#2-implementing-a-new-mcp-tool)
    - [Authoring a New Specialist Agent](#3-authoring-a-new-specialist-agent)
-6. [Testing & Verification Protocol](#-testing--verification-protocol)
-7. [Git Workflow & Commit Standards](#-git-workflow--commit-standards)
-8. [Packaging & Local Installation](#-packaging--local-installation)
-9. [Release Process & CI/CD](#-release-process--cicd)
-10. [Security & Vulnerability Reporting](#-security--vulnerability-reporting)
+7. [Testing & Verification Protocol](#-testing--verification-protocol)
+8. [Git Workflow & Commit Standards](#-git-workflow--commit-standards)
+9. [Packaging & Local Installation](#-packaging--local-installation)
+10. [Release Process & CI/CD](#-release-process--cicd)
+11. [Security & Vulnerability Reporting](#-security--vulnerability-reporting)
 
 ---
 
 ## ⚡ Core Development Philosophy
 
-Our project strictly adheres to the **Ponytail (Lazy Senior Developer)** development philosophy. We prioritize maintainability, extreme simplicity, and zero dead code over clever abstractions:
+Our project strictly adheres to the [**Ponytail (`DietrichGebert/ponytail`)**](https://github.com/DietrichGebert/ponytail) development philosophy. We prioritize maintainability, extreme simplicity, and zero dead code over clever abstractions:
 
 * **YAGNI (You Aren't Gonna Need It)**: Refuse to build speculative abstractions. Do not create interfaces with a single implementation, generic factories for a single class, or configuration flags for values that do not change.
 * **Standard Library First**: Always leverage native Node.js standard modules (`node:fs`, `node:path`, `node:https`, `node:crypto`, `node:child_process`, `node:test`, `node:assert`) before considering third-party npm packages.
@@ -122,6 +123,60 @@ Tier 5: Foundation (scripts/core/types.ts, scripts/core/storage.ts, scripts/core
    - `AWAITING_PLAN_APPROVAL` requires plan review (`approvePlanApi`).
    - `AWAITING_USER_FEEDBACK` / `AWAITING_USER_INPUT` requires conversational response (`sendMessageApi`).
    - Never conflate these two states in the UI or API layers.
+
+---
+
+## 🛠️ Contributor & AI Agent Tooling (Ponytail & Sentrux)
+
+To ensure that every human contributor and autonomous AI coding agent works with the exact same standards and toolset as the maintainers, this project requires and integrates two open-source governance tools:
+
+### 1. Ponytail — The Pragmatic Senior Developer Engine
+* **GitHub Repository**: [**`https://github.com/DietrichGebert/ponytail`**](https://github.com/DietrichGebert/ponytail)
+* **What it does**: Enforces extreme pragmatism and anti-overengineering. It tells AI coding assistants (and reminds developers) to stop writing speculative scaffolding, prefer the Node.js standard library, make surgical diffs, and delete unnecessary code.
+* **How to Install & Configure**:
+  * **Google Antigravity CLI / Gemini CLI**:
+    ```bash
+    gemini extensions install https://github.com/DietrichGebert/ponytail
+    # or
+    agy plugin install https://github.com/DietrichGebert/ponytail
+    ```
+  * **Pi Coding Agent**:
+    ```bash
+    pi install git:github.com/DietrichGebert/ponytail
+    ```
+  * **OpenClaw**:
+    ```bash
+    clawhub install ponytail
+    ```
+  * **VS Code / Cursor / Windsurf / Copilot**:
+    Install or copy the matching steering rules from the [Ponytail repository](https://github.com/DietrichGebert/ponytail) into your editor (`.cursor/rules/ponytail.md`, `.windsurf/rules/ponytail.md`, or `.github/copilot-instructions.md`).
+* **Available Commands**:
+  - `/ponytail full`: Enforces default senior developer mode.
+  - `/ponytail-review`: Runs an anti-bloat code review focusing solely on simplifying complex code.
+  - `/ponytail-audit`: Scans the entire codebase for speculative abstractions to delete.
+  - `/ponytail-debt`: Harvests deferred shortcuts into a structured ledger.
+
+### 2. Sentrux — AI Architectural Linter & Quality Sensor
+* **GitHub Repository**: [**`https://github.com/sentrux/sentrux`**](https://github.com/sentrux/sentrux)
+* **What it does**: Acts as an automated architectural firewall. It enforces our 6-tier downward dependency hierarchy, prevents circular dependencies (`max_cycles = 0`), and monitors codebase structural health.
+* **How to Install**:
+  * Via Rust Cargo:
+    ```bash
+    cargo install sentrux
+    ```
+  * Or download the prebuilt binary for your OS from [Sentrux Releases](https://github.com/sentrux/sentrux/releases).
+* **Configuration**:
+  Governance rules are defined in [`.sentrux/rules.toml`](.sentrux/rules.toml).
+* **Execution & Verification**:
+  ```bash
+  # Check architectural layering and circular dependencies:
+  sentrux check .
+  # or via npm shortcut:
+  npm run sentrux:check
+
+  # Full pre-submission verification gate:
+  npm run verify
+  ```
 
 ---
 

@@ -116,3 +116,11 @@ If the host environment does not support native MCP tool invocation:
 * **Session Deployment**: `node dist/deploy_session.js --type start --agents architect --task "Task description" --mode code`
 * **Session Merge**: `node dist/merge_session.js --session <sessionId>`
 * **Status Check**: `node dist/jules_client.js session show <sessionId>`
+
+---
+
+## 🛡️ Architecture & Contributor Tooling: Ponytail & Sentrux
+
+AI Agents and human contributors operating in this codebase MUST use the standard governance tools:
+* **[Ponytail (`DietrichGebert/ponytail`)](https://github.com/DietrichGebert/ponytail)**: Enforces senior developer pragmatism, YAGNI, standard library first, and shortest working diffs.
+* **[Sentrux (`sentrux/sentrux`)](https://github.com/sentrux/sentrux)**: Enforces acyclic graph dependencies and strict downward layering via `.sentrux/rules.toml` (`npm run sentrux:check`).

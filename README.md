@@ -85,6 +85,16 @@ Add this configuration to your AI assistant's MCP config file (e.g. `claude_desk
 
 ---
 
+## 🛠️ Contributor & Agent Tooling (Ponytail & Sentrux)
+
+Jules Companion enforces rigorous engineering standards using two integrated open-source tools:
+* **[Ponytail](https://github.com/DietrichGebert/ponytail)**: Anti-overengineering ruleset for developers and AI agents (YAGNI, standard library first, minimal diffs).
+* **[Sentrux](https://github.com/sentrux/sentrux)**: Architectural boundary linter enforcing a strict 6-tier downward dependency hierarchy (`npm run sentrux:check`).
+
+See [**CONTRIBUTING.md**](CONTRIBUTING.md) and [**AGENT.md**](AGENT.md) for full setup and execution instructions.
+
+---
+
 ## 📚 Architecture Documentation
 
 Comprehensive architecture documentation for all 28 scripts and subsystems is available in English:
@@ -171,6 +181,16 @@ Tambahkan konfigurasi berikut ke berkas konfigurasi MCP asisten AI Anda (misal `
   }
 }
 ```
+
+---
+
+## 🛠️ Kakas Pengembang & Agen AI (Ponytail & Sentrux)
+
+Jules Companion menerapkan standar rekayasa ketat menggunakan dua kakas open-source terintegrasi:
+* **[Ponytail](https://github.com/DietrichGebert/ponytail)**: Panduan anti-overengineering bagi pengembang dan agen AI (YAGNI, utamakan standard library, diff minimal).
+* **[Sentrux](https://github.com/sentrux/sentrux)**: Linter batas arsitektur yang menegakkan hierarki dependensi 6-tier satu arah (`npm run sentrux:check`).
+
+Lihat [**CONTRIBUTING.md**](CONTRIBUTING.md) dan [**AGENT.md**](AGENT.md) untuk panduan instalasi dan penggunaan lengkap.
 
 ---
 

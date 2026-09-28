@@ -7,16 +7,20 @@
 
 To keep the Jules Companion codebase clean, maintainable, and regression-free over the long term, all contributors should adhere to these core pillars:
 
-1. **Ponytail Mindset (Lazy Senior Developer)**:
+1. **[Ponytail](https://github.com/DietrichGebert/ponytail) Mindset (Lazy Senior Developer)**:
    - Avoid speculative abstractions or premature boilerplate (*You Aren't Gonna Need It - YAGNI*).
    - Prefer Node.js standard library modules (`node:fs`, `node:path`, `node:https`, `child_process`) over adding external npm dependencies.
    - Fix root causes rather than patching symptoms.
-2. **100% TSDoc / JSDoc Coverage**:
+   - Enforce the shortest working diff on every edit.
+2. **[Sentrux](https://github.com/sentrux/sentrux) Architectural Governance**:
+   - Maintain 6-tier downward dependency flow with 0 circular dependencies (`max_cycles = 0`).
+   - Run `npm run sentrux:check` before submitting PRs.
+3. **100% TSDoc / JSDoc Coverage**:
    - Every exported symbol (`export function`, `export class`, `export interface`, `export type`) must include a complete TSDoc comment block with `@param`, `@returns`, and descriptive documentation.
    - Enforced automatically by `tests/doc_coverage.test.ts`.
-3. **Zero Regression Policy**:
+4. **Zero Regression Policy**:
    - Every modification must pass the full test suite (`npm test`) with a 100% pass rate.
-4. **Security & State Isolation**:
+5. **Security & State Isolation**:
    - Never commit sensitive keys or hardcode environment paths into source control.
    - State file writes must be atomic to prevent concurrency corruption.
 

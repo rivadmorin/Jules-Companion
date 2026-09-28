@@ -19,6 +19,7 @@ This manual defines the **non-negotiable operating invariants, architectural bou
 When inspecting, modifying, refactoring, or extending this codebase, you must adhere to these five core invariants:
 
 ### Invariant 1: Ponytail Mode is Permanently Active (Lazy Senior Developer)
+* **Governing Engine**: [**Ponytail** (`DietrichGebert/ponytail`)](https://github.com/DietrichGebert/ponytail) — Anti-overengineering ruleset for AI coding agents.
 * **YAGNI (You Aren't Gonna Need It)**: Refuse to build speculative abstractions. Do not create interfaces with a single implementation, factories for a single class, or configuration flags for values that do not change.
 * **Standard Library First**: Use native Node.js built-ins (`node:fs`, `node:path`, `node:https`, `node:crypto`, `node:child_process`, `node:test`, `node:assert`). Never introduce new `npm` packages for functionality that standard modules or short helper functions can provide.
 * **Shortest Working Diff**: Make surgical edits. Touch only the exact target lines necessary to resolve the task. Zero unsolicited cleanup, style reformatting, or collateral edits.
@@ -33,10 +34,11 @@ Every exported symbol (`export function`, `export class`, `export interface`, `e
 * *Enforcement*: The CI pipeline and [`tests/doc_coverage.test.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/tests/doc_coverage.test.ts) will immediately fail if even a single exported symbol lacks documentation.
 
 ### Invariant 3: Strict Downward Layering & Zero Circular Dependencies
+* **Governing Sensor**: [**Sentrux** (`sentrux/sentrux`)](https://github.com/sentrux/sentrux) — AI Codebase Quality Sensor & Architectural Linter.
 * Dependencies must flow in a single downward direction:
   $$\text{Tier 0: Tests} \longrightarrow \text{Tier 1: Interfaces} \longrightarrow \text{Tier 2: Tools \& UI} \longrightarrow \text{Tier 3: Core Engines} \longrightarrow \text{Tier 4: Client} \longrightarrow \text{Tier 5: Foundation}$$
 * Foundation modules ([`scripts/core/*`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/core/) and [`scripts/client/*`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/client/)) must **never** import from UI ([`scripts/ui/*`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/ui/)) or MCP tool handlers ([`scripts/mcp/*`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/mcp/)).
-* Enforced statically by Sentrux (`.sentrux/rules.toml`).
+* Enforced statically by Sentrux via [`.sentrux/rules.toml`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/.sentrux/rules.toml).
 
 ### Invariant 4: Status Disambiguation — Plan Approval vs User Feedback
 Google Jules Cloud sessions operate with two distinct pausing states that must **never** be conflated:
@@ -74,7 +76,63 @@ Before triggering any automated or manual Git merge ([`mergeSessionCore`](file:/
 
 ---
 
-## 🗺️ 3. Codebase Architectural Navigation Map
+## 🛠️ 3. Contributor & AI Agent Tooling Suite: Ponytail & Sentrux
+
+To guarantee zero over-engineering and strict architectural compliance, this repository requires both human developers and autonomous AI agents to operate with the same standard tools:
+
+### 1. Ponytail — The Pragmatic Senior Developer Engine
+* **Repository**: [`https://github.com/DietrichGebert/ponytail`](https://github.com/DietrichGebert/ponytail)
+* **Purpose**: Prevents speculative code, kills boilerplate, and forces the simplest solution that actually works (YAGNI, stdlib first, shortest working diff).
+* **AI Agent Installation & Activation**:
+  * **Google Antigravity CLI / Gemini CLI**:
+    ```bash
+    gemini extensions install https://github.com/DietrichGebert/ponytail
+    # or
+    agy plugin install https://github.com/DietrichGebert/ponytail
+    ```
+  * **Pi Coding Agent**:
+    ```bash
+    pi install git:github.com/DietrichGebert/ponytail
+    ```
+  * **OpenClaw**:
+    ```bash
+    clawhub install ponytail
+    ```
+  * **Cursor / Windsurf / Copilot / Claude Code**:
+    Copy rules from [Ponytail repository](https://github.com/DietrichGebert/ponytail):
+    - Cursor: `.cursor/rules/ponytail.md`
+    - Windsurf: `.windsurf/rules/ponytail.md`
+    - Copilot: `.github/copilot-instructions.md`
+    - Qoder / Cline: `AGENTS.md`
+* **Agent Slash Commands**:
+  - `/ponytail full`: Activates full intensity mode (default).
+  - `/ponytail-review`: Conducts an anti-complexity code review on the git diff.
+  - `/ponytail-audit`: Scans the entire repo for dead code and unneeded abstractions.
+  - `/ponytail-debt`: Harvests deferred shortcuts into a structured ledger.
+
+### 2. Sentrux — AI Architectural Linter & Quality Sensor
+* **Repository**: [`https://github.com/sentrux/sentrux`](https://github.com/sentrux/sentrux)
+* **Purpose**: Enforces acyclic graph dependencies, strict 6-tier downward layering, and detects structural code decay.
+* **Installation**:
+  ```bash
+  cargo install sentrux
+  # Or download prebuilt release binaries from https://github.com/sentrux/sentrux/releases
+  ```
+* **Repository Ruleset**: [`.sentrux/rules.toml`](.sentrux/rules.toml)
+* **Verification Commands**:
+  ```bash
+  # Check architectural layering and circular dependencies
+  sentrux check .
+  # or via npm script:
+  npm run sentrux:check
+
+  # Compare architecture condition against baseline gate
+  sentrux gate .
+  ```
+
+---
+
+## 🗺️ 4. Codebase Architectural Navigation Map
 
 ```
 Jules-Companion/
@@ -121,7 +179,7 @@ Jules-Companion/
 
 ---
 
-## 🛠️ 4. AI Agent Operating Playbook
+## 🛠️ 5. AI Agent Operating Playbook
 
 When executing tasks in this repository, follow this step-by-step workflow:
 
@@ -161,7 +219,7 @@ npm run sync
 
 ---
 
-## 🔌 5. Model Context Protocol (MCP) Tool Calling Reference
+## 🔌 6. Model Context Protocol (MCP) Tool Calling Reference
 
 Jules Companion exposes **20 native MCP tools**. When interacting as an AI agent via MCP, use these exact schemas:
 
@@ -218,7 +276,7 @@ Dispatches an autonomous team workflow across multiple agent personas:
 
 ---
 
-## 📋 6. Specialist Agent Roster Reference (30 Personas)
+## 📋 7. Specialist Agent Roster Reference (30 Personas)
 
 The repository provides 30 specialized agent personas located in [`references/agents/`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/references/agents/) and indexed in [`references/agents/registry.json`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/references/agents/registry.json):
 
@@ -251,7 +309,7 @@ The repository provides 30 specialized agent personas located in [`references/ag
 
 ---
 
-## ⚠️ 7. Common Gotchas & Agent Survival Guide
+## ⚠️ 8. Common Gotchas & Agent Survival Guide
 
 1. **Path Separators & Line Endings**:
    - The primary host environment is **Windows** (PowerShell), but CI runs on both **Ubuntu Linux** and **Windows**.
@@ -271,13 +329,15 @@ The repository provides 30 specialized agent personas located in [`references/ag
 
 ---
 
-## ✅ 8. Pre-Completion Agent Checklist
+## ✅ 9. Pre-Completion Agent Checklist
 
 Before completing any task in this repository, verify every item:
 - [ ] Only minimal, targeted lines were modified (Shortest Working Diff).
 - [ ] No speculative or unused abstractions were added (YAGNI).
 - [ ] Zero new external npm dependencies were added unless explicitly authorized.
 - [ ] All new or modified exported functions, classes, and types have 100% TSDoc blocks.
+- [ ] Code strictly respects [Ponytail](https://github.com/DietrichGebert/ponytail) principles (stdlib first, shortest working diff).
+- [ ] Architecture passes [Sentrux](https://github.com/sentrux/sentrux) verification (`sentrux check .` or `npm run sentrux:check`) with 0 cycle violations.
 - [ ] `npm test` runs and passes 106/106 tests with 0 failures.
 - [ ] `npm run package` succeeds cleanly, producing `jules-companion-1.0.0.vsix`.
 - [ ] Git status is clean and all changes are accounted for.
