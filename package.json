@@ -416,7 +416,7 @@
     }
   },
   "scripts": {
-    "build": "esbuild scripts/*.ts scripts/**/*.ts --outdir=dist --platform=node --format=cjs",
+    "build": "esbuild scripts/*.ts scripts/*/*.ts scripts/*/*/*.ts --outdir=dist --platform=node --format=cjs",
     "postbuild": "node dist/sync_global.js",
     "sync": "node dist/sync_global.js",
     "pretest": "npm run build",
@@ -425,7 +425,7 @@
     "deploy": "node dist/deploy_session.js",
     "merge": "node dist/merge_session.js",
     "client": "node dist/jules_client.js",
-    "test": "tsx --test --test-concurrency=1 tests/*.test.ts",
+    "test": "node scripts/run_tests.js",
     "mcp": "node dist/mcp_server.js",
     "package": "vsce package --no-dependencies",
     "graft:check": "graft check",
