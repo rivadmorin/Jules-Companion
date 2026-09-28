@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "Google Jules CLI & REST API companion skill with 30 specialized agents",
   "displayName": "Jules Companion",
-  "publisher": "rivadmorin",
+  "publisher": "RivadMorinrivadmorin",
+  "icon": "media/logo.png",
   "engines": {
     "vscode": "^1.90.0"
   },
