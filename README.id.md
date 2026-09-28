@@ -2,7 +2,7 @@
 
 > **[Read in English (Baca dalam Bahasa Inggris)](README.md)**
 
-`jules-companion` adalah Model Context Protocol (MCP) Server, global Agent Skill, dan alat CLI untuk AI coding agent dan IDE modern — seperti **Antigravity IDE**, **OpenCode**, **Claude Code**, **Cursor**, **Windsurf**, dan **Codex CLI**.
+`jules-companion` adalah Model Context Protocol (MCP) Server, global Agent Skill, dan ekstensi IDE native untuk lingkungan AI coding modern — seperti **Visual Studio Code**, **Google Antigravity IDE**, **Claude Desktop / Claude Code**, **Cursor**, **Windsurf**, dan **OpenCode**.
 
 Aplikasi ini berfungsi sebagai ko-pilot pintar untuk mengintegrasikan alur kerja lokal (Git + GitHub CLI) dengan eksekusi cloud otonom menggunakan **Google Jules API**.
 
@@ -10,36 +10,52 @@ Aplikasi ini berfungsi sebagai ko-pilot pintar untuk mengintegrasikan alur kerja
 
 ## ⚡ Fitur Utama
 
-* **💻 Native VS Code / IDE Extension**: Sidebar TreeView untuk Sessions, Direktori 43 Agen Spesialis, dan Jurnal Keputusan, plus inspeksi git diff native side-by-side dan status bar counter real-time.
-* **🔌 Native MCP Server**: Terhubung langsung secara seamless ke klien AI berbasis MCP (Antigravity IDE, Claude Desktop, OpenCode, Cursor) yang menyediakan tools & resource status sesi real-time.
-* **🤖 43 Agen Spesialis**: Agen yang telah dikonfigurasi untuk peran spesifik (misal: *Bolt* untuk performa, *Sentinel* untuk keamanan, *Architect* untuk desain struktur).
-* **🛡️ Penggabungan Patch Dua-Tahap**: Patch dari cloud ditarik ke dalam cabang ulasan (review branch) terisolasi terlebih dahulu. Anda menginspeksi laporan Markdown sebelum menggabungkannya ke `main`.
-* **⚡ Core Programatik & CLI Bersih**: Eksekusi fungsi bertipe secara langsung tanpa mutasi proses global, plus perintah CLI praktis (`npm run deploy`, `npm run merge`, `npm run setup`).
+* **🚀 4 Mode Eksekusi Resmi Google Jules**:
+  * **Start** (`start`): Eksekusi kode otonom seketika tanpa berhenti menunggu persetujuan rencana (`requirePlanApproval: false`).
+  * **Review** (`review`): Merumuskan rencana pelaksanaan dan berhenti pada status `AWAITING_PLAN_APPROVAL` untuk otorisasi Anda (`requirePlanApproval: true`).
+  * **Interactive plan** (`interactive`): Jules berdialog interaktif untuk memperjelas tujuan developer sebelum merumuskan rencana (berhenti di `AWAITING_USER_FEEDBACK`).
+  * **Scheduled task** (`scheduled` [BARU!]): Menjadwalkan tugas otomatis di latar belakang yang dievaluasi oleh background scheduler engine.
+* **⏰ Mesin Penjadwalan Tugas Otonom**: Loop evaluasi latar belakang yang memicu tugas jatuh tempo, mencatat ID sesi cloud, dan memberi notifikasi ke IDE.
+* **🎛️ Mission Control Webview**: Panel interaktif dengan sinkronisasi status cloud live, stepper rencana eksekusi, timeline aktivitas, dan pemisahan tegas banner Approval Plan vs Masukan Pengguna.
+* **💻 Ekstensi IDE Native**: Sidebar TreeView untuk Sesi Aktif, Tugas Terjadwal, Arsip Sesi, Konteks Git Workspace, Katalog 30 Agen, dan Jurnal Keputusan.
+* **🔌 Server MCP Native (20 Tools)**: Server standar JSON-RPC via `stdio` yang kompatibel dengan Claude, Antigravity CLI, Cursor, dan klien MCP lainnya.
+* **🤖 30 Agen Spesialis**: Peran agen yang telah dikalibrasi untuk Coding, Testing, Keamanan, Arsitektur, DevOps, dan Dokumentasi.
+* **🛡️ Safety Gate Anti-Gagal**: Memverifikasi keberhasilan sesi cloud (`SUCCEEDED`) dan kebersihan working tree sebelum merge Git.
 
 ---
 
-## 💻 Ekstensi VS Code / IDE
+## 🚀 Rincian 4 Mode Eksekusi
 
-`jules-companion` menyertakan ekstensi GUI terintegrasi untuk VS Code, Cursor, dan Antigravity IDE!
+| Mode | Label & Ikon | Perilaku Google Jules | Integrasi di Ekstensi |
+|---|---|---|---|
+| **Start** | 🚀 `Start` | Eksekusi langsung tanpa persetujuan | Implementasi kode otonom seketika. |
+| **Review** | 📑 `Review` | Merumuskan rencana dan menunggu persetujuan | Jules merumuskan rencana dan berhenti di `AWAITING_PLAN_APPROVAL`. |
+| **Interactive plan** | 🎯 `Interactive plan` | Berdialog untuk memahami tujuan developer | Injeksi direktif eksplorasi; jeda di `AWAITING_USER_FEEDBACK`. |
+| **Scheduled task** | ⏰ `Scheduled task` | Menjalankan tugas saat developer tidak di tempat | Disimpan ke `.jules-companion/schedules.json` dan dieksekusi via background timer. |
+
+---
+
+## 💻 Ekstensi VS Code / Antigravity IDE
+
+`jules-companion` menyertakan ekstensi GUI terintegrasi dengan 33 commands dan 4 TreeView di sidebar!
 
 ### 🌟 Fitur Antarmuka (UI)
 * **Sidebar Activity Bar**:
-  * **Sessions View**: Daftar real-time sesi cloud yang aktif, selesai, maupun gagal, lengkap dengan tombol aksi inline (`Diff`, `Merge`, `Cancel`, `Rollback`).
-  * **Agent Roster**: Direktori terkategori dari 43 agen spesialis beserta deskripsi peran dan batasannya.
-  * **Journals & Reports**: Akses 1-klik ke file catatan keputusan dan ulasan kode (Markdown).
-* **Native Diff Integration**: Membuka perubahan kode dari sesi Jules berdampingan (side-by-side) menggunakan diff editor bawaan VS Code sebelum di-merge.
-* **Indikator Status Bar**: Counter minimalis di pojok kiri bawah yang menampilkan jumlah sesi yang sedang berjalan.
-* **Dukungan Command Palette**: Akses cepat via `Ctrl+Shift+P` (`Jules: Deploy New Session`, `Jules: Run System Doctor`, dll.).
+  * **Sessions View**: Daftar real-time sesi aktif, grup tugas terjadwal (`⏰ Scheduled Tasks (N pending)`), dan grup arsip (`📦 Archived Sessions`).
+  * **Workspace View**: Menampilkan branch Git aktif, remote URL, status working tree, dan status health checks.
+  * **Agent Roster**: Direktori 30 agen spesialis beserta deskripsi peran dan batasannya.
+  * **Journals View**: Akses cepat ke catatan jurnal pembelajaran agen (`*.journal.md`).
+* **Mission Control Webview**: Antarmuka visual lengkap dengan kepatuhan CSP ketat (nonces kriptografis & event delegation `data-action`).
+* **Native Diff Integration**: Membuka perubahan kode berdampingan (*side-by-side*) menggunakan diff editor bawaan IDE via `vscode.diff`.
 
 ### 📦 Build & Instalasi
 ```bash
 # 1. Package menjadi file installer .vsix
 npm run package
 
-# 2. Pasang langsung di VS Code / Cursor
+# 2. Pasang langsung di VS Code / Antigravity IDE
 code --install-extension jules-companion-1.0.0.vsix
 ```
-*Untuk pengembangan atau debugging lokal, buka direktori ini di VS Code lalu tekan `F5` untuk menjalankan Extension Development Host.*
 
 ---
 
@@ -49,165 +65,47 @@ code --install-extension jules-companion-1.0.0.vsix
 
 ### Konfigurasi Server
 
-Tambahkan `jules-companion` ke konfigurasi MCP di Klien AI Anda (`mcp_config.json` atau sejenisnya):
+Tambahkan `jules-companion` ke konfigurasi MCP di Klien AI Anda (`claude_desktop_config.json` atau sejenisnya):
 
 ```json
 {
   "mcpServers": {
     "jules-companion": {
       "command": "node",
-      "args": ["/path/to/jules-companion/dist/mcp_server.js"]
+      "args": ["/path/to/jules-companion/dist/mcp_server.js"],
+      "env": {
+        "JULES_API_KEY": "kunci_api_anda_di_sini"
+      }
     }
   }
 }
 ```
 
-### Exposed MCP Tools (20 Tools) & Resources
-
-#### 🔹 Group 1: Discovery & Setup
-| Nama Tool | Deskripsi | Contoh Payload |
-| :--- | :--- | :--- |
-| `list_agents` | Mengembalikan daftar JSON dari 43 agen spesialis di `registry.json`. | `{}` |
-| `get_agent_info` | Membaca template markdown instruksi dan batasan agen target. | `{ "agentName": "annotator" }` |
-| `list_sources` | Mengueri repositori GitHub Cloud terhubung di akun Jules ini. | `{}` |
-| `run_doctor` | Menjalankan pemeriksaan integritas lingkungan (.env, API key, git, gh CLI). | `{}` |
-| `create_custom_agent` | Membuat file template agen kustom dan memperbarui registry.json. | `{ "name": "custom", "role": "Role", "directives": "...", "boundariesDo": [], "boundariesDont": [] }` |
-
-#### 🔹 Group 2: Session Control & Interactivity
-| Nama Tool | Deskripsi | Contoh Payload |
-| :--- | :--- | :--- |
-| `deploy_session` | Menyebarkan sesi Jules baru dengan agen spesialis. | `{ "type": "start", "agents": "annotator", "task": "...", "mode": "code" }` |
-| `get_session_status` | Mengambil status sesi real-time langsung dari Google Jules API. | `{ "sessionId": "12345" }` |
-| `cancel_session` | Membatalkan sesi cloud Jules via HTTP DELETE. | `{ "sessionId": "12345" }` |
-| `send_session_message` | Mengirim pesan balasan atau instruksi ke sesi yang berjalan. | `{ "sessionId": "12345", "message": "Lanjutkan" }` |
-| `retry_failed_session` | Meng-deploy ulang sesi yang gagal dengan instruksi tugas baru. | `{ "sessionId": "12345" }` |
-
-#### 🔹 Group 3: Multi-Agent Orchestration
-| Nama Tool | Deskripsi | Contoh Payload |
-| :--- | :--- | :--- |
-| `auto_process` | Menyetujui plan & mengirim auto-reply secara otomatis. | `{ "all": true }` |
-| `deploy_team` | Menyebarkan preset tim multi-agen (full-audit, feature-sprint, refactor-boost). | `{ "preset": "full-audit", "task": "Audit codebase" }` |
-| `setup_workspace` | Menginisialisasi lingkungan staging workspace lokal Jules. | `{}` |
-
-#### 🔹 Group 4: Patch, Git & PR Bridge
-| Nama Tool | Deskripsi | Contoh Payload |
-| :--- | :--- | :--- |
-| `merge_session` | Menginspeksi, menyetujui, atau menggabungkan patch sesi cloud Jules. | `{ "sessionId": "12345", "approve": true }` |
-| `pull_session_diff` | Mengambil isi patch unidiff tanpa melakukan merge. | `{ "sessionId": "12345", "outputPath": "patch.diff" }` |
-| `checkout_session_branch` | Membuat branch fitur terisolasi dan menerapkan patch sesi. | `{ "sessionId": "12345" }` |
-| `create_github_pr` | Membuat GitHub Pull Request menggunakan gh CLI untuk sesi terhubung. | `{ "sessionId": "12345" }` |
-
-#### 🔹 Group 5: Knowledge, Quality & Safety
-| Nama Tool | Deskripsi | Contoh Payload |
-| :--- | :--- | :--- |
-| `read_agent_journal` | Membaca catatan pembelajaran agen di `.jules/<agent>.md`. | `{ "agentName": "annotator" }` |
-| `get_review_reports` | Memindai dan merangkum laporan audit markdown di `docs/jules-reviews/`. | `{}` |
-| `rollback_session` | Mengembalikan stashes uncommitted atau membersihkan working directory. | `{}` |
-
-#### 🔹 MCP Resource
-| URI | Deskripsi |
-| :--- | :--- |
-| `jules://sessions` | Mengembalikan daftar sesi Jules AI aktif dan histori dari status lokal. |
+### Katalog Lengkap 20 Native MCP Tools:
+1. `deploy_session`: Meluncurkan sesi baru dengan 4 mode peluncuran resmi.
+2. `merge_session`: Menjalankan Safety Gate dan menggabungkan branch sesi ke lokal.
+3. `auto_process`: Pipeline otonom: deploy -> pantau -> setujui rencana -> merge.
+4. `get_session_status`: Mengambil status real-time dari Google Jules REST API.
+5. `setup_workspace`: Menginisialisasi direktori `.jules/` dan staging workspace.
+6. `list_agents`: Menampilkan daftar 30 agen spesialis dari `registry.json`.
+7. `get_agent_info`: Membaca instruksi sistem dan batasan agen target.
+8. `list_sources`: Mengambil daftar repositori yang terhubung di Google Jules Cloud.
+9. `run_doctor`: Menjalankan pemeriksaan integritas lingkungan (Git, Node, API Key).
+10. `create_custom_agent`: Membuat template agen kustom baru dan memperbarui `registry.json`.
+11. `cancel_session`: Membatalkan sesi aktif di Google Cloud.
+12. `send_session_message`: Mengirim pesan balasan ke sesi yang menunggu masukan.
+13. `retry_failed_session`: Meluncurkan ulang sesi yang gagal secara otomatis.
+14. `deploy_team`: Meluncurkan sesi paralel untuk beberapa agen sekaligus.
+15. `pull_session_diff`: Mengambil unified diff patch dari perubahan kode.
+16. `checkout_session_branch`: Melakukan checkout branch Git yang dibuatkan Jules.
+17. `create_github_pr`: Membuat GitHub Pull Request via GitHub CLI (`gh`).
+18. `read_agent_journal`: Membaca catatan pembelajaran agen di `.journal.md`.
+19. `get_review_reports`: Mengambil daftar laporan tinjauan kode di `docs/jules-reviews/`.
+20. `rollback_session`: Membatalkan commit merge sesi dari branch kerja lokal secara aman.
 
 ---
 
-## 🚀 Instalasi Satu-Baris
+## 📚 Dokumentasi Arsitektur Lengkap
 
-Instal dan konfigurasikan `jules-companion` secara instan hanya dengan satu perintah:
-
-### Linux / macOS
-```bash
-curl -sSL https://raw.githubusercontent.com/rivadmorin/Jules-Companion/main/install.sh | bash
-```
-
-### Windows (PowerShell)
-```powershell
-powershell -c "irm https://raw.githubusercontent.com/rivadmorin/Jules-Companion/main/install.ps1 | iex"
-```
-
-<details>
-<summary><b>🛠️ Instalasi Manual (Klik untuk melihat)</b></summary>
-
-### Prasyarat
-* **Node.js**: v18.0.0 atau lebih tinggi (teruji pada Node v20 & v24 LTS)
-* **Git** & **GitHub CLI** (`gh` CLI opsional, direkomendasikan untuk pembuatan PR otomatis)
-* **Google Jules API Key**: Dapatkan dari [Google Jules Console](https://jules.google.com/)
-
-```bash
-# Kloning repositori
-git clone https://github.com/rivadmorin/Jules-Companion.git
-cd Jules-Companion
-
-# Instal dependensi dan build artefak TypeScript
-npm install
-npm run build
-
-# Jalankan penyiapan staging workspace otomatis
-npm run setup
-```
-> [!NOTE]
-> Perintah `npm run build` secara otomatis memicu skrip `postbuild` yang menyinkronkan seluruh artefak terkompilasi, template prompt agen, dan skema MCP langsung ke direktori global IDE (`~/.gemini/config/skills/jules-companion` dan `~/.gemini/antigravity-ide/mcp/jules-companion`).
-</details>
-
-### Konfigurasi
-1. Buat file `.env` pada root repositori:
-   ```env
-   JULES_API_KEY=kunci_api_jules_anda_di_sini
-   ```
-2. Tambahkan `jules-companion` ke file konfigurasi MCP IDE Anda (`mcp_config.json`):
-   ```json
-   {
-     "mcpServers": {
-       "jules-companion": {
-         "command": "node",
-         "args": ["<path-ke-Jules-Companion>/dist/mcp_server.js"]
-       }
-     }
-   }
-   ```
-
----
-
-## 💬 Slash Commands Agen AI
-
-Saat digunakan sebagai Agent Skill di asisten AI seperti **Antigravity IDE** atau **Claude Code**, slash commands secara langsung dipetakan ke payload MCP Tool native (dengan perintah terminal CLI sebagai fallback sekunder):
-
-| Perintah | Aksi Utama (MCP Tool) | Fallback Sekunder (CLI) |
-| :--- | :--- | :--- |
-| `/jules-deploy <agen> <tugas>` | `deploy_session` `{ type: "start", mode: "code" }` | `node dist/deploy_session.js --type start ...` |
-| `/jules-review <agen> <tugas>` | `deploy_session` `{ type: "review", mode: "review" }` | `node dist/deploy_session.js --type review ...` |
-| `/jules-status` | `get_session_status` / Baca `jules://sessions` | `node dist/jules_client.js list --json` |
-| `/jules-auto` | `auto_process` `{ all: true }` | `node dist/auto_process.js --all` |
-| `/jules-inspect <session_id>` | `merge_session` `{ inspect: true }` | `node dist/merge_session.js --inspect <id>` |
-| `/jules-merge <session_id>` | `merge_session` `{ approve: true }` | `node dist/merge_session.js --approve <id>` |
-| `/jules-doctor` | Cek diagnostik lingkungan | Cek diagnostik lingkungan |
-
----
-
-## 📚 Dokumentasi
-
-Untuk rincian komprehensif mengenai arsitektur aplikasi, peta kode, standar pengujian, dan peta jalan pengembangan:
-
-* 📖 **[Panduan & Dokumentasi Lengkap Aplikasi](docs/penjelasan-aplikasi.md)** — Arsitektur umum, katalog 20 MCP tools, FSM siklus sesi, dan diagnostik.
-* 🗺️ **[Peta Arsitektur & Panduan Codebase](docs/codebase-architecture-map.md)** — Hierarki 6 lapisan, tata kelola Sentrux, topologi Graft, dan pola *programmatic core*.
-* 🛡️ **[Panduan Keberlanjutan Kode, QA & Roadmap](docs/development-and-contribution-guide.md)** — Standar keberlanjutan kode, audit 100% TSDoc, tata cara kontribusi/ekstensi fitur, dan roadmap keberlanjutan.
-
----
-
-## 🧹 Hapus Instalasi Satu-Baris (One-Line Uninstall)
-
-Hapus `jules-companion` dan seluruh skema global secara bersih:
-
-### Linux / macOS
-```bash
-curl -sSL https://raw.githubusercontent.com/rivadmorin/Jules-Companion/main/uninstall.sh | bash
-```
-
-### Windows (PowerShell)
-```powershell
-powershell -c "irm https://raw.githubusercontent.com/rivadmorin/Jules-Companion/main/uninstall.ps1 | iex"
-```
-
-> [!TIP]
-> Jangan lupa untuk menghapus entri `"jules-companion"` dari file `mcp_config.json` pada IDE Anda setelah menjalankan uninstaller.
-
+Dokumentasi arsitektur komprehensif untuk seluruh 28 modul skrip tersedia dalam Bahasa Inggris:
+👉 [**Master Architecture & Codebase Documentation**](docs/codebase/README.md)
