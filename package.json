@@ -439,13 +439,8 @@
     "test": "node scripts/run_tests.js",
     "mcp": "node dist/mcp_server.js",
     "package": "vsce package --no-dependencies",
-    "graft:check": "graft check",
-    "graft:map": "graft map",
-    "graft:blast": "graft blast",
-    "graft:viz": "graft viz",
-    "graft:export": "graft viz --export docs/architecture-graph --no-open",
     "sentrux:check": "sentrux check .",
-    "verify": "npm test && npm run sentrux:check && npm run graft:check"
+    "verify": "npm test && npm run sentrux:check"
   },
   "keywords": [
     "jules",
