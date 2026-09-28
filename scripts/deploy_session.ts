@@ -175,16 +175,6 @@ export async function deploySessionCore(options: DeploySessionOptions): Promise<
     };
   }
 
-  const apiKey = getApiKey(targetDir);
-  if (!apiKey) {
-    return {
-      success: false,
-      output: '',
-      error: 'JULES_API_KEY not found in environment or .env file.'
-    };
-  }
-
-  const headers = { 'X-Goog-Api-Key': apiKey };
   const outputLogs: string[] = [];
 
   let startingBranch: string;
@@ -210,6 +200,17 @@ export async function deploySessionCore(options: DeploySessionOptions): Promise<
       startingBranch = defaultBranch;
     }
   }
+
+  const apiKey = getApiKey(targetDir);
+  if (!apiKey) {
+    return {
+      success: false,
+      output: '',
+      error: 'JULES_API_KEY not found in environment or .env file.'
+    };
+  }
+
+  const headers = { 'X-Goog-Api-Key': apiKey };
 
   try {
     outputLogs.push(`Matching repository '${gitRepo}' with Jules sources...`);

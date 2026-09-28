@@ -416,7 +416,7 @@
     }
   },
   "scripts": {
-    "build": "esbuild scripts/*.ts scripts/*/*.ts scripts/*/*/*.ts --outdir=dist --platform=node --format=cjs",
+    "build": "node scripts/build.js",
     "postbuild": "node dist/sync_global.js",
     "sync": "node dist/sync_global.js",
     "pretest": "npm run build",
