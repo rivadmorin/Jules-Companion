@@ -124,15 +124,17 @@ Executes Git commands via Node.js `child_process.spawnSync`.
 | `cancelScheduledTask` | `(taskId: string, targetDir?: string): boolean` | Transitions a `'pending'` task to `'cancelled'`. Returns false if not found or already executed. |
 | `deleteScheduledTask` | `(taskId: string, targetDir?: string): boolean` | Permanently deletes a task record from schedules storage. |
 | `getDueScheduledTasks` | `(targetDir?: string, now?: Date): ScheduledTask[]` | Filters tasks with status `'pending'` where `scheduledAt <= now.toISOString()`. |
-| `executeDueTasks` | `(targetDir?: string, onExecute?: Function): Promise<number>` | Evaluates due tasks, transitions them to `'running'`, invokes `deploySessionCore`, updates status to `'completed'`, and attaches the resulting cloud session ID. |
-| `runScheduledTaskNow` | `(taskId: string, targetDir?: string): Promise<{ success: boolean; sessionId?: string; error?: string }>` | Force-executes a specific scheduled task immediately without waiting for `scheduledAt`. |
+| `setTaskExecutor` | `(executor: TaskExecutor): void` | Registers global task runner callback, cleanly decoupling scheduler from workflow implementation. |
+| `getTaskExecutor` | `(): TaskExecutor \| null` | Retrieves active registered task executor handler. |
+| `executeDueTasks` | `(targetDir?: string, onExecute?: Function, executor?: TaskExecutor): Promise<number>` | Evaluates due tasks, transitions them to `'running'`, invokes registered executor, updates status to `'completed'`, and attaches the resulting cloud session ID. |
+| `runScheduledTaskNow` | `(taskId: string, targetDir?: string, executor?: TaskExecutor): Promise<{ success: boolean; sessionId?: string; error?: string }>` | Force-executes a specific scheduled task immediately via registered executor without waiting for `scheduledAt`. |
 
 ### Execution State Machine in `executeDueTasks`:
 ```typescript
-// Autonomous Execution Lifecycle:
+// Autonomous Execution Lifecycle (Decoupled Layer Architecture):
 // 1. Fetch due tasks: scheduledAt <= now
 // 2. Mark task as 'running' -> disk sync (prevents concurrent double-execution)
-// 3. Call deploySessionCore({ task, agents, mode, type, branch, targetDir })
+// 3. Delegate to registered TaskExecutor({ task, agents, mode, type, branch, targetDir })
 // 4. On success -> mark 'completed', extract session ID from output, disk sync
 // 5. On failure -> revert to 'pending' for retry in subsequent poll tick
 ```

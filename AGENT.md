@@ -338,6 +338,6 @@ Before completing any task in this repository, verify every item:
 - [ ] All new or modified exported functions, classes, and types have 100% TSDoc blocks.
 - [ ] Code strictly respects [Ponytail](https://github.com/DietrichGebert/ponytail) principles (stdlib first, shortest working diff).
 - [ ] Architecture passes [Sentrux](https://github.com/sentrux/sentrux) verification (`sentrux check .` or `npm run sentrux:check`) with 0 cycle violations.
-- [ ] `npm test` runs and passes 106/106 tests with 0 failures.
-- [ ] `npm run package` succeeds cleanly, producing `jules-companion-1.0.0.vsix`.
+- [ ] `npm test` runs and passes 108/108 tests with 0 failures.
+- [ ] `npm run package` succeeds cleanly, producing `jules-companion-1.0.1.vsix`.
 - [ ] Git status is clean and all changes are accounted for.

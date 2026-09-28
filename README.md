@@ -51,8 +51,8 @@ It acts as an intelligent co-pilot to orchestrate local developer workflows (Git
 npm run build
 npm run package
 
-# 2. Install the resulting jules-companion-1.0.0.vsix in your IDE:
-code --install-extension jules-companion-1.0.0.vsix
+# 2. Install the resulting jules-companion-1.0.1.vsix in your IDE:
+code --install-extension jules-companion-1.0.1.vsix
 ```
 
 ### Configure API Key
@@ -150,8 +150,8 @@ Aplikasi ini berfungsi sebagai ko-pilot pintar untuk mengintegrasikan alur kerja
 npm run build
 npm run package
 
-# 2. Pasang berkas jules-companion-1.0.0.vsix di IDE:
-code --install-extension jules-companion-1.0.0.vsix
+# 2. Pasang berkas jules-companion-1.0.1.vsix di IDE:
+code --install-extension jules-companion-1.0.1.vsix
 ```
 
 ### Mengonfigurasi Kunci API

@@ -2,7 +2,7 @@
 > *Architecture Documentation & Maintenance Guide Powered by [**Sentrux**](https://github.com/sentrux/sentrux) (Architectural Governance) and [**Graft**](https://github.com/alexphelps/graft) (Semantic Context Graph)*  
 > *Developer Pragmatism & Anti-Overengineering Powered by [**Ponytail**](https://github.com/DietrichGebert/ponytail)*  
 > *Complete 28 Scripts Reference: See [**Comprehensive Codebase Documentation Index**](codebase/README.md)*  
-> *Current Status: 106 Unit Tests 100% Passed, 100% TSDoc Coverage, Zero Regressions, Zero Architectural Violations*
+> *Current Status: 108 Unit Tests 100% Passed, 100% TSDoc Coverage, Zero Regressions, Zero Architectural Violations*
 
 ---
 
@@ -20,7 +20,7 @@ The `Jules-Companion` codebase is built upon a **clean domain-driven layered arc
 | **Clean Interfaces** | 🟢 Programmatic Core | Core functions (`deploySessionCore`, `mergeSessionCore`, `autoProcessCore`) are modularly invokable without mutating `process.argv` or hijacking `stdout`. |
 | **Equality & God-Files** | 🟢 Lightweight | [`mcp_server.ts`](file:///e:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/mcp_server.ts) is only **85 lines**, [`jules_client.ts`](file:///e:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/jules_client.ts) **185 lines**, divided into isolated tool handlers. |
 | **Modularity & Coupling** | 🟢 Clean Distribution | Dependency load of core hotspot callers is evenly distributed across `core/`, `client/`, and `mcp/`. |
-| **Test Suite Pass Rate** | 🟢 100% (106/106 Tests) | 35 test suites pass 100% in ~26 seconds on Node.js native test runner with tsx. |
+| **Test Suite Pass Rate** | 🟢 100% (108/108 Tests) | 35 test suites pass 100% in ~26 seconds on Node.js native test runner with tsx. |
 
 ---
 
@@ -31,7 +31,7 @@ Sentrux enforces that code dependencies must flow **in one direction downward**.
 ```mermaid
 graph TD
     subgraph Tier_0 ["Tier 0: Tests (Verification Layer)"]
-        T["tests/*.test.ts (35 test suites / 106 tests)"]
+        T["tests/*.test.ts (35 test suites / 108 tests)"]
     end
 
     subgraph Tier_1 ["Tier 1: Interfaces & Entrypoints"]

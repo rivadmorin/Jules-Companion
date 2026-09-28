@@ -129,7 +129,7 @@ sequenceDiagram
     
     opt Has Due Tasks (scheduledAt <= now)
         Sched->>Sched: Mark task as 'running'
-        Sched->>API: deploySessionCore(task)
+        Sched->>API: executeTask(task) via TaskExecutor
         API-->>Sched: Session Created (ID)
         Sched->>Sched: Mark task as 'completed', attach sessionId
         Sched-->>LS: Fired count > 0

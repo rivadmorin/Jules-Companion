@@ -132,19 +132,19 @@ npm run package
 
 ## 4. Extension Distribution & Installation
 
-Once `jules-companion-1.0.0.vsix` is built:
+Once `jules-companion-1.0.1.vsix` is built:
 
 ### A. Local Development Direct Sync:
 Copy `dist/` and `package.json` directly into your IDE extensions folder:
-- **VS Code**: `C:\Users\<User>\.vscode\extensions\rivadmorin.jules-companion-1.0.0`
-- **Antigravity IDE**: `C:\Users\<User>\.antigravity-ide\extensions\rivadmorin.jules-companion-1.0.0`
+- **VS Code**: `C:\Users\<User>\.vscode\extensions\rivadmorin.jules-companion-1.0.1`
+- **Antigravity IDE**: `C:\Users\<User>\.antigravity-ide\extensions\rivadmorin.jules-companion-1.0.1`
 
 ### B. VSIX Installation via GUI:
 1. Open VS Code or Antigravity IDE.
 2. Go to **Extensions** panel (`Ctrl+Shift+X`).
 3. Click the `...` menu in the upper-right corner of the Extensions panel.
 4. Select **Install from VSIX...**.
-5. Choose `jules-companion-1.0.0.vsix`.
+5. Choose `jules-companion-1.0.1.vsix`.
 
 ---
 

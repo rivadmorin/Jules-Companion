@@ -54,7 +54,7 @@ Aplikasi ini berfungsi sebagai ko-pilot pintar untuk mengintegrasikan alur kerja
 npm run package
 
 # 2. Pasang langsung di VS Code / Antigravity IDE
-code --install-extension jules-companion-1.0.0.vsix
+code --install-extension jules-companion-1.0.1.vsix
 ```
 
 ---
