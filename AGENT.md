@@ -366,8 +366,8 @@ Before completing any task in this repository, verify every item:
 - [ ] Code strictly respects [Ponytail](https://github.com/DietrichGebert/ponytail) principles (stdlib first, shortest working diff).
 - [ ] Architecture passes [Sentrux](https://github.com/sentrux/sentrux) verification (`sentrux check .` or `npm run sentrux:check`) with 0 cycle violations.
 - [ ] Build script compiles cleanly cross-platform without shell glob dependencies (`npm run build`).
-- [ ] `npm test` runs and passes 108/108 tests with 0 failures in headless/offline environment.
-- [ ] `npm run package` succeeds cleanly, producing `jules-companion-1.0.1.vsix`.
+- [ ] `npm test` runs and passes 115/115 tests with 0 failures in headless/offline environment.
+- [ ] `npm run package` succeeds cleanly, producing `jules-companion-1.1.0.vsix`.
 - [ ] CI pipeline ([`.github/workflows/ci.yml`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/.github/workflows/ci.yml)) is confirmed green across all matrix runners (Ubuntu & Windows, Node 20.x & 22.x).
 - [ ] All relevant documentation (`README.md`, `README.id.md`, `docs/codebase/`, `CHANGELOG.md`, `AGENT.md`) has been updated and synchronized with latest changes.
 - [ ] Git status is clean and all changes are accounted for.

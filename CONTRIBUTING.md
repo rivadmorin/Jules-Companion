@@ -328,14 +328,14 @@ test(mcp): add unit tests for dynamic tool registration
 
 To build and verify the VSIX package locally:
 ```bash
-# Package into jules-companion-1.0.1.vsix
+# Package into jules-companion-1.1.0.vsix
 npm run package
 
 # Install directly into VS Code
-code --install-extension jules-companion-1.0.1.vsix
+code --install-extension jules-companion-1.1.0.vsix
 
 # Install directly into Antigravity IDE (if installed)
-antigravity --install-extension jules-companion-1.0.1.vsix
+antigravity --install-extension jules-companion-1.1.0.vsix
 ```
 
 ---
@@ -346,9 +346,9 @@ Our release pipeline is fully automated via GitHub Actions:
 
 1. **Pull Request Validation** ([`.github/workflows/ci.yml`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/.github/workflows/ci.yml)):
    - Runs on Ubuntu & Windows matrix across Node.js 20 and 22.
-   - Verifies cross-platform TypeScript compilation via [`scripts/build.js`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/build.js), runs all 108 tests in headless CI environments, enforces 100% TSDoc coverage, and validates VSIX packaging.
+   - Verifies cross-platform TypeScript compilation via [`scripts/build.js`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/build.js), runs all 115 tests in headless CI environments, enforces 100% TSDoc coverage, and validates VSIX packaging.
 2. **Automated Release** ([`.github/workflows/release.yml`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/.github/workflows/release.yml)):
-   - Triggered by pushing a version tag (e.g. `git tag -a v1.0.1 -m "Release v1.0.1"`).
+   - Triggered by pushing a version tag (e.g. `git tag -a v1.1.0 -m "Release v1.1.0"`).
    - Generates release notes from [`CHANGELOG.md`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/CHANGELOG.md).
    - Publishes a GitHub Release with the compiled `.vsix` binary attached as an asset.
 
