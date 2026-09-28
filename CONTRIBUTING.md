@@ -1,155 +1,306 @@
 # Contributing to Jules Companion 🐙
 
-Thank you for your interest in contributing to **Jules Companion**! We welcome contributions from both human developers and autonomous AI coding agents.
+Thank you for your interest in contributing to **Jules Companion**! We warmly welcome contributions from both human developers and autonomous AI coding agents.
 
-This document sets out the guidelines and standards for developing, maintaining, and contributing code to ensure long-term stability, zero architectural regressions, and maintainability.
+This guide outlines our architecture, engineering principles, development workflow, and testing requirements to ensure long-term stability, zero architectural regressions, and maintainability.
 
 ---
 
 ## 📜 Table of Contents
-1. [Core Development Philosophy](#-core-development-philosophy)
+1. [Core Development Philosophy (Ponytail)](#-core-development-philosophy)
 2. [Development Environment Setup](#-development-environment-setup)
-3. [Architecture Invariants & Coding Standards](#-architecture-invariants--coding-standards)
-4. [Testing & Verification Protocol](#-testing--verification-protocol)
-5. [Git Workflow & Commit Conventions](#-git-workflow--commit-conventions)
-6. [Submitting a Pull Request](#-submitting-a-pull-request)
-7. [Reporting Bugs & Proposing Features](#-reporting-bugs--proposing-features)
+3. [Architecture Invariants & Governance](#-architecture-invariants--governance)
+4. [Coding Standards & Style Guide](#-coding-standards--style-guide)
+5. [Step-by-Step Developer Playbooks](#-step-by-step-developer-playbooks)
+   - [Adding a New VS Code Command](#1-adding-a-new-vs-code-command)
+   - [Implementing a New MCP Tool](#2-implementing-a-new-mcp-tool)
+   - [Authoring a New Specialist Agent](#3-authoring-a-new-specialist-agent)
+6. [Testing & Verification Protocol](#-testing--verification-protocol)
+7. [Git Workflow & Commit Standards](#-git-workflow--commit-standards)
+8. [Packaging & Local Installation](#-packaging--local-installation)
+9. [Release Process & CI/CD](#-release-process--cicd)
+10. [Security & Vulnerability Reporting](#-security--vulnerability-reporting)
 
 ---
 
 ## ⚡ Core Development Philosophy
 
-Contributors are expected to adhere to the **Ponytail Mindset** (Senior Developer Pragmatism):
+Our project strictly adheres to the **Ponytail (Lazy Senior Developer)** development philosophy. We prioritize maintainability, extreme simplicity, and zero dead code over clever abstractions:
 
-* **YAGNI (You Aren't Gonna Need It)**: Do not create speculative abstractions. No interfaces with only one implementation, no factories for a single product, and no config flags for values that never change.
-* **Standard Library First**: Always leverage native Node.js standard modules (`node:fs`, `node:path`, `node:https`, `child_process`, `node:test`, `node:assert`) before considering third-party npm packages.
+* **YAGNI (You Aren't Gonna Need It)**: Refuse to build speculative abstractions. Do not create interfaces with a single implementation, generic factories for a single class, or configuration flags for values that do not change.
+* **Standard Library First**: Always leverage native Node.js standard modules (`node:fs`, `node:path`, `node:https`, `node:crypto`, `node:child_process`, `node:test`, `node:assert`) before considering third-party npm packages.
 * **Shortest Working Diff**: Touch only the exact target lines necessary to resolve the task. Avoid unsolicited refactoring, stylistic reformatting, or collateral edits.
 * **Fix Root Causes**: Investigate and fix the shared root cause at the bottleneck rather than patching superficial symptoms across multiple call sites.
-* **Deletion Over Addition**: Deleting dead code and simplifying logic is prioritized over introducing complex layers.
+* **Deletion Over Addition**: Deleting obsolete code and simplifying logic is always preferred over introducing complex layers.
 
 ---
 
 ## 💻 Development Environment Setup
 
 ### 1. Prerequisites
-* **Node.js**: Version 18.0.0 or higher.
+* **Node.js**: Version 18.0.0 or higher (LTS recommended).
 * **npm**: Version 9.0.0 or higher.
-* **Git**: Installed and available in your system `PATH`.
-* **Google Jules API Key**: Optional for local unit tests, required for live deployment testing ([Obtain Key](https://jules.google)).
+* **Git**: Installed and accessible in your system `PATH`.
+* **VS Code** or **Google Antigravity IDE**: Recommended IDE with the TypeScript language service.
+* **Google Jules API Key**: Optional for running unit tests, required for live deployment testing ([Jules Console](https://jules.google)).
 
-### 2. Clone & Install
+### 2. Initial Setup
 ```bash
-# Clone the repository
+# 1. Clone the repository
 git clone https://github.com/rivadmorin/Jules-Companion.git
 cd Jules-Companion
 
-# Install dependencies (MCP SDK, dev tooling)
+# 2. Install dependencies (MCP SDK, vsce packaging, Sentrux)
 npm install
 
-# Verify workspace setup and scaffolding
+# 3. Configure environment variables (optional for local mock testing)
+cp .env.example .env
+# Edit .env and insert your JULES_API_KEY and GEMINI_API_KEY
+
+# 4. Verify workspace setup
 npm run setup
-```
 
-### 3. Build & Watch
-```bash
-# Compile TypeScript scripts to dist/ directory
+# 5. Build the TypeScript codebase
 npm run build
-
-# Run global synchronization
-npm run sync
 ```
+
+### 3. Running & Debugging in VS Code
+1. Open the project folder in VS Code or Antigravity IDE:
+   ```bash
+   code .
+   ```
+2. Press <kbd>F5</kbd> (or go to **Run and Debug** ➔ select **Run Extension**).
+3. A new **Extension Development Host** window will open with Jules Companion loaded.
+4. Open the Command Palette (<kbd>Ctrl+Shift+P</kbd> or <kbd>Cmd+Shift+P</kbd>) and test commands such as `Jules: Open Mission Control` or `Jules: Deploy Session`.
 
 ---
 
-## 🏛️ Architecture Invariants & Coding Standards
+## 🏛️ Architecture Invariants & Governance
 
-Our codebase enforces strict architectural governance via [**Sentrux**](docs/codebase-architecture-map.md) and [**Graft**](docs/codebase-architecture-map.md):
+The codebase is governed by architectural rules defined in `.sentrux/rules.toml` and documented in [Codebase Architecture Map](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/docs/codebase-architecture-map.md).
 
-### 1. Downward Dependency Flow (Strict Layering)
-Code dependencies must flow in one direction downward. Lower layers must **never** import higher layers:
-1. `Tier 0: Tests` (`tests/`)
-2. `Tier 1: Interfaces & Entrypoints` (`extension.ts`, `mcp_server.ts`)
-3. `Tier 2: Tools & UI Providers` (`mcp/tools/`, `ui/`)
-4. `Tier 3: Workflows & Domain Core` (`deploy_session.ts`, `merge_session.ts`, `core/scheduler.ts`)
-5. `Tier 4: Client & Communication` (`client/jules_api.ts`, `client/http.ts`)
-6. `Tier 5: Foundation` (`core/storage.ts`, `core/git.ts`, `core/types.ts`, `utils.ts`)
+```
+Tier 0: Tests (tests/)
+   │
+   ▼
+Tier 1: Interfaces (scripts/extension.ts, scripts/mcp_server.ts)
+   │
+   ▼
+Tier 2: Tools & UI (scripts/mcp/, scripts/ui/)
+   │
+   ▼
+Tier 3: Workflows & Engines (scripts/deploy_session.ts, scripts/merge_session.ts)
+   │
+   ▼
+Tier 4: API Client (scripts/client/jules_api.ts, scripts/client/http.ts)
+   │
+   ▼
+Tier 5: Foundation (scripts/core/types.ts, scripts/core/storage.ts, scripts/core/git.ts, scripts/utils.ts)
+```
 
-### 2. 100% TSDoc / JSDoc Coverage
-Every exported symbol (`export function`, `export class`, `export interface`, `export type`) **must** include a complete TSDoc comment block:
-- `@module` declaration at the top of every file.
-- Clear description of purpose and side-effects.
-- `@param` tags documenting every input argument.
-- `@returns` tag documenting return value and promise behavior.
-*Enforced automatically by `tests/doc_coverage.test.ts`.*
+### Inviolable Invariants:
+1. **Strict Downward Layering**: Lower tiers must **never** import modules from higher tiers. For example, `scripts/core/` must never import from `scripts/ui/` or `scripts/mcp/`.
+2. **100% TSDoc Coverage**: Every exported symbol (`export function`, `export class`, `export interface`, `export type`, `export const`) must have a complete TSDoc comment block:
+   ```typescript
+   /**
+    * @module CoreStorage
+    */
 
-### 3. State & Concurrency Safety
-- **Atomic Persistence**: Always use synchronous, safe serialization routines when modifying `.jules/sessions.json` or `.jules-companion/schedules.json`.
-- **Status Disambiguation**: Decouple `AWAITING_PLAN_APPROVAL` from `AWAITING_USER_FEEDBACK`. Never trigger plan approvals when the agent is only waiting for input.
-- **Fail-Safe Safety Gate**: Never merge code unless verified as `SUCCEEDED` in Google Jules Cloud and local working tree is clean.
+   /**
+    * Loads session records from the local storage file.
+    * 
+    * @param baseDir - Workspace root directory containing .jules/
+    * @returns Array of active and completed SessionRecords
+    */
+   export function loadSessions(baseDir: string): SessionRecord[] { ... }
+   ```
+   *Enforced automatically by `tests/doc_coverage.test.ts`.*
+3. **Webview Content Security Policy (CSP)**:
+   - Inline script execution is strictly forbidden (`<script>...</script>` without nonce or inline `onclick="..."`).
+   - Use `data-action` attributes and centralized event delegation.
+4. **Plan Approval vs User Feedback**:
+   - `AWAITING_PLAN_APPROVAL` requires plan review (`approvePlanApi`).
+   - `AWAITING_USER_FEEDBACK` / `AWAITING_USER_INPUT` requires conversational response (`sendMessageApi`).
+   - Never conflate these two states in the UI or API layers.
+
+---
+
+## 📝 Coding Standards & Style Guide
+
+* **TypeScript Configuration**: We compile with strict mode (`strict: true`, `noImplicitAny: true`, `target: ES2022`).
+* **Path Handling**: Always use `node:path` methods (`path.join()`, `path.resolve()`) for filesystem paths to ensure cross-platform compatibility across Windows, macOS, and Linux.
+* **Error Handling**: Never swallow exceptions silently. Wrap async operations in `try/catch` and provide meaningful user notifications via `vscode.window.showErrorMessage` or structured JSON-RPC errors.
+* **No Unnecessary Dependencies**:
+  - Need UUIDs? Use `node:crypto.randomUUID()`.
+  - Need HTTP? Use native `node:https`.
+  - Need test assertions? Use `node:assert/strict`.
+  - Need testing framework? Use native `node:test`.
+
+---
+
+## 🛠️ Step-by-Step Developer Playbooks
+
+### 1. Adding a New VS Code Command
+
+1. **Declare the command in `package.json`**:
+   ```json
+   "contributes": {
+     "commands": [
+       {
+         "command": "jules.myNewCommand",
+         "title": "Jules: My New Command",
+         "category": "Jules"
+       }
+     ]
+   }
+   ```
+2. **Implement the command handler in [`scripts/extension.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/extension.ts)**:
+   ```typescript
+   /**
+    * Handles execution of my new command.
+    * 
+    * @param context - VS Code extension context
+    * @returns Promise resolving when command finishes
+    */
+   export async function handleMyNewCommand(context: vscode.ExtensionContext): Promise<void> {
+     try {
+       // Command logic here
+       vscode.window.showInformationMessage('Command executed successfully!');
+     } catch (err: unknown) {
+       vscode.window.showErrorMessage(`Execution failed: ${err instanceof Error ? err.message : String(err)}`);
+     }
+   }
+   ```
+3. **Register the command in `activate()`**:
+   ```typescript
+   context.subscriptions.push(
+     vscode.commands.registerCommand('jules.myNewCommand', () => handleMyNewCommand(context))
+   );
+   ```
+4. **Add a unit test in `tests/`** and verify with `npm test`.
+
+---
+
+### 2. Implementing a New MCP Tool
+
+1. **Define the tool specification in [`scripts/mcp/registry.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/mcp/registry.ts)**:
+   ```typescript
+   {
+     name: "my_custom_tool",
+     description: "Performs custom diagnostic analysis on the workspace.",
+     inputSchema: {
+       type: "object",
+       properties: {
+         target_path: { type: "string", description: "Target directory path" }
+       },
+       required: ["target_path"]
+     }
+   }
+   ```
+2. **Implement the tool handler in [`scripts/mcp/tools/my_custom_tool.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/mcp/)** with full TSDoc.
+3. **Register the handler in `scripts/mcp/registry.ts`**.
+4. **Add unit test in [`tests/mcp.test.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/tests/mcp.test.ts)** verifying tool registration and parameter execution.
+
+---
+
+### 3. Authoring a New Specialist Agent
+
+1. Create a new markdown definition file in [`references/agents/<role-id>.md`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/references/agents/):
+   ```markdown
+   ---
+   id: database_expert
+   name: Database Expert
+   role: database_expert
+   group: coding
+   description: Specialized database optimization and schema migration agent.
+   ---
+
+   # Database Expert Specialist Persona
+   You are an autonomous Google Jules specialist focused on SQL query optimization, migration scripts, and indexing strategies.
+   ```
+2. **Recompile the agent catalog**:
+   ```bash
+   npm run registry
+   ```
+3. Verify that `references/agents/registry.json` is updated with your new persona.
 
 ---
 
 ## 🧪 Testing & Verification Protocol
 
-Every proposed change must pass the entire test suite without failures:
+We use the native Node.js test runner (`node:test`) for zero-overhead, ultra-fast test execution.
 
 ```bash
-# Run all unit tests (100+ tests across 35 suites)
+# Run all 106 tests across 35 test suites
 npm test
 
-# Build the distributable VSIX package
-npm run package
+# Run a specific test suite directly
+node --test dist/tests/scheduler.test.js
+node --test dist/tests/mission_control.test.js
+node --test dist/tests/doc_coverage.test.ts
 ```
 
-### Test Suite Map:
-* `tests/doc_coverage.test.ts`: Verifies 100% TSDoc tag coverage across all TypeScript files.
-* `tests/scheduler.test.ts`: Tests background task scheduling, persistence, and execution lifecycle.
-* `tests/mission_control.test.ts`: Tests Webview CSP, event delegation, and status banner separation.
-* `tests/sessions_provider.test.ts`: Tests TreeView generation, sub-items, and universal ID resolution.
-* `tests/mcp.test.ts`: Tests MCP server tool registry and parameter schemas.
-* `tests/merge_session.test.ts`: Tests Safety Gate verification and Git merge operations.
+### Test Suite Coverage:
+* [`tests/doc_coverage.test.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/tests/doc_coverage.test.ts): Verifies 100% TSDoc comment blocks on every exported symbol.
+* [`tests/scheduler.test.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/tests/scheduler.test.ts): Task scheduler persistence, due task discovery, cancellation.
+* [`tests/mission_control.test.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/tests/mission_control.test.ts): Webview rendering, CSP, status banner separation.
+* [`tests/sessions_provider.test.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/tests/sessions_provider.test.ts): TreeView items, expandable nodes, universal session ID resolver.
+* [`tests/mcp.test.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/tests/mcp.test.ts): MCP 20-tool registry, schemas, and execution handlers.
+* [`tests/merge_session.test.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/tests/merge_session.test.ts): Safety Gate enforcement and clean working tree checks.
 
 ---
 
-## 🔀 Git Workflow & Commit Conventions
+## 🔀 Git Workflow & Commit Standards
 
 ### 1. Branch Naming
-Create a feature or fix branch from `main`:
-* `feat/short-description`: New features or capabilities.
-* `fix/short-description`: Bug fixes and error handling improvements.
-* `docs/short-description`: Documentation and markdown guides.
-* `refactor/short-description`: Code simplification without functional changes.
+* `feat/<feature-name>`: New functionality.
+* `fix/<bug-name>`: Bug fixes and error handling patches.
+* `docs/<topic>`: Documentation updates.
+* `refactor/<target>`: Code simplification and cleanup.
 
-### 2. Commit Message Standard
-We follow the [Conventional Commits](https://www.conventionalcommits.org/) specification:
+### 2. Commit Message Convention
+We adhere to [Conventional Commits](https://www.conventionalcommits.org/):
 ```text
-feat(scheduler): implement autonomous task scheduling engine
-fix(mission_control): prevent spurious plan approval banner on user input state
-docs(codebase): add comprehensive architecture reference suite
-test(scheduler): add unit tests for task persistence and due execution
+feat(scheduler): implement recurring cron task scheduling
+fix(mission_control): prevent plan approval banner rendering during feedback state
+docs(codebase): document 10-chapter master architecture reference
+test(mcp): add unit tests for dynamic tool registration
 ```
 
 ---
 
-## 🚀 Submitting a Pull Request
+## 📦 Packaging & Local Installation
 
-1. **Verify Locally First**: Ensure `npm run build`, `npm test`, and `npm run package` complete with zero errors.
-2. **Push Branch**: Push your feature branch to GitHub:
-   ```bash
-   git push origin feat/your-feature-name
-   ```
-3. **Open Pull Request**:
-   * Target branch: `main`.
-   * Title: Clear and following commit conventions.
-   * Description:
-     * Summary of changes.
-     * Motivation and context.
-     * Verification steps and test results.
-4. **Code Review**: Address feedback promptly. Once approved, commits will be squash-merged into `main`.
+To build and verify the VSIX package locally:
+```bash
+# Package into jules-companion-1.0.0.vsix
+npm run package
+
+# Install directly into VS Code
+code --install-extension jules-companion-1.0.0.vsix
+
+# Install directly into Antigravity IDE (if installed)
+antigravity --install-extension jules-companion-1.0.0.vsix
+```
 
 ---
 
-## 🐛 Reporting Bugs & Proposing Features
+## 🚀 Release Process & CI/CD
 
-* **Bug Reports**: Open an issue detailing steps to reproduce, expected vs actual behavior, Node.js version, OS, and relevant console logs.
-* **Feature Requests**: Open an issue outlining the problem statement, proposed solution, and why it aligns with the project's minimalist, high-impact philosophy.
+Our release pipeline is fully automated via GitHub Actions:
+
+1. **Pull Request Validation** ([`.github/workflows/ci.yml`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/.github/workflows/ci.yml)):
+   - Runs on Ubuntu & Windows matrix across Node.js 18 and 20.
+   - Verifies TypeScript compilation, runs all 106 tests, enforces 100% TSDoc coverage, and validates VSIX packaging.
+2. **Automated Release** ([`.github/workflows/release.yml`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/.github/workflows/release.yml)):
+   - Triggered by pushing a version tag (e.g. `git tag -a v1.0.0 -m "Release v1.0.0"`).
+   - Generates release notes from [`CHANGELOG.md`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/CHANGELOG.md).
+   - Publishes a GitHub Release with the compiled `.vsix` binary attached as an asset.
+
+---
+
+## 🔒 Security & Vulnerability Reporting
+
+* **Never commit secrets**: Keep `.env`, API keys, and sensitive tokens out of version control.
+* **Secret Storage**: Use VS Code `context.secrets` for persistent credential storage.
+* **Reporting Security Issues**: If you discover a security vulnerability or CSP bypass, please do **NOT** open a public issue. Email security reports directly to the maintainers or report via GitHub Security Advisories.

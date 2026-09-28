@@ -1,114 +1,283 @@
-# AGENT.md - AI Coding Agent Operating Manual
-**Target Audience:** Autonomous AI Coding Agents (Antigravity CLI, Google Jules, Claude Code, Copilot, Codex, Hermes, Cursor, Windsurf)
+# AGENT.md - Autonomous AI Coding Agent Operating Manual
+
+> **Target Audience:** Autonomous AI Coding Agents (Antigravity CLI, Google Jules, Claude Code, GitHub Copilot CLI, OpenAI Codex, Hermes, Cursor, Windsurf)  
+> **Repository:** [Jules Companion](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion)  
+> **Runtime Environment:** Node.js 18+, TypeScript 5, VS Code Extension Engine, Model Context Protocol (MCP)
 
 ---
 
-## 🤖 Welcome, AI Agent!
+## 🤖 1. Mission & System Overview
 
-You are operating within the **Jules Companion** repository. This codebase is an enterprise orchestration platform connecting IDEs (Visual Studio Code and Google Antigravity IDE) and external AI models (via Model Context Protocol) with Google Jules Cloud autonomous agents.
+Welcome, AI Agent! You are operating inside the codebase of **Jules Companion**, an enterprise developer orchestration platform that bridges modern IDEs (Visual Studio Code and Google Antigravity IDE) and external LLMs (via Model Context Protocol) with **Google Jules Cloud** autonomous agents.
 
-This document outlines the **non-negotiable operating rules, architectural invariants, and verification protocols** you must follow when inspecting, modifying, or extending this repository.
-
----
-
-## ⚡ Golden Rules for AI Agents
-
-Whenever you work on this repository, strictly adhere to the following principles:
-
-### 1. Ponytail Mode is Permanently Active (Lazy Senior Developer)
-* **YAGNI (You Aren't Gonna Need It)**: Refuse to build speculative abstractions, single-use factory functions, or unrequested configuration options.
-* **Standard Library First**: Use native Node.js standard modules (`node:fs`, `node:path`, `node:https`, `child_process`, `node:test`, `node:assert`). Never introduce new `npm` dependencies for what standard library or native platform features can accomplish.
-* **Shortest Working Diff**: Make surgical, minimal edits. Touch only the exact target lines necessary to resolve the task. Do not reformat unrelated code, alter whitespace style, or perform unsolicited cleanup.
-* **Fix Root Causes**: Trace errors to their shared bottleneck and fix them once at the root rather than patching superficial symptoms across multiple callers.
-
-### 2. 100% TSDoc Coverage is Mandatory
-Every exported symbol (`export function`, `export class`, `export interface`, `export type`, `export const`) **must** include a valid JSDoc/TSDoc block:
-* `@module <name>` header at the top of the file.
-* Clear summary of purpose and side-effects.
-* `@param <argName>` tags for every parameter.
-* `@returns` tag documenting return value or resolved promise.
-* **Note**: Any omission will cause `tests/doc_coverage.test.ts` to fail during `npm test`.
-
-### 3. Strict Layering & Zero Circular Dependencies
-* Never violate the downward dependency hierarchy:
-  `tests/` ➔ `interfaces/` (`extension.ts`, `mcp_server.ts`) ➔ `tools & UI/` ➔ `workflows & core/` ➔ `client/` ➔ `foundation/` (`types.ts`, `storage.ts`, `git.ts`).
-* Foundation modules (`scripts/core/*`, `scripts/client/*`) must **never** import from `scripts/ui/*` or `scripts/mcp/*`.
-* Enforced by `.sentrux/rules.toml`.
-
-### 4. Status Disambiguation: Plan Approval vs User Feedback
-* **`AWAITING_PLAN_APPROVAL`**: The cloud agent has formulated an execution plan and paused for authorization. Action required: `approvePlanApi` (`jules.approvePlan`).
-* **`AWAITING_USER_FEEDBACK` / `AWAITING_USER_INPUT`**: The cloud agent is asking for clarification or conversational input. Action required: `sendMessageApi` (`jules.sendMessage`).
-* **Inviolable Invariant**: Never display a plan approval form or trigger plan approvals when the session status indicates user input/feedback.
-
-### 5. Content Security Policy (CSP) in Webviews
-* Never inject inline event handlers (`onclick="..."`, `onsubmit="..."`) into Webview HTML.
-* All interactive elements must use semantic data attributes: `data-action="<action-name>" data-session-id="<id>"`.
-* The Webview script must handle events via centralized event delegation (`document.addEventListener('click', ...)`).
-
-### 6. Fail-Safe Git Safety Gate
-* Before executing any Git merge (`mergeSessionCore`), you must verify:
-  1. Cloud session status is strictly `SUCCEEDED`.
-  2. Local Git working tree is completely clean (`git status --porcelain` is empty).
-* If either check fails, the merge must be safely rejected.
+This manual defines the **non-negotiable operating invariants, architectural boundaries, communication schemas, and verification protocols** that you must strictly uphold.
 
 ---
 
-## 🗺️ Codebase Map for AI Navigation
+## ⚡ 2. The Golden Invariants (Non-Negotiable)
 
-| Subsystem | Key Files | Purpose & Architectural Role |
-|---|---|---|
-| **Domain Contracts** | [`scripts/core/types.ts`](scripts/core/types.ts) | Universal domain types (`SessionRecord`, `ScheduledTask`, `LaunchMode`, etc.). |
-| **Local Storage** | [`scripts/core/storage.ts`](scripts/core/storage.ts) | Atomic JSON persistence for `.jules/sessions.json` and project directories. |
-| **Task Scheduler** | [`scripts/core/scheduler.ts`](scripts/core/scheduler.ts) | Standalone background task scheduler for `.jules-companion/schedules.json`. |
-| **Git Operations** | [`scripts/core/git.ts`](scripts/core/git.ts) | Safe subprocess wrapper around Git CLI. |
-| **API Client** | [`scripts/client/http.ts`](scripts/client/http.ts), [`scripts/client/jules_api.ts`](scripts/client/jules_api.ts) | Google Jules Cloud REST API client using native HTTPS. |
-| **Session Engine** | [`scripts/deploy_session.ts`](scripts/deploy_session.ts), [`scripts/merge_session.ts`](scripts/merge_session.ts) | Core deployment logic for 4 launch modes and pre-merge safety gate. |
-| **VS Code UI** | [`scripts/extension.ts`](scripts/extension.ts), [`scripts/ui/`](scripts/ui/) | Extension controller, 33 commands, TreeView providers, LiveSync, and Visual Diff. |
-| **Mission Control** | [`scripts/ui/mission_control.ts`](scripts/ui/mission_control.ts) | Webview panel with live state reconciliation and event delegation. |
-| **MCP Server** | [`scripts/mcp_server.ts`](scripts/mcp_server.ts), [`scripts/mcp/registry.ts`](scripts/mcp/registry.ts) | Model Context Protocol server exposing 20 native tools via JSON-RPC. |
-| **Specialist Agents**| [`references/agents/`](references/agents/), [`references/agents/registry.json`](references/agents/registry.json) | 30 specialist agent role templates and compiled JSON catalog. |
-| **Shared Utils** | [`scripts/utils.ts`](scripts/utils.ts) | Status predicates, Doctor checks, date formatting, and session archival. |
+When inspecting, modifying, refactoring, or extending this codebase, you must adhere to these five core invariants:
+
+### Invariant 1: Ponytail Mode is Permanently Active (Lazy Senior Developer)
+* **YAGNI (You Aren't Gonna Need It)**: Refuse to build speculative abstractions. Do not create interfaces with a single implementation, factories for a single class, or configuration flags for values that do not change.
+* **Standard Library First**: Use native Node.js built-ins (`node:fs`, `node:path`, `node:https`, `node:crypto`, `node:child_process`, `node:test`, `node:assert`). Never introduce new `npm` packages for functionality that standard modules or short helper functions can provide.
+* **Shortest Working Diff**: Make surgical edits. Touch only the exact target lines necessary to resolve the task. Zero unsolicited cleanup, style reformatting, or collateral edits.
+* **Fix Root Causes**: Trace bugs to their shared bottleneck and patch them once at the root rather than writing workarounds across multiple callers.
+
+### Invariant 2: 100% TSDoc / JSDoc Coverage is Mandatory
+Every exported symbol (`export function`, `export class`, `export interface`, `export type`, `export const`) **must** include a comprehensive TSDoc comment block:
+* `@module <name>` header at the very top of each file.
+* Clear summary of purpose, behavior, and side effects.
+* `@param <name>` tag for every parameter, describing its type and semantics.
+* `@returns` tag documenting return values or Promise resolutions.
+* *Enforcement*: The CI pipeline and [`tests/doc_coverage.test.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/tests/doc_coverage.test.ts) will immediately fail if even a single exported symbol lacks documentation.
+
+### Invariant 3: Strict Downward Layering & Zero Circular Dependencies
+* Dependencies must flow in a single downward direction:
+  $$\text{Tier 0: Tests} \longrightarrow \text{Tier 1: Interfaces} \longrightarrow \text{Tier 2: Tools \& UI} \longrightarrow \text{Tier 3: Core Engines} \longrightarrow \text{Tier 4: Client} \longrightarrow \text{Tier 5: Foundation}$$
+* Foundation modules ([`scripts/core/*`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/core/) and [`scripts/client/*`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/client/)) must **never** import from UI ([`scripts/ui/*`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/ui/)) or MCP tool handlers ([`scripts/mcp/*`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/mcp/)).
+* Enforced statically by Sentrux (`.sentrux/rules.toml`).
+
+### Invariant 4: Status Disambiguation — Plan Approval vs User Feedback
+Google Jules Cloud sessions operate with two distinct pausing states that must **never** be conflated:
+1. **`AWAITING_PLAN_APPROVAL`**: The cloud agent has formulated an execution plan and paused for human authorization.
+   - *Webview UI*: Render the green "Plan Approval Required" banner with the "Approve Plan & Authorize Execution" button.
+   - *Action API*: Invoke [`approvePlanApi`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/client/jules_api.ts) (`jules.approvePlan`).
+2. **`AWAITING_USER_FEEDBACK` / `AWAITING_USER_INPUT`**: The cloud agent has paused to ask a clarifying question.
+   - *Webview UI*: Render the amber "Agent Paused for Feedback" banner with the conversational input box and "Reply to Agent" button.
+   - *Action API*: Invoke [`sendMessageApi`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/client/jules_api.ts) (`jules.sendMessage`).
+* **Rule**: It is a critical regression to display plan authorization buttons when the agent is waiting for user input, or vice-versa.
+
+### Invariant 5: Content Security Policy (CSP) & Event Delegation
+* Webview scripts in [`scripts/ui/mission_control.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/ui/mission_control.ts) run under strict CSP nonces.
+* **Never** use inline DOM event listeners (`onclick="..."`, `onsubmit="..."`).
+* All interactive DOM elements must declare semantic data attributes:
+  ```html
+  <button class="btn btn-primary" data-action="approve-plan" data-session-id="abc-123">Approve Plan</button>
+  ```
+* Events are captured exclusively via centralized event delegation in the client-side Webview script:
+  ```javascript
+  document.addEventListener('click', (e) => {
+    const target = e.target.closest('[data-action]');
+    if (!target) return;
+    const action = target.getAttribute('data-action');
+    const sessionId = target.getAttribute('data-session-id');
+    vscode.postMessage({ command: action, sessionId });
+  });
+  ```
+
+### Invariant 6: Fail-Safe Pre-Merge Git Safety Gate
+Before triggering any automated or manual Git merge ([`mergeSessionCore`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/merge_session.ts)), you must verify two prerequisites:
+1. Cloud session status is strictly `SUCCEEDED`.
+2. Local working tree is completely clean (`git status --porcelain` returns an empty string).
+* If either check fails, the merge operation must abort safely without modifying local branches.
 
 ---
 
-## 🛠️ AI Agent Workflow Playbook
+## 🗺️ 3. Codebase Architectural Navigation Map
 
-### Step 1: Research & Orientation (Think in Code)
-* When analyzing files, use programmatic sandbox tools (`ctx_execute_file` / `ctx_execute`) rather than dumping raw file contents.
-* Check types in `scripts/core/types.ts` before modifying function signatures.
+```
+Jules-Companion/
+├── scripts/
+│   ├── core/                        # Tier 5: Foundation Layer
+│   │   ├── types.ts                 # Universal TypeScript contracts and interfaces
+│   │   ├── storage.ts               # Atomic JSON storage (.jules/sessions.json)
+│   │   ├── scheduler.ts             # Background Task Scheduler engine (.jules-companion/schedules.json)
+│   │   └── git.ts                   # Git CLI subprocess abstractions
+│   ├── client/                      # Tier 4: Communication Layer
+│   │   ├── http.ts                  # Native HTTPS transport engine (zero dependencies)
+│   │   └── jules_api.ts             # Google Jules Cloud REST API endpoints
+│   ├── deploy_session.ts            # Tier 3: Core Deployment Engine (4 launch modes)
+│   ├── merge_session.ts             # Tier 3: Core Merge Engine & Safety Gate
+│   ├── jules_client.ts              # Tier 3: Consolidated Jules client facade
+│   ├── ui/                          # Tier 2: VS Code Presentation Layer
+│   │   ├── mission_control.ts       # Real-time Webview dashboard & CSP event router
+│   │   ├── sessions_provider.ts     # TreeDataProvider for Jules Sessions explorer
+│   │   ├── scheduled_provider.ts    # TreeDataProvider for Scheduled Tasks explorer
+│   │   ├── agents_provider.ts       # TreeDataProvider for 30 Specialist Agents
+│   │   ├── workspace_provider.ts    # TreeDataProvider for Workspace health & Git context
+│   │   ├── visual_diff.ts           # Unified diff parser & Gemini AI explanation panel
+│   │   ├── live_sync.ts             # Background polling engine with adaptive backoff
+│   │   └── custom_agent_wizard.ts   # Interactive multi-step agent creation wizard
+│   ├── mcp/                         # Tier 2: MCP Tool Registry & Handlers
+│   │   ├── registry.ts              # 20 modular native MCP tool declarations
+│   │   └── tools/                   # Individual tool handler implementations
+│   ├── extension.ts                 # Tier 1: VS Code Extension Entrypoint (33 commands)
+│   ├── mcp_server.ts                # Tier 1: Standalone JSON-RPC MCP Server Entrypoint
+│   └── utils.ts                     # Tier 5: Shared utilities, Doctor checks, status helpers
+├── references/                      # Specialist Agent Markdown definitions
+│   └── agents/
+│       ├── registry.json            # Compiled catalog of 30 specialist agents
+│       └── *.md                     # 30 individual agent prompt definitions
+├── tests/                           # Tier 0: Native Node.js Test Suite (106 tests)
+│   ├── doc_coverage.test.ts         # 100% TSDoc coverage enforcement
+│   ├── scheduler.test.ts            # Task Scheduler test suite
+│   ├── mission_control.test.ts      # Webview rendering & CSP test suite
+│   ├── sessions_provider.test.ts    # TreeDataProvider test suite
+│   ├── mcp.test.ts                  # MCP registry and tool execution tests
+│   └── merge_session.test.ts        # Pre-merge safety gate tests
+└── docs/codebase/                   # Master Architecture Reference Suite (10 chapters)
+```
 
-### Step 2: Make the Minimal Surgical Edit
-* Apply the shortest working diff using `replace_file_content`.
-* Ensure every newly added function or type has a complete TSDoc block with `@param` and `@returns`.
+---
+
+## 🛠️ 4. AI Agent Operating Playbook
+
+When executing tasks in this repository, follow this step-by-step workflow:
+
+### Step 1: Context Gathering (Think in Code)
+* **Never dump entire files into conversation context.** Use [`context-mode`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/docs/codebase/00-master-architecture.md) tools (`ctx_execute_file` / `ctx_execute`) to programmatically inspect AST, search symbols, and compute diffs.
+* Consult [`scripts/core/types.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/core/types.ts) first before changing function signatures or data structures.
+
+### Step 2: Implement the Minimal Surgical Fix
+* Modify only the target files. Use `replace_file_content` for surgical line replacements.
+* Ensure every added or modified exported symbol contains full TSDoc tags (`@module`, `@param`, `@returns`).
 
 ### Step 3: Run the Verification Suite
-Always execute the test suite to verify your changes:
-```bash
-# Must pass 106/106 tests with 0 failures
+Execute the native test runner via PowerShell:
+```powershell
 npm test
 ```
+* **Success Criteria**: 106 tests across 35 suites must pass with `0 failures`.
+* If any test fails, analyze the failure root cause immediately and patch it.
 
-### Step 4: Synchronize & Package
-If modifying specialist agent templates in `references/agents/`:
-```bash
+### Step 4: Recompile & Verify Packaging
+```powershell
+# Compile TypeScript files
+npm run build
+
+# If agent files in references/agents/ were touched, recompile the catalog
 npm run registry
-```
-If updating extension files, verify packaging:
-```bash
+
+# Verify VSIX package bundling
 npm run package
 ```
 
+### Step 5: Sync to Local IDE Extensions (If Modifying Extension)
+If you made changes that affect the live VS Code or Antigravity IDE runtime, copy the compiled output:
+```powershell
+npm run sync
+```
+
 ---
 
-## 🤖 The 30 Specialist Agents Roster
+## 🔌 5. Model Context Protocol (MCP) Tool Calling Reference
 
-When acting as or delegating to specialist personas within this repo:
-* **`architect`**: Enforces system modularity, clean interfaces, and low coupling.
-* **`coder`**: Implements business features with minimal complexity.
-* **`inspector`**: Writes unit, integration, and E2E tests for 100% pass rates.
-* **`sentinel`**: Audits security, CSP rules, sanitization, and credential handling.
-* **`scaler`**: Optimizes performance, async concurrency, and memory efficiency.
-* **`curator`**: Maintains architectural documentation, gotchas, and repository references.
-* **`scribe`**: Ensures 100% TSDoc comments, API references, and user guides.
+Jules Companion exposes **20 native MCP tools**. When interacting as an AI agent via MCP, use these exact schemas:
 
-Refer to [`docs/codebase/07-agents-and-customization.md`](docs/codebase/07-agents-and-customization.md) for the complete 30-agent catalog.
+### 1. `deploy_session`
+Deploys a new autonomous session to Google Jules Cloud. Supports 4 distinct launch modes:
+```json
+{
+  "prompt": "Refactor authentication middleware to use JWT standard library",
+  "agent": "architect",
+  "launch_mode": "plan_approval",
+  "auto_pr": false
+}
+```
+* `launch_mode` options:
+  - `"one_shot"`: Autonomous execution with auto-merge upon completion.
+  - `"plan_approval"`: Agent halts after planning and requires explicit user authorization.
+  - `"scheduled"`: Session is registered in the Task Scheduler to execute at a specific timestamp.
+  - `"chat"`: Interactive multi-turn conversational session.
+
+### 2. `merge_session`
+Inspects and merges the code changes from a completed Jules session:
+```json
+{
+  "session_id": "sessions/20260928-auth-refactor"
+}
+```
+
+### 3. `send_session_message`
+Replies to an agent waiting in `AWAITING_USER_INPUT` or `AWAITING_USER_FEEDBACK`:
+```json
+{
+  "session_id": "sessions/20260928-auth-refactor",
+  "message": "Use HMAC-SHA256 for the token signature algorithm."
+}
+```
+
+### 4. `get_session_status`
+Polls current live session status and plan steps:
+```json
+{
+  "session_id": "sessions/20260928-auth-refactor"
+}
+```
+
+### 5. `auto_process`
+Dispatches an autonomous team workflow across multiple agent personas:
+```json
+{
+  "task": "Perform end-to-end security audit and patch vulnerabilities",
+  "agents": ["sentinel", "inspector", "scribe"],
+  "launch_mode": "one_shot"
+}
+```
+
+---
+
+## 📋 6. Specialist Agent Roster Reference (30 Personas)
+
+The repository provides 30 specialized agent personas located in [`references/agents/`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/references/agents/) and indexed in [`references/agents/registry.json`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/references/agents/registry.json):
+
+| Role ID | Title & Emoji | Primary Specialty |
+|---|---|---|
+| `architect` | Architect 🏛️ | High-level system design, modularity, boundary contracts |
+| `coder` | Coder 💻 | Clean, idiomatic business logic implementation |
+| `inspector` | Inspector 🧪 | Unit, integration, and E2E test suites, 100% test coverage |
+| `sentinel` | Sentinel 🛡️ | Security hardening, input validation, CSP, dependency auditing |
+| `curator` | Curator 📚 | Architecture documentation, codebase map, developer gotchas |
+| `scribe` | Scribe 📝 | 100% TSDoc coverage, markdown guides, API references |
+| `scaler` | Scaler 📈 | Performance profiling, concurrency tuning, memory efficiency |
+| `janitor` | Janitor 🧹 | Dead code elimination, lint cleanup, dependency pruning |
+| `gatekeeper` | Gatekeeper 🚪 | Pre-merge verification, branch protection, safety gates |
+| `nexus` | Nexus 🔗 | Model Context Protocol (MCP) server & client integration |
+| `sleuth` | Sleuth 🕵️ | Deep crash dump forensics, memory leak tracing |
+| `innovator` | Innovator 💡 | Greenfield feature prototypes and architectural spikes |
+| `modernizer` | Modernizer 🔄 | Legacy code refactoring, modern TypeScript idiom adoption |
+| `netrunner` | Netrunner 🌐 | Network protocols, HTTP/HTTPS client tuning, retry backoffs |
+| `proteus` | Proteus 🎭 | Dynamic bespoke roles and specialized domain analysis |
+| `revenant` | Revenant 🧟 | Cross-platform persistence, process recovery, OS boot hooks |
+| `smith` | Smith 🧰 | Developer experience (DevEx), build tooling, CLI automation |
+| `synapse` | Synapse 🧠 | LLM orchestration, structured prompt engineering, embeddings |
+| `watcher` | Watcher 👁️ | Data schema validation, type integrity, boundary sanitization |
+| `green` | Green 🌱 | Carbon footprint reduction, CPU/memory energy optimization |
+| `localizer` | Localizer 🌍 | Internationalization (i18n), multi-language resources, RTL layouts |
+| `nomad` | Nomad 🏕️ | Cross-platform portability (Windows, macOS, Linux, containers) |
+
+*(See [`docs/codebase/07-agents-and-customization.md`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/docs/codebase/07-agents-and-customization.md) for the complete list of all 30 personas).*
+
+---
+
+## ⚠️ 7. Common Gotchas & Agent Survival Guide
+
+1. **Path Separators & Line Endings**:
+   - The primary host environment is **Windows** (PowerShell), but CI runs on both **Ubuntu Linux** and **Windows**.
+   - Always use `node:path` methods (`path.join()`, `path.resolve()`, `path.normalize()`) or forward slashes `/` for cross-platform file paths.
+   - Do not depend on CRLF vs LF in regexes; use `\r?\n`.
+
+2. **Atomic JSON File Persistence**:
+   - Never write partial JSON to `.jules/sessions.json` or `.jules-companion/schedules.json`. Always read, update the in-memory array, and write atomically via [`saveSessions`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/core/storage.ts) or [`saveScheduledTasks`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/core/scheduler.ts).
+
+3. **No Unhandled Promise Rejections**:
+   - All async operations in commands and MCP handlers must be wrapped in structured `try ... catch` blocks with descriptive error feedback.
+
+4. **Secret Storage vs Environment Variables**:
+   - In VS Code, API keys are stored in `context.secrets` (OS SecretStorage).
+   - In MCP standalone mode and CLI scripts, API keys fall back to `process.env.JULES_API_KEY` and `process.env.GEMINI_API_KEY`.
+   - Never commit `.env` or plaintext API keys to git.
+
+---
+
+## ✅ 8. Pre-Completion Agent Checklist
+
+Before completing any task in this repository, verify every item:
+- [ ] Only minimal, targeted lines were modified (Shortest Working Diff).
+- [ ] No speculative or unused abstractions were added (YAGNI).
+- [ ] Zero new external npm dependencies were added unless explicitly authorized.
+- [ ] All new or modified exported functions, classes, and types have 100% TSDoc blocks.
+- [ ] `npm test` runs and passes 106/106 tests with 0 failures.
+- [ ] `npm run package` succeeds cleanly, producing `jules-companion-1.0.0.vsix`.
+- [ ] Git status is clean and all changes are accounted for.
