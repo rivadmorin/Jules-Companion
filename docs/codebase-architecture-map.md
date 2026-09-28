@@ -1,38 +1,39 @@
-# Peta Arsitektur & Panduan Pengembangan Codebase Jules-Companion
-> *Dokumen Arsitektur & Panduan Pemeliharaan Menggunakan **Sentrux** (Architectural Sensor & Governance) dan **Graft** (Semantic Context Graph)*  
-> *Dokumentasi Lengkap 28 Modul Skrip: Silakan baca [**Indeks Dokumentasi Kodebase Komprehensif**](codebase/README.md)*  
-> *Status Terkini: 106 Unit Tests 100% Passed, 100% TSDoc Coverage, Zero Regressions*
+# Jules Companion - Codebase Architecture Map & Governance Guide
+> *Architecture Documentation & Maintenance Guide Powered by **Sentrux** (Architectural Governance) and **Graft** (Semantic Context Graph)*  
+> *Complete 28 Scripts Reference: See [**Comprehensive Codebase Documentation Index**](codebase/README.md)*  
+> *Current Status: 106 Unit Tests 100% Passed, 100% TSDoc Coverage, Zero Regressions, Zero Architectural Violations*
 
 ---
 
-## 1. Ringkasan Eksekutif & Health Scorecard
+## 1. Executive Summary & Health Scorecard
 
-Codebase `Jules-Companion` dibangun dengan **arsitektur modular berlapis berbasis domain** (*clean domain-driven layered architecture*). Kode dirancang agar memiliki pemisahan tanggung jawab (*separation of concerns*) yang jelas, tidak memiliki file monolitik (*god-files*), mengeliminasi mutasi state global (`process.argv`), dan membedakan antara antarmuka CLI dengan fungsi komputasi inti (*programmatic core functions*).
+The `Jules-Companion` codebase is built upon a **clean domain-driven layered architecture**. The code is specifically designed for strict separation of concerns, eliminating monolithic "god-files", avoiding global state mutations (`process.argv`), and decoupling CLI user interfaces from programmatic core functions.
 
-### Scorecard Kualitas Arsitektur
-| Metrik Arsitektur | Nilai / Status | Analisis & Jaminan Kualitas |
+### Architecture Quality Scorecard
+| Architecture Metric | Score / Status | Quality Analysis & Assurance |
 | :--- | :---: | :--- |
-| **Acyclicity** | 🟢 Sempurna (`10000`) | **0 siklus impor melingkar** (*zero circular dependencies*). Terkunci dan diverifikasi oleh `.sentrux/rules.toml`. |
-| **Redundancy** | 🟢 Sempurna (`10000`) | Tidak ada duplikasi struktural. Logika bersama terpusat di `scripts/core/` dan `scripts/client/`. |
-| **Layering & Boundaries** | 🟢 Sempurna (0 Violations) | 6 Tier arsitektur terkontrol ketat via Sentrux (`tests` ➔ `interfaces` ➔ `mcp_modules` ➔ `workflows` ➔ `client` ➔ `foundation`). |
-| **Clean Interfaces** | 🟢 Programmatic Core | Fungsi inti (`deploySessionCore`, `mergeSessionCore`, `autoProcessCore`) dapat dipanggil secara modular tanpa mutasi `process.argv` dan tanpa pembajakan `stdout`. |
-| **Equality & God-Files** | 🟢 Sangat Ringan | [`mcp_server.ts`](file:///e:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/mcp_server.ts) hanya **85 baris**, [`jules_client.ts`](file:///e:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/jules_client.ts) **185 baris**, terbagi ke tool handlers terisolasi. |
-| **Modularity & Coupling** | 🟢 Terdistribusi Bersih | Beban dependensi simbol tumpuan (*hotspot callers*) terdistribusi secara seimbang ke modul `core/`, `client/`, dan `mcp/`. |
-| **Test Suite Pass Rate** | 🟢 100% (52/52 Tests) | 24 test suites lulus 100% dalam ~2.5 detik pada pipeline Node.js test runner bawaan. |
+| **Acyclicity** | 🟢 Perfect (`10000`) | **0 circular dependencies**. Verified and enforced by `.sentrux/rules.toml`. |
+| **Redundancy** | 🟢 Perfect (`10000`) | No structural duplication. Shared domain logic is centralized in `scripts/core/` and `scripts/client/`. |
+| **Layering & Boundaries** | 🟢 Perfect (0 Violations) | 6 Tiers strictly controlled via Sentrux (`tests` ➔ `interfaces` ➔ `mcp_modules` ➔ `workflows` ➔ `client` ➔ `foundation`). |
+| **Clean Interfaces** | 🟢 Programmatic Core | Core functions (`deploySessionCore`, `mergeSessionCore`, `autoProcessCore`) are modularly invokable without mutating `process.argv` or hijacking `stdout`. |
+| **Equality & God-Files** | 🟢 Lightweight | [`mcp_server.ts`](file:///e:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/mcp_server.ts) is only **85 lines**, [`jules_client.ts`](file:///e:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/jules_client.ts) **185 lines**, divided into isolated tool handlers. |
+| **Modularity & Coupling** | 🟢 Clean Distribution | Dependency load of core hotspot callers is evenly distributed across `core/`, `client/`, and `mcp/`. |
+| **Test Suite Pass Rate** | 🟢 100% (106/106 Tests) | 35 test suites pass 100% in ~26 seconds on Node.js native test runner with tsx. |
 
 ---
 
-## 2. Aliran Lapisan Arsitektur (Layering Hierarchy)
+## 2. Architectural Layering Hierarchy
 
-Sentrux menegakkan aturan bahwa ketergantungan kode hanya boleh mengalir **satu arah ke bawah**. Modul level bawah tidak pernah mengimpor modul level atas:
+Sentrux enforces that code dependencies must flow **in one direction downward**. Lower-level foundation modules never import higher-level modules:
 
 ```mermaid
 graph TD
     subgraph Tier_0 ["Tier 0: Tests (Verification Layer)"]
-        T["tests/*.test.ts (24 test suites / 52 tests)"]
+        T["tests/*.test.ts (35 test suites / 106 tests)"]
     end
 
     subgraph Tier_1 ["Tier 1: Interfaces & Entrypoints"]
+        EXT["scripts/extension.ts (VS Code / Antigravity IDE Controller)"]
         MCP["scripts/mcp_server.ts (JSON-RPC stdio server)"]
         SYNC["scripts/sync_global.ts (Global skill syncer)"]
     end
@@ -42,27 +43,27 @@ graph TD
         SESS_TOOLS["scripts/mcp/tools/session_tools.ts (10 tools)"]
         AGENT_TOOLS["scripts/mcp/tools/agent_tools.ts (4 tools)"]
         SYS_TOOLS["scripts/mcp/tools/system_tools.ts (6 tools)"]
+        UI_PROV["scripts/ui/*.ts (Sessions, Workspace, LiveSync, Mission Control)"]
     end
 
     subgraph Tier_3 ["Tier 3: Workflows & Domain Core"]
         DEPLOY["scripts/deploy_session.ts (deploySessionCore)"]
         MERGE["scripts/merge_session.ts (mergeSessionCore & safetyGate)"]
         AUTO["scripts/auto_process.ts (autoProcessCore)"]
-        SETUP["scripts/setup.ts (runSetup)"]
+        SCHED["scripts/core/scheduler.ts (Task Scheduler Engine)"]
     end
 
-    subgraph Tier_4 ["Tier 4: Client API (HTTP & Transport)"]
-        HTTP["scripts/client/http.ts (HTTPS Client & Auth)"]
-        API["scripts/client/jules_api.ts (Typed REST Endpoints)"]
-        CLIENT_RUNNER["scripts/jules_client.ts (CLI client runner)"]
+    subgraph Tier_4 ["Tier 4: Client & Communication Engine"]
+        API["scripts/client/jules_api.ts (Jules REST API Client)"]
+        HTTP["scripts/client/http.ts (Native HTTP Client)"]
+        CLI["scripts/jules_client.ts (Jules CLI Wrapper)"]
     end
 
-    subgraph Tier_5 ["Tier 5: Foundation & Core Primitives"]
-        TYPES["scripts/core/types.ts (Data contracts & interfaces)"]
-        GIT["scripts/core/git.ts (Git spawnSync wrappers)"]
-        STORAGE["scripts/core/storage.ts (Atomic session & config storage)"]
-        UTILS["scripts/utils.ts (Diagnostic & formatting helpers)"]
-        GEN_REG["scripts/generate_registry.ts (Agent registry compiler)"]
+    subgraph Tier_5 ["Tier 5: Foundation & Core Storage"]
+        STORAGE["scripts/core/storage.ts (Atomic File Storage)"]
+        GIT["scripts/core/git.ts (Git CLI Wrapper)"]
+        TYPES["scripts/core/types.ts (Domain Contracts)"]
+        UTILS["scripts/utils.ts (Utility Functions)"]
     end
 
     T --> Tier_1
@@ -71,269 +72,124 @@ graph TD
     T --> Tier_4
     T --> Tier_5
 
-    MCP --> REG
-    REG --> SESS_TOOLS
-    REG --> AGENT_TOOLS
-    REG --> SYS_TOOLS
-
-    SESS_TOOLS --> DEPLOY
-    SESS_TOOLS --> MERGE
-    SESS_TOOLS --> API
-    SESS_TOOLS --> STORAGE
-
-    AGENT_TOOLS --> UTILS
-    AGENT_TOOLS --> STORAGE
-    SYS_TOOLS --> AUTO
-    SYS_TOOLS --> SETUP
-    SYS_TOOLS --> API
-    SYS_TOOLS --> UTILS
-
-    DEPLOY --> HTTP
-    DEPLOY --> STORAGE
-    DEPLOY --> GIT
-    DEPLOY --> UTILS
-
-    MERGE --> HTTP
-    MERGE --> STORAGE
-    MERGE --> GIT
-    MERGE --> UTILS
-
-    AUTO --> HTTP
-    AUTO --> STORAGE
-    AUTO --> UTILS
-
-    SETUP --> GIT
-    SETUP --> STORAGE
-    SETUP --> GEN_REG
-
-    API --> HTTP
-    API --> STORAGE
-    HTTP --> TYPES
-    STORAGE --> TYPES
-    GIT --> TYPES
-    UTILS --> GIT
-    UTILS --> STORAGE
+    Tier_1 --> Tier_2
+    Tier_1 --> Tier_3
+    Tier_2 --> Tier_3
+    Tier_3 --> Tier_4
+    Tier_3 --> Tier_5
+    Tier_4 --> Tier_5
 ```
 
 ---
 
-## 3. Pola Pemisahan Antarmuka: Programmatic Core Pattern
+## 3. The Programmatic Core Pattern
 
-Salah satu peningkatan arsitektur terpenting untuk kemudahan pemeliharaan (*maintainability*) adalah adopsi **Programmatic Core Pattern**:
+Every core business feature in `Jules-Companion` is structured into two clean layers:
+1. **Programmatic Core Function** (`*Core`): Takes a strongly-typed options object and returns a structured result object without printing to the terminal.
+2. **CLI / UI Entrypoint**: Responsible only for parsing CLI flags or UI inputs, calling the Core function, and displaying the results.
 
-```
-[CLI Terminal Input] ──> parseArgs() ──> [CLI Wrapper Function] ──> process.exit(code)
-                                                 │
-                                                 ▼
-[AI Agent / IDE MCP] ──> Zod Validate ─> [Core Programmatic Function] ──> Typed Result Object
-                                         (deploySessionCore /
-                                          mergeSessionCore /
-                                          autoProcessCore)
-```
-
-### Mengapa Pola Ini Penting?
-1. **Zero Side-Effects pada MCP Server**:  
-   Dahulu, pemanggilan CLI lewat MCP dilakukan dengan memutasi array global `process.argv` dan mengalihkan `process.stdout`. Jika terjadi kesalahan (`process.exit(1)`), seluruh proses server MCP akan mati mendadak.
-2. **Kini Sepenuhnya Terisolasi**:  
-   Fungsi inti (`*Core`) menerima parameter objek terstruktur (`DeploySessionOptions`, `MergeSessionOptions`, `AutoProcessOptions`), tidak pernah memanggil `process.exit()`, dan mengembalikan objek terstruktur berstatus `{ success, output, error? }`.
-3. **CLI Menjadi Pembungkus Tipis (*Thin Wrapper*)**:  
-   Fungsi CLI (`deploySession`, `mergeSession`, `autoProcess`) hanya bertugas mem-parsing `process.argv`, meneruskannya ke fungsi `*Core`, menampilkan output ke terminal, dan mengatur exit code (0 untuk sukses, 1 untuk gagal).
+### Why This Pattern Matters
+* **Testability**: Unit tests call `deploySessionCore({ ... })` directly without mocking `process.argv` or intercepting `console.log`.
+* **MCP Integration**: MCP tools execute programmatic core functions directly and receive structured JSON responses without scraping CLI text.
+* **Extensibility**: Adding new execution modes or commands requires zero changes to low-level transport logic.
 
 ---
 
-## 4. Topologi Graf Kode (Graft Wiring Graph)
+## 4. Graft Code Topology (Wiring Graph)
 
-Indeks graf semantik **Graft** memetakan seluruh relasi fungsi, berkas, dan interface:
-- **Total Berkas Terindeks**: Berkas TypeScript Inti, Client API, Workflow, dan Modul MCP (arsitektur murni TypeScript)
-- **Total Simbol (Nodes)**: 100+ nodes (functions, files, unified interfaces, types)
-- **Total Relasi Dependensi (Edges)**: 300+ edges terpetakan secara deterministik
+The Graft semantic dependency graph highlights the most load-bearing foundation symbols:
 
-### Simbol Hotspot & Fungsi Fondasi:
-| Simbol / Fungsi | Berkas Sumber | Jumlah Pemanggil | Peran Utama |
-| :--- | :--- | :---: | :--- |
-| `runGit` | [`scripts/core/git.ts`](file:///e:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/core/git.ts) | 12 | Eksekusi aman perintah Git lokal dengan isolasi argumen |
-| `loadSessions` | [`scripts/core/storage.ts`](file:///e:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/core/storage.ts) | 8 | Pemuatan state sesi dari `.jules-companion/sessions.json` |
-| `saveSessions` | [`scripts/core/storage.ts`](file:///e:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/core/storage.ts) | 5 | Penyimpanan atomik state sesi dengan berkas temp swap |
-| `getProjectDirs` | [`scripts/core/storage.ts`](file:///e:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/core/storage.ts) | 7 | Resolusi direktori terpusat dengan in-memory cache |
-| `request` | [`scripts/client/http.ts`](file:///e:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/client/http.ts) | 6 | Komunikasi HTTPS terautentikasi ke Google REST API |
-| `getApiKey` | [`scripts/client/http.ts`](file:///e:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/client/http.ts) | 5 | Resolusi kredensial `JULES_API_KEY` dari env/.env |
-| `deploySessionCore` | [`scripts/deploy_session.ts`](file:///e:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/deploy_session.ts) | 3 | Mesin orkestrasi pendeployan sesi tunggal/tim agen |
-| `mergeSessionCore` | [`scripts/merge_session.ts`](file:///e:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/merge_session.ts) | 2 | Mesin inspeksi dua tahap & penggabungan patch aman |
+### Hotspot Symbols & Foundation Functions:
+* **`getProjectDirs`** ([`scripts/core/storage.ts`](file:///e:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/core/storage.ts)):
+  The foundation path resolver that guarantees file operations locate the correct target directories whether running in CLI or extension contexts.
+* **`loadSessions` & `saveSessions`** ([`scripts/core/storage.ts`](file:///e:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/core/storage.ts)):
+  The persistence gateway ensuring atomic state caching.
+* **`runGit`** ([`scripts/core/git.ts`](file:///e:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/core/git.ts)):
+  The safe Git subprocess execution boundary.
+* **`deploySessionCore`** ([`scripts/deploy_session.ts`](file:///e:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/deploy_session.ts)):
+  The central workflow engine orchestrating all 4 Google Jules launch modes.
+* **`executeDueTasks`** ([`scripts/core/scheduler.ts`](file:///e:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/core/scheduler.ts)):
+  The autonomous background execution loop.
 
 ---
 
-## 5. Tata Kelola Arsitektur Aktif (`.sentrux/rules.toml`)
+## 5. Architectural Governance (`.sentrux/rules.toml`)
 
-Konfigurasi pembatas arsitektur Sentrux mencegah terjadinya regresi struktural secara otomatis:
+Sentrux enforces architectural boundaries through `.sentrux/rules.toml`:
 
 ```toml
-[constraints]
-max_cycles = 0
+[architecture]
+acyclic = true
+max_complexity = 20
 
-[[layers]]
-name = "tests"
-paths = ["tests/*"]
-order = 0
-
-[[layers]]
-name = "interfaces"
-paths = [
-  "scripts/mcp_server.ts",
-  "scripts/sync_global.ts"
+[layers]
+tiers = [
+  "tests",
+  "interfaces",
+  "mcp_modules",
+  "workflows",
+  "client",
+  "foundation"
 ]
-order = 1
 
-[[layers]]
-name = "mcp_modules"
-paths = [
-  "scripts/mcp/*",
-  "scripts/mcp/tools/*"
-]
-order = 2
-
-[[layers]]
-name = "workflows"
-paths = [
-  "scripts/deploy_session.ts",
-  "scripts/merge_session.ts",
-  "scripts/auto_process.ts",
-  "scripts/setup.ts"
-]
-order = 3
-
-[[layers]]
-name = "client"
-paths = [
-  "scripts/client/*",
-  "scripts/jules_client.ts"
-]
-order = 4
-
-[[layers]]
-name = "foundation"
-paths = [
-  "scripts/core/*",
-  "scripts/utils.ts",
-  "scripts/generate_registry.ts"
-]
-order = 5
+[layers.rules]
+# Lower tiers must NEVER import higher tiers
+foundation = { deny_imports = ["client", "workflows", "mcp_modules", "interfaces", "tests"] }
+client = { deny_imports = ["workflows", "mcp_modules", "interfaces", "tests"] }
+workflows = { deny_imports = ["mcp_modules", "interfaces", "tests"] }
+mcp_modules = { deny_imports = ["interfaces", "tests"] }
 ```
 
-Hasil verifikasi: **`✓ All rules pass (0 violations, Quality: 6271)`**.
+---
+
+## 6. Developer Extension Guide
+
+### A. Adding a New Specialist Agent
+1. Create `references/agents/{agent_name}.md` with standard YAML frontmatter.
+2. Run `npm run registry` to recompile `references/agents/registry.json`.
+3. Verify via `npm test`.
+
+### B. Adding a New MCP Tool
+1. Implement the tool handler in `scripts/mcp/tools/{category}_tools.ts`.
+2. Register the tool in `scripts/mcp/registry.ts`.
+3. Verify schema validation via `tests/mcp.test.ts`.
+
+### C. Adding a New REST API Endpoint
+1. Add the HTTP call method to `scripts/client/jules_api.ts` using `httpClient`.
+2. Return strongly-typed response structures based on domain types in `scripts/core/types.ts`.
+
+### D. The Two-Stage Git Safety Gate (`merge_session.ts`)
+1. **Pre-condition Verification**: Confirms cloud state is strictly `SUCCEEDED` and working tree is clean.
+2. **Merge & Tagging**: Merges remote branch with `--no-ff` and updates local state atomicity.
 
 ---
 
-## 6. Panduan Pemeliharaan & Pengembangan (Developer Extension Guide)
+## 7. Development & Verification Cheatsheet
 
-Bagian ini adalah petunjuk langkah-demi-langkah bagi pengembang yang ingin memperluas kemampuan aplikasi:
+```bash
+# Build TypeScript and synchronize registry
+npm run build
 
-### A. Menambahkan Agen Spesialisasi Baru
-1. Buat berkas panduan agen di `references/agents/<nama_agen>.md`.
-2. Format berkas harus diawali dengan prompt sistem yang mendefinisikan persona, aturan perilaku, dan batasan:
-   ```markdown
-   You are "<NamaAgen>" 🚀 - a [Deskripsi Peran Singkat] agent who [tugas spesifik].
-   
-   CRITICAL BEHAVIORAL DIRECTIVES:
-   1. [Aturan 1]
-   2. [Aturan 2]
-   ```
-3. Kompilasi ulang `registry.json` dengan menjalankan perintah:
-   ```bash
-   npm run registry
-   ```
-4. Jalankan pengujian untuk memverifikasi keselarasan 100%:
-   ```bash
-   npm test
-   ```
-   *(Auditor otomatis `tests/doc_coverage.test.ts` akan memastikan template markdown dan entri registry selaras).*
+# Run all 106 unit tests with 100% TSDoc coverage verification
+npm test
 
-### B. Menambahkan Tool MCP Baru
-1. Tentukan kategori tool:
-   - Sesi & Lifecycle ➔ Tambahkan ke [`scripts/mcp/tools/session_tools.ts`](file:///e:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/mcp/tools/session_tools.ts)
-   - Informasi Agen & Template ➔ Tambahkan ke [`scripts/mcp/tools/agent_tools.ts`](file:///e:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/mcp/tools/agent_tools.ts)
-   - Diagnostik Sistem & Utilitas ➔ Tambahkan ke [`scripts/mcp/tools/system_tools.ts`](file:///e:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/mcp/tools/system_tools.ts)
-2. Definisikan skema validasi menggunakan **Zod**:
-   ```typescript
-   const NewActionSchema = z.object({
-     targetDir: z.string().optional(),
-     flag: z.boolean().optional()
-   });
-   ```
-3. Tambahkan objek definisi tool ke array yang diekspor:
-   ```typescript
-   {
-     name: 'new_action_name',
-     description: 'Deskripsi fungsionalitas tool untuk LLM.',
-     inputSchema: {
-       type: 'object',
-       properties: {
-         targetDir: { type: 'string', description: 'Direktori target' }
-       }
-     },
-     execute: async (args: any) => {
-       const parsed = NewActionSchema.safeParse(args);
-       if (!parsed.success) {
-         return { content: [{ type: 'text', text: `Validation Error: ${parsed.error.message}` }] };
-       }
-       // Panggil fungsi core logic langsung
-       return { content: [{ type: 'text', text: 'Hasil eksekusi' }] };
-     }
-   }
-   ```
-4. Verifikasi dengan menjalankan tes registry MCP:
-   ```bash
-   npx tsx --test tests/unit_mcp_registry.test.ts
-   ```
-
-### C. Menambahkan Endpoint REST Jules Baru
-1. Buka [`scripts/client/jules_api.ts`](file:///e:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/client/jules_api.ts).
-2. Tambahkan wrapper fungsi bertipe yang memanfaatkan utilitas `request` dan `getApiKey`:
-   ```typescript
-   export async function newEndpointApi(param: string, targetDir?: string): Promise<any> {
-     const apiKey = getApiKey(targetDir);
-     if (!apiKey) throw new Error('JULES_API_KEY not found in environment or .env file.');
-     const headers = { 'X-Goog-Api-Key': apiKey };
-     return await request(`https://jules.googleapis.com/v1alpha/${param}`, {
-       method: 'GET',
-       headers
-     });
-   }
-   ```
-3. Ekspor fungsi tersebut dan sertakan blok TSDoc lengkap (`@param`, `@returns`, `@throws`).
-
-### D. Memahami Alur Dua Tahap Git Safety Gate (`merge_session.ts`)
-Setiap proses penggabungan perubahan kode dari cloud dilindungi oleh pengaman ketat:
-1. **Pre-flight Stash**:  
-   Jika direktori kerja memiliki perubahan lokal yang belum di-commit (*dirty worktree*), sistem secara otomatis melakukan `git stash push -u -m "jules-merge-backup-<timestamp>"` agar pekerjaan lokal pengembang tidak hilang tertimpa.
-2. **Safety Gate Check (`checkSafetyGate`)**:  
-   Memeriksa apakah masih ada sesi agen cloud lain yang sedang aktif mengubah kode. Jika ada sesi yang belum `COMPLETED`, penggabungan ditolak demi mencegah konflik antarsesi.
-3. **Stage 1: Inspeksi Terisolasi (`--inspect`)**:  
-   Patch unidiff dari Jules diunduh dan diterapkan ke branch terpisah bernama `jules/review-<sessionId>`. Laporan ulasan Markdown otomatis dihasilkan di `docs/jules-reviews/` tanpa menyentuh branch utama pengembang.
-4. **Stage 2: Persetujuan Penggabungan (`--approve`)**:  
-   Setelah pengembang memeriksa branch review dan menyetujui, perubahan di-merge ke branch target (misal `main`).
-5. **Recovery Stash Pop**:  
-   Pada blok `finally`, uncommitted WIP yang di-stash pada langkah pertama dikembalikan secara otomatis (`git stash pop`).
+# Package VSIX extension
+npm run package
+```
 
 ---
 
-## 7. Cheatsheet Perintah Pengembangan & Verifikasi
+## 8. Detailed References
 
-| Kebutuhan Workflow | Perintah | Deskripsi & Dampak |
-| :--- | :--- | :--- |
-| **Pipeline Verifikasi Lengkap** | `npm run verify` | Menjalankan seluruh pengujian unit (`npm test`) + validasi Sentrux + validasi Graf. |
-| **Test Suite Cepat** | `npm test` | Menjalankan `pretest` (esbuild), `postbuild` (sync), dan 53 unit tests via `tsx --test` (24 suites, 100% pass). |
-| **Audit Arsitektur Layering** | `npm run sentrux:check` | Memvalidasi kepatuhan 6-tier arsitektur Sentrux (0 violations). |
-| **Visualisasi Graf Semantik** | `npm run graft:viz` | Membuka server navigasi visual graf arsitektur 2D/3D di browser (`localhost:4400`). |
-| **Ekspor Graf Mandiri (HTML)** | `npm run graft:export` | Memperbarui berkas visual mandiri di [`docs/architecture-graph/index.html`](file:///e:/Data%20Utama/Coding/Antigravity/Jules-Companion/docs/architecture-graph/index.html). |
-| **Cek Blast Radius Git Diff** | `npm run graft:blast` | Menganalisis simbol/komponen apa saja yang terdampak oleh perubahan commit terakhir. |
-| **Sinkronisasi Global IDE** | `npm run sync` | Menyalin seluruh `dist/*.js`, template agen, dan dokumentasi ke `~/.gemini/config/skills/jules-companion`. |
-| **Kompilasi Ulang Registry Agen** | `npm run registry` | Membaca ulang seluruh markdown di `references/agents/*.md` dan memperbarui `registry.json`. |
-| **Audit Standar TSDoc** | `npx tsx --test tests/doc_coverage.test.ts` | Memastikan 100% simbol yang diekspor di `scripts/` memiliki blok TSDoc ber-tag `@param` dan `@returns`. |
-
----
-
-## 8. Panduan Terkait
-
-Untuk pemeliharaan jangka panjang, standar kontribusi, dan peta jalan fitur:
-* 🛡️ **[Panduan Keberlanjutan Kode, QA & Roadmap (`docs/development-and-contribution-guide.md`)](development-and-contribution-guide.md)**: Pedoman arsitektur anti-regresi, aturan isolasi handle Windows, dan milestone pengembangan berkelanjutan.
-* 📖 **[Panduan & Dokumentasi Lengkap Aplikasi (`docs/penjelasan-aplikasi.md`)](penjelasan-aplikasi.md)**: Rincian operasional, integrasi IDE, dan pemecahan masalah runtime.
+For exhaustive technical references on each subsystem:
+* 👉 [**00 - Master Architecture & System Design**](codebase/00-master-architecture.md)
+* 👉 [**01 - Core Subsystem Reference**](codebase/01-core-subsystem.md)
+* 👉 [**02 - API Client Subsystem Reference**](codebase/02-api-client-subsystem.md)
+* 👉 [**03 - Session Lifecycle & 4 Launch Modes**](codebase/03-session-lifecycle.md)
+* 👉 [**04 - VS Code Extension & UI Layer**](codebase/04-vscode-extension-ui.md)
+* 👉 [**05 - Mission Control Webview Subsystem**](codebase/05-mission-control-webview.md)
+* 👉 [**06 - MCP Server Subsystem**](codebase/06-mcp-server-subsystem.md)
+* 👉 [**07 - Agent System & Customization**](codebase/07-agents-and-customization.md)
+* 👉 [**08 - Utilities & CLI Tooling**](codebase/08-utilities-and-cli.md)
+* 👉 [**09 - Maintenance & Extension Developer Guide**](codebase/09-maintenance-and-extension-guide.md)
+* 👉 [**Master Codebase Index**](codebase/README.md)

@@ -1,11 +1,11 @@
 # 06 - Model Context Protocol (MCP) Server Subsystem
-**Modul:** [`scripts/mcp_server.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/mcp_server.ts), [`scripts/mcp/registry.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/mcp/registry.ts), [`scripts/mcp/tools/session_tools.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/mcp/tools/session_tools.ts), [`scripts/mcp/tools/agent_tools.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/mcp/tools/agent_tools.ts), [`scripts/mcp/tools/system_tools.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/mcp/tools/system_tools.ts)
+**Modules:** [`scripts/mcp_server.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/mcp_server.ts), [`scripts/mcp/registry.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/mcp/registry.ts), [`scripts/mcp/tools/session_tools.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/mcp/tools/session_tools.ts), [`scripts/mcp/tools/agent_tools.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/mcp/tools/agent_tools.ts), [`scripts/mcp/tools/system_tools.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/mcp/tools/system_tools.ts)
 
 ---
 
-## 1. Arsitektur Server MCP
+## 1. MCP Server Architecture
 
-Jules Companion menyertakan server **Model Context Protocol (MCP)** resmi berbasis SDK `@modelcontextprotocol/sdk`. Protokol ini memungkinkan agen AI eksternal (seperti Claude Desktop, Antigravity CLI, atau Hermes) untuk mengendalikan seluruh kapabilitas Google Jules secara programatis melalui saluran komunikasi standar JSON-RPC melalui `stdio`.
+Jules Companion embeds a full **Model Context Protocol (MCP)** server built on `@modelcontextprotocol/sdk`. This open standard allows external AI models (such as Claude Desktop, Antigravity CLI, or Hermes) to programmatically interact with Google Jules via JSON-RPC over `stdio`.
 
 ```mermaid
 graph TD
@@ -25,7 +25,7 @@ graph TD
 
 ## 2. Dynamic Tool Registry (`mcp/registry.ts`)
 
-Kelas `McpToolRegistry` bertindak sebagai pengelola dan validator seluruh alat (*tools*) yang diekspos ke klien MCP:
+The `McpToolRegistry` class manages and validates all tools exposed to MCP clients:
 
 ```typescript
 export interface McpToolDefinition {
@@ -40,55 +40,55 @@ export interface McpToolDefinition {
 }
 ```
 
-### Kemampuan Registri:
-- **Validasi Skema**: Memastikan setiap alat memiliki deskripsi yang jelas dan skema masukan bertipe JSON Schema standar yang dapat dipahami oleh LLM.
-- **Penanganan Kesalahan Terisolasi**: Jika suatu alat gagal dijalankan, server tidak akan crash; melainkan mengembalikan pesan kesalahan terstruktur dengan format `isError: true` ke klien.
-- **Katalog Lengkap**: Mengekspos tepat 20 alat native terdaftar.
+### Registry Features:
+- **Schema Validation**: Guarantees that every tool has an accurate description and standard JSON Schema parameters easily parsed by LLMs.
+- **Isolated Error Handling**: If a tool handler throws, the server does not crash; it returns a structured error object with `isError: true`.
+- **Complete Suite**: Exposes exactly 20 validated native tools.
 
 ---
 
-## 3. Katalog Lengkap 20 MCP Tools
+## 3. Catalog of the 20 Native MCP Tools
 
 ### 3.1. Session Management Tools (`session_tools.ts`)
 
-| Tool Name | Parameter Masukan | Deskripsi & Kegunaan |
+| Tool Name | Input Parameters | Description |
 |---|---|---|
-| `deploy_session` | `task: string`, `agents?: string`, `mode?: 'code' \| 'review'`, `type?: 'start' \| 'review' \| 'interactive'`, `branch?: string` | Meluncurkan sesi Jules baru ke Google Cloud dengan opsi pemilihan mode peluncuran resmi. |
-| `merge_session` | `sessionId?: string`, `branch?: string` | Memvalidasi safety gate dan menggabungkan hasil pekerjaan sesi ke branch lokal. |
-| `get_session_status`| `sessionId: string` | Mengambil status cloud terkini, branch, dan ringkasan aktivitas sesi. |
-| `cancel_session` | `sessionId: string` | Membatalkan sesi aktif yang sedang berjalan di Google Cloud. |
-| `send_session_message` | `sessionId: string`, `message: string` | Mengirim pesan balasan atau instruksi lanjutan kepada agen Jules. |
-| `retry_failed_session`| `sessionId: string` | Mengambil parameter sesi yang gagal dan meluncurkan sesi baru secara otomatis. |
-| `deploy_team` | `team: string[]`, `task: string` | Meluncurkan beberapa sesi paralel untuk beberapa agen spesialis sekaligus. |
-| `pull_session_diff` | `sessionId: string` | Mengambil unified diff patch dari perubahan kode sesi. |
-| `checkout_session_branch` | `sessionId: string` | Melakukan git checkout ke branch yang dibuatkan oleh Jules. |
-| `rollback_session` | `sessionId: string` | Membatalkan commit merge sesi dari branch kerja lokal secara aman. |
+| `deploy_session` | `task: string`, `agents?: string`, `mode?: 'code' \| 'review'`, `type?: 'start' \| 'review' \| 'interactive'`, `branch?: string` | Deploys a new Jules session with official launch mode support. |
+| `merge_session` | `sessionId?: string`, `branch?: string` | Verifies safety gate and merges session branch into local branch. |
+| `get_session_status`| `sessionId: string` | Retrieves live cloud status, branch name, and activity summary. |
+| `cancel_session` | `sessionId: string` | Cancels an active running cloud session. |
+| `send_session_message` | `sessionId: string`, `message: string` | Sends feedback or follow-up instructions to Jules. |
+| `retry_failed_session`| `sessionId: string` | Retries a failed session using initial task parameters. |
+| `deploy_team` | `team: string[]`, `task: string` | Deploys parallel sessions for multiple specialist agents simultaneously. |
+| `pull_session_diff` | `sessionId: string` | Fetches unified Git diff patch of changes made in the session. |
+| `checkout_session_branch` | `sessionId: string` | Checks out the Git branch created by Jules locally. |
+| `rollback_session` | `sessionId: string` | Safely reverts a session merge commit from local branch. |
 
 ### 3.2. Agent Management Tools (`agent_tools.ts`)
 
-| Tool Name | Parameter Masukan | Deskripsi & Kegunaan |
+| Tool Name | Input Parameters | Description |
 |---|---|---|
-| `list_agents` | *(Tanpa argumen)* | Mengembalikan daftar 30 agen spesialis beserta peran dan deskripsi masing-masing. |
-| `get_agent_info` | `agentName: string` | Mengembalikan teks instruksi sistem lengkap dan aturan direktif dari agen tertentu. |
-| `create_custom_agent` | `name: string`, `role: string`, `directives: string`, `group?: string` | Membuat template agen baru dan mendaftarkannya ke `registry.json`. |
-| `read_agent_journal` | `agentName: string` | Membaca catatan pembelajaran dan histori kerja dari berkas jurnal agen. |
+| `list_agents` | *(No arguments)* | Lists all 30 specialist agents with their roles and descriptions. |
+| `get_agent_info` | `agentName: string` | Returns system prompt directives and guardrails for a specific agent. |
+| `create_custom_agent` | `name: string`, `role: string`, `directives: string`, `group?: string` | Scaffolds a new agent template and registers it in `registry.json`. |
+| `read_agent_journal` | `agentName: string` | Reads operational insights and historical notes from agent journal file. |
 
 ### 3.3. System & Workflow Tools (`system_tools.ts`)
 
-| Tool Name | Parameter Masukan | Deskripsi & Kegunaan |
+| Tool Name | Input Parameters | Description |
 |---|---|---|
-| `auto_process` | `task: string`, `agents?: string` | Menjalankan pipeline otomatis: deploy -> pantau -> setujui rencana -> merge saat sukses. |
-| `setup_workspace` | `targetDir?: string` | Mempersiapkan struktur direktori kerja `.jules/` dan berkas konfigurasi awal. |
-| `list_sources` | `targetDir?: string` | Menginventarisasi berkas-berkas kode dan konfigurasi yang relevan di workspace. |
-| `run_doctor` | `targetDir?: string` | Menjalankan audit kesehatan lingkungan (ketersediaan Git, Node.js, API Key, dan konektivitas). |
-| `create_github_pr` | `sessionId: string`, `baseBranch?: string`, `title?: string`, `body?: string` | Membuat GitHub Pull Request dari branch sesi menggunakan GitHub CLI (`gh`). |
-| `get_review_reports`| `targetDir?: string` | Mengambil daftar laporan tinjauan kode yang tersimpan di `docs/jules-reviews/`. |
+| `auto_process` | `task: string`, `agents?: string` | Autonomous pipeline: deploy -> monitor -> approve plan -> merge upon success. |
+| `setup_workspace` | `targetDir?: string` | Scaffolds `.jules/` directory structure and initial state files. |
+| `list_sources` | `targetDir?: string` | Inventories source files and configuration in current workspace. |
+| `run_doctor` | `targetDir?: string` | Audits system health (Git, Node.js, API Key, registry integrity). |
+| `create_github_pr` | `sessionId: string`, `baseBranch?: string`, `title?: string`, `body?: string` | Creates a GitHub Pull Request from session branch via GitHub CLI (`gh`). |
+| `get_review_reports`| `targetDir?: string` | Fetches code review report files stored in `docs/jules-reviews/`. |
 
 ---
 
-## 4. Konfigurasi MCP Client
+## 4. MCP Client Configuration Example
 
-Untuk menghubungkan Jules Companion ke klien AI (misal `claude_desktop_config.json` atau konfigurasi MCP Antigravity CLI), tambahkan blok server berikut:
+To connect Jules Companion with an AI coding assistant (e.g., `claude_desktop_config.json` or Antigravity CLI MCP settings):
 
 ```json
 {

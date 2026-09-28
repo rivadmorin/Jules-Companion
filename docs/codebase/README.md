@@ -1,65 +1,65 @@
 # Jules Companion - Codebase Master Documentation Index
-**Repositori Resmi:** `rivadmorin/Jules-Companion`  
-**Status Dokumentasi:** Lengkap & Terverifikasi (100% Modul & Simbol)
+**Official Repository:** `rivadmorin/Jules-Companion`  
+**Documentation Status:** Complete & Verified (100% Modules & Symbols Covered)
 
 ---
 
-## 📚 Daftar Lengkap Dokumentasi Modul
+## 📚 Complete Module Documentation Directory
 
-Dokumentasi ini disusun secara komprehensif agar setiap bagian dari kodebase dapat dipahami, dipelihara, dan dikembangkan secara stabil dalam jangka panjang tanpa risiko regresi:
+This comprehensive technical documentation is organized to ensure every subsystem, data structure, workflow, and security constraint is clearly documented for **long-term stability, maintainability, and regression-free development**:
 
-| Bab | Berkas Dokumen | Lingkup Modul & Topik Utama |
+| Chapter | Document | Scope & Core Topics |
 |---|---|---|
-| **00** | [**Master Architecture & System Design**](00-master-architecture.md) | Gambaran umum arsitektur 5-layer, diagram alur data end-to-end, state machine, isolasi keamanan CSP, dan thread-safety. |
-| **01** | [**Core Subsystem Reference**](01-core-subsystem.md) | Domain types ([`types.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/core/types.ts)), atomisitas penyimpanan lokal ([`storage.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/core/storage.ts)), pembungkus Git CLI ([`git.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/core/git.ts)), dan mesin penjadwal tugas otonom ([`scheduler.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/core/scheduler.ts)). |
-| **02** | [**API Client Subsystem Reference**](02-api-client-subsystem.md) | Klien HTTP native tanpa dependensi eksternal ([`client/http.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/client/http.ts)), pemetaan endpoint resmi REST API Google Jules Cloud v1alpha ([`client/jules_api.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/client/jules_api.ts)), dan wrapper CLI lokal ([`jules_client.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/jules_client.ts)). |
-| **03** | [**Session Lifecycle & 4 Launch Modes**](03-session-lifecycle.md) | Spesifikasi lengkap 4 mode peluncuran (`start`, `review`, `interactive`, `scheduled`), mesin deploy ([`deploy_session.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/deploy_session.ts)), verifikasi safety gate sebelum merge & rollback ([`merge_session.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/merge_session.ts)), integrasi GitHub PR, dan loop otomatis ([`auto_process.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/auto_process.ts)). |
-| **04** | [**VS Code Extension & UI Layer**](04-vscode-extension-ui.md) | Pengendali utama ekstensi ([`extension.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/extension.ts)), katalog 33 VS Code commands, 4 TreeDataProvider di sidebar ([`sessions_provider.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/ui/sessions_provider.ts), [`workspace_provider.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/ui/workspace_provider.ts), [`agents_provider.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/ui/agents_provider.ts), [`journals_provider.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/ui/journals_provider.ts)), mesin polling background ([`live_sync.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/ui/live_sync.ts)), visual diff parser ([`visual_diff.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/ui/visual_diff.ts)), dan wizard pembuatan agen ([`custom_agent_wizard.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/ui/custom_agent_wizard.ts)). |
-| **05** | [**Mission Control Webview Subsystem**](05-mission-control-webview.md) | Panel interaktif HTML5 terisolasi ([`ui/mission_control.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/ui/mission_control.ts)), rekonsiliasi state live cloud vs disk lokal, arsitektur event delegation `data-action` yang mematuhi CSP, serta diferensiasi tegas antara banner persetujuan rencana (`AWAITING_PLAN_APPROVAL`) dan banner masukan pengguna (`AWAITING_USER_FEEDBACK`). |
-| **06** | [**Model Context Protocol (MCP) Server**](06-mcp-server-subsystem.md) | Server protokol standar untuk AI ([`mcp_server.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/mcp_server.ts)), registri terpusat dengan schema JSON valid ([`mcp/registry.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/mcp/registry.ts)), dan katalog lengkap 20 native tools untuk integrasi LLM (Claude, Antigravity CLI, Hermes). |
-| **07** | [**Agent System & Customization**](07-agents-and-customization.md) | Katalog 30 agen AI spesialis, skema frontmatter markdown template ([`references/agents/`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/references/agents/)), kompilasi `registry.json`, dan pola pencatatan memori agen (*agent journaling*). |
-| **08** | [**Utilities & CLI Tooling**](08-utilities-and-cli.md) | Pustaka fungsi bersama ([`utils.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/utils.ts)), predikat status sesi, doctor health checks, format tanggal terstandarisasi `DD-MM-YYYY`, inisialisasi workspace ([`setup.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/setup.ts)), kompilasi registri ([`generate_registry.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/generate_registry.ts)), dan post-build sync ([`sync_global.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/sync_global.ts)). |
-| **09** | [**Maintenance & Extension Developer Guide**](09-maintenance-and-extension-guide.md) | Panduan praktis bagi developer untuk menambah command, tool MCP, atau agen baru, standar pengujian unit test & audit TSDoc 100%, prosedur packaging VSIX, serta solusi pemecahan masalah (*troubleshooting*). |
+| **00** | [**Master Architecture & System Design**](00-master-architecture.md) | High-level 5-layer architecture, end-to-end data flow diagrams, deterministic state machine, CSP security isolation, thread-safety, and API key resolution. |
+| **01** | [**Core Subsystem Reference**](01-core-subsystem.md) | Universal domain types ([`types.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/core/types.ts)), atomic file storage ([`storage.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/core/storage.ts)), Git CLI subprocess wrapper ([`git.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/core/git.ts)), and autonomous background task scheduler ([`scheduler.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/core/scheduler.ts)). |
+| **02** | [**API Client Subsystem Reference**](02-api-client-subsystem.md) | Dependency-free native Node.js HTTP client ([`client/http.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/client/http.ts)), Google Jules Cloud REST API v1alpha endpoint mapping ([`client/jules_api.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/client/jules_api.ts)), and local CLI wrapper ([`jules_client.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/jules_client.ts)). |
+| **03** | [**Session Lifecycle & 4 Launch Modes**](03-session-lifecycle.md) | Detailed specifications for all 4 official launch modes (`start`, `review`, `interactive`, `scheduled`), deployment engine ([`deploy_session.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/deploy_session.ts)), pre-merge Safety Gate verification & rollback ([`merge_session.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/merge_session.ts)), GitHub PR automation, and autonomous processing loop ([`auto_process.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/auto_process.ts)). |
+| **04** | [**VS Code Extension & UI Layer**](04-vscode-extension-ui.md) | Master extension controller ([`extension.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/extension.ts)), 33 registered commands, 4 sidebar TreeDataProviders ([`sessions_provider.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/ui/sessions_provider.ts), [`workspace_provider.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/ui/workspace_provider.ts), [`agents_provider.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/ui/agents_provider.ts), [`journals_provider.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/ui/journals_provider.ts)), background heartbeat manager ([`live_sync.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/ui/live_sync.ts)), visual diff parser ([`visual_diff.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/ui/visual_diff.ts)), and agent creation wizard ([`custom_agent_wizard.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/ui/custom_agent_wizard.ts)). |
+| **05** | [**Mission Control Webview Subsystem**](05-mission-control-webview.md) | Isolated HTML5 webview panel ([`ui/mission_control.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/ui/mission_control.ts)), live cloud vs disk state reconciliation, CSP-compliant `data-action` event delegation, and strict separation between Plan Approval (`AWAITING_PLAN_APPROVAL`) and User Feedback (`AWAITING_USER_FEEDBACK`) banners. |
+| **06** | [**Model Context Protocol (MCP) Server**](06-mcp-server-subsystem.md) | Standard MCP AI server over stdio ([`mcp_server.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/mcp_server.ts)), centralized tool registry with JSON schema validation ([`mcp/registry.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/mcp/registry.ts)), and complete 20 native tools suite for external LLM clients (Claude, Antigravity CLI, Hermes). |
+| **07** | [**Agent System & Customization**](07-agents-and-customization.md) | Catalog of 30 specialized AI agent roles, template markdown schemas ([`references/agents/`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/references/agents/)), `registry.json` compilation, and persistent agent procedural memory journaling. |
+| **08** | [**Utilities & CLI Tooling**](08-utilities-and-cli.md) | Shared utility library ([`utils.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/utils.ts)), status predicates, environment health checks, standardized `DD-MM-YYYY` date formatting, workspace scaffolding ([`setup.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/setup.ts)), registry compiling ([`generate_registry.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/generate_registry.ts)), and post-build synchronization ([`sync_global.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/sync_global.ts)). |
+| **09** | [**Maintenance & Extension Developer Guide**](09-maintenance-and-extension-guide.md) | Practical developer guide: how to add commands, MCP tools, and specialist agents; 100% TSDoc auditing rules; test suite execution; VSIX packaging; and troubleshooting matrix. |
 
 ---
 
-## 🛠️ Peta Modul Kode (28 Scripts Inventory)
+## 🛠️ TypeScript Scripts Inventory (28 Files)
 
-Berikut adalah daftar lengkap 28 berkas skrip TypeScript dalam proyek yang telah didokumentasikan sepenuhnya:
+Every TypeScript source file in `scripts/` is fully covered in the documentation:
 
 ```
 scripts/
-├── auto_process.ts                -> Bab 03: Session Lifecycle
+├── auto_process.ts                -> Chapter 03: Session Lifecycle
 ├── client/
-│   ├── http.ts                    -> Bab 02: API Client Subsystem
-│   └── jules_api.ts               -> Bab 02: API Client Subsystem
+│   ├── http.ts                    -> Chapter 02: API Client Subsystem
+│   └── jules_api.ts               -> Chapter 02: API Client Subsystem
 ├── core/
-│   ├── git.ts                     -> Bab 01: Core Subsystem
-│   ├── scheduler.ts               -> Bab 01: Core Subsystem
-│   ├── storage.ts                 -> Bab 01: Core Subsystem
-│   └── types.ts                   -> Bab 01: Core Subsystem
-├── deploy_session.ts              -> Bab 03: Session Lifecycle
-├── extension.ts                   -> Bab 04: VS Code Extension UI
-├── generate_registry.ts           -> Bab 08: Utilities & CLI
-├── jules_client.ts                -> Bab 02: API Client Subsystem
+│   ├── git.ts                     -> Chapter 01: Core Subsystem
+│   ├── scheduler.ts               -> Chapter 01: Core Subsystem
+│   ├── storage.ts                 -> Chapter 01: Core Subsystem
+│   └── types.ts                   -> Chapter 01: Core Subsystem
+├── deploy_session.ts              -> Chapter 03: Session Lifecycle
+├── extension.ts                   -> Chapter 04: VS Code Extension UI
+├── generate_registry.ts           -> Chapter 08: Utilities & CLI
+├── jules_client.ts                -> Chapter 02: API Client Subsystem
 ├── mcp/
-│   ├── registry.ts                -> Bab 06: MCP Server Subsystem
+│   ├── registry.ts                -> Chapter 06: MCP Server Subsystem
 │   └── tools/
-│       ├── agent_tools.ts         -> Bab 06: MCP Server Subsystem
-│       ├── session_tools.ts       -> Bab 06: MCP Server Subsystem
-│       └── system_tools.ts        -> Bab 06: MCP Server Subsystem
-├── mcp_server.ts                  -> Bab 06: MCP Server Subsystem
-├── merge_session.ts               -> Bab 03: Session Lifecycle
-├── setup.ts                       -> Bab 08: Utilities & CLI
-├── sync_global.ts                 -> Bab 08: Utilities & CLI
+│       ├── agent_tools.ts         -> Chapter 06: MCP Server Subsystem
+│       ├── session_tools.ts       -> Chapter 06: MCP Server Subsystem
+│       └── system_tools.ts        -> Chapter 06: MCP Server Subsystem
+├── mcp_server.ts                  -> Chapter 06: MCP Server Subsystem
+├── merge_session.ts               -> Chapter 03: Session Lifecycle
+├── setup.ts                       -> Chapter 08: Utilities & CLI
+├── sync_global.ts                 -> Chapter 08: Utilities & CLI
 ├── ui/
-│   ├── agents_provider.ts         -> Bab 04: VS Code Extension UI
-│   ├── custom_agent_wizard.ts     -> Bab 04: VS Code Extension UI
-│   ├── journals_provider.ts       -> Bab 04: VS Code Extension UI
-│   ├── live_sync.ts               -> Bab 04: VS Code Extension UI
-│   ├── mission_control.ts         -> Bab 05: Mission Control Webview
-│   ├── sessions_provider.ts       -> Bab 04: VS Code Extension UI
-│   ├── visual_diff.ts             -> Bab 04: VS Code Extension UI
-│   └── workspace_provider.ts      -> Bab 04: VS Code Extension UI
-└── utils.ts                       -> Bab 08: Utilities & CLI
+│   ├── agents_provider.ts         -> Chapter 04: VS Code Extension UI
+│   ├── custom_agent_wizard.ts     -> Chapter 04: VS Code Extension UI
+│   ├── journals_provider.ts       -> Chapter 04: VS Code Extension UI
+│   ├── live_sync.ts               -> Chapter 04: VS Code Extension UI
+│   ├── mission_control.ts         -> Chapter 05: Mission Control Webview
+│   ├── sessions_provider.ts       -> Chapter 04: VS Code Extension UI
+│   ├── visual_diff.ts             -> Chapter 04: VS Code Extension UI
+│   └── workspace_provider.ts      -> Chapter 04: VS Code Extension UI
+└── utils.ts                       -> Chapter 08: Utilities & CLI
 ```

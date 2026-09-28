@@ -1,21 +1,21 @@
 # 02 - API Client Subsystem Reference
-**Modul:** [`scripts/client/http.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/client/http.ts), [`scripts/client/jules_api.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/client/jules_api.ts), [`scripts/jules_client.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/jules_client.ts)
+**Modules:** [`scripts/client/http.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/client/http.ts), [`scripts/client/jules_api.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/client/jules_api.ts), [`scripts/jules_client.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/jules_client.ts)
 
 ---
 
-## 1. Arsitektur Klien HTTP Native (`http.ts`)
+## 1. Native HTTP Client Architecture (`http.ts`)
 
-Modul [`scripts/client/http.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/client/http.ts) mengimplementasikan klien HTTP berkinerja tinggi menggunakan pustaka standar Node.js (`node:https` dan `node:http`) tanpa ketergantungan pada dependensi pihak ketiga yang berat seperti `axios` atau `node-fetch`.
+[`scripts/client/http.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/client/http.ts) implements a lightweight, high-performance HTTP client using Node.js standard library modules (`node:https` and `node:http`) without third-party dependencies such as `axios` or `node-fetch`.
 
-### 1.1. Resolusi Kredensial API Key
-Fungsi `resolveApiKey(providedKey?: string): string` menyelesaikan token otentikasi Google Jules secara berjenjang:
-1. Argumen `providedKey` eksplisit.
-2. Variabel lingkungan `JULES_API_KEY`.
-3. Variabel lingkungan alternatif `GEMINI_API_KEY`.
-4. Berkas lingkungan `.env` lokal di direktori kerja aktif.
-5. Konfigurasi workspace VS Code `jules.apiKey`.
+### 1.1. API Key Resolution Chain
+The `resolveApiKey(providedKey?: string): string` function resolves the Google Jules authentication token using a predictable priority fallback:
+1. Explicit `providedKey` parameter.
+2. `JULES_API_KEY` environment variable.
+3. `GEMINI_API_KEY` alternative environment variable.
+4. Local `.env` file in the current working directory.
+5. VS Code configuration property `jules.apiKey`.
 
-### 1.2. Eksekusi Permintaan HTTP
+### 1.2. HTTP Request Execution
 ```typescript
 export interface HttpRequestOptions {
   url: string;
@@ -35,24 +35,24 @@ export interface HttpResponse<T = any> {
 }
 ```
 
-- **Otentikasi Header**: Kunci API secara otomatis disematkan ke dalam header permintaan HTTP:
+- **Authentication Headers**: The API key is automatically injected into the request headers:
   ```http
   X-Goog-Api-Key: <resolved_api_key>
   Content-Type: application/json; charset=utf-8
   Accept: application/json
   ```
-- **Penanganan Status Code**:
-  - `200 - 299`: Permintaan sukses; isi respons di-parsing secara otomatis menjadi objek JavaScript jika bertipe JSON.
-  - `400 - 599`: Dilempar sebagai `HttpError` yang mencakup kode status, pesan status, dan badan respons kesalahan mentah untuk mempermudah pelacakan masalah.
-- **Timeout**: Standar timeout bawaan adalah `30.000 ms` (30 detik).
+- **Status Code Evaluation**:
+  - `200 - 299`: Success; response body is parsed automatically as JSON if applicable.
+  - `400 - 599`: Thrown as an informative `HttpError` containing status code, status message, and raw error body for straightforward debugging.
+- **Timeout**: Default request timeout is `30,000 ms` (30 seconds).
 
 ---
 
-## 2. Pemetaan Google Jules REST API (`jules_api.ts`)
+## 2. Google Jules REST API Mapping (`jules_api.ts`)
 
-Modul [`scripts/client/jules_api.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/client/jules_api.ts) memetakan seluruh endpoint resmi Google Jules Cloud API v1alpha (`https://jules.googleapis.com/v1alpha`).
+[`scripts/client/jules_api.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/client/jules_api.ts) maps all official endpoints of Google Jules Cloud API v1alpha (`https://jules.googleapis.com/v1alpha`).
 
-### Daftar Endpoint Lengkap:
+### Complete Endpoint Architecture:
 
 ```mermaid
 classDiagram
@@ -71,65 +71,65 @@ classDiagram
 
 #### 2.1. `listSessionsApi`
 - **Method**: `GET /v1alpha/sessions`
-- **Tujuan**: Mengambil daftar sesi cloud milik akun Google Jules terautentikasi.
-- **Parameter**:
-  - `apiKey?: string`: Kunci API opsional.
-  - `pageSize?: number`: Jumlah sesi per halaman (default 50).
-  - `pageToken?: string`: Token pagination halaman berikutnya.
-- **Return**: `{ sessions: SessionRecord[], nextPageToken?: string }`.
+- **Purpose**: Fetches the list of cloud sessions associated with the authenticated Google Jules account.
+- **Parameters**:
+  - `apiKey?: string`: Optional API key override.
+  - `pageSize?: number`: Number of records per page (default 50).
+  - `pageToken?: string`: Pagination cursor token.
+- **Returns**: `{ sessions: SessionRecord[], nextPageToken?: string }`.
 
 #### 2.2. `getSessionApi`
 - **Method**: `GET /v1alpha/sessions/{sessionId}`
-- **Tujuan**: Mengambil detail status paling mutakhir (*live state*) sebuah sesi dari cloud.
-- **Return**: `SessionRecord` lengkap dengan status, metadata branch, timestamp, dan aktivitas terbaru.
+- **Purpose**: Retrieves the real-time live state of a session directly from the cloud.
+- **Returns**: Up-to-date `SessionRecord` including status, branch metadata, timestamps, and activities.
 
 #### 2.3. `createSessionApi`
 - **Method**: `POST /v1alpha/sessions`
-- **Tujuan**: Menginisiasi dan meluncurkan sesi eksekusi baru di cloud Google Jules.
-- **Payload**:
+- **Purpose**: Deploys a new autonomous agent session on Google Jules Cloud.
+- **Payload Schema**:
   ```json
   {
-    "prompt": "<instruksi_dan_direktif_agen>",
+    "prompt": "<agent_directives_and_user_task>",
     "sourceContext": {
       "github": {
-        "startingBranch": "<nama_branch>"
+        "startingBranch": "<target_branch>"
       }
     },
     "requirePlanApproval": true | false
   }
   ```
-- **Keterangan**:
-  - Nilai `requirePlanApproval: false` digunakan pada mode 🚀 **Start**.
-  - Nilai `requirePlanApproval: true` digunakan pada mode 📑 **Review** dan 🎯 **Interactive plan**.
+- **Mode Mapping**:
+  - `requirePlanApproval: false` is used for 🚀 **Start** mode.
+  - `requirePlanApproval: true` is used for 📑 **Review** and 🎯 **Interactive plan** modes.
 
 #### 2.4. `approvePlanApi`
 - **Method**: `POST /v1alpha/sessions/{sessionId}:approvePlan`
-- **Tujuan**: Mengotorisasi rencana pelaksanaan kode yang telah dirumuskan Jules saat sesi berstatus `AWAITING_PLAN_APPROVAL`.
-- **Kondisi**: Hanya dapat dipanggil ketika status sesi secara resmi menunggu persetujuan rencana.
+- **Purpose**: Authorizes the execution plan formulated by Jules when the session is paused in `AWAITING_PLAN_APPROVAL`.
+- **Condition**: Only invoked when the session is strictly waiting for plan authorization.
 
 #### 2.5. `sendMessageApi`
 - **Method**: `POST /v1alpha/sessions/{sessionId}:sendMessage`
-- **Tujuan**: Mengirim pesan balasan, instruksi lanjutan, atau jawaban klarifikasi kepada Jules.
-- **Payload**: `{ "message": "<teks_masukan_pengguna>" }`.
-- **Kondisi**: Digunakan ketika sesi berstatus `AWAITING_USER_FEEDBACK` atau saat developer ingin memberikan arahan baru di tengah jalannya sesi.
+- **Purpose**: Sends a user reply, response, or follow-up instruction to Jules.
+- **Payload**: `{ "message": "<developer_input_text>" }`.
+- **Condition**: Used when the session is in `AWAITING_USER_FEEDBACK` or when the developer provides mid-flight guidance.
 
 #### 2.6. `cancelSessionApi` & `deleteSessionApi`
-- **`cancelSessionApi`** (`POST /v1alpha/sessions/{sessionId}:cancel`): Menghentikan sesi aktif yang sedang berjalan di cloud secara aman.
-- **`deleteSessionApi`** (`DELETE /v1alpha/sessions/{sessionId}`): Menghapus rekaman sesi dari cloud secara permanen.
+- **`cancelSessionApi`** (`POST /v1alpha/sessions/{sessionId}:cancel`): Halts an active running cloud session cleanly.
+- **`deleteSessionApi`** (`DELETE /v1alpha/sessions/{sessionId}`): Permanently removes a session record from the cloud.
 
 #### 2.7. `pullDiffApi`
 - **Method**: `GET /v1alpha/sessions/{sessionId}/diff`
-- **Tujuan**: Mengunduh unified git diff/patch dari perubahan kode yang dihasilkan oleh Jules pada sesi tersebut.
+- **Purpose**: Downloads the unified Git diff patch representing the code changes created by Jules.
 
 #### 2.8. `getActivitiesApi`
 - **Method**: `GET /v1alpha/sessions/{sessionId}/activities`
-- **Tujuan**: Mengambil riwayat aktivitas internal langkah-demi-langkah (perintah bash yang dijalankan, berkas yang diedit, pemikiran internal agen).
+- **Purpose**: Retrieves step-by-step internal execution events (bash commands executed, files edited, agent reasoning).
 
 ---
 
 ## 3. Jules CLI Subprocess Wrapper (`jules_client.ts`)
 
-Modul [`scripts/jules_client.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/jules_client.ts) menyediakan lapisan cadangan (*fallback wrapper*) jika pengguna bekerja di lingkungan yang memanfaatkan binary CLI resmi `jules` secara lokal:
+[`scripts/jules_client.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/jules_client.ts) provides a fallback wrapper when working in environments where the developer prefers using the local `jules` binary CLI:
 
-- Mengeksekusi perintah CLI `jules session new`, `jules session list`, `jules session show`, `jules session approve`.
-- Mem-parsing output stdout/stderr teks terformat dari CLI ke dalam representasi data terstruktur yang kompatibel dengan antarmuka TypeScript.
+- Wraps CLI commands: `jules session new`, `jules session list`, `jules session show`, `jules session approve`.
+- Parses formatted terminal stdout/stderr into typed TypeScript structures compatible with the rest of the application.

@@ -1,63 +1,63 @@
 # 04 - VS Code Extension & UI Layer Reference
-**Modul:** [`scripts/extension.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/extension.ts), [`scripts/ui/sessions_provider.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/ui/sessions_provider.ts), [`scripts/ui/workspace_provider.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/ui/workspace_provider.ts), [`scripts/ui/agents_provider.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/ui/agents_provider.ts), [`scripts/ui/journals_provider.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/ui/journals_provider.ts), [`scripts/ui/live_sync.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/ui/live_sync.ts), [`scripts/ui/visual_diff.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/ui/visual_diff.ts), [`scripts/ui/custom_agent_wizard.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/ui/custom_agent_wizard.ts)
+**Modules:** [`scripts/extension.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/extension.ts), [`scripts/ui/sessions_provider.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/ui/sessions_provider.ts), [`scripts/ui/workspace_provider.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/ui/workspace_provider.ts), [`scripts/ui/agents_provider.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/ui/agents_provider.ts), [`scripts/ui/journals_provider.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/ui/journals_provider.ts), [`scripts/ui/live_sync.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/ui/live_sync.ts), [`scripts/ui/visual_diff.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/ui/visual_diff.ts), [`scripts/ui/custom_agent_wizard.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/ui/custom_agent_wizard.ts)
 
 ---
 
 ## 1. Extension Controller (`extension.ts`)
 
-File [`scripts/extension.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/extension.ts) adalah titik masuk (*entry point*) ekstensi yang diinisialisasi oleh VS Code dan Antigravity IDE saat ekstensi diaktifkan (`activate`).
+[`scripts/extension.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/extension.ts) is the master lifecycle entry point initialized by VS Code and Antigravity IDE upon extension activation (`activate`).
 
-### 1.1. Siklus Hidup Ekstensi
+### 1.1. Lifecycle Hooks
 - **`activate(context: vscode.ExtensionContext)`**:
-  - Menginisialisasi status bar items (`statusBarItem`, `liveSyncBarItem`).
-  - Mendaftarkan 4 TreeDataProvider ke container activity bar `jules-companion`.
-  - Mendaftarkan seluruh 33 VS Code Commands.
-  - Memulai `LiveSyncManager` untuk sinkronisasi latar belakang.
-  - Memasang `FileSystemWatcher` pada `**/.jules*/**/*.{json}` untuk menyegarkan tampilan secara otomatis ketika ada pembaruan sesi atau jadwal.
+  - Initializes status bar items (`statusBarItem`, `liveSyncBarItem`).
+  - Registers 4 TreeDataProviders into the `jules-companion` activity bar container.
+  - Registers all 33 VS Code Commands.
+  - Starts `LiveSyncManager` for background synchronization.
+  - Registers `FileSystemWatcher` on `**/.jules*/**/*.{json}` to refresh views upon state changes.
 - **`deactivate()`**:
-  - Menghentikan timer LiveSync background.
-  - Membuang (*dispose*) status bar items dan watcher.
+  - Halts the LiveSync polling timer.
+  - Disposes status bar items and file system watchers.
 
-### 1.2. Ringkasan Registrasi Perintah (33 Commands)
+### 1.2. Complete Command Registry (33 Commands)
 
-| Kategori | ID Perintah | Judul / Aksi |
+| Category | Command ID | Action Description |
 |---|---|---|
-| **Sesi & Deployment** | `jules.deploySession` | Menampilkan wizard 3-langkah (Prompt -> Agen -> 4 Mode Eksekusi). |
-| | `jules.deployWithAgent` | Meluncurkan sesi dengan agen tertentu dari pohon agen. |
-| | `jules.approvePlan` | Mengirim persetujuan rencana untuk sesi `AWAITING_PLAN_APPROVAL`. |
-| | `jules.sendMessage` | Membuka prompt pesan untuk membalas sesi yang membutuhkan masukan. |
-| | `jules.mergeSession` | Menjalankan safety gate dan menggabungkan branch sesi ke branch lokal. |
-| | `jules.rollbackSession` | Mengembalikan working tree ke kondisi sebelum merge. |
-| | `jules.cancelSession` | Membatalkan sesi aktif di cloud. |
-| | `jules.deleteSession` | Menghapus sesi dari riwayat lokal/cloud. |
-| | `jules.archiveSession` | Memindahkan sesi selesai/gagal ke grup arsip. |
-| | `jules.unarchiveSession` | Mengembalikan sesi dari arsip ke daftar aktif. |
-| | `jules.retryFailedSession` | Mencoba ulang sesi yang gagal dengan parameter awal. |
-| | `jules.checkoutSessionBranch`| Melakukan git checkout ke branch yang dibuatkan Jules. |
-| **Scheduler Otonom** | `jules.scheduleTask` | Menjadwalkan tugas baru dengan pemilihan delay/waktu. |
-| | `jules.viewScheduledTasks` | Menampilkan daftar seluruh jadwal aktif & selesai. |
-| | `jules.viewScheduledTaskDetail` | Melihat rincian instruksi dan waktu target. |
-| | `jules.runScheduledTaskNow` | Memaksa eksekusi tugas terjadwal seketika. |
-| | `jules.cancelScheduledTask` | Membatalkan jadwal tugas tertunda. |
-| **Tampilan & Webview** | `jules.openMissionControl` | Membuka Mission Control Webview interaktif. |
-| | `jules.viewVisualDiff` | Membuka native diff viewer untuk perubahan kode sesi. |
-| | `jules.viewActivities` | Menampilkan riwayat langkah-langkah aktivitas Jules. |
-| | `jules.openInWeb` | Membuka sesi di Google Jules Web Console. |
-| | `jules.copySessionUrl` | Menyalin tautan web sesi ke clipboard sistem. |
-| **Integrasi & Utilitas**| `jules.createGitHubPR` | Membuat PR resmi di GitHub menggunakan GitHub CLI atau browser. |
-| | `jules.setApiKey` | Menyimpan Kunci API Google Jules secara aman. |
-| | `jules.runDoctor` | Menjalankan pemeriksaan kesehatan sistem dan dependensi. |
-| | `jules.toggleLiveSync` | Menyalakan/mematikan pemantauan live polling background. |
-| | `jules.createCustomAgent` | Membuka wizard pembuatan template agen AI baru. |
-| | `jules.openAgentDoc` | Membuka dokumentasi markdown dari agen yang dipilih. |
-| | `jules.refreshSessions` | Memperbarui daftar sesi di sidebar secara manual. |
-| | `jules.refreshWorkspace` | Memperbarui status repositori workspace di sidebar. |
+| **Sessions & Deployment** | `jules.deploySession` | 3-step QuickPick wizard (Task Prompt -> Agent -> 4 Launch Modes). |
+| | `jules.deployWithAgent` | Deploys a session directly using selected agent. |
+| | `jules.approvePlan` | Sends plan approval for sessions in `AWAITING_PLAN_APPROVAL`. |
+| | `jules.sendMessage` | Opens input box to reply to sessions awaiting feedback. |
+| | `jules.mergeSession` | Runs safety gate and merges session branch into local branch. |
+| | `jules.rollbackSession` | Safely reverts merge commit from local branch. |
+| | `jules.cancelSession` | Cancels an active cloud session. |
+| | `jules.deleteSession` | Permanently deletes a session record from local/cloud. |
+| | `jules.archiveSession` | Moves completed/failed session to archived group. |
+| | `jules.unarchiveSession` | Restores archived session back to active list. |
+| | `jules.retryFailedSession` | Retries a failed session using initial parameters. |
+| | `jules.checkoutSessionBranch`| Checks out the Git branch created by Jules. |
+| **Autonomous Scheduler** | `jules.scheduleTask` | Schedules a new task with delay or specific time. |
+| | `jules.viewScheduledTasks` | Displays list of scheduled tasks with management options. |
+| | `jules.viewScheduledTaskDetail` | Views prompt, target time, and metadata. |
+| | `jules.runScheduledTaskNow` | Force-executes a scheduled task immediately. |
+| | `jules.cancelScheduledTask` | Cancels a pending scheduled task. |
+| **Views & Webview** | `jules.openMissionControl` | Opens interactive Mission Control Webview panel. |
+| | `jules.viewVisualDiff` | Opens native side-by-side diff for session code changes. |
+| | `jules.viewActivities` | Displays cloud execution step timeline. |
+| | `jules.openInWeb` | Opens session directly in Google Jules Web Console. |
+| | `jules.copySessionUrl` | Copies web console URL to clipboard. |
+| **Integrations & Utils**| `jules.createGitHubPR` | Creates a GitHub Pull Request using GitHub CLI or browser. |
+| | `jules.setApiKey` | Securely stores Google Jules API key. |
+| | `jules.runDoctor` | Executes environment and dependency health checks. |
+| | `jules.toggleLiveSync` | Toggles background polling loop. |
+| | `jules.createCustomAgent` | Launches custom agent scaffolding wizard. |
+| | `jules.openAgentDoc` | Opens markdown documentation for selected agent. |
+| | `jules.refreshSessions` | Manually refreshes session tree view. |
+| | `jules.refreshWorkspace` | Manually refreshes workspace Git context. |
 
 ---
 
 ## 2. Tree Data Providers Subsystem
 
-Sidebar Jules Companion menyajikan 4 panel hierarkis di Activity Bar:
+The extension presents 4 hierarchical panels in the Activity Bar:
 
 ```mermaid
 graph TD
@@ -84,36 +84,27 @@ graph TD
 ```
 
 ### 2.1. `SessionsTreeDataProvider` (`ui/sessions_provider.ts`)
-- **Root Items**: Memisahkan sesi aktif, grup tugas terjadwal (`⏰ Scheduled Tasks (N pending)`), dan grup arsip (`📦 Archived Sessions (N)`).
-- **Sub-Items**: Setiap sesi dapat diperluas (*expanded*) untuk melihat detail spesifik:
-  - `Task`: Rincian prompt developer.
-  - `Branch`: Nama branch Git yang diasosiasikan.
-  - `Agent`: Nama agen yang ditugaskan.
-  - `Status`: Lencana status visual dengan ikon tematik (`sync~spin` untuk running, `checklist` untuk awaiting approval, `comment` untuk awaiting input, `check` untuk succeeded, `error` untuk failed).
-  - **Inline Action Context Items**: Item khusus yang muncul otomatis sesuai status (e.g. `Approve Plan` hanya muncul pada status menunggu persetujuan).
-- **Fungsi `resolveSessionId`**: Helper tangguh yang dapat mengekstrak ID sesi baik dari objek `SessionTreeItem`, raw `SessionRecord`, wrapper object, maupun string ID langsung.
+- **Root Level**: Groups items into Active Sessions, Scheduled Tasks (`⏰ Scheduled Tasks (N pending)`), and Archived Sessions (`📦 Archived Sessions (N)`).
+- **Sub-Items**: Each session expands to show Task prompt, Branch, Agent, Status badge, and contextual action items (e.g., `Approve Plan` only renders when awaiting approval).
+- **`resolveSessionId`**: Universal resolver unpacking session IDs from TreeItems, raw session objects, wrappers, or string IDs.
 
 ### 2.2. `WorkspaceTreeDataProvider` (`ui/workspace_provider.ts`)
-- Memberikan visualisasi cepat konteks Git workspace aktif:
-  - Branch lokal aktif.
-  - Remote origin URL (mendukung parsing format SSH dan HTTPS).
-  - Jumlah berkas yang belum di-commit (*dirty tree warning*).
-  - Status konektivitas dan Kunci API.
+- Inspects repository status: active branch, remote origin (parsing SSH and HTTPS), working tree cleanliness, and Doctor health summary.
 
 ### 2.3. `AgentsTreeDataProvider` & `JournalsTreeDataProvider`
-- Mengorganisir 30 agen spesialis berdasarkan grup fungsional.
-- Memberikan akses cepat untuk membaca berkas panduan markdown agen dan berkas catatan jurnal pembelajaran agen.
+- Organizes 30 specialist agents by functional group.
+- Provides direct navigation to agent role documents and operational decision journals.
 
 ---
 
 ## 3. Live Sync Manager Subsystem (`ui/live_sync.ts`)
 
-Kelas `LiveSyncManager` bertindak sebagai *heartbeat engine* yang menjaga antarmuka IDE selalu sinkron dengan Google Jules Cloud:
+The `LiveSyncManager` acts as the extension heartbeat engine:
 
 ```typescript
 export class LiveSyncManager {
   private timer: NodeJS.Timeout | null = null;
-  private intervalMs: number = 30000; // Polling setiap 30 detik
+  private intervalMs: number = 30000; // 30-second polling interval
   
   public start(): void;
   public stop(): void;
@@ -123,30 +114,30 @@ export class LiveSyncManager {
 }
 ```
 
-### Tanggung Jawab Siklus `pollOnce`:
-1. **Trigger Scheduler**: Memanggil `executeDueTasks(root)`. Jika ada tugas terjadwal yang jatuh tempo, sistem langsung mengeksekusinya dan memunculkan notifikasi IDE.
-2. **Sinkronisasi Sesi Cloud**: Memanggil `listSessionsApi()` untuk mengambil status cloud terbaru.
-3. **Deteksi Intervensi Pengguna**:
-   - Jika ada sesi yang bertransisi ke `AWAITING_PLAN_APPROVAL`, IDE menampilkan notifikasi interaktif: `"Plan approval required for session #{id}!"` dengan tombol aksi `Approve Plan` dan `Open Mission Control`.
-   - Jika sesi bertransisi ke `AWAITING_USER_FEEDBACK`, IDE menampilkan notifikasi masukan: `"Jules needs your feedback on session #{id}!"` dengan tombol `Reply to Agent`.
-4. **Penyegaran Tampilan**: Memperbarui metrik badge status bar dan menyegarkan TreeView.
+### `pollOnce` Execution Routine:
+1. **Scheduler Trigger**: Calls `executeDueTasks(root)`. Automatically fires due tasks and alerts the developer.
+2. **Cloud Sync**: Calls `listSessionsApi()` to refresh cloud session statuses.
+3. **Interactive Notifications**:
+   - `AWAITING_PLAN_APPROVAL`: Shows `"Plan approval required for session #{id}!"` with action buttons `Approve Plan` and `Open Mission Control`.
+   - `AWAITING_USER_FEEDBACK`: Shows `"Jules needs your feedback on session #{id}!"` with button `Reply to Agent`.
+4. **View Updates**: Updates status bar metrics and triggers TreeView refresh.
 
 ---
 
 ## 4. Visual Diff Viewer (`ui/visual_diff.ts`)
 
-Modul [`scripts/ui/visual_diff.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/ui/visual_diff.ts) memungkinkan developer melihat perbedaan kode yang dihasilkan Jules langsung menggunakan native diff editor bawaan VS Code tanpa harus melakukan checkout branch:
-1. Mengambil git patch mentah dari `pullDiffApi` atau `git diff`.
-2. Mem-parsing header file, chunk lines (`+`, `-`, ` `).
-3. Menyimpan snapshot berkas sementara (*virtual document*) dan memanggil perintah `vscode.diff` dengan judul yang ramah pengguna: `"Jules Proposed Changes: filename.ts"`.
+[`scripts/ui/visual_diff.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/ui/visual_diff.ts) allows reviewing proposed code changes without checking out branches:
+1. Fetches unified Git diff patch from `pullDiffApi` or `git diff`.
+2. Parses file headers and diff chunks.
+3. Reconstructs before/after states and launches native VS Code diff editor (`vscode.diff`).
 
 ---
 
 ## 5. Custom Agent Wizard (`ui/custom_agent_wizard.ts`)
 
-Menyediakan panduan interaktif langkah-demi-langkah bagi developer untuk merancang agen AI baru:
-1. Meminta input nama agen (e.g. `graphql-expert`).
-2. Meminta pemilihan grup peran (`Coding`, `Advisory`, `DevOps`, `Architecture`, `Testing`).
-3. Meminta penulisan deskripsi direktif sistem.
-4. Membuat berkas markdown baru di `references/agents/{name}.md` dengan frontmatter standar.
-5. Memperbarui `registry.json` secara otomatis dan menyegarkan pohon agen di sidebar.
+Provides an interactive GUI wizard for creating custom specialist agents:
+1. Prompts for agent name (e.g., `graphql-expert`).
+2. Prompts for functional group selection (`Coding`, `Advisory`, `DevOps`, `Architecture`, `Testing`).
+3. Prompts for core behavioral directives.
+4. Scaffolds `references/agents/{name}.md` with standard YAML frontmatter.
+5. Updates `registry.json` and refreshes the sidebar agent tree.

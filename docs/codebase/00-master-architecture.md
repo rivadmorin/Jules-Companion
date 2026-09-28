@@ -5,20 +5,20 @@
 
 ## 1. Overview & Architectural Goals
 
-**Jules Companion** adalah platform orkestrasi agen AI dan ekstensi IDE (kompatibel penuh dengan Visual Studio Code dan Google Antigravity IDE) yang menghubungkan developer lokal dengan layanan cloud Google Jules.
+**Jules Companion** is an AI agent orchestration platform and native IDE extension (fully compatible with Visual Studio Code and Google Antigravity IDE) that bridges local developer environments with the cloud-native Google Jules autonomous coding service.
 
-Tujuan utama arsitektur Jules Companion meliputi:
-1. **Multi-Modal Execution**: Mendukung penuh 4 mode peluncuran sesi resmi Google Jules (`start`, `review`, `interactive`, `scheduled`).
-2. **Autonomous Background Scheduling**: Mesin penjadwalan lokal yang memicu eksekusi sesi otonom saat jatuh tempo tanpa intervensi manual.
-3. **State Reconciliation & Safety**: Rekonsiliasi transparan antara status sesi cloud live (`ACTIVE`, `AWAITING_PLAN_APPROVAL`, `AWAITING_USER_FEEDBACK`, `SUCCEEDED`, `FAILED`) dan status lokal di disk, dilindungi *Safety Gate* sebelum operasi merge Git.
-4. **Dual Interface Compatibility**: Dapat dioperasikan secara visual melalui IDE TreeView & Mission Control Webview, atau secara programatis oleh model bahasa besar (LLM) melalui protokol standar Model Context Protocol (MCP) dengan 20 native tools.
-5. **Clean Separation of Concerns**: Modularitas tinggi dengan pemisahan tegas antara UI, Domain Core, API Client, MCP Server, dan Storage.
+The primary architectural goals of Jules Companion are:
+1. **Multi-Modal Execution**: Full support for all 4 official Google Jules launch modes (`start`, `review`, `interactive`, `scheduled`).
+2. **Autonomous Background Scheduling**: Standalone local task scheduler that evaluates due tasks and autonomously deploys them without manual developer intervention.
+3. **State Reconciliation & Safety Gate**: Transparent reconciliation between live cloud state (`ACTIVE`, `AWAITING_PLAN_APPROVAL`, `AWAITING_USER_FEEDBACK`, `SUCCEEDED`, `FAILED`) and local disk cache, protected by a fail-safe *Safety Gate* before any Git merge operations.
+4. **Dual Interface Compatibility**: Operable visually via IDE TreeViews & Mission Control Webview, or programmatically by Large Language Models (LLMs) via the Model Context Protocol (MCP) using 20 native tools.
+5. **Clean Separation of Concerns**: Highly modular design strictly separating UI, Core Domain, API Client, MCP Server, and Storage layers.
 
 ---
 
 ## 2. High-Level Layered Architecture
 
-Sistem dirancang dalam 5 lapisan independen namun terkoordinasi secara rapi:
+The system is organized into 5 independent yet neatly orchestrated layers:
 
 ```mermaid
 graph TD
@@ -77,7 +77,7 @@ graph TD
 
 ### 3.1. Session Deployment Flow (4 Launch Modes)
 
-Diagram berikut mengilustrasikan bagaimana sebuah permintaan sesi diproses berdasarkan `LaunchMode`:
+The following sequence illustrates how a session deployment request is processed based on `LaunchMode`:
 
 ```mermaid
 sequenceDiagram
@@ -146,7 +146,7 @@ sequenceDiagram
 
 ## 4. State Machine & Status Reconciliation
 
-Status sesi Jules dikelola dengan transisi tegas:
+Jules session statuses are managed with strict, deterministic transitions:
 
 ```mermaid
 stateDiagram-v2
@@ -172,20 +172,20 @@ stateDiagram-v2
     ARCHIVED --> [*]
 ```
 
-### Prinsip Penting:
-1. **Diferensiasi Status**: Status `AWAITING_PLAN_APPROVAL` dan `AWAITING_USER_FEEDBACK` dipisahkan secara tegas. Sistem tidak pernah menampilkan form persetujuan rencana jika agen hanya menanyakan klarifikasi masukan.
-2. **Prioritas Cloud Live**: Data dari endpoint `getSessionApi` cloud selalu diprioritaskan di atas cache disk lokal untuk mencegah aksi usang (*stale action*).
+### Core Design Rules:
+1. **Status Disambiguation**: The states `AWAITING_PLAN_APPROVAL` and `AWAITING_USER_FEEDBACK` are strictly decoupled. The system never displays a plan approval form if the cloud agent is merely asking for user input or goal clarification.
+2. **Cloud Live Priority**: Data returned by `getSessionApi` cloud endpoint takes precedence over local disk cache to prevent stale action triggers.
 
 ---
 
-## 5. Keamanan & Kebijakan Isolasi
+## 5. Security & Isolation Policies
 
-1. **Content Security Policy (CSP) Webview**:
-   - Webview Mission Control menggunakan CSP ketat (`default-src 'none'; style-src 'unsafe-inline'; script-src 'nonce-...';`).
-   - Tidak ada inline event handler (`onclick="..."`). Seluruh aksi menggunakan arsitektur Event Delegation berbasis atribut `data-action`.
-2. **Penyimpanan Kredensial**:
-   - API Key Google Jules diresolusi dengan urutan aman: Konfigurasi VS Code (`jules.apiKey`) -> Environment Variable (`JULES_API_KEY` / `GEMINI_API_KEY`) -> `.env` file lokal -> Interactive Secure Prompt.
-3. **Safety Gate Verifikasi Merge**:
-   - `mergeSessionCore` menolak menggabungkan branch jika sesi belum diverifikasi tuntas di Google Jules Cloud (`status === 'SUCCEEDED'`).
-4. **Penulisan Berkas Atomik**:
-   - Operasi modifikasi `.jules/sessions.json` dan `.jules-companion/schedules.json` menggunakan teknik serialisasi sinkron untuk mencegah *race condition* antar proses.
+1. **Content Security Policy (CSP) in Webview**:
+   - The Mission Control Webview enforces strict CSP (`default-src 'none'; style-src 'unsafe-inline'; script-src 'nonce-...';`).
+   - Inline event handlers (`onclick="..."`) are strictly prohibited. All user actions utilize semantic Event Delegation via `data-action` attributes.
+2. **Credential Resolution**:
+   - Google Jules API key is resolved hierarchically: VS Code configuration (`jules.apiKey`) -> Environment variable (`JULES_API_KEY` / `GEMINI_API_KEY`) -> local `.env` file -> Secure interactive prompt.
+3. **Safety Gate Merge Verification**:
+   - `mergeSessionCore` rejects branch merges if the session is not verified as `SUCCEEDED` on Google Jules Cloud.
+4. **Atomic Disk Writes**:
+   - Modifications to `.jules/sessions.json` and `.jules-companion/schedules.json` use synchronous atomic persistence to avoid race conditions across processes.

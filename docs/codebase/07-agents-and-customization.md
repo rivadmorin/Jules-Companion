@@ -1,11 +1,11 @@
 # 07 - Agent System & Customization Reference
-**Modul:** [`references/agents/`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/references/agents/), [`references/agents/registry.json`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/references/agents/registry.json), [`scripts/generate_registry.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/generate_registry.ts), [`scripts/ui/custom_agent_wizard.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/ui/custom_agent_wizard.ts)
+**Modules:** [`references/agents/`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/references/agents/), [`references/agents/registry.json`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/references/agents/registry.json), [`scripts/generate_registry.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/generate_registry.ts), [`scripts/ui/custom_agent_wizard.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/ui/custom_agent_wizard.ts)
 
 ---
 
-## 1. Konsep Agen Spesialis
+## 1. Specialist Agent Architecture
 
-Jules Companion tidak memperlakukan AI sebagai asisten umum yang seragam (*generic assistant*). Sebaliknya, sistem mengorganisir tugas ke dalam **30 peran agen spesialis (*specialized roles*)**, masing-masing dengan instruksi sistem, batasan perilaku (*guardrails*), dan pola pikir arsitektur yang terkalibrasi secara presisi.
+Jules Companion avoids treating AI as a generic assistant. Instead, tasks are assigned to **30 specialist agent personas**, each calibrated with distinct system directives, behavioral guardrails, and architectural focus.
 
 ```mermaid
 graph TD
@@ -22,9 +22,9 @@ graph TD
 
 ---
 
-## 2. Format Template Agen (`references/agents/*.md`)
+## 2. Agent Template Specification (`references/agents/*.md`)
 
-Setiap agen didefinisikan dalam berkas markdown mandiri dengan frontmatter YAML terstandarisasi:
+Each agent is defined in a self-contained markdown file using standardized YAML frontmatter:
 
 ```markdown
 ---
@@ -50,61 +50,61 @@ You are "Architect" - an Elite System Architect AI agent...
 
 ---
 
-## 3. Katalog Lengkap 30 Agen Spesialis
+## 3. Catalog of the 30 Specialist Agents
 
-| Nama Agen | Ikon | Grup | Deskripsi Tugas Utama |
+| Agent Name | Icon | Group | Primary Specialty & Focus |
 |---|---|---|---|
-| `architect` | 🏛️ | Architecture | Merancang arsitektur sistem tingkat tinggi, modularitas, dan batas antarmuka. |
-| `auditor` | 📋 | Advisory | Melakukan audit kepatuhan kode, dependensi rentan, dan standar lisensi. |
-| `coder` | 💻 | Coding | Implementasi kode fitur dan perbaikan logika bisnis umum. |
-| `curator` | 📚 | Advisory | Mengurasi basis pengetahuan tim dan dokumentasi internal repositori. |
-| `datasmith`| 🗄️ | System | Desain skema database, migrasi data, query optimization, dan relasi tabel. |
-| `deployer` | 🚀 | DevOps | Menyiapkan pipeline CI/CD, konfigurasi release, dan otomatisasi deployment. |
-| `exterminator`| 🪲| Coding | Investigasi mendalam dan pemusnahan bug kompleks (*root-cause debugging*). |
-| `innovator`| 💡 | Coding | Merancang dan mengintegrasikan fitur baru yang inovatif ke dalam aplikasi. |
-| `inspector`| 🔎 | Testing | Menulis pengujian unit, integrasi, dan E2E untuk keandalan aplikasi. |
-| `janitor` | 🧹 | Coding | Membersihkan kode mati (*dead code*), berkas sampah, dan dependensi usang. |
-| `localizer`| 🌍 | Advisory | Menangani lokalisasi bahasa, format angka/tanggal, dan tata letak RTL. |
-| `logger` | 🪵 | System | Integrasi structured logging, metrik telemetri, dan pelacakan error. |
-| `materialist`| 🎴 | Coding | Penataan styling antarmuka UI sesuai panduan Google Material Design 3. |
-| `modernizer` | ⚡ | Coding | Memperbarui kode warisan (*legacy code*) ke standar modern (ESNext, TypeScript). |
-| `netrunner`| 🌐 | DevOps | Konfigurasi web server, reverse proxy, port routing, dan sertifikasi SSL. |
-| `nexus` | 🔗 | System | Spesialis integrasi MCP AI, membangun server konteks dan bridge LLM. |
-| `nomad` | 🎒 | Coding | Memastikan aplikasi dapat berjalan 100% lokal dan offline tanpa internet. |
-| `optimizer`| ⏱️ | Performance| Mengoptimasi algoritma, konsumsi memori, dan kecepatan komputasi. |
-| `packager` | 💿 | DevOps | Membuat skrip instalasi, uninstaller, dan konfigurasi portable bundler. |
-| `palette` | 🎨 | Coding | Desain micro-UX dan aksesibilitas antarmuka pengguna (WCAG/ARIA). |
-| `partisan` | 🛰️ | Architecture | Desain arsitektur terdesentralisasi dan komunikasi peer-to-peer (P2P). |
-| `profiler` | 📊 | Performance| Analisis profil penggunaan CPU, memory heap, dan deteksi memory leaks. |
-| `proteus` | 🎭 | Advisory | Analisis kustom dan adaptif sesuai permintaan fleksibel developer. |
-| `refactorer`| 🔨| Coding | Refactoring kode untuk meningkatkan keterbacaan tanpa mengubah fungsionalitas. |
-| `revenant` | 🧟 | System | Konfigurasi persistensi background service lintas OS (Windows, Linux, macOS). |
-| `scaler` | 📈 | Architecture | Merancang skalabilitas tinggi, caching strategy, dan load balancing. |
-| `scribe` | ✍️ | Documentation| Menulis dokumentasi teknis, TSDoc, API reference, dan README. |
-| `sentinel` | 🛡️ | Security | Audit keamanan siber, pencegahan injeksi SQL, XSS, dan sanitasi input. |
-| `strategist`| ♟️| Advisory | Perencanaan roadmap pengembangan, evaluasi teknologi, dan mitigasi risiko. |
-| `synthesizer`| 🧬| System | Menggabungkan beberapa subsistem dan mengkoordinasikan pekerjaan tim agen. |
+| `architect` | 🏛️ | Architecture | Designs high-level system architecture, modular boundaries, and clean contracts. |
+| `auditor` | 📋 | Advisory | Audits code compliance, security vulnerabilities, and software licensing. |
+| `coder` | 💻 | Coding | Implements features, refactors business logic, and writes production code. |
+| `curator` | 📚 | Advisory | Curates repository documentation, developer onboarding guides, and gotchas. |
+| `datasmith`| 🗄️ | System | Database schemas, migration scripts, query optimization, and table indexing. |
+| `deployer` | 🚀 | DevOps | CI/CD pipelines, release configurations, and automated deployment scripts. |
+| `exterminator`| 🪲| Coding | Deep-dive bug investigation and root-cause debugging. |
+| `innovator`| 💡 | Coding | Designs and integrates new functional capabilities following existing patterns. |
+| `inspector`| 🔎 | Testing | Writes unit, integration, and E2E tests across codebase modules. |
+| `janitor` | 🧹 | Coding | Cleans up dead code, stray files, and stale dependencies. |
+| `localizer`| 🌍 | Advisory | UI localization, i18n string extraction, date/number formatting, RTL support. |
+| `logger` | 🪵 | System | Structured logging patterns, telemetry metrics, and error tracing. |
+| `materialist`| 🎴 | Coding | UI styling strictly adhering to Google Material Design 3 guidelines. |
+| `modernizer` | ⚡ | Coding | Upgrades legacy codebases to modern standards (ESNext, TypeScript). |
+| `netrunner`| 🌐 | DevOps | Web servers, reverse proxies, port routing, and SSL/TLS certificate scopes. |
+| `nexus` | 🔗 | System | MCP AI integration, context servers, and LLM-to-tool bridges. |
+| `nomad` | 🎒 | Coding | Ensures software runs 100% offline and locally without internet connectivity. |
+| `optimizer`| ⏱️ | Performance| Algorithmic performance, memory footprints, and execution speed. |
+| `packager` | 💿 | DevOps | Clean installers, setup scripts, and portable bundler distributions. |
+| `palette` | 🎨 | Coding | Micro-UX enhancements and accessibility compliance (WCAG/ARIA). |
+| `partisan` | 🛰️ | Architecture | Decentralized architectures and peer-to-peer (P2P) networking. |
+| `profiler` | 📊 | Performance| CPU profiling, heap snapshot analysis, and memory leak detection. |
+| `proteus` | 🎭 | Advisory | Adaptive, custom analyses tailored to ad-hoc developer requirements. |
+| `refactorer`| 🔨| Coding | Code refactoring for clarity and simplicity without altering behavior. |
+| `revenant` | 🧟 | System | Cross-platform background service persistence (Windows, Linux, macOS). |
+| `scaler` | 📈 | Architecture | High availability, query load balancing, and caching strategies. |
+| `scribe` | ✍️ | Documentation| Writes technical documentation, TSDoc comments, API guides, and READMEs. |
+| `sentinel` | 🛡️ | Security | Cyber-security reviews, SQL injection/XSS prevention, and sanitization. |
+| `strategist`| ♟️| Advisory | Development roadmaps, technical feasibility analysis, and risk mitigation. |
+| `synthesizer`| 🧬| System | Coordinates multi-agent team workflows and synthesizes changes. |
 
 ---
 
-## 4. Mekanisme Pembuatan Agen Kustom (`createCustomAgentScaffold`)
+## 4. Custom Agent Creation (`createCustomAgentScaffold`)
 
-Developer dapat memperluas katalog dengan agen kustom buatan sendiri:
+Developers can easily extend the roster with custom agents:
 
-1. **Pemanggilan**:
-   - Melalui UI Wizard: Perintah `Jules: Create Custom Agent` (`jules.createCustomAgent`).
-   - Melalui MCP: Tool `create_custom_agent`.
-   - Melalui Kode: `createCustomAgentScaffold(name, role, directives, targetDir)`.
-2. **Penyimpanan**:
-   - Template berkas dibuat di `references/agents/{name}.md`.
-   - Entri baru ditambahkan ke `references/agents/registry.json`.
-3. **Penyegaran Otomatis**:
-   - Ekstensi secara otomatis memperbarui sidebar `AgentsTreeDataProvider` tanpa perlu me-reload IDE.
+1. **Invocation**:
+   - Via IDE UI Wizard: `Jules: Create Custom Agent` (`jules.createCustomAgent`).
+   - Via MCP Tool: `create_custom_agent`.
+   - Programmatically: `createCustomAgentScaffold(name, role, directives, targetDir)`.
+2. **Storage**:
+   - Template file saved to `references/agents/{name}.md`.
+   - Entry appended to `references/agents/registry.json`.
+3. **Immediate Availability**:
+   - Extension auto-refreshes the `AgentsTreeDataProvider` without requiring an IDE reload.
 
 ---
 
 ## 5. Agent Journaling Pattern (`references/agents/*.journal.md`)
 
-Setiap agen didukung dengan berkas jurnal pembelajarannya sendiri:
-- Agen dapat mencatat temuan arsitektural penting, asumsi domain, atau *gotchas* yang dihadapi selama eksekusi sesi ke dalam berkas `references/agents/{agentName}.journal.md`.
-- Informasi ini dapat dibaca kembali oleh agen pada sesi mendatang melalui `read_agent_journal`, memberikan memori prosedural jangka panjang bagi agen AI.
+Each agent maintains an operational memory log:
+- Agents record architectural findings, domain constraints, or gotchas into `references/agents/{agentName}.journal.md`.
+- Read back by future agent sessions via `read_agent_journal`, providing long-term procedural memory across interactions.

@@ -1,60 +1,60 @@
 # 01 - Core Subsystem Reference
-**Modul:** [`scripts/core/types.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/core/types.ts), [`scripts/core/storage.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/core/storage.ts), [`scripts/core/git.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/core/git.ts), [`scripts/core/scheduler.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/core/scheduler.ts)
+**Modules:** [`scripts/core/types.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/core/types.ts), [`scripts/core/storage.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/core/storage.ts), [`scripts/core/git.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/core/git.ts), [`scripts/core/scheduler.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/core/scheduler.ts)
 
 ---
 
 ## 1. Domain Types & Contracts (`types.ts`)
 
-File [`scripts/core/types.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/core/types.ts) merupakan fondasi tipe domain sentral (*single source of truth*) yang mendefinisikan seluruh struktur data yang digunakan lintas subsistem:
+[`scripts/core/types.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/core/types.ts) serves as the central domain type registry and single source of truth across all subsystems:
 
 ### 1.1. `SessionRecord`
-Mewakili catatan status sebuah sesi Jules di lingkungan lokal:
+Represents a Jules session's state on disk and in memory:
 ```typescript
 export interface SessionRecord {
-  id: string;               // ID unik sesi dari Google Jules (e.g. "1234567890abcdef")
-  agent: string;            // Nama agen spesialis (e.g. "architect", "tester", "default")
-  task: string;             // Deskripsi tugas/instruksi prompt developer
-  status: string;           // Status sesi: 'PENDING' | 'RUNNING' | 'AWAITING_PLAN_APPROVAL' | 'AWAITING_USER_FEEDBACK' | 'SUCCEEDED' | 'FAILED'
-  branch?: string;          // Nama branch Git target (e.g. "jules/task-xyz")
-  timestamp?: string;       // Timestamp pembuatan sesi (format ISO atau lokal)
-  createdAt?: string;       // Timestamp pembuatan ISO standar
-  updatedAt?: string;       // Timestamp terakhir pembaruan status
-  archived?: boolean;       // Penanda apakah sesi diarsipkan oleh pengguna
-  prompt?: string;          // Prompt awal lengkap
-  mode?: 'code' | 'review'; // Mode operasional sesi
-  activities?: any[];       // Log aktivitas cloud yang dieksekusi oleh Jules
-  artifacts?: any[];        // Berkas/perubahan kode yang dihasilkan oleh Jules
+  id: string;               // Unique session ID from Google Jules (e.g., "1234567890abcdef")
+  agent: string;            // Specialist agent name (e.g., "architect", "tester", "default")
+  task: string;             // Developer instruction / prompt summary
+  status: string;           // Session status: 'PENDING' | 'RUNNING' | 'AWAITING_PLAN_APPROVAL' | 'AWAITING_USER_FEEDBACK' | 'SUCCEEDED' | 'FAILED'
+  branch?: string;          // Associated Git branch name (e.g., "jules/task-xyz")
+  timestamp?: string;       // Creation timestamp string
+  createdAt?: string;       // Standard ISO creation timestamp
+  updatedAt?: string;       // Latest status update ISO timestamp
+  archived?: boolean;       // Archival flag
+  prompt?: string;          // Full initial user prompt
+  mode?: 'code' | 'review'; // Operational execution mode
+  activities?: any[];       // Cloud execution timeline events
+  artifacts?: any[];        // Output artifacts and code patches
 }
 ```
 
 ### 1.2. `ScheduledTask` & `LaunchMode`
-Mendefinisikan entitas tugas terjadwal dan mode eksekusi resmi Google Jules:
+Defines autonomous scheduled task entities and official Google Jules launch modes:
 ```typescript
 export type LaunchMode = 'start' | 'review' | 'interactive' | 'scheduled';
 
 export interface ScheduledTask {
-  id: string;               // ID unik dengan prefiks "sched-"
-  agent: string;            // Agen yang ditugaskan
-  mode: 'code' | 'review';  // Mode eksekusi
-  type: LaunchMode;         // Mode peluncuran
-  task: string;             // Prompt instruksi
-  scheduledAt: string;      // Waktu eksekusi yang ditargetkan (ISO string)
-  createdAt: string;        // Waktu pembuatan jadwal (ISO string)
+  id: string;               // Unique identifier with "sched-" prefix
+  agent: string;            // Assigned specialist agent
+  mode: 'code' | 'review';  // Execution mode
+  type: LaunchMode;         // Launch mode
+  task: string;             // Task instruction prompt
+  scheduledAt: string;      // Target execution time (ISO string)
+  createdAt: string;        // Creation timestamp (ISO string)
   status: 'pending' | 'running' | 'completed' | 'cancelled';
-  sessionId?: string;       // ID sesi cloud setelah berhasil dieksekusi
-  branch?: string;          // Branch Git opsional
+  sessionId?: string;       // Resulting cloud session ID once deployed
+  branch?: string;          // Optional target Git branch
 }
 ```
 
 ### 1.3. `ProjectDirs`
-Menampung direktori absolut proyek yang terisolasi:
+Encapsulates isolated filesystem directory paths for a project:
 ```typescript
 export interface ProjectDirs {
-  root: string;             // Root folder proyek saat ini
-  julesDir: string;         // Folder .jules lokal di root proyek
-  agentsDir: string;        // Folder references/agents atau .jules/agents
-  reportsDir: string;       // Folder docs/jules-reports
-  reviewsDir: string;       // Folder docs/jules-reviews
+  root: string;             // Project root directory path
+  julesDir: string;         // Local .jules directory
+  agentsDir: string;        // references/agents or .jules/agents directory
+  reportsDir: string;       // docs/jules-reports directory
+  reviewsDir: string;       // docs/jules-reviews directory
 }
 ```
 
@@ -62,35 +62,35 @@ export interface ProjectDirs {
 
 ## 2. Storage Subsystem (`storage.ts`)
 
-Modul [`scripts/core/storage.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/core/storage.ts) bertanggung jawab atas persistensi data lokal di disk dengan pola penulisan berkas yang aman:
+[`scripts/core/storage.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/core/storage.ts) provides safe, atomic JSON file persistence on disk:
 
-### Fungsi Utama:
+### Core Functions:
 
 #### `getProjectDirs(targetDir?: string): ProjectDirs`
-- Menyelesaikan dan mengembalikan struktur direktori absolut berdasarkan folder kerja pengguna.
-- Menjamin jalur direktori yang valid baik saat dieksekusi dari lingkungan CLI mandiri maupun dari dalam ekstensi VS Code.
+- Resolves absolute project directories based on the current workspace or process working directory.
+- Ensures consistent paths whether running in standalone CLI mode or within VS Code / Antigravity IDE.
 
 #### `loadSessions(targetDir?: string): SessionRecord[]`
-- Membaca dan mem-parsing berkas `.jules/sessions.json`.
-- **Ketahanan Kesalahan**: Jika berkas tidak ditemukan atau format JSON korup, fungsi tidak akan melempar *crash*, melainkan mengembalikan *empty array* `[]` secara anggun (*graceful fallback*).
+- Reads and parses `.jules/sessions.json`.
+- **Fault-Tolerant Resilience**: If the file does not exist or contains invalid JSON, the function gracefully returns an empty array `[]` rather than throwing an unhandled exception.
 
 #### `saveSessions(sessions: SessionRecord[], targetDir?: string): void`
-- Menuliskan array `SessionRecord[]` kembali ke `.jules/sessions.json`.
-- Secara otomatis membuat direktori `.jules/` secara rekursif jika belum ada (`fs.mkdirSync(dirs.julesDir, { recursive: true })`).
-- Menggunakan serialisasi berformat (`JSON.stringify(sessions, null, 2)`).
+- Persists `SessionRecord[]` array to `.jules/sessions.json`.
+- Automatically scaffolds the `.jules/` directory if missing (`fs.mkdirSync(dirs.julesDir, { recursive: true })`).
+- Uses pretty-printed serialization (`JSON.stringify(sessions, null, 2)`).
 
 ---
 
 ## 3. Git CLI Subsystem (`git.ts`)
 
-Modul [`scripts/core/git.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/core/git.ts) menyediakan lapisan eksekusi Git yang aman dan terisolasi tanpa dependensi modul native eksternal (*zero extra dependencies*).
+[`scripts/core/git.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/core/git.ts) provides safe, isolated Git subprocess execution with zero third-party dependencies:
 
 ### `runGit(args: string[], cwd?: string): GitExecutionResult`
-Mengeksekusi perintah Git melalui `child_process.spawnSync`.
-- **Parameter**:
-  - `args`: Array argumen perintah git (e.g. `['status', '--porcelain']`, `['checkout', '-b', branch]`).
-  - `cwd`: Direktori kerja tempat perintah git dijalankan (default `process.cwd()`).
-- **Return**:
+Executes Git commands via Node.js `child_process.spawnSync`.
+- **Parameters**:
+  - `args`: Array of command arguments (e.g., `['status', '--porcelain']`, `['checkout', '-b', branch]`).
+  - `cwd`: Working directory where Git command should execute (default `process.cwd()`).
+- **Return Type**:
   ```typescript
   export interface GitExecutionResult {
     success: boolean;
@@ -99,40 +99,40 @@ Mengeksekusi perintah Git melalui `child_process.spawnSync`.
     exitCode: number;
   }
   ```
-- **Keamanan**:
-  - Mengatur `maxBuffer: 10 * 1024 * 1024` (10MB) untuk mencegah buffer overflow pada output diff yang besar.
-  - Memotong *trailing whitespaces* pada stdout/stderr secara otomatis.
-  - Menangkap error spawning subprocess dengan tangguh (menghasilkan `exitCode: -1` jika binary git tidak ditemukan di PATH).
+- **Security & Safety**:
+  - Sets `maxBuffer: 10 * 1024 * 1024` (10MB) to prevent buffer overflows during large patch generations.
+  - Automatically trims whitespace on stdout and stderr.
+  - Catches spawning errors gracefully (`exitCode: -1` when git binary is not found).
 
 ---
 
 ## 4. Task Scheduler Engine (`scheduler.ts`)
 
-Modul [`scripts/core/scheduler.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/core/scheduler.ts) mengimplementasikan mesin penjadwalan mandiri untuk mengeksekusi tugas Jules di latar belakang tanpa dependensi cron eksternal.
+[`scripts/core/scheduler.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/core/scheduler.ts) implements an autonomous background task scheduling engine without relying on external system cron jobs:
 
-### Alur Kerja Persistensi:
-- Jadwal disimpan di `.jules-companion/schedules.json`.
-- Setiap tugas memiliki ID format: `sched-${Date.now().toString(36)}-${randomHex}`.
+### Persistence & Storage:
+- Stored persistently in `.jules-companion/schedules.json`.
+- Task ID format: `sched-${Date.now().toString(36)}-${randomHex}`.
 
-### Daftar Fungsi:
+### Complete Method Catalog:
 
-| Fungsi | Tanda Tangan | Deskripsi |
+| Function | Signature | Description |
 |---|---|---|
-| `loadScheduledTasks` | `(targetDir?: string): ScheduledTask[]` | Membaca semua jadwal tersimpan. |
-| `saveScheduledTasks` | `(tasks: ScheduledTask[], targetDir?: string): void` | Menyimpan array jadwal ke disk. |
-| `addScheduledTask` | `(task: Omit<ScheduledTask, 'id' \| 'createdAt' \| 'status'>, targetDir?: string): ScheduledTask` | Membuat entri jadwal baru berstatus `'pending'`. |
-| `cancelScheduledTask` | `(taskId: string, targetDir?: string): boolean` | Mengubah status tugas `'pending'` menjadi `'cancelled'`. Mengembalikan `false` jika tidak ditemukan atau sudah selesai. |
-| `deleteScheduledTask` | `(taskId: string, targetDir?: string): boolean` | Menghapus permanen tugas dari berkas jadwal. |
-| `getDueScheduledTasks` | `(targetDir?: string, now?: Date): ScheduledTask[]` | Memfilter tugas berstatus `'pending'` dengan nilai `scheduledAt <= now.toISOString()`. |
-| `executeDueTasks` | `(targetDir?: string, onExecute?: Function): Promise<number>` | Mengevaluasi dan mengeksekusi semua tugas yang jatuh tempo, mengubah status menjadi `'running'`, memanggil `deploySessionCore`, memperbarui status menjadi `'completed'`, dan mengaitkan `sessionId` cloud yang tercipta. |
-| `runScheduledTaskNow` | `(taskId: string, targetDir?: string): Promise<{ success: boolean; sessionId?: string; error?: string }>` | Memaksa eksekusi tugas terjadwal seketika tanpa menunggu waktu `scheduledAt`. |
+| `loadScheduledTasks` | `(targetDir?: string): ScheduledTask[]` | Loads all persisted scheduled tasks from disk. |
+| `saveScheduledTasks` | `(tasks: ScheduledTask[], targetDir?: string): void` | Saves array of scheduled tasks to disk. |
+| `addScheduledTask` | `(task: Omit<ScheduledTask, 'id' \| 'createdAt' \| 'status'>, targetDir?: string): ScheduledTask` | Creates a new task record with `'pending'` status. |
+| `cancelScheduledTask` | `(taskId: string, targetDir?: string): boolean` | Transitions a `'pending'` task to `'cancelled'`. Returns false if not found or already executed. |
+| `deleteScheduledTask` | `(taskId: string, targetDir?: string): boolean` | Permanently deletes a task record from schedules storage. |
+| `getDueScheduledTasks` | `(targetDir?: string, now?: Date): ScheduledTask[]` | Filters tasks with status `'pending'` where `scheduledAt <= now.toISOString()`. |
+| `executeDueTasks` | `(targetDir?: string, onExecute?: Function): Promise<number>` | Evaluates due tasks, transitions them to `'running'`, invokes `deploySessionCore`, updates status to `'completed'`, and attaches the resulting cloud session ID. |
+| `runScheduledTaskNow` | `(taskId: string, targetDir?: string): Promise<{ success: boolean; sessionId?: string; error?: string }>` | Force-executes a specific scheduled task immediately without waiting for `scheduledAt`. |
 
-### Detail Penanganan Status `executeDueTasks`:
+### Execution State Machine in `executeDueTasks`:
 ```typescript
-// Transisi State saat Eksekusi Otomatis:
-// 1. Ambil due tasks: scheduledAt <= now
-// 2. Mark task as 'running' -> disk sync (mencegah double execution)
-// 3. Panggil deploySessionCore({ task, agents, mode, type, branch, targetDir })
-// 4. Jika sukses -> mark 'completed', parse session ID dari output, disk sync
-// 5. Jika gagal -> revert ke 'pending' agar dapat dicoba ulang pada siklus berikutnya
+// Autonomous Execution Lifecycle:
+// 1. Fetch due tasks: scheduledAt <= now
+// 2. Mark task as 'running' -> disk sync (prevents concurrent double-execution)
+// 3. Call deploySessionCore({ task, agents, mode, type, branch, targetDir })
+// 4. On success -> mark 'completed', extract session ID from output, disk sync
+// 5. On failure -> revert to 'pending' for retry in subsequent poll tick
 ```

@@ -1,36 +1,34 @@
 # 09 - Maintenance & Extension Developer Guide
-**Panduan Pengembang untuk Pemeliharaan Jangka Panjang dan Pengembangan Stabil**
+**Developer Playbook for Long-Term Maintenance and Stable Development**
 
 ---
 
-## 1. Prinsip Utama Pengembangan (Guiding Principles)
+## 1. Guiding Principles
 
-Untuk menjaga kodebase Jules Companion tetap stabil, bersih, dan bebas regresi dalam jangka panjang, setiap kontributor wajib mematuhi 4 pilar berikut:
+To keep the Jules Companion codebase clean, maintainable, and regression-free over the long term, all contributors should adhere to these core pillars:
 
 1. **Ponytail Mindset (Lazy Senior Developer)**:
-   - Hindari over-engineering atau abstraksi spekulatif yang belum dibutuhkan (*You Aren't Gonna Need It - YAGNI*).
-   - Utamakan pustaka standar Node.js (`node:fs`, `node:path`, `node:https`, `child_process`) sebelum menambahkan dependensi `npm` baru.
-   - Perbaiki akar masalah (*root cause*), bukan hanya gejalanya.
+   - Avoid speculative abstractions or premature boilerplate (*You Aren't Gonna Need It - YAGNI*).
+   - Prefer Node.js standard library modules (`node:fs`, `node:path`, `node:https`, `child_process`) over adding external npm dependencies.
+   - Fix root causes rather than patching symptoms.
 2. **100% TSDoc / JSDoc Coverage**:
-   - Seluruh simbol yang diekspor (`export function`, `export class`, `export interface`, `export type`) wajib memiliki blok dokumentasi TSDoc lengkap dengan tag `@param`, `@returns`, dan deskripsi yang jelas.
-   - Audit kelengkapan dokumentasi diuji secara otomatis oleh `tests/doc_coverage.test.ts`.
+   - Every exported symbol (`export function`, `export class`, `export interface`, `export type`) must include a complete TSDoc comment block with `@param`, `@returns`, and descriptive documentation.
+   - Enforced automatically by `tests/doc_coverage.test.ts`.
 3. **Zero Regression Policy**:
-   - Seluruh perubahan kode harus melewati pengujian lokal (`npm test`) dengan tingkat kelulusan 100% tanpa ada tes yang gagal atau diabaikan.
-4. **Keamanan & Isolasi Lingkungan**:
-   - Jangan pernah menulis kredensial sensitif atau hardcode path lingkungan lokal ke dalam kode repositori.
-   - Penulisan berkas status harus bersifat atomik dan aman dari *race condition*.
+   - Every modification must pass the full test suite (`npm test`) with a 100% pass rate.
+4. **Security & State Isolation**:
+   - Never commit sensitive keys or hardcode environment paths into source control.
+   - State file writes must be atomic to prevent concurrency corruption.
 
 ---
 
-## 2. Panduan Menambah Fitur Baru
+## 2. Extending the Platform
 
-### 2.1. Menambah VS Code Command Baru
+### 2.1. Adding a New VS Code Command
 
-Jika Anda ingin menambahkan perintah baru ke ekstensi:
-
-1. **Daftarkan di [`package.json`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/package.json)**:
-   - Tambahkan ke array `activationEvents`: `"onCommand:jules.myNewCommand"`.
-   - Tambahkan ke `contributes.commands`:
+1. **Register in [`package.json`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/package.json)**:
+   - Add to `activationEvents`: `"onCommand:jules.myNewCommand"`.
+   - Add to `contributes.commands`:
      ```json
      {
        "command": "jules.myNewCommand",
@@ -38,119 +36,119 @@ Jika Anda ingin menambahkan perintah baru ke ekstensi:
        "icon": "$(gear)"
      }
      ```
-   - (Opsional) Tambahkan ke `contributes.menus` (`view/title` atau `view/item/context`) jika ingin ditampilkan di toolbar atau menu klik-kanan sidebar.
-2. **Implementasikan Handler di [`scripts/extension.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/extension.ts)**:
+   - (Optional) Add to `contributes.menus` (`view/title` or `view/item/context`) for sidebar placement.
+2. **Implement Handler in [`scripts/extension.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/extension.ts)**:
    ```typescript
    context.subscriptions.push(
      vscode.commands.registerCommand('jules.myNewCommand', async (item?: any) => {
-       // Logika implementasi perintah...
+       // Command implementation logic...
      })
    );
    ```
-3. **Tulis Unit Test**:
-   - Tambahkan pengujian di berkas pengujian terkait di `tests/`.
+3. **Write Unit Test**:
+   - Add verification tests in the appropriate file in `tests/`.
 
 ---
 
-### 2.2. Menambah Alat Baru ke Server MCP (Model Context Protocol)
+### 2.2. Adding a New Tool to the MCP Server
 
-1. **Implementasikan Handler Tool**:
-   - Buka berkas kelompok alat terkait di `scripts/mcp/tools/`:
-     - `session_tools.ts` untuk manajemen sesi.
-     - `agent_tools.ts` untuk agen.
-     - `system_tools.ts` untuk utilitas sistem.
-2. **Daftarkan Tool ke [`scripts/mcp/registry.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/mcp/registry.ts)**:
+1. **Implement Tool Handler**:
+   - Open the target tool group in `scripts/mcp/tools/`:
+     - `session_tools.ts` for session workflows.
+     - `agent_tools.ts` for agent discovery.
+     - `system_tools.ts` for environment utilities.
+2. **Register in [`scripts/mcp/registry.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/mcp/registry.ts)**:
    ```typescript
    this.registerTool({
      name: 'my_new_tool',
-     description: 'Deskripsi jelas tentang fungsi alat ini bagi LLM.',
+     description: 'Clear description explaining the tool capability to an LLM.',
      inputSchema: {
        type: 'object',
        properties: {
-         targetDir: { type: 'string', description: 'Direktori target proyek' }
+         targetDir: { type: 'string', description: 'Target workspace directory' }
        },
        required: []
      },
      handler: async (args) => {
-       // Eksekusi logika dan kembalikan objek data
+       // Execute logic and return structured result
        return { success: true, result: '...' };
      }
    });
    ```
-3. **Verifikasi**:
-   - Jalankan `npm test` untuk memverifikasi bahwa total jumlah tools terdaftar dan schema-nya tervalidasi di `tests/mcp.test.ts`.
+3. **Verify**:
+   - Run `npm test` to ensure tool counts and schemas pass in `tests/mcp.test.ts`.
 
 ---
 
-### 2.3. Menambah Agen AI Spesialis Baru
+### 2.3. Adding a New Specialist Agent
 
-1. **Buat Berkas Template Markdown**:
-   - Buat berkas baru di `references/agents/{nama_agen}.md`.
-   - Sertakan frontmatter standar:
+1. **Create Template Markdown File**:
+   - Add a new file at `references/agents/{agent_name}.md`.
+   - Provide standard YAML frontmatter:
      ```markdown
      ---
      name: Specialized Name
      role: specialized_role
      group: Coding | Advisory | DevOps | Architecture | Testing | System
-     description: Deskripsi singkat tentang keahlian spesifik agen ini.
+     description: Concise summary of agent domain expertise.
      ---
      # Agent Persona: Specialized Name
      ...
      ```
-2. **Kompilasi Registri**:
-   - Jalankan perintah kompilasi: `npm run registry`.
-   - Berkas `references/agents/registry.json` akan otomatis diperbarui dan disortir.
-3. **Verifikasi**:
-   - Jalankan `npm test` untuk memastikan `tests/generate_registry.test.ts` dan `tests/doc_coverage.test.ts` lulus.
+2. **Compile Catalog**:
+   - Run `npm run registry`.
+   - `references/agents/registry.json` will be automatically updated and sorted.
+3. **Verify**:
+   - Run `npm test` to verify `tests/generate_registry.test.ts` and `tests/doc_coverage.test.ts`.
 
 ---
 
-## 3. Alur Kerja Pengujian & Verifikasi Kualitas
+## 3. Testing & Verification Lifecycle
 
-Sebelum melakukan commit dan memaketkan ekstensi, jalankan seluruh siklus verifikasi:
+Before committing and packaging releases, run the full verification pipeline:
 
 ```bash
-# 1. Kompilasi TypeScript ke folder dist/ dan sinkronisasi global
+# 1. Compile TypeScript to dist/ and sync registry
 npm run build
 
-# 2. Jalankan seluruh unit test suite (100+ tests)
+# 2. Run full unit test suite (100+ tests)
 npm test
 
-# 3. Paketkan ekstensi menjadi berkas VSIX
+# 3. Package extension into VSIX archive
 npm run package
 ```
 
-### Penjelasan Test Suite Penting:
-- **`tests/doc_coverage.test.ts`**: Menelusuri seluruh berkas TypeScript di `scripts/` untuk memverifikasi tidak ada fungsi atau tipe data yang lupa didokumentasikan.
-- **`tests/scheduler.test.ts`**: Menguji lifecycle tugas otonom (tambah, hapus, batal, evaluasi due, dan eksekusi background).
-- **`tests/mission_control.test.ts`**: Menguji isolasi CSP, rendering badge, event delegation, dan pemisahan tegas banner persetujuan rencana vs masukan pengguna.
-- **`tests/sessions_provider.test.ts`**: Menguji keandalan parsing tree view dan resolusi ID sesi.
+### Essential Test Suites:
+- **`tests/doc_coverage.test.ts`**: Audits 100% of exported TypeScript symbols across `scripts/**/*.ts` to ensure complete documentation tags.
+- **`tests/scheduler.test.ts`**: Tests scheduled task persistence, due evaluation, cancellation, and execution.
+- **`tests/mission_control.test.ts`**: Validates CSP compliance, event delegation, and plan approval vs user feedback banner separation.
+- **`tests/sessions_provider.test.ts`**: Tests TreeView generation and universal session ID resolution.
 
 ---
 
-## 4. Instalasi & Distribusi Ekstensi
+## 4. Extension Distribution & Installation
 
-Setelah berkas `jules-companion-1.0.0.vsix` dihasilkan melalui `npm run package`:
+Once `jules-companion-1.0.0.vsix` is built:
 
-### A. Instalasi Otomatis untuk Pengembangan Lokal:
-Salin berkas `dist/` dan `package.json` langsung ke direktori ekstensi IDE:
+### A. Local Development Direct Sync:
+Copy `dist/` and `package.json` directly into your IDE extensions folder:
 - **VS Code**: `C:\Users\<User>\.vscode\extensions\rivadmorin.jules-companion-1.0.0`
 - **Antigravity IDE**: `C:\Users\<User>\.antigravity-ide\extensions\rivadmorin.jules-companion-1.0.0`
 
-### B. Instalasi Manual via Antarmuka IDE:
-1. Buka VS Code / Antigravity IDE.
-2. Buka menu **Extensions** (`Ctrl+Shift+X`).
-3. Klik ikon titik tiga `...` di pojok kanan atas panel Extensions.
-4. Pilih **Install from VSIX...**.
-5. Pilih berkas `jules-companion-1.0.0.vsix`.
+### B. VSIX Installation via GUI:
+1. Open VS Code or Antigravity IDE.
+2. Go to **Extensions** panel (`Ctrl+Shift+X`).
+3. Click the `...` menu in the upper-right corner of the Extensions panel.
+4. Select **Install from VSIX...**.
+5. Choose `jules-companion-1.0.0.vsix`.
 
 ---
 
-## 5. Panduan Troubleshooting & Debugging
+## 5. Troubleshooting & Debugging
 
-| Gejala Masalah | Kemungkinan Penyebab | Solusi & Tindakan |
+| Symptom | Probable Cause | Corrective Action |
 |---|---|---|
-| Permintaan API gagal dengan status `401 Unauthorized` | Kunci API Google Jules belum disetel atau salah. | Jalankan perintah `Jules: Set API Key` (`jules.setApiKey`) atau periksa variabel lingkungan `JULES_API_KEY`. |
-| Safety Gate menolak merge branch | Sesi di cloud belum berstatus `SUCCEEDED` atau working tree Git lokal masih kotor (*uncommitted changes*). | Tunggu sesi selesai di Google Jules web, atau lakukan `git stash` / `git commit` pada perubahan lokal terlebih dahulu. |
-| Tombol di Mission Control tidak merespons | Pelanggaran CSP karena penggunaan inline script / onclick. | Pastikan seluruh interaksi tombol menggunakan atribut `data-action="..."` yang ditangani oleh event listener terpusat di `mission_control.ts`. |
-| Tugas terjadwal tidak berjalan pada waktunya | LiveSync polling dalam keadaan nonaktif. | Pastikan LiveSync aktif (periksa status bar `$(sync) Jules Sync` atau jalankan perintah `jules.toggleLiveSync`). |
+| API requests return `401 Unauthorized` | Google Jules API key is missing or invalid. | Run `Jules: Set API Key` (`jules.setApiKey`) or check `JULES_API_KEY` environment variable. |
+| Safety Gate rejects merge | Cloud session is not `SUCCEEDED` or local working tree is dirty. | Wait for Jules to complete on web console, or commit/stash local changes before merging. |
+| Mission Control buttons unresponsive | CSP violation caused by inline script or onclick handler. | Ensure all clickable elements use `data-action="..."` handled by centralized delegation in `mission_control.ts`. |
+| Scheduled tasks not running at target time | LiveSync polling is disabled. | Turn on LiveSync (check `$(sync) Jules Sync` status bar or run `jules.toggleLiveSync`). |
