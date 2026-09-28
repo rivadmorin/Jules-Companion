@@ -8,6 +8,7 @@ import * as vscode from 'vscode';
 import { getSessionApi, getActivitiesApi, approvePlanApi, sendMessageApi } from '../client/jules_api';
 import { loadSessions, saveSessions, isSessionAwaitingApproval, isSessionAwaitingInput } from '../utils';
 import { cleanAgentName } from './sessions_provider';
+import { checkPatchConflict, PatchCheckResult } from '../core/git';
 
 /**
  * Escapes raw values for safe HTML embedding.
@@ -131,12 +132,14 @@ function parseChangesetFiles(patch: string): ModifiedFileEntry[] {
  * @param session - The session metadata record.
  * @param activities - Array of chronological activity objects from Jules cloud.
  * @param isLoading - Optional flag indicating background synchronization is in flight.
+ * @param patchStatus - Optional pre-computed patch conflict dry-run result.
  * @returns Complete HTML document string styled with Google Material 3 Dark theme.
  */
 export function renderMissionControlHtml(
   session: any,
   activities: any[] = [],
-  isLoading: boolean = false
+  isLoading: boolean = false,
+  patchStatus?: PatchCheckResult | null
 ): string {
   const sessionId = escapeHtml(session.id || 'Unknown');
   const agent = escapeHtml(cleanAgentName(session.agent || session.title?.split('-')[0] || 'Agent'));
@@ -189,6 +192,7 @@ export function renderMissionControlHtml(
   // 3. Extract latest changeset & modified files
   let latestCommitMsg = '';
   let modifiedFiles: ModifiedFileEntry[] = [];
+  let rawPatchString = '';
   for (let i = activities.length - 1; i >= 0; i--) {
     const act = activities[i];
     if (act.artifacts) {
@@ -198,6 +202,7 @@ export function renderMissionControlHtml(
             latestCommitMsg = art.changeSet.gitPatch.suggestedCommitMessage;
           }
           if (art.changeSet.gitPatch?.unidiffPatch) {
+            rawPatchString = art.changeSet.gitPatch.unidiffPatch;
             try {
               modifiedFiles = parseChangesetFiles(art.changeSet.gitPatch.unidiffPatch);
             } catch {}
@@ -272,10 +277,48 @@ export function renderMissionControlHtml(
       `).join('')
     : '<div class="empty-state">No direct agent-user conversation messages exchanged yet.</div>';
 
-  // 7. Render Changeset
-  const changesetHtml = (modifiedFiles.length > 0 || latestCommitMsg)
+  // 7. Render Changeset & Patch Compatibility
+  const hasPatch = modifiedFiles.length > 0 || !!rawPatchString;
+  const isClean = patchStatus ? patchStatus.canApplyCleanly : null;
+  const patchStatusHtml = hasPatch ? `
+    <div class="patch-compatibility-card ${isClean === true ? 'clean' : (isClean === false ? 'conflict' : '')}">
+      <div class="patch-compat-header">
+        <div class="patch-compat-title-row">
+          <span>${isClean === true ? '✅' : (isClean === false ? '⚠️' : '🔍')}</span>
+          <span class="patch-compat-title">
+            ${isClean === true ? 'Patch Compatibility: Clean (0 Conflicts)' : (isClean === false ? 'Patch Compatibility: Conflict Detected' : 'Patch Compatibility: Dry-Run Ready')}
+          </span>
+        </div>
+        <span class="line-badge">Branch: ${branch}</span>
+      </div>
+      <div class="patch-compat-desc">
+        ${isClean === true
+          ? 'This patch applies cleanly without any merge conflicts to the local working branch.'
+          : (isClean === false
+              ? `Conflicts detected during dry-run: <code>${escapeHtml(patchStatus?.message || '')}</code>`
+              : 'Perform dry-run verification to check whether this patch applies cleanly without conflicts.')}
+      </div>
+      <div class="patch-compat-actions">
+        <button class="pill-btn btn-primary" data-action="pullDiff">
+          <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor">
+            <path fill-rule="evenodd" d="M1 2.75A.75.75 0 011.75 2h12.5a.75.75 0 010 1.5H1.75A.75.75 0 011 2.75zm0 5A.75.75 0 011.75 7h12.5a.75.75 0 010 1.5H1.75A.75.75 0 011 7.75zM1.75 12a.75.75 0 000 1.5h12.5a.75.75 0 000-1.5H1.75z"/>
+          </svg>
+          <span>Pull .diff File</span>
+        </button>
+        <button class="pill-btn btn-secondary" data-action="checkConflict">
+          <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor">
+            <path fill-rule="evenodd" d="M11.5 7a4.499 4.499 0 11-8.998 0A4.499 4.499 0 0111.5 7zm-.82 4.74a6 6 0 111.06-1.06l3.04 3.04a.75.75 0 11-1.06 1.06l-3.04-3.04z"/>
+          </svg>
+          <span>Check Conflicts</span>
+        </button>
+      </div>
+    </div>
+  ` : '';
+
+  const changesetHtml = (hasPatch || latestCommitMsg)
     ? `
       <div class="changeset-card">
+        ${patchStatusHtml}
         ${latestCommitMsg ? `
           <div class="commit-banner">
             <div class="commit-banner-header">
@@ -845,6 +888,65 @@ export function renderMissionControlHtml(
       padding: 18px 20px;
       margin-bottom: 24px;
     }
+    .patch-compatibility-card {
+      background: var(--surface-container);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-bottom: 16px;
+      transition: all 0.2s ease;
+    }
+    .patch-compatibility-card.clean {
+      border-color: rgba(52, 168, 83, 0.4);
+      background: rgba(52, 168, 83, 0.08);
+    }
+    .patch-compatibility-card.conflict {
+      border-color: rgba(234, 67, 53, 0.4);
+      background: rgba(234, 67, 53, 0.08);
+    }
+    .patch-compat-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .patch-compat-title-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .patch-compat-title {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+    }
+    .patch-compatibility-card.clean .patch-compat-title {
+      color: #81c995;
+    }
+    .patch-compatibility-card.conflict .patch-compat-title {
+      color: #f28b82;
+    }
+    .patch-compat-desc {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+      line-height: 1.4;
+      font-family: var(--font-family);
+    }
+    .patch-compat-desc code {
+      font-family: "Roboto Mono", monospace;
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.06);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 11px;
+    }
+    .patch-compat-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
     .commit-banner {
       background: var(--google-blue-container);
       border: 1px solid rgba(138, 180, 248, 0.25);
@@ -1210,6 +1312,12 @@ export function renderMissionControlHtml(
       </svg>
       <span>Visual Diff</span>
     </button>
+    <button class="pill-btn btn-secondary" data-action="pullDiff">
+      <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
+        <path fill-rule="evenodd" d="M1 2.75A.75.75 0 011.75 2h12.5a.75.75 0 010 1.5H1.75A.75.75 0 011 2.75zm0 5A.75.75 0 011.75 7h12.5a.75.75 0 010 1.5H1.75A.75.75 0 011 7.75zM1.75 12a.75.75 0 000 1.5h12.5a.75.75 0 000-1.5H1.75z"/>
+      </svg>
+      <span>Pull .diff</span>
+    </button>
     <button class="pill-btn btn-ghost" data-action="${session.archived ? 'unarchiveSession' : 'archiveSession'}">
       <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
         <path d="M0 2a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1v7.5a2.5 2.5 0 0 1-2.5 2.5h-9A2.5 2.5 0 0 1 1 12.5V5a1 1 0 0 1-1-1V2zm2 3v7.5A1.5 1.5 0 0 0 3.5 14h9a1.5 1.5 0 0 0 1.5-1.5V5H2zm13-3H1v2h14V2zM5 7.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5z"/>
@@ -1427,8 +1535,10 @@ export async function openMissionControlWebview(
     { enableScripts: true, retainContextWhenHidden: true }
   );
 
+  let patchStatus: PatchCheckResult | null = null;
+
   const updateView = (loading: boolean = false) => {
-    panel.webview.html = renderMissionControlHtml(sessionData, activities, loading);
+    panel.webview.html = renderMissionControlHtml(sessionData, activities, loading, patchStatus);
   };
 
   // 1. Initial immediate render for instantaneous UI responsiveness
@@ -1459,6 +1569,18 @@ export async function openMissionControlWebview(
 
     try {
       activities = await getActivitiesApi(sessionId, targetDir);
+      for (let i = activities.length - 1; i >= 0; i--) {
+        const act = activities[i];
+        if (act.artifacts) {
+          for (const art of act.artifacts) {
+            if (art.changeSet?.gitPatch?.unidiffPatch) {
+              patchStatus = checkPatchConflict(art.changeSet.gitPatch.unidiffPatch, targetDir);
+              break;
+            }
+          }
+        }
+        if (patchStatus) break;
+      }
     } catch {
       activities = [];
     }
@@ -1498,6 +1620,39 @@ export async function openMissionControlWebview(
       }
       case 'visualDiff': {
         vscode.commands.executeCommand('jules.viewVisualDiff', sessionId);
+        break;
+      }
+      case 'pullDiff': {
+        vscode.commands.executeCommand('jules.pullSessionDiff', sessionId);
+        break;
+      }
+      case 'checkConflict': {
+        let rawPatch = '';
+        for (let i = activities.length - 1; i >= 0; i--) {
+          const act = activities[i];
+          if (act.artifacts) {
+            for (const art of act.artifacts) {
+              if (art.changeSet?.gitPatch?.unidiffPatch) {
+                rawPatch = art.changeSet.gitPatch.unidiffPatch;
+                break;
+              }
+            }
+          }
+          if (rawPatch) break;
+        }
+
+        if (!rawPatch) {
+          vscode.window.showInformationMessage('No patch changeset found in this session yet.');
+          break;
+        }
+
+        patchStatus = checkPatchConflict(rawPatch, targetDir);
+        updateView(false);
+        if (patchStatus.canApplyCleanly) {
+          vscode.window.showInformationMessage(`✓ Patch applies cleanly to current branch (${sessionData.branch || 'main'}) with 0 conflicts.`);
+        } else {
+          vscode.window.showWarningMessage(`⚠ Conflict detected during patch dry-run: ${patchStatus.message}`);
+        }
         break;
       }
       case 'checkoutBranch': {

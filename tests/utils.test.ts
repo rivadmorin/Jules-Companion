@@ -15,8 +15,13 @@ import {
   getReviewReports,
   createCustomAgentScaffold,
   isSessionAwaitingApproval,
-  isSessionAwaitingInput
+  isSessionAwaitingInput,
+  checkPatchConflict,
+  cleanSessionScratch,
+  archiveSession,
+  unarchiveSession
 } from '../scripts/utils';
+import { deleteSessionApi } from '../scripts/client/jules_api';
 
 const TEST_DIR = path.join(process.cwd(), 'temp_test_dir_utils');
 
@@ -191,6 +196,130 @@ describe('Utils Comprehensive Tests', () => {
       assert.strictEqual(isSessionAwaitingApproval('AWAITING_USER_INPUT'), false);
       assert.strictEqual(isSessionAwaitingApproval('AWAITING_USER_FEEDBACK'), false);
       assert.strictEqual(isSessionAwaitingApproval('awaiting_response'), false);
+    });
+
+    test('cleanSessionScratch should purge diff, patch, and visual_diff directories for target session', () => {
+      const dirs = getProjectDirs(TEST_DIR);
+      const testSessionId = 'sess-abcdef123456';
+      const shortId = 'sess-abc';
+
+      const diffsDir = path.join(dirs.julesDir, 'diffs');
+      const scratchDir = dirs.scratchDir;
+      const vDiffDir = path.join(scratchDir, 'visual_diff', testSessionId);
+
+      fs.mkdirSync(diffsDir, { recursive: true });
+      fs.mkdirSync(scratchDir, { recursive: true });
+      fs.mkdirSync(vDiffDir, { recursive: true });
+
+      const diffFile = path.join(diffsDir, `session-${shortId}.diff`);
+      const patchFile = path.join(scratchDir, `${testSessionId}.patch`);
+      const vDiffFile = path.join(vDiffDir, 'before_file.ts');
+      const unrelatedFile = path.join(scratchDir, 'unrelated-session.patch');
+
+      fs.writeFileSync(diffFile, 'test diff content', 'utf8');
+      fs.writeFileSync(patchFile, 'test patch content', 'utf8');
+      fs.writeFileSync(vDiffFile, 'test visual diff', 'utf8');
+      fs.writeFileSync(unrelatedFile, 'keep this file', 'utf8');
+
+      assert.strictEqual(fs.existsSync(diffFile), true);
+      assert.strictEqual(fs.existsSync(patchFile), true);
+      assert.strictEqual(fs.existsSync(vDiffFile), true);
+
+      const cleaned = cleanSessionScratch(testSessionId, TEST_DIR);
+      assert.ok(cleaned.length >= 3);
+
+      assert.strictEqual(fs.existsSync(diffFile), false);
+      assert.strictEqual(fs.existsSync(patchFile), false);
+      assert.strictEqual(fs.existsSync(vDiffDir), false);
+      assert.strictEqual(fs.existsSync(unrelatedFile), true);
+    });
+
+    test('archiveSession should mark session archived and purge scratch files', () => {
+      const dirs = getProjectDirs(TEST_DIR);
+      const sessId = 'arch-sess-998877';
+      const mockSession: SessionRecord = {
+        id: sessId,
+        agent: 'smith',
+        branch: 'main',
+        status: 'completed',
+        timestamp: new Date().toISOString()
+      };
+      saveSessions([mockSession], TEST_DIR);
+
+      const scratchDir = dirs.scratchDir;
+      fs.mkdirSync(scratchDir, { recursive: true });
+      const patchFile = path.join(scratchDir, `${sessId}.patch`);
+      fs.writeFileSync(patchFile, 'archive patch content', 'utf8');
+
+      const res = archiveSession(sessId, TEST_DIR);
+      assert.strictEqual(res.success, true);
+      assert.strictEqual(fs.existsSync(patchFile), false);
+
+      const updated = loadSessions(TEST_DIR);
+      assert.strictEqual(updated[0].archived, true);
+    });
+
+    test('deleteSessionApi should remove session from sessions.json and purge scratch files', async () => {
+      const dirs = getProjectDirs(TEST_DIR);
+      const sessId = 'del-sess-554433';
+      const mockSession: SessionRecord = {
+        id: sessId,
+        agent: 'octo',
+        branch: 'main',
+        status: 'completed',
+        timestamp: new Date().toISOString()
+      };
+      saveSessions([mockSession], TEST_DIR);
+
+      const diffsDir = path.join(dirs.julesDir, 'diffs');
+      fs.mkdirSync(diffsDir, { recursive: true });
+      const diffFile = path.join(diffsDir, `session-${sessId.slice(0, 8)}.diff`);
+      fs.writeFileSync(diffFile, 'delete diff content', 'utf8');
+
+      const res = await deleteSessionApi(sessId, TEST_DIR);
+      assert.strictEqual(res.success, true);
+      assert.strictEqual(fs.existsSync(diffFile), false);
+
+      const remaining = loadSessions(TEST_DIR);
+      assert.strictEqual(remaining.length, 0);
+    });
+  });
+
+  describe('checkPatchConflict', () => {
+    test('should return canApplyCleanly true for empty or whitespace patch', () => {
+      const res = checkPatchConflict('', TEST_DIR);
+      assert.strictEqual(res.canApplyCleanly, true);
+      assert.ok(res.message.includes('Empty patch'));
+    });
+
+    test('should detect whether a valid patch applies cleanly vs conflicts', () => {
+      const filePath = path.join(TEST_DIR, 'sample.txt');
+      fs.writeFileSync(filePath, 'line1\nline2\n', 'utf8');
+      runGit(['add', 'sample.txt'], TEST_DIR);
+      runGit(['commit', '-m', 'initial sample'], TEST_DIR);
+
+      const cleanPatch = `diff --git a/sample.txt b/sample.txt
+--- a/sample.txt
++++ b/sample.txt
+@@ -1,2 +1,3 @@
+ line1
+ line2
++line3
+`;
+      const cleanRes = checkPatchConflict(cleanPatch, TEST_DIR);
+      assert.strictEqual(cleanRes.canApplyCleanly, true);
+      assert.ok(cleanRes.message.includes('0 conflicts'));
+
+      const conflictPatch = `diff --git a/sample.txt b/sample.txt
+--- a/sample.txt
++++ b/sample.txt
+@@ -1,2 +1,2 @@
+-nonexistent line
++modified line
+`;
+      const conflictRes = checkPatchConflict(conflictPatch, TEST_DIR);
+      assert.strictEqual(conflictRes.canApplyCleanly, false);
+      assert.ok(conflictRes.message.length > 0);
     });
   });
 });

@@ -2,7 +2,7 @@
 
 `jules-companion` adalah sebuah asisten AI ko-pilot dan alat orkestrasi baris perintah (CLI & MCP) yang dibangun dengan TypeScript. Tujuan utamanya adalah menjadi jembatan cerdas dan aman yang mengoordinasikan interaksi antara pengembang (melalui terminal lokal, Git, dan AI Agent) dengan **Google Jules REST API** (lingkungan eksekusi tugas berbasis *cloud sandbox*).
 
-Aplikasi ini mengotomatiskan seluruh siklus hidup sesi cloud (*cloud session lifecycle*), peninjauan kode terisolasi (*isolated branch review*), ekstraksi patch unidiff, penggabungan aman (*safe merge* dengan *git stash*), serta menyediakan katalog 43 agen AI spesialis (*specialized domain agents*).
+Aplikasi ini mengotomatiskan seluruh siklus hidup sesi cloud (*cloud session lifecycle*), peninjauan kode terisolasi (*isolated branch review*), ekstraksi patch unidiff, penggabungan aman (*safe merge* dengan *git stash*), serta menyediakan katalog 44 agen AI spesialis (*specialized domain agents*).
 
 ---
 
@@ -86,7 +86,7 @@ Katalog MCP Jules-Companion dibagi menjadi 5 modul domain independen:
 
 ### III. Multi-Agent Orchestration Tools
 11. **`auto_process`**: Mem-polling sesi cloud secara otonom, otomatis menyetujui plan (`approvePlan`) dan membalas prompt.
-12. **`deploy_team`**: Meluncurkan tim agen berdasarkan preset teruji (`full-audit`, `feature-sprint`, `refactor-boost`).
+12. **`deploy_team`**: Meluncurkan tim agen berdasarkan preset teruji (`full-audit`, `feature-sprint`, `refactor-boost`, `github-ops`).
 13. **`setup_workspace`**: Menginisialisasi staging workspace lokal (`.jules-companion/`, `.gitignore`, `sessions.json`).
 
 ### IV. Git & Pull Request Bridge Tools
@@ -188,7 +188,7 @@ Struktur penyimpanan lokal dibuat rapi dan tidak mengotori repositori:
 │   ├── config.json               # Konfigurasi platform & versi
 │   ├── sessions.json             # Basis data lokal riwayat sesi (atomic write)
 │   ├── references/               # Salinan template agen lokal
-│   │   └── agents/*.md           # 43 template prompt agen
+│   │   └── agents/*.md           # 44 template prompt agen
 │   └── scratch/                  # Patch unduhan sementara (*.patch)
 ├── docs/
 │   ├── jules-reviews/            # Laporan audit mode 'review' & hasil Stage 1

@@ -99,7 +99,7 @@ When operating in an MCP-compliant host environment (Antigravity IDE, Claude Cod
 11. **`cancel_session`**: Cancels an active cloud session safely.
 12. **`send_session_message`**: Sends a reply or guidance to a session awaiting feedback.
 13. **`retry_failed_session`**: Redeploys a failed session using initial task parameters.
-14. **`deploy_team`**: Deploys multi-agent team presets (`full-audit`, `feature-sprint`, `refactor-boost`).
+14. **`deploy_team`**: Deploys multi-agent team presets (`full-audit`, `feature-sprint`, `refactor-boost`, `github-ops`).
 15. **`pull_session_diff`**: Extracts raw unified Git diff patch string without merging.
 16. **`checkout_session_branch`**: Checks out the isolated Git branch created by Jules.
 17. **`create_github_pr`**: Creates a GitHub Pull Request using GitHub CLI (`gh`).

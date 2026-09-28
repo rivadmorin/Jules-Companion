@@ -204,7 +204,7 @@ Peta jalan ini memandu arah evolusi arsitektur sistem dari fondasi modular saat 
 ```mermaid
 timeline
     title Peta Jalan Evolusi Arsitektur Jules-Companion
-    Milestone 1 (Tuntas) : 20 MCP Tools Terpadu : 43 Agen Spesialisasi : Eliminasi Legacy Code & Unified Types : 53 Test Suites Green
+    Milestone 1 (Tuntas) : 20 MCP Tools Terpadu : 44 Agen Spesialisasi : Eliminasi Legacy Code & Unified Types : 53 Test Suites Green
     Milestone 2 (Jangka Pendek) : Structured Telemetry Logging : Health & Token Consumption Metrics : IDE Status Notification Webhooks
     Milestone 3 (Jangka Menengah) : Concurrent Multi-Session Orchestration : Dynamic Target Branch Safety Gate : Multi-Repository Workspace Support
     Milestone 4 (Jangka Lanjut) : Streaming SSE / WebSocket Feedback : Real-time Terminal Log Feeds : Adaptive Polling with Exponential Backoff
@@ -215,7 +215,7 @@ timeline
 
 #### 🔹 Milestone 1: Modular Foundation & Zero-Debt Core (Tuntas ✅)
 * Registrasi 20 MCP tools dengan standar JSON-RPC resmi.
-* 43 profil agen spesialisasi tersusun rapi di `references/agents/` dan terindeks di `registry.json`.
+* 44 profil agen spesialisasi tersusun rapi di `references/agents/` dan terindeks di `registry.json`.
 * Pemisahan penuh *Programmatic Core* (`deploySessionCore`, `mergeSessionCore`, `autoProcessCore`).
 * Eliminasi seluruh kode usang Python evals dan duplikasi tipe MCP ke `scripts/core/types.ts`.
 * 53 test suites lulus 100% dengan audit otomatis 100% TSDoc coverage dan 0 cycle violations di Sentrux.

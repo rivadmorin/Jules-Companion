@@ -5,7 +5,7 @@
 
 import { getApiKey, request } from './http';
 import { JulesSource, SessionRecord } from '../core/types';
-import { loadSessions, saveSessions } from '../core/storage';
+import { loadSessions, saveSessions, cleanSessionScratch } from '../core/storage';
 
 export { JulesSource, SessionRecord };
 
@@ -155,7 +155,7 @@ export async function approvePlanApi(sessionId: string, targetDir?: string): Pro
 export async function deleteSessionApi(
   sessionId: string,
   targetDir?: string
-): Promise<{ success: boolean; message: string }> {
+): Promise<{ success: boolean; message: string; cleanedFiles?: string[] }> {
   const apiKey = getApiKey(targetDir);
   if (apiKey) {
     const headers = { 'X-Goog-Api-Key': apiKey };
@@ -175,7 +175,10 @@ export async function deleteSessionApi(
   const updated = localSessions.filter(s => s.id !== sessionId);
   saveSessions(updated, root);
 
-  return { success: true, message: `Session #${sessionId} deleted.` };
+  // Purge leftover diffs, patches, and scratch files from workspace
+  const cleanedFiles = cleanSessionScratch(sessionId, root);
+
+  return { success: true, message: `Session #${sessionId} deleted.`, cleanedFiles };
 }
 
 /**

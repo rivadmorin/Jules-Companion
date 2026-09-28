@@ -96,6 +96,7 @@ describe('Mission Control Webview Renderer Unit Tests', () => {
   test('should use data-action event delegation and avoid inline onclick', () => {
     const html = renderMissionControlHtml(mockSession, mockActivities);
     assert.ok(html.includes('data-action="visualDiff"'));
+    assert.ok(html.includes('data-action="pullDiff"'));
     assert.ok(html.includes('data-action="checkoutBranch"'));
     assert.ok(html.includes('data-action="mergeSession"'));
     assert.ok(html.includes('data-action="createPR"'));
@@ -125,5 +126,40 @@ describe('Mission Control Webview Renderer Unit Tests', () => {
     assert.ok(html.includes('feat: implement connection pooling'));
     assert.ok(html.includes('src/pool.ts'));
   });
+
+  test('should render patch compatibility card and pullDiff/checkConflict actions when patch is present', () => {
+    const activitiesWithChangeset = [
+      ...mockActivities,
+      {
+        createTime: '2026-09-28T04:20:00Z',
+        artifacts: [
+          {
+            changeSet: {
+              gitPatch: {
+                suggestedCommitMessage: 'feat: implement connection pooling',
+                unidiffPatch: 'diff --git a/src/pool.ts b/src/pool.ts\n--- a/src/pool.ts\n+++ b/src/pool.ts\n@@ -1 +1,2 @@\n-old\n+new'
+              }
+            }
+          }
+        ]
+      }
+    ];
+
+    const cleanHtml = renderMissionControlHtml(mockSession, activitiesWithChangeset, false, {
+      canApplyCleanly: true,
+      message: 'Patch applies cleanly with 0 conflicts.'
+    });
+    assert.ok(cleanHtml.includes('Patch Compatibility: Clean (0 Conflicts)'));
+    assert.ok(cleanHtml.includes('data-action="pullDiff"'));
+    assert.ok(cleanHtml.includes('data-action="checkConflict"'));
+
+    const conflictHtml = renderMissionControlHtml(mockSession, activitiesWithChangeset, false, {
+      canApplyCleanly: false,
+      message: 'error: patch failed: src/pool.ts:1'
+    });
+    assert.ok(conflictHtml.includes('Patch Compatibility: Conflict Detected'));
+    assert.ok(conflictHtml.includes('error: patch failed: src/pool.ts:1'));
+  });
 });
+
 

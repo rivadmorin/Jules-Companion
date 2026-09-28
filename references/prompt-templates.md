@@ -31,6 +31,7 @@ Below is the index of 30 Google Jules Specialized Agents. Click on each agent na
 22. [Partisan 🛰️](file:///home/toor/.gemini/config/skills/jules-companion/references/agents/partisan.md) - Decentralized & P2P Architectures
 23. [Netrunner 🌐](file:///home/toor/.gemini/config/skills/jules-companion/references/agents/netrunner.md) - Network & Web-Server Configurations
 24. [Adapter 🔌](file:///home/toor/.gemini/config/skills/jules-companion/references/agents/adapter.md) - Cross-Platform Compatibility (Windows/Linux/macOS)
+25. [Octo 🐙](references/agents/octo.md) - GitHub Workflows, Actions & Repository Operations
 
 ## 📝 DOCUMENTING & ADVISORY GROUP (Only Write Markdown & Review)
 *Authorisation Scope: Agents in this group are forbidden from modifying application code files. They are only allowed to write Markdown (.md) documents, architecture trees, or review ulasan logs.*

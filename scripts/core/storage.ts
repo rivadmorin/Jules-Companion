@@ -84,3 +84,82 @@ export function saveSessions(sessions: SessionRecord[], targetDir: string = proc
     }
   }
 }
+
+/**
+ * Purges leftover scratch, diff, and patch files associated with a specific session ID.
+ * Removes files from `.jules-companion/diffs/` and `.jules-companion/scratch/` to prevent repository clutter.
+ *
+ * @param sessionId - Unique identifier of the session whose scratch files should be purged.
+ * @param targetDir - The root project directory containing the `.jules-companion` folder.
+ * @returns An array of absolute file/directory paths that were deleted.
+ */
+export function cleanSessionScratch(sessionId: string, targetDir: string = process.cwd()): string[] {
+  if (!sessionId || !sessionId.trim()) return [];
+  const dirs = getProjectDirs(targetDir);
+  const deleted: string[] = [];
+  const cleanId = sessionId.trim();
+  const shortId = cleanId.length >= 6 ? cleanId.slice(0, 8) : cleanId;
+
+  const candidateDirs = [
+    dirs.scratchDir,
+    path.join(dirs.julesDir, 'diffs')
+  ];
+
+  for (const cDir of candidateDirs) {
+    if (!fs.existsSync(cDir)) continue;
+
+    try {
+      const entries = fs.readdirSync(cDir, { withFileTypes: true });
+      for (const entry of entries) {
+        const fullPath = path.join(cDir, entry.name);
+        // Match exact or prefix/suffix patterns:
+        // e.g. session-12345678.diff, 12345678.diff, 12345678.patch, or any file containing cleanId/shortId
+        const matches = entry.name.includes(cleanId) || (shortId.length >= 6 && entry.name.includes(shortId));
+        if (matches) {
+          try {
+            if (entry.isDirectory()) {
+              fs.rmSync(fullPath, { recursive: true, force: true });
+            } else {
+              fs.unlinkSync(fullPath);
+            }
+            deleted.push(fullPath);
+          } catch (_e) {}
+        }
+      }
+    } catch (_e) {}
+  }
+
+  // Also clean visual_diff subfolder specifically: .jules-companion/scratch/visual_diff/<sessionId>
+  const visualDiffDir = path.join(dirs.scratchDir, 'visual_diff');
+  if (fs.existsSync(visualDiffDir)) {
+    for (const id of [cleanId, shortId]) {
+      const vSessionPath = path.join(visualDiffDir, id);
+      if (fs.existsSync(vSessionPath)) {
+        try {
+          fs.rmSync(vSessionPath, { recursive: true, force: true });
+          deleted.push(vSessionPath);
+        } catch (_e) {}
+      }
+    }
+    try {
+      const remaining = fs.readdirSync(visualDiffDir);
+      if (remaining.length === 0) {
+        fs.rmdirSync(visualDiffDir);
+      }
+    } catch (_e) {}
+  }
+
+  // If diffs directory is now empty, remove it to keep workspace clean
+  const diffsDir = path.join(dirs.julesDir, 'diffs');
+  if (fs.existsSync(diffsDir)) {
+    try {
+      const remaining = fs.readdirSync(diffsDir);
+      if (remaining.length === 0) {
+        fs.rmdirSync(diffsDir);
+      }
+    } catch (_e) {}
+  }
+
+  return deleted;
+}
+

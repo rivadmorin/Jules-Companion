@@ -42,7 +42,7 @@ import { openVisualDiff } from './ui/visual_diff';
 import { LiveSyncManager } from './ui/live_sync';
 import { openMissionControlWebview } from './ui/mission_control';
 import { runCustomAgentWizard } from './ui/custom_agent_wizard';
-import { runGit } from './core/git';
+import { runGit, checkPatchConflict } from './core/git';
 
 let statusBarItem: vscode.StatusBarItem;
 let liveSyncBarItem: vscode.StatusBarItem;
@@ -301,7 +301,7 @@ interface AgentPickItem extends vscode.QuickPickItem {
 }
 
 /**
- * Loads all 43 agents and team presets into QuickPick items.
+ * Loads all 44 agents and team presets into QuickPick items.
  */
 function getAgentQuickPickList(extensionPath: string, root: string): AgentPickItem[] {
   const candidates = [
@@ -342,8 +342,14 @@ function getAgentQuickPickList(extensionPath: string, root: string): AgentPickIt
       agentValue: 'modernizer,bolt,inspector'
     },
     {
+      label: '$(organization) Team: GitHub Ops',
+      description: 'octo, smith, scribe, archivist',
+      detail: 'GitHub Actions, CI/CD, repository templates, Git hooks, and release management',
+      agentValue: 'octo,smith,scribe,archivist'
+    },
+    {
       kind: vscode.QuickPickItemKind.Separator,
-      label: `Specialist Agents (${Object.keys(rawAgents).length || 43})`,
+      label: `Specialist Agents (${Object.keys(rawAgents).length || 44})`,
       agentValue: ''
     }
   ];
@@ -410,7 +416,7 @@ function getAgentQuickPickList(extensionPath: string, root: string): AgentPickIt
       const agentItems = getAgentQuickPickList(context.extensionPath, root);
       const agentSelection = await vscode.window.showQuickPick(agentItems, {
         title: 'Step 2/3: Select Primary Agent or Team Preset',
-        placeHolder: 'Search across 43 specialized agents or select a team preset...',
+        placeHolder: 'Search across 44 specialized agents or select a team preset...',
         matchOnDescription: true,
         matchOnDetail: true
       });
@@ -836,8 +842,10 @@ function getAgentQuickPickList(extensionPath: string, root: string): AgentPickIt
         },
         async () => {
           try {
-            await deleteSessionApi(sessionId!, root);
-            vscode.window.showInformationMessage(`🗑️ Session #${sessionId} permanently deleted.`);
+            const delRes = await deleteSessionApi(sessionId!, root);
+            const count = delRes.cleanedFiles?.length || 0;
+            const cleanMsg = count > 0 ? ` (purged ${count} scratch file${count > 1 ? 's' : ''})` : '';
+            vscode.window.showInformationMessage(`🗑️ Session #${sessionId} permanently deleted${cleanMsg}.`);
           } catch (err: any) {
             vscode.window.showErrorMessage(`Failed to delete session: ${err.message}`);
           } finally {
@@ -877,7 +885,9 @@ function getAgentQuickPickList(extensionPath: string, root: string): AgentPickIt
 
       const res = archiveSession(sessionId!, root);
       if (res.success) {
-        vscode.window.showInformationMessage(`📦 Session #${sessionId.slice(0, 8)} archived.`);
+        const count = res.cleanedFiles?.length || 0;
+        const cleanMsg = count > 0 ? ` (purged ${count} scratch file${count > 1 ? 's' : ''})` : '';
+        vscode.window.showInformationMessage(`📦 Session #${sessionId.slice(0, 8)} archived${cleanMsg}.`);
       } else {
         vscode.window.showWarningMessage(res.message);
       }
@@ -1323,7 +1333,68 @@ function getAgentQuickPickList(extensionPath: string, root: string): AgentPickIt
     })
   );
 
-  // 10. Open Mission Control Webview Command
+  // 10. Pull Session .diff Command
+  context.subscriptions.push(
+    vscode.commands.registerCommand('jules.pullSessionDiff', async (item?: any) => {
+      const root = getWorkspaceRoot();
+      let sessionId = resolveSessionId(item);
+
+      if (!sessionId) {
+        const sessions = loadSessions(root);
+        if (sessions.length === 0) {
+          vscode.window.showInformationMessage('No sessions found.');
+          return;
+        }
+
+        const picked = await vscode.window.showQuickPick(
+          sessions.map(s => ({
+            label: `#${s.id.slice(0, 8)} • ${s.agent}`,
+            description: `[${s.status}] ${s.task || ''}`,
+            id: s.id
+          })),
+          { title: 'Select Session to Pull .diff File' }
+        );
+
+        if (!picked) return;
+        sessionId = picked.id;
+      }
+
+      await vscode.window.withProgress(
+        {
+          location: vscode.ProgressLocation.Notification,
+          title: `Pulling .diff for session #${sessionId.slice(0, 8)}...`,
+          cancellable: false
+        },
+        async () => {
+          try {
+            const patchContent = await pullDiffApi(sessionId!, root);
+            const diffsDir = path.join(root, '.jules-companion', 'diffs');
+            fs.mkdirSync(diffsDir, { recursive: true });
+            const diffFilePath = path.join(diffsDir, `session-${sessionId!.slice(0, 8)}.diff`);
+            fs.writeFileSync(diffFilePath, patchContent, 'utf8');
+
+            const doc = await vscode.workspace.openTextDocument(diffFilePath);
+            await vscode.window.showTextDocument(doc, { preview: false });
+
+            const check = checkPatchConflict(patchContent, root);
+            if (check.canApplyCleanly) {
+              vscode.window.showInformationMessage(
+                `Saved and opened session-${sessionId!.slice(0, 8)}.diff (Applies cleanly with 0 conflicts)`
+              );
+            } else {
+              vscode.window.showWarningMessage(
+                `Saved and opened session-${sessionId!.slice(0, 8)}.diff (Conflict warning: ${check.message})`
+              );
+            }
+          } catch (err: any) {
+            vscode.window.showErrorMessage(`Failed to pull .diff: ${err.message}`);
+          }
+        }
+      );
+    })
+  );
+
+  // 11. Open Mission Control Webview Command
   context.subscriptions.push(
     vscode.commands.registerCommand('jules.openMissionControl', async (item?: any) => {
       const root = getWorkspaceRoot();

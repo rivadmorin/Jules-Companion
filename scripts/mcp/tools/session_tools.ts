@@ -15,7 +15,8 @@ import { cancelSessionApi, sendMessageApi, pullDiffApi } from '../../client/jule
 const TEAM_PRESETS: Record<string, string> = {
   'full-audit': 'sentinel,janitor,annotator,grader',
   'feature-sprint': 'innovator,builder,inspector',
-  'refactor-boost': 'modernizer,bolt,inspector'
+  'refactor-boost': 'modernizer,bolt,inspector',
+  'github-ops': 'octo,smith,scribe,archivist'
 };
 
 /**
@@ -181,11 +182,11 @@ export const sessionTools: McpToolDefinition[] = [
   },
   {
     name: 'deploy_team',
-    description: 'Deploys multi-agent team presets (full-audit, feature-sprint, refactor-boost).',
+    description: 'Deploys multi-agent team presets (full-audit, feature-sprint, refactor-boost, github-ops).',
     inputSchema: {
       type: 'object',
       properties: {
-        preset: { type: 'string', enum: ['full-audit', 'feature-sprint', 'refactor-boost'], description: 'Predefined agent team preset' },
+        preset: { type: 'string', enum: ['full-audit', 'feature-sprint', 'refactor-boost', 'github-ops'], description: 'Predefined agent team preset' },
         task: { type: 'string', description: 'Task description for the team' },
         mode: { type: 'string', enum: ['code', 'review'], description: 'Execution mode' },
         branch: { type: 'string', description: 'Starting branch' },

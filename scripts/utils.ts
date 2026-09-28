@@ -6,8 +6,8 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { spawnSync } from 'child_process';
-import { runGit, GitExecutionResult } from './core/git';
-import { getProjectDirs, loadSessions, saveSessions } from './core/storage';
+import { runGit, GitExecutionResult, checkPatchConflict, PatchCheckResult } from './core/git';
+import { getProjectDirs, loadSessions, saveSessions, cleanSessionScratch } from './core/storage';
 import { ProjectDirs, SessionRecord, ScheduledTask, LaunchMode } from './core/types';
 import {
   loadScheduledTasks,
@@ -43,7 +43,10 @@ export {
   runScheduledTaskNow,
   setTaskExecutor,
   getTaskExecutor,
-  TaskExecutor
+  TaskExecutor,
+  checkPatchConflict,
+  PatchCheckResult,
+  cleanSessionScratch
 };
 
 /**
@@ -168,16 +171,17 @@ export function isSessionAwaitingInput(status?: string): boolean {
 }
 
 /**
- * Archives a session locally, moving it to the archived sessions collection.
+ * Archives a session locally, moving it to the archived sessions collection and
+ * automatically purging any associated leftover scratch, diff, and patch files.
  *
  * @param sessionId - Unique identifier of the session to archive.
  * @param targetDir - Optional workspace root directory path.
- * @returns Object indicating success and notification message.
+ * @returns Object indicating success, notification message, and purged scratch files list.
  */
 export function archiveSession(
   sessionId: string,
   targetDir: string = process.cwd()
-): { success: boolean; message: string } {
+): { success: boolean; message: string; cleanedFiles?: string[] } {
   const sessions = loadSessions(targetDir);
   let found = false;
   const updated = sessions.map(s => {
@@ -189,10 +193,16 @@ export function archiveSession(
   });
   if (found) {
     saveSessions(updated, targetDir);
+    const cleanedFiles = cleanSessionScratch(sessionId, targetDir);
+    return {
+      success: true,
+      message: `Session #${sessionId} archived.`,
+      cleanedFiles
+    };
   }
   return {
-    success: found,
-    message: found ? `Session #${sessionId} archived.` : `Session #${sessionId} not found.`
+    success: false,
+    message: `Session #${sessionId} not found.`
   };
 }
 

@@ -33,6 +33,7 @@
     "onCommand:jules.viewActivities",
     "onCommand:jules.openAgentDoc",
     "onCommand:jules.viewVisualDiff",
+    "onCommand:jules.pullSessionDiff",
     "onCommand:jules.openMissionControl",
     "onCommand:jules.toggleLiveSync",
     "onCommand:jules.createGitHubPR",
@@ -181,6 +182,11 @@
         "command": "jules.viewVisualDiff",
         "title": "Inspect Visual Diff (Side-by-Side)",
         "icon": "$(diff)"
+      },
+      {
+        "command": "jules.pullSessionDiff",
+        "title": "Pull Session .diff File",
+        "icon": "$(file-code)"
       },
       {
         "command": "jules.openMissionControl",
@@ -371,6 +377,11 @@
           "command": "jules.viewActivities",
           "when": "view == jules.sessionsView && viewItem =~ /^session/",
           "group": "navigation@2"
+        },
+        {
+          "command": "jules.pullSessionDiff",
+          "when": "view == jules.sessionsView && viewItem =~ /^session/",
+          "group": "navigation@3"
         },
         {
           "command": "jules.cancelSession",

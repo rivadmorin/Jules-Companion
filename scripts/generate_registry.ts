@@ -60,7 +60,7 @@ export async function generateRegistry(): Promise<Registry> {
     'builder', 'conduit', 'alchemist', 'gatekeeper', 'bridge', 'dockerist',
     'modernizer', 'inspector', 'janitor', 'logger', 'benchmarker', 'watcher',
     'chameleon', 'innovator', 'materialist', 'partisan', 'netrunner', 'adapter',
-    'enforcer'
+    'enforcer', 'octo'
   ]);
 
   const files = fs.readdirSync(agentsDir).filter(f => f.endsWith('.md'));
