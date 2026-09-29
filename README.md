@@ -97,8 +97,20 @@ See [**CONTRIBUTING.md**](CONTRIBUTING.md) and [**AGENT.md**](AGENT.md) for full
 
 ## 🤖 Developer Workflows & Git Hooks
 
-The project utilizes automated Git hooks to improve the developer experience and ensure code health. By running `npm install`, a local git pre-commit hook is automatically configured via `scripts/install_hooks.js`.
-This pre-commit hook will automatically run the `npm run verify` script (which executes TypeScript checks via `npx tsc --noEmit` and our test suite) to prevent any failing code from being committed.
+The project utilizes automated Git hooks to improve the developer experience and ensure code health. By running `npm install`, git hooks are automatically configured via `scripts/install_hooks.js`:
+- **Pre-commit**: Runs `npm run verify` (TypeScript checks via `npx tsc --noEmit` and our test suite) to prevent failing code from being committed.
+- **Post-commit**: Automatically re-extracts code AST changes into the Graphify knowledge graph (`graphify-out/`).
+
+## 🗺️ Codebase Knowledge Graph (Graphify)
+
+The codebase is mapped into a persistent, queryable knowledge graph powered by [**Graphify**](https://github.com/safishamsi/graphify):
+* **Interactive Visualization**: Open [`graphify-out/graph.html`](graphify-out/graph.html) directly in any web browser to explore community clusters, god nodes, and call chains.
+* **Audit Report**: View [`graphify-out/GRAPH_REPORT.md`](graphify-out/GRAPH_REPORT.md) for architectural health, bridge nodes, and suggested exploration questions.
+* **Query & Update**:
+  ```bash
+  graphify query "<question>"
+  npm run graphify:update
+  ```
 
 ## 📚 Architecture Documentation
 
@@ -189,11 +201,12 @@ Tambahkan konfigurasi berikut ke berkas konfigurasi MCP asisten AI Anda (misal `
 
 ---
 
-## 🛠️ Kakas Pengembang & Agen AI (Ponytail & Sentrux)
+## 🛠️ Kakas Pengembang & Agen AI (Ponytail, Sentrux & Graphify)
 
-Jules Companion menerapkan standar rekayasa ketat menggunakan dua kakas open-source terintegrasi:
+Jules Companion menerapkan standar rekayasa ketat menggunakan tiga kakas open-source terintegrasi:
 * **[Ponytail](https://github.com/DietrichGebert/ponytail)**: Panduan anti-overengineering bagi pengembang dan agen AI (YAGNI, utamakan standard library, diff minimal).
 * **[Sentrux](https://github.com/sentrux/sentrux)**: Linter batas arsitektur yang menegakkan hierarki dependensi 6-tier satu arah (`npm run sentrux:check`).
+* **[Graphify](https://github.com/safishamsi/graphify)**: Graf pengetahuan arsitektur codebase interaktif (`graphify-out/graph.html`) dan audit dependensi (`npm run graphify:update`).
 
 Lihat [**CONTRIBUTING.md**](CONTRIBUTING.md) dan [**AGENT.md**](AGENT.md) untuk panduan instalasi dan penggunaan lengkap.
 

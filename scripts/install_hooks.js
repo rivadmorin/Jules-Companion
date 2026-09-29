@@ -23,3 +23,12 @@ fi
 
 fs.writeFileSync(hookFile, hookScript, { encoding: 'utf8', mode: 0o755 });
 console.log('Successfully installed git pre-commit hook.');
+
+// Attempt graphify hook installation if graphify is installed
+const { execSync } = require('child_process');
+try {
+  execSync('graphify hook install', { stdio: 'ignore' });
+  console.log('Successfully configured graphify post-commit hook and merge driver.');
+} catch {
+  // graphify may not be in global PATH; silently continue
+}

@@ -66,7 +66,7 @@ export function syncGlobalInstallation(targetWorkspaceDir: string = process.cwd(
     }
 
     // 4. Sync key root configuration & documentation files
-    const rootFiles = ['SKILL.md', 'README.md', 'README.id.md', 'package.json', 'AGENT.md'];
+    const rootFiles = ['SKILL.md', 'README.md', 'README.id.md', 'package.json', 'AGENT.md', 'NOTE.md'];
     for (const rf of rootFiles) {
       const src = path.join(targetWorkspaceDir, rf);
       if (fs.existsSync(src)) {

@@ -113,20 +113,23 @@ Tambahkan `jules-companion` ke konfigurasi MCP di Klien AI Anda (`claude_desktop
 
 ---
 
-## 🛠️ Kakas Pengembang & Agen AI (Ponytail & Sentrux)
+## 🛠️ Kakas Pengembang & Agen AI (Ponytail, Sentrux & Graphify)
 
-Jules Companion menerapkan standar rekayasa ketat menggunakan dua kakas open-source terintegrasi:
+Jules Companion menerapkan standar rekayasa ketat menggunakan tiga kakas open-source terintegrasi:
 * **[Ponytail](https://github.com/DietrichGebert/ponytail)**: Panduan anti-overengineering bagi pengembang dan agen AI (YAGNI, utamakan standard library, diff minimal).
 * **[Sentrux](https://github.com/sentrux/sentrux)**: Linter batas arsitektur yang menegakkan hierarki dependensi 6-tier satu arah (`npm run sentrux:check`).
+* **[Graphify](https://github.com/safishamsi/graphify)**: Peta graf pengetahuan arsitektur codebase interaktif (`graphify-out/graph.html`) dan navigasi relasi (`npm run graphify:update`).
 
 Lihat [**CONTRIBUTING.md**](CONTRIBUTING.md) dan [**AGENT.md**](AGENT.md) untuk panduan instalasi dan penggunaan lengkap.
 
 ---
 
-## 🤖 Alur Kerja Developer & Git Hooks
+## 🤖 Alur Kerja Developer, Git Hooks & Graf Pengetahuan
 
-Proyek ini memanfaatkan Git hooks otomatis untuk meningkatkan pengalaman developer dan memastikan kesehatan kode. Dengan menjalankan perintah `npm install`, git pre-commit hook lokal akan dikonfigurasi secara otomatis melalui `scripts/install_hooks.js`.
-Hook pre-commit ini akan otomatis menjalankan skrip `npm run verify` (yang mengeksekusi pengecekan TypeScript melalui `npx tsc --noEmit` dan rangkaian pengujian kami) untuk mencegah kode yang bermasalah atau rusak agar tidak dapat di-commit.
+Proyek ini memanfaatkan Git hooks otomatis untuk meningkatkan pengalaman developer dan memastikan integritas kode:
+* **Pre-commit**: Dikonfigurasi via `scripts/install_hooks.js` untuk menjalankan `npm run verify` (validasi TypeScript `npx tsc --noEmit` dan pengujian unit 117 tests).
+* **Post-commit**: Memperbarui layer AST pada graf pengetahuan Graphify (`graphify-out/`) secara otomatis setelah commit.
+* **Visualisasi Graf**: Buka berkas [`graphify-out/graph.html`](graphify-out/graph.html) langsung di browser web untuk eksplorasi kluster arsitektur dan god nodes.
 
 ## 📚 Dokumentasi Arsitektur Lengkap
 

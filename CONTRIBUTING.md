@@ -10,7 +10,7 @@ This guide outlines our architecture, engineering principles, development workfl
 1. [Core Development Philosophy (Ponytail)](#-core-development-philosophy)
 2. [Development Environment Setup](#-development-environment-setup)
 3. [Architecture Invariants & Governance](#-architecture-invariants--governance)
-4. [Contributor & AI Agent Tooling (Ponytail & Sentrux)](#-contributor--ai-agent-tooling-ponytail--sentrux)
+4. [Contributor & AI Agent Tooling (Ponytail, Sentrux & Graphify)](#-contributor--ai-agent-tooling-ponytail-sentrux--graphify)
 5. [Coding Standards & Style Guide](#-coding-standards--style-guide)
 6. [Step-by-Step Developer Playbooks](#-step-by-step-developer-playbooks)
    - [Adding a New VS Code Command](#1-adding-a-new-vs-code-command)
@@ -126,9 +126,9 @@ Tier 5: Foundation (scripts/core/types.ts, scripts/core/storage.ts, scripts/core
 
 ---
 
-## 🛠️ Contributor & AI Agent Tooling (Ponytail & Sentrux)
+## 🛠️ Contributor & AI Agent Tooling (Ponytail, Sentrux & Graphify)
 
-To ensure that every human contributor and autonomous AI coding agent works with the exact same standards and toolset as the maintainers, this project requires and integrates two open-source governance tools:
+To ensure that every human contributor and autonomous AI coding agent works with the exact same standards and toolset as the maintainers, this project requires and integrates three open-source governance and navigation tools:
 
 ### 1. Ponytail — The Pragmatic Senior Developer Engine
 * **GitHub Repository**: [**`https://github.com/DietrichGebert/ponytail`**](https://github.com/DietrichGebert/ponytail)
@@ -177,6 +177,26 @@ To ensure that every human contributor and autonomous AI coding agent works with
   # Full pre-submission verification gate:
   npm run verify
   ```
+
+### 3. Graphify — Codebase Knowledge Graph & Architecture Navigation
+* **GitHub Repository**: [**`https://github.com/safishamsi/graphify`**](https://github.com/safishamsi/graphify)
+* **What it does**: Maps the entire codebase into a queryable knowledge graph with community detection, god nodes analysis, cross-community bridge identification, and interactive visualization.
+* **Persistent Artifacts**:
+  - [`graphify-out/graph.html`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/graphify-out/graph.html): Interactive graph visualization (open in any browser).
+  - [`graphify-out/GRAPH_REPORT.md`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/graphify-out/GRAPH_REPORT.md): Audit report detailing god nodes, surprises, and community clusters.
+  - [`graphify-out/graph.json`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/graphify-out/graph.json): Machine-readable knowledge graph for AI agent exploration.
+* **Commands**:
+  ```bash
+  # Query the knowledge graph:
+  graphify query "<question>"
+
+  # Update the graph incrementally after modifying files:
+  npm run graphify:update
+  # or: graphify update .
+  ```
+* **Git Hook & Merge Driver**:
+  - Automatically re-extracts AST changes upon `git commit` via `.git/hooks/post-commit` (configured via `npm run prepare`).
+  - Automatically merges `graph.json` without merge conflicts via `.gitattributes`.
 
 ---
 

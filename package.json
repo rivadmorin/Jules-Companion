@@ -444,6 +444,7 @@
     "commit": "node scripts/ship.js",
     "release": "node scripts/release.js",
     "sentrux:check": "sentrux check .",
+    "graphify:update": "graphify update .",
     "verify": "npx tsc --noEmit && npm run test",
     "prepare": "node scripts/install_hooks.js"
   },

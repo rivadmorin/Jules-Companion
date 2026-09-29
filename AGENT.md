@@ -97,11 +97,16 @@ Continuous Integration (CI) and automated releases ([`.github/workflows/`](file:
 * **Executable CLI Commands**: Every CLI fallback command documented in [`SKILL.md`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/SKILL.md), [`AGENT.md`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/AGENT.md), and [`README.md`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/README.md) must be 100% syntactically valid and runnable by Node.js. If a command uses `--team <preset>`, `--inspect <id>`, `--approve <id>`, or `--diff <id>`, the underlying CLI argument parsers ([`scripts/deploy_session.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/deploy_session.ts), [`scripts/merge_session.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/merge_session.ts)) must support them without throwing unknown parameter or validation errors.
 * **Automatic MCP Schema Refresh**: The global IDE MCP schema repository (`~/.gemini/antigravity-ide/mcp/jules-companion/`) must be systematically refreshed and overwritten on every build/sync ([`scripts/sync_global.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/sync_global.ts)) to avoid stale schema drift between local code tools and IDE agent capabilities.
 
+### Invariant 10: Codebase Knowledge Graph & Architecture Navigation (Graphify)
+* **Governing Framework**: [**Graphify** (`safishamsi/graphify`)](https://github.com/safishamsi/graphify) — Persistent Codebase Knowledge Graph with Community Detection & GraphRAG extraction.
+* **Inspect Graph First**: Before performing broad file searches or multi-module refactorings, query the knowledge graph first via `graphify query "<question>"` or inspect [`graphify-out/graph.json`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/graphify-out/graph.json) and [`graphify-out/GRAPH_REPORT.md`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/graphify-out/GRAPH_REPORT.md) to trace call graphs, bridge nodes, and god node dependencies.
+* **Preserve Graph Synchronization**: Codebase changes should be synchronized with the knowledge graph (`npm run graphify:update` or `graphify update .`). The automated Git post-commit hook automatically updates the AST layer upon committing.
+
 ---
 
-## 🛠️ 3. Contributor & AI Agent Tooling Suite: Ponytail & Sentrux
+## 🛠️ 3. Contributor & AI Agent Tooling Suite: Ponytail, Sentrux & Graphify
 
-To guarantee zero over-engineering and strict architectural compliance, this repository requires both human developers and autonomous AI agents to operate with the same standard tools:
+To guarantee zero over-engineering, strict architectural compliance, and graph-guided navigation, this repository requires both human developers and autonomous AI agents to operate with the same standard tools:
 
 ### 1. Ponytail — The Pragmatic Senior Developer Engine
 * **Repository**: [`https://github.com/DietrichGebert/ponytail`](https://github.com/DietrichGebert/ponytail)
@@ -153,6 +158,23 @@ To guarantee zero over-engineering and strict architectural compliance, this rep
   sentrux gate .
   ```
 
+### 3. Graphify — Codebase Knowledge Graph & Architecture Navigation
+* **Repository**: [`https://github.com/safishamsi/graphify`](https://github.com/safishamsi/graphify)
+* **Purpose**: Generates queryable knowledge graphs with community clustering, god nodes analysis, cross-community bridge identification, and interactive browser visualization ([`graphify-out/graph.html`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/graphify-out/graph.html)).
+* **Artifacts & Location**: [`graphify-out/`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/graphify-out/) (`graph.json`, `graph.html`, `GRAPH_REPORT.md`).
+* **Key Commands**:
+  ```bash
+  # Query the knowledge graph for architectural context:
+  graphify query "<question>"
+
+  # Trace shortest path between components:
+  graphify path "AuthModule" "Database"
+
+  # Incremental graph update for new/modified code:
+  npm run graphify:update
+  # or: graphify update .
+  ```
+
 ---
 
 ## 🗺️ 4. Codebase Architectural Navigation Map
@@ -190,13 +212,17 @@ Jules-Companion/
 │   └── agents/
 │       ├── registry.json            # Compiled catalog of 44 specialist agents
 │       └── *.md                     # 44 individual agent prompt definitions
-├── tests/                           # Tier 0: Native Node.js Test Suite (115 tests across 36 suites)
+├── tests/                           # Tier 0: Native Node.js Test Suite (117 tests across 36 suites)
 │   ├── doc_coverage.test.ts         # 100% TSDoc coverage enforcement
 │   ├── scheduler.test.ts            # Task Scheduler test suite
 │   ├── mission_control.test.ts      # Webview rendering & CSP test suite
 │   ├── sessions_provider.test.ts    # TreeDataProvider test suite
 │   ├── mcp.test.ts                  # MCP registry and tool execution tests
 │   └── merge_session.test.ts        # Pre-merge safety gate tests
+├── graphify-out/                    # Codebase Knowledge Graph & Visualizer (697 nodes, 44 communities)
+│   ├── graph.json                   # GraphRAG knowledge graph export
+│   ├── graph.html                   # Interactive browser visualization
+│   └── GRAPH_REPORT.md              # Architectural health & God Nodes audit report
 └── docs/codebase/                   # Master Architecture Reference Suite (10 chapters)
 ```
 
@@ -380,54 +406,18 @@ The repository provides **44 specialized agent personas** located in [`reference
 
 ---
 
-## ⚠️ 8. Common Gotchas & Agent Survival Guide
+## ⚠️ 8. Development Gotchas & Operational Notes
 
-1. **Path Separators & Line Endings**:
-   - The primary host environment is **Windows** (PowerShell), but CI runs on both **Ubuntu Linux** and **Windows**.
-   - Always use `node:path` methods (`path.join()`, `path.resolve()`, `path.normalize()`) or forward slashes `/` for cross-platform file paths.
-   - Do not depend on CRLF vs LF in regexes; use `\r?\n`.
+Detailed debugging traps, cross-platform path handling, historical bug autopsies, and emergency recovery recipes are cataloged in [NOTE.md](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/NOTE.md).
 
-2. **Atomic JSON File Persistence**:
-   - Never write partial JSON to `.jules-companion/sessions.json` or `.jules-companion/schedules.json`. Always read, update the in-memory array, and write atomically via [`saveSessions`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/core/storage.ts) or [`saveScheduledTasks`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/core/scheduler.ts).
+**Essential Domains Covered in [NOTE.md](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/NOTE.md):**
+- **Platform Traps:** Windows vs Linux path separators, CRLF/LF line endings, and Bash globbing divergence.
+- **API Guardrails:** Google Jules REST protocol (`prompt` vs `message`), offline parameter validation precedence, and MCP error handling.
+- **Persistence:** Atomic JSON file updates, secret storage vs environment variables, and scratch file purging.
+- **CI & Testing Traps:** Headless VS Code mocks in bare Node.js, automatic `registry.json` checkout after test runs, and isolated TSDoc block rules.
+- **CLI Dispatching:** Multi-mapping parameters in `parseArgs` (`--inspect`, `--approve`, `--session`).
 
-3. **No Unhandled Promise Rejections**:
-   - All async operations in commands and MCP handlers must be wrapped in structured `try ... catch` blocks with descriptive error feedback.
-
-4. **Secret Storage vs Environment Variables**:
-   - In VS Code, API keys are stored in `context.secrets` (OS SecretStorage).
-   - In MCP standalone mode and CLI scripts, API keys fall back to `process.env.JULES_API_KEY` and `process.env.GEMINI_API_KEY`.
-   - Never commit `.env` or plaintext API keys to git.
-
-5. **Cross-Platform Globbing & Shell Divergence**:
-   - Linux Bash shells do not recursively expand `**/*.ts` without explicit shell options (`globstar`). Never run build commands in `package.json` that rely on shell glob expansion. Always route multi-file TypeScript compilation through [`scripts/build.js`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/build.js).
-
-6. **Headless VS Code Mocking in CI**:
-   - The test runner [`scripts/run_tests.js`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/run_tests.js) and [`scripts/setup.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/setup.ts) automatically scaffold a headless mock for `node_modules/vscode`. Do not rely on VS Code runtime APIs being available in bare Node.js CLI or CI runner environments.
-
-7. **Validation Order Precedence (Offline Test Safety)**:
-   - When authoring core functions (such as [`deploySessionCore`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/deploy_session.ts)), always validate user parameters and options *before* accessing network or secret credentials. This ensures unit tests testing invalid parameters pass without requiring external API keys.
-
-8. **CLI Argument Parser Multi-Mapping (`parseArgs`)**:
-   - When users invoke CLI commands like `--inspect <sessionId>` or `--approve <sessionId>`, `parseArgs` places the session ID directly into `params.inspect` or `params.approve`.
-   - Never assume `params.session` is populated. Always extract `sessionId` using:
-     ```typescript
-     const inspectId = typeof params.inspect === 'string' ? params.inspect : undefined;
-     const approveId = typeof params.approve === 'string' ? params.approve : undefined;
-     const sessionId = params.session || params.sessions || params.id || inspectId || approveId;
-     ```
-
-9. **Google Jules REST API Request Body Field (`prompt` vs `message`)**:
-   - The cloud REST endpoint `POST /sessions/{sessionId}:sendMessage` requires the request body `{ "prompt": "<text>" }`. Sending `{ "message": "<text>" }` will be rejected by Google's API gateway.
-
-10. **Global IDE MCP Schema Freshness**:
-    - Build and synchronization routines ([`scripts/sync_global.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/sync_global.ts)) must **unconditionally overwrite** JSON schema definitions in `~/.gemini/antigravity-ide/mcp/jules-companion/` to prevent version drift between local tool code and IDE capabilities.
-
-11. **Isolated TSDoc Blocks for Exported Constants**:
-    - Every exported constant (e.g. `export const TEAM_PRESETS = ...`) must have its own dedicated TSDoc comment immediately preceding it. Placing a constant immediately above an exported function without its own comment causes `tests/doc_coverage.test.ts` to fail.
-
-12. **Automatic Scratch & Residual File Cleanup**:
-    - When archiving or deleting sessions, always call [`cleanSessionScratch`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/core/storage.ts) to purge temporary `.patch`, `.diff`, and `visual_diff/` folders in `.jules-companion/scratch/`.
-    - Ensure global sync cleans obsolete residual files (like `.ignore`).
+👉 **Read [NOTE.md](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/NOTE.md) before implementing tricky network, cross-platform, or storage routines.**
 
 ---
 

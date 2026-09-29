@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.2.1] - 2026-09-29
+
+### 🚀 Added
+- **Graphify Codebase Knowledge Graph**:
+  - Initialized full Graphify knowledge graph extraction: 697 nodes, 1,483 edges across 44 semantic community clusters.
+  - Interactive browser visualization (`graphify-out/graph.html`) and audit report (`graphify-out/GRAPH_REPORT.md`).
+  - Added Git post-commit hook for automated incremental AST graph re-indexing (`.git/hooks/post-commit`) and merge driver registration (`.gitattributes`).
+  - Added `graphify:update` command in `package.json` and integrated hook installation into `scripts/install_hooks.js`.
+  - Configured `.gitignore` to track public graph artifacts (`graph.json`, `graph.html`, `GRAPH_REPORT.md`) while strictly ignoring local interpreter paths and caches (`.graphify_*`, `cache/`).
+  - Updated all governance and architectural documentation: `AGENT.md` (Invariant 10), `CONTRIBUTING.md`, `.github/CONTRIBUTING.md`, `README.md`, `README.id.md`, and `docs/codebase-architecture-map.md`.
+
+---
+
 ## [1.2.0] - 2026-09-28
 
 ### 🚀 Highlights

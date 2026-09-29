@@ -62,6 +62,9 @@ We provide automated helper scripts to make shipping changes effortless:
    - Any agent added must be registered in `scripts/generate_registry.ts` and updated in `references/agents/registry.json`.
 3. **Docstring Quality**:
    - Every exported module, class, interface, and function must include accurate JSDoc/TSDoc comments with `@param` and `@returns`.
+4. **Codebase Knowledge Graph (Graphify)**:
+   - Explore the architecture, god nodes, and relationships via `graphify query "<question>"` or open `graphify-out/graph.html` in your browser.
+   - Keep the graph synchronized with `npm run graphify:update` (git post-commit hook handles AST updates automatically).
 
 ---
 

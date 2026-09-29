@@ -1,8 +1,8 @@
 # Jules Companion - Codebase Architecture Map & Governance Guide
-> *Architecture Documentation & Maintenance Guide Powered by [**Sentrux**](https://github.com/sentrux/sentrux) (Architectural Governance) and [**Graft**](https://github.com/alexphelps/graft) (Semantic Context Graph)*  
+> *Architecture Documentation & Maintenance Guide Powered by [**Sentrux**](https://github.com/sentrux/sentrux) (Architectural Governance) and [**Graphify**](https://github.com/safishamsi/graphify) (Codebase Knowledge Graph & Visualizer)*  
 > *Developer Pragmatism & Anti-Overengineering Powered by [**Ponytail**](https://github.com/DietrichGebert/ponytail)*  
 > *Complete 28 Scripts Reference: See [**Comprehensive Codebase Documentation Index**](codebase/README.md)*  
-> *Current Status: 108 Unit Tests 100% Passed, 100% TSDoc Coverage, Zero Regressions, Zero Architectural Violations*
+> *Current Status: 117 Unit Tests 100% Passed (36 Suites), 100% TSDoc Coverage, Zero Regressions, Zero Architectural Violations*
 
 ---
 
@@ -16,11 +16,12 @@ The `Jules-Companion` codebase is built upon a **clean domain-driven layered arc
 | **Acyclicity** | 🟢 Perfect (`10000`) | **0 circular dependencies**. Verified and enforced by [`.sentrux/rules.toml`](.sentrux/rules.toml) via [Sentrux](https://github.com/sentrux/sentrux). |
 | **Redundancy** | 🟢 Perfect (`10000`) | No structural duplication. Shared domain logic is centralized in `scripts/core/` and `scripts/client/`. |
 | **Layering & Boundaries** | 🟢 Perfect (0 Violations) | 6 Tiers strictly controlled via [Sentrux](https://github.com/sentrux/sentrux) (`tests` ➔ `interfaces` ➔ `mcp_modules` ➔ `workflows` ➔ `client` ➔ `foundation`). |
+| **Knowledge Graph** | 🟢 Graphify Synchronized | **697 nodes, 1,483 edges, 44 communities**. Interactive HTML visualization at [`graphify-out/graph.html`](../graphify-out/graph.html). |
 | **Pragmatic Implementation** | 🟢 Ponytail Compliant | Minimum necessary complexity, standard library preference, zero unrequested abstractions ([Ponytail](https://github.com/DietrichGebert/ponytail)). |
 | **Clean Interfaces** | 🟢 Programmatic Core | Core functions (`deploySessionCore`, `mergeSessionCore`, `autoProcessCore`) are modularly invokable without mutating `process.argv` or hijacking `stdout`. |
 | **Equality & God-Files** | 🟢 Lightweight | [`mcp_server.ts`](file:///e:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/mcp_server.ts) is only **85 lines**, [`jules_client.ts`](file:///e:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/jules_client.ts) **185 lines**, divided into isolated tool handlers. |
 | **Modularity & Coupling** | 🟢 Clean Distribution | Dependency load of core hotspot callers is evenly distributed across `core/`, `client/`, and `mcp/`. |
-| **Test Suite Pass Rate** | 🟢 100% (108/108 Tests) | 35 test suites pass 100% in ~26 seconds on Node.js native test runner with tsx. |
+| **Test Suite Pass Rate** | 🟢 100% (117/117 Tests) | 36 test suites pass 100% in ~29 seconds on Node.js native test runner with tsx. |
 
 ---
 
@@ -189,6 +190,26 @@ npm run package
 ### Contributor & AI Agent Tooling Links:
 * **[Ponytail (`DietrichGebert/ponytail`)](https://github.com/DietrichGebert/ponytail)**: Anti-overengineering rules and slash commands (`/ponytail-review`, `/ponytail-audit`).
 * **[Sentrux (`sentrux/sentrux`)](https://github.com/sentrux/sentrux)**: Architectural firewall and quality sensor.
+* **[Graphify (`safishamsi/graphify`)](https://github.com/safishamsi/graphify)**: Codebase Knowledge Graph, God Node analysis, and interactive browser visualization.
+
+---
+
+## 7.5. Codebase Knowledge Graph & Community Clusters (Graphify)
+
+The codebase architecture, symbol call graphs, and documentation are mapped into a persistent knowledge graph via [**Graphify**](https://github.com/safishamsi/graphify):
+
+* **Interactive Browser Visualizer**: [`graphify-out/graph.html`](../graphify-out/graph.html) (open directly in browser).
+* **Comprehensive Graph Report**: [`graphify-out/GRAPH_REPORT.md`](../graphify-out/GRAPH_REPORT.md)
+* **Graph Metric Overview**:
+  - **Total Nodes**: 697 nodes (AST code nodes, documentation concepts, agents, media artifacts).
+  - **Total Edges**: 1,483 relationships (calls, imports, references, implements, semantically similar).
+  - **Detected Communities**: 44 distinct semantic clusters.
+* **Core God Nodes**:
+  1. [`activate()`](../scripts/extension.ts) (43 edges) - Extension activation gateway.
+  2. [`loadSessions()`](../scripts/core/storage.ts) (30 edges) - Session persistence deserializer.
+  3. [`runGit()`](../scripts/core/git.ts) (23 edges) - Universal Git subprocess executor.
+  4. [`getApiKey()`](../scripts/core/storage.ts) / [`saveSessions()`](../scripts/core/storage.ts) (22 edges each) - Configuration & state management.
+  5. [`request()`](../scripts/client/jules_api.ts) (21 edges) - Jules REST API transport client.
 
 ---
 

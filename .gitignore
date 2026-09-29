@@ -76,6 +76,11 @@ venv/
 .sentrux/*.cache
 .sentrux/baseline.json
 
+# 9b. Codebase Knowledge Graph & Architecture Navigation (Graphify)
+graphify-out/.graphify_*
+graphify-out/cache/
+graphify-out/[0-9]*/
+
 # 10. Logs & Debug Traces
 *.log
 npm-debug.log*
