@@ -444,7 +444,8 @@
     "commit": "node scripts/ship.js",
     "release": "node scripts/release.js",
     "sentrux:check": "sentrux check .",
-    "verify": "npm test && npm run sentrux:check"
+    "verify": "npx tsc --noEmit && npm run test",
+    "prepare": "node scripts/install_hooks.js"
   },
   "keywords": [
     "jules",

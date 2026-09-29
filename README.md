@@ -95,6 +95,11 @@ See [**CONTRIBUTING.md**](CONTRIBUTING.md) and [**AGENT.md**](AGENT.md) for full
 
 ---
 
+## 🤖 Developer Workflows & Git Hooks
+
+The project utilizes automated Git hooks to improve the developer experience and ensure code health. By running `npm install`, a local git pre-commit hook is automatically configured via `scripts/install_hooks.js`.
+This pre-commit hook will automatically run the `npm run verify` script (which executes TypeScript checks via `npx tsc --noEmit` and our test suite) to prevent any failing code from being committed.
+
 ## 📚 Architecture Documentation
 
 Comprehensive architecture documentation for all 28 scripts and subsystems is available in English:

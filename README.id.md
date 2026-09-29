@@ -123,6 +123,11 @@ Lihat [**CONTRIBUTING.md**](CONTRIBUTING.md) dan [**AGENT.md**](AGENT.md) untuk 
 
 ---
 
+## 🤖 Alur Kerja Developer & Git Hooks
+
+Proyek ini memanfaatkan Git hooks otomatis untuk meningkatkan pengalaman developer dan memastikan kesehatan kode. Dengan menjalankan perintah `npm install`, git pre-commit hook lokal akan dikonfigurasi secara otomatis melalui `scripts/install_hooks.js`.
+Hook pre-commit ini akan otomatis menjalankan skrip `npm run verify` (yang mengeksekusi pengecekan TypeScript melalui `npx tsc --noEmit` dan rangkaian pengujian kami) untuk mencegah kode yang bermasalah atau rusak agar tidak dapat di-commit.
+
 ## 📚 Dokumentasi Arsitektur Lengkap
 
 Dokumentasi arsitektur komprehensif untuk seluruh 28 modul skrip tersedia dalam Bahasa Inggris:
