@@ -42,9 +42,9 @@
     "semantic_hash": ""
   },
   "references/agents/registry.json": {
-    "mtime": 1790763737.682388,
-    "seen": 1790763821.0514736,
-    "ast_hash": "e13aa99876bbc2f78060c62d37fabea0",
+    "mtime": 1790764457.6088972,
+    "seen": 1790765061.6208549,
+    "ast_hash": "abc025dc8d72db9075eaa579f5d3be48",
     "semantic_hash": ""
   },
   "scripts/auto_process.ts": {
@@ -474,9 +474,9 @@
     "semantic_hash": "6a823e7ab10b21cf645fc4250b972e45"
   },
   "AGENT.md": {
-    "mtime": 1790676559.4936607,
-    "seen": 1790676621.3296602,
-    "ast_hash": "d83119a881ab4dd40e2550819b7ac213",
+    "mtime": 1790764360.7599964,
+    "seen": 1790765061.6208549,
+    "ast_hash": "a6decdda6497128896231980452626d1",
     "semantic_hash": ""
   },
   "CHANGELOG.md": {
