@@ -138,8 +138,9 @@ Aplikasi ini berfungsi sebagai ko-pilot pintar untuk mengintegrasikan alur kerja
 * **⏰ Mesin Penjadwalan Tugas Otonom**: Loop evaluasi latar belakang yang memicu tugas jatuh tempo, mencatat ID sesi cloud, dan memberi notifikasi ke IDE.
 * **🎛️ Mission Control Webview**: Panel interaktif dengan sinkronisasi status cloud live, stepper rencana eksekusi, timeline aktivitas, dan pemisahan tegas banner Approval Plan vs Masukan Pengguna.
 * **💻 Ekstensi IDE Native**: Sidebar TreeView untuk Sesi Aktif, Tugas Terjadwal, Arsip Sesi, Konteks Git Workspace, Katalog Agen, dan Jurnal Keputusan.
+* **🔍 Native Side-by-Side Diff Editor**: Inspeksi perubahan patch sesi cloud secara berdampingan (`vscode.diff`) atau unified patch tab tanpa penulisan berkas scratch ke disk (`jules-diff://`).
 * **🔌 Server MCP Native (20 Tools)**: Server standar JSON-RPC via `stdio` yang kompatibel dengan Claude, Antigravity CLI, Cursor, dan klien MCP lainnya.
-* **🤖 30 Agen Spesialis**: Peran agen yang telah dikalibrasi untuk Coding, Testing, Keamanan, Arsitektur, DevOps, dan Dokumentasi.
+* **🤖 53 Agen Spesialis**: Peran agen yang telah dikalibrasi untuk Coding, Testing, Keamanan, Arsitektur, DevOps, dan Dokumentasi.
 * **🛡️ Safety Gate Anti-Gagal**: Memverifikasi keberhasilan sesi cloud (`SUCCEEDED`) dan kebersihan working tree sebelum merge Git.
 
 ---
@@ -167,8 +168,8 @@ Aplikasi ini berfungsi sebagai ko-pilot pintar untuk mengintegrasikan alur kerja
 npm run build
 npm run package
 
-# 2. Pasang berkas jules-companion-1.1.0.vsix di IDE:
-code --install-extension jules-companion-1.1.0.vsix
+# 2. Pasang berkas jules-companion-1.2.2.vsix di IDE:
+code --install-extension jules-companion-1.2.2.vsix
 ```
 
 ### Mengonfigurasi Kunci API

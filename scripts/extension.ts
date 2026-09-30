@@ -38,7 +38,7 @@ import {
   runScheduledTaskNow,
   setTaskExecutor
 } from './utils';
-import { openVisualDiff } from './ui/visual_diff';
+import { openVisualDiff, openUnifiedDiff, JulesDiffContentProvider, JULES_DIFF_SCHEME } from './ui/visual_diff';
 import { LiveSyncManager } from './ui/live_sync';
 import { openMissionControlWebview } from './ui/mission_control';
 import { runCustomAgentWizard } from './ui/custom_agent_wizard';
@@ -124,6 +124,12 @@ export function activate(context: vscode.ExtensionContext): void {
 
   outputChannel = vscode.window.createOutputChannel('Jules Companion');
   context.subscriptions.push(outputChannel);
+
+  // In-Memory Virtual Document Provider for Native Diffs (zero disk writes)
+  const diffProvider = JulesDiffContentProvider.getInstance();
+  context.subscriptions.push(
+    vscode.workspace.registerTextDocumentContentProvider(JULES_DIFF_SCHEME, diffProvider)
+  );
 
   // Status Bar Item
   statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 10);
@@ -745,29 +751,39 @@ function getAgentQuickPickList(extensionPath: string, root: string): AgentPickIt
         sessionId = picked.id;
       }
 
+      const choice = await vscode.window.showQuickPick(
+        [
+          {
+            label: '$(diff) Native Side-by-Side Diff Editor',
+            description: 'Inspect modified files side-by-side using VS Code built-in diff editor',
+            mode: 'visual'
+          },
+          {
+            label: '$(file-code) Unified Git Patch Tab',
+            description: 'Open complete unified diff in an in-memory virtual editor tab',
+            mode: 'unified'
+          }
+        ],
+        { title: `Inspect Diff for Session #${sessionId!.slice(0, 8)}` }
+      );
+
+      if (!choice) return;
+
       await vscode.window.withProgress(
         {
           location: vscode.ProgressLocation.Notification,
-          title: `Fetching diff for session #${sessionId}...`,
+          title: `Loading diff for session #${sessionId}...`,
           cancellable: false
         },
         async () => {
           try {
-            const diffContent = await pullDiffApi(sessionId!, root);
-            if (!diffContent || !diffContent.trim()) {
-              vscode.window.showInformationMessage(`No diff changes found for session #${sessionId}.`);
-              return;
+            if (choice.mode === 'visual') {
+              await openVisualDiff(sessionId!, root);
+            } else {
+              await openUnifiedDiff(sessionId!, root);
             }
-
-            const scratchDir = path.join(root, '.jules-companion', 'scratch');
-            fs.mkdirSync(scratchDir, { recursive: true });
-            const diffPath = path.join(scratchDir, `${sessionId}.diff`);
-            fs.writeFileSync(diffPath, diffContent, 'utf8');
-
-            const doc = await vscode.workspace.openTextDocument(vscode.Uri.file(diffPath));
-            await vscode.window.showTextDocument(doc, { preview: true });
           } catch (err: any) {
-            vscode.window.showErrorMessage(`Failed to pull diff: ${err.message}`);
+            vscode.window.showErrorMessage(`Failed to display diff: ${err.message}`);
           }
         }
       );

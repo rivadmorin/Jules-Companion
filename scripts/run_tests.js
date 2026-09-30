@@ -40,15 +40,28 @@ class ThemeColor {
 }
 const TreeItemCollapsibleState = { None: 0, Collapsed: 1, Expanded: 2 };
 const Uri = {
-  file: (p) => ({ fsPath: p, path: p, scheme: 'file' }),
-  parse: (u) => ({ toString: () => u, scheme: 'https' })
+  file: (p) => ({ fsPath: p, path: p, scheme: 'file', toString: () => 'file://' + p }),
+  parse: (u) => ({ toString: () => u, scheme: u.split(':')[0], path: u })
 };
 class MarkdownString {
   constructor(value = '') { this.value = value; this.isTrusted = false; this.supportHtml = false; }
   appendMarkdown(val) { this.value += val; }
   appendText(val) { this.value += val; }
 }
-module.exports = { TreeItem, TreeItemCollapsibleState, EventEmitter, ThemeIcon, ThemeColor, Uri, MarkdownString };
+const workspace = {
+  registerTextDocumentContentProvider: (scheme, provider) => ({ dispose: () => {} }),
+  openTextDocument: async (uri) => ({ uri })
+};
+const window = {
+  showInformationMessage: async () => {},
+  showErrorMessage: async () => {},
+  showQuickPick: async () => null,
+  withProgress: async (opt, task) => task()
+};
+const commands = {
+  executeCommand: async () => {}
+};
+module.exports = { TreeItem, TreeItemCollapsibleState, EventEmitter, ThemeIcon, ThemeColor, Uri, MarkdownString, workspace, window, commands };
 `);
   }
 }

@@ -1,6 +1,14 @@
 import { test, describe } from 'node:test';
 import * as assert from 'node:assert';
-import { parseDiffFiles } from '../scripts/ui/visual_diff';
+import {
+  parseDiffFiles,
+  JulesDiffContentProvider,
+  JULES_DIFF_SCHEME,
+  getOriginalUri,
+  getProposedUri,
+  getUnifiedDiffUri
+} from '../scripts/ui/visual_diff';
+import * as vscode from 'vscode';
 
 describe('Visual Diff Parser Unit Tests', () => {
   const samplePatch = `diff --git a/src/math.ts b/src/math.ts
@@ -27,7 +35,7 @@ new file mode 100644
     assert.deepStrictEqual(parseDiffFiles('   \n  '), []);
   });
 
-  test('should parse multiple files and reconstruct before/after lines', () => {
+  test('should parse multiple files and reconstruct before/after lines with stats', () => {
     const parsed = parseDiffFiles(samplePatch);
     assert.strictEqual(parsed.length, 2);
 
@@ -38,11 +46,66 @@ new file mode 100644
     assert.ok(!f1.before.includes('Fixed addition bug'));
     assert.ok(f1.after.includes('return a + b;'));
     assert.ok(f1.after.includes('Fixed addition bug'));
+    assert.strictEqual(f1.additions, 2);
+    assert.strictEqual(f1.deletions, 1);
 
     // File 2: docs/readme.md
     const f2 = parsed[1];
     assert.strictEqual(f2.file, 'docs/readme.md');
     assert.strictEqual(f2.before, '');
     assert.ok(f2.after.includes('# New Feature'));
+    assert.strictEqual(f2.additions, 2);
+    assert.strictEqual(f2.deletions, 0);
+  });
+});
+
+describe('JulesDiffContentProvider Unit Tests', () => {
+  test('should generate properly formatted virtual document URIs', () => {
+    const sessionId = 'test-session-123';
+    const filePath = 'src/components/Button.tsx';
+
+    const origUri = getOriginalUri(sessionId, filePath);
+    assert.ok(origUri.toString().startsWith(`${JULES_DIFF_SCHEME}://`));
+    assert.ok(origUri.toString().includes('original'));
+    assert.ok(origUri.toString().includes('Button.tsx'));
+
+    const propUri = getProposedUri(sessionId, filePath);
+    assert.ok(propUri.toString().startsWith(`${JULES_DIFF_SCHEME}://`));
+    assert.ok(propUri.toString().includes('proposed'));
+    assert.ok(propUri.toString().includes('Button.tsx'));
+
+    const patchUri = getUnifiedDiffUri(sessionId);
+    assert.ok(patchUri.toString().endsWith('patch.diff'));
+  });
+
+  test('should store, retrieve, and serve virtual document content in memory', () => {
+    const provider = JulesDiffContentProvider.getInstance();
+    const uri = vscode.Uri.parse(`${JULES_DIFF_SCHEME}://sessions/session-abc/original/file.txt`);
+    const content = 'Hello world from virtual diff memory';
+
+    provider.setContent(uri, content);
+    assert.strictEqual(provider.getContent(uri), content);
+    assert.strictEqual(provider.provideTextDocumentContent(uri), content);
+
+    // Non-existent URI should return empty string
+    const emptyUri = vscode.Uri.parse(`${JULES_DIFF_SCHEME}://sessions/session-abc/notfound.txt`);
+    assert.strictEqual(provider.provideTextDocumentContent(emptyUri), '');
+  });
+
+  test('clearSession should purge all virtual document buffers for target session', () => {
+    const provider = JulesDiffContentProvider.getInstance();
+    const uri1 = vscode.Uri.parse(`${JULES_DIFF_SCHEME}://sessions/session-purge-1/orig.ts`);
+    const uri2 = vscode.Uri.parse(`${JULES_DIFF_SCHEME}://sessions/session-purge-1/prop.ts`);
+    const uriOther = vscode.Uri.parse(`${JULES_DIFF_SCHEME}://sessions/session-keep/prop.ts`);
+
+    provider.setContent(uri1, 'code 1');
+    provider.setContent(uri2, 'code 2');
+    provider.setContent(uriOther, 'keep me');
+
+    provider.clearSession('session-purge-1');
+
+    assert.strictEqual(provider.provideTextDocumentContent(uri1), '');
+    assert.strictEqual(provider.provideTextDocumentContent(uri2), '');
+    assert.strictEqual(provider.provideTextDocumentContent(uriOther), 'keep me');
   });
 });

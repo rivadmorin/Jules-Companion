@@ -42,9 +42,9 @@
     "semantic_hash": ""
   },
   "references/agents/registry.json": {
-    "mtime": 1790778406.5556302,
-    "seen": 1790778442.2429748,
-    "ast_hash": "2401718e57ae4470dd3f5515083b4474",
+    "mtime": 1790785325.990517,
+    "seen": 1790785354.7730355,
+    "ast_hash": "b9b44ee193efc015a7fa0582076a5b31",
     "semantic_hash": ""
   },
   "scripts/auto_process.ts": {
@@ -102,15 +102,15 @@
     "semantic_hash": "a30d31c525a7fbc4a26d43e405173ead"
   },
   "scripts/extension.ts": {
-    "mtime": 1790626036.259707,
-    "seen": 1790674108.7382,
-    "ast_hash": "93301273b0404d03f5e074064724e55c",
-    "semantic_hash": "93301273b0404d03f5e074064724e55c"
+    "mtime": 1790785114.7653165,
+    "seen": 1790785354.7730355,
+    "ast_hash": "b05374a03c8ddd642d092437ad02f18a",
+    "semantic_hash": ""
   },
   "scripts/generate_registry.ts": {
-    "mtime": 1790778139.2554026,
-    "seen": 1790778442.2429748,
-    "ast_hash": "6f347701da2dd90a0c6d62d709a55e96",
+    "mtime": 1790778792.2622962,
+    "seen": 1790785354.7730355,
+    "ast_hash": "eb24f97c942fa53803a8e7c02b14cde0",
     "semantic_hash": ""
   },
   "scripts/install_hooks.js": {
@@ -174,10 +174,10 @@
     "semantic_hash": "0468d357ec36470b970344202943c342"
   },
   "scripts/run_tests.js": {
-    "mtime": 1790617656.032947,
-    "seen": 1790674108.7382,
-    "ast_hash": "8f14e1e248634bf15576bb59c7102d5e",
-    "semantic_hash": "8f14e1e248634bf15576bb59c7102d5e"
+    "mtime": 1790785147.0036688,
+    "seen": 1790785354.7730355,
+    "ast_hash": "07a4ce279d836b8fd897979847760a3b",
+    "semantic_hash": ""
   },
   "scripts/setup.ts": {
     "mtime": 1790617667.9702325,
@@ -234,10 +234,10 @@
     "semantic_hash": "4a275805d985ecce372a082b96232580"
   },
   "scripts/ui/visual_diff.ts": {
-    "mtime": 1790624525.4547548,
-    "seen": 1790674108.7382,
-    "ast_hash": "9c96032007982bfc18b9594e997119e2",
-    "semantic_hash": "9c96032007982bfc18b9594e997119e2"
+    "mtime": 1790785028.6450665,
+    "seen": 1790785354.7730355,
+    "ast_hash": "cf586f6fd437fab3ffb64d027cb51161",
+    "semantic_hash": ""
   },
   "scripts/ui/workspace_provider.ts": {
     "mtime": 1790583756.934682,
@@ -282,9 +282,9 @@
     "semantic_hash": "2ca98aa6df250c1378cb416c56f4ade7"
   },
   "tests/generate_registry.test.ts": {
-    "mtime": 1790676763.791925,
-    "seen": 1790763455.3258328,
-    "ast_hash": "47096674586f0967dcdae890300ace34",
+    "mtime": 1790778688.4268744,
+    "seen": 1790785354.7730355,
+    "ast_hash": "e249a4376968458c1b6a14fd8db1eca7",
     "semantic_hash": ""
   },
   "tests/jules_client.test.ts": {
@@ -360,10 +360,10 @@
     "semantic_hash": "69b2822abde75b5ca2a9c993ffd7cf6b"
   },
   "tests/visual_diff.test.ts": {
-    "mtime": 1790580761.2083507,
-    "seen": 1790674108.7382,
-    "ast_hash": "4a2b9aaba5c0f0aa58e405e0e759a40e",
-    "semantic_hash": "4a2b9aaba5c0f0aa58e405e0e759a40e"
+    "mtime": 1790785125.8095064,
+    "seen": 1790785354.7730355,
+    "ast_hash": "292493ea6b06f0afd3268a21c46c1743",
+    "semantic_hash": ""
   },
   "tests/workspace_provider.test.ts": {
     "mtime": 1790583860.5967152,
@@ -480,9 +480,9 @@
     "semantic_hash": ""
   },
   "CHANGELOG.md": {
-    "mtime": 1790778383.8678474,
-    "seen": 1790778442.2429748,
-    "ast_hash": "e904c4f80fe9d4e13eac810fa91a1675",
+    "mtime": 1790785258.5523434,
+    "seen": 1790785354.7730355,
+    "ast_hash": "b2a3006725ba0f7461e7a792a5a9cbe8",
     "semantic_hash": ""
   },
   "FAQ.md": {
@@ -492,15 +492,15 @@
     "semantic_hash": ""
   },
   "README.id.md": {
-    "mtime": 1790675931.4423478,
-    "seen": 1790676621.3296602,
-    "ast_hash": "66797c86c6fdfd1ac2fd59153179d523",
+    "mtime": 1790785306.4527783,
+    "seen": 1790785354.7730355,
+    "ast_hash": "95dedab9a298b25e995713eb145136b8",
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1790675914.8143651,
-    "seen": 1790676621.3296602,
-    "ast_hash": "6595797f5e868c4f2ad39d20070d9813",
+    "mtime": 1790785271.304173,
+    "seen": 1790785354.7730355,
+    "ast_hash": "0cc958c9c779ce832606f843920202b5",
     "semantic_hash": ""
   },
   "SKILL.md": {

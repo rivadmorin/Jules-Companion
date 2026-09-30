@@ -1,12 +1,16 @@
 /**
- * Native side-by-side visual diff viewer for Jules session changesets.
+ * Native side-by-side visual diff viewer and virtual document provider for Jules session changesets.
  * @module ui/visual_diff
  */
 
 import * as vscode from 'vscode';
 import * as path from 'path';
-import * as fs from 'fs';
 import { pullDiffApi } from '../client/jules_api';
+
+/**
+ * Custom URI scheme for Jules in-memory virtual diff documents.
+ */
+export const JULES_DIFF_SCHEME = 'jules-diff';
 
 /**
  * Representation of a file modified within a unified diff patch.
@@ -18,13 +22,120 @@ export interface ParsedDiffFile {
   before: string;
   /** Reconstructed text content after the patch */
   after: string;
+  /** Count of added lines in this patch */
+  additions: number;
+  /** Count of deleted lines in this patch */
+  deletions: number;
+}
+
+/**
+ * In-memory TextDocumentContentProvider for zero-disk-write diff and patch inspection.
+ * Delivers virtual document buffers directly to VS Code's native side-by-side diff editor.
+ */
+export class JulesDiffContentProvider implements vscode.TextDocumentContentProvider {
+  private static instance: JulesDiffContentProvider;
+  private _onDidChange = new vscode.EventEmitter<vscode.Uri>();
+  readonly onDidChange = this._onDidChange.event;
+
+  /** Internal memory cache mapping URI string keys to document text content */
+  private contentCache = new Map<string, string>();
+
+  /**
+   * Returns the singleton instance of the JulesDiffContentProvider.
+   *
+   * @returns {JulesDiffContentProvider} The provider instance.
+   */
+  public static getInstance(): JulesDiffContentProvider {
+    if (!JulesDiffContentProvider.instance) {
+      JulesDiffContentProvider.instance = new JulesDiffContentProvider();
+    }
+    return JulesDiffContentProvider.instance;
+  }
+
+  /**
+   * Sets in-memory document content for a target virtual URI and notifies VS Code.
+   *
+   * @param uri - Target virtual document URI.
+   * @param content - Text content of the virtual document.
+   */
+  public setContent(uri: vscode.Uri, content: string): void {
+    this.contentCache.set(uri.toString(), content);
+    this._onDidChange.fire(uri);
+  }
+
+  /**
+   * Retrieves currently cached content for a target virtual URI.
+   *
+   * @param uri - Target virtual document URI.
+   * @returns {string | undefined} Cached content if present.
+   */
+  public getContent(uri: vscode.Uri): string | undefined {
+    return this.contentCache.get(uri.toString());
+  }
+
+  /**
+   * Cleans up all cached virtual documents associated with a specific session ID.
+   *
+   * @param sessionId - Target session ID to purge.
+   */
+  public clearSession(sessionId: string): void {
+    for (const key of Array.from(this.contentCache.keys())) {
+      if (key.includes(sessionId)) {
+        this.contentCache.delete(key);
+      }
+    }
+  }
+
+  /**
+   * VS Code TextDocumentContentProvider contract: provides virtual document text for a given URI.
+   *
+   * @param uri - Requested virtual document URI.
+   * @returns {string} The text content of the document.
+   */
+  public provideTextDocumentContent(uri: vscode.Uri): string {
+    return this.contentCache.get(uri.toString()) || '';
+  }
+}
+
+/**
+ * Generates a virtual URI for the original (pre-patch) version of a modified file.
+ *
+ * @param sessionId - Jules session ID.
+ * @param filePath - Relative path of the file.
+ * @returns {vscode.Uri} Virtual URI pointing to the original document.
+ */
+export function getOriginalUri(sessionId: string, filePath: string): vscode.Uri {
+  const safe = filePath.replace(/\\/g, '/');
+  return vscode.Uri.parse(`${JULES_DIFF_SCHEME}://sessions/${sessionId}/original/${safe}`);
+}
+
+/**
+ * Generates a virtual URI for the proposed (post-patch) version of a modified file.
+ *
+ * @param sessionId - Jules session ID.
+ * @param filePath - Relative path of the file.
+ * @returns {vscode.Uri} Virtual URI pointing to the proposed document.
+ */
+export function getProposedUri(sessionId: string, filePath: string): vscode.Uri {
+  const safe = filePath.replace(/\\/g, '/');
+  return vscode.Uri.parse(`${JULES_DIFF_SCHEME}://sessions/${sessionId}/proposed/${safe}`);
+}
+
+/**
+ * Generates a virtual URI for the unified raw git patch of a session.
+ *
+ * @param sessionId - Jules session ID.
+ * @returns {vscode.Uri} Virtual URI pointing to the unified patch document.
+ */
+export function getUnifiedDiffUri(sessionId: string): vscode.Uri {
+  return vscode.Uri.parse(`${JULES_DIFF_SCHEME}://sessions/${sessionId}/patch.diff`);
 }
 
 /**
  * Parses a standard Git unidiff patch string into reconstructed before/after representations per file.
  *
  * @param diffText - Raw unidiff patch string.
- * @returns Array of ParsedDiffFile objects.
+ * @returns Array of ParsedDiffFile objects with line additions and deletions statistics.
  */
 export function parseDiffFiles(diffText: string): ParsedDiffFile[] {
   if (!diffText || !diffText.trim()) return [];
@@ -41,6 +152,8 @@ export function parseDiffFiles(diffText: string): ParsedDiffFile[] {
 
     const beforeLines: string[] = [];
     const afterLines: string[] = [];
+    let additions = 0;
+    let deletions = 0;
 
     for (let i = 1; i < lines.length; i++) {
       const l = lines[i];
@@ -56,8 +169,10 @@ export function parseDiffFiles(diffText: string): ParsedDiffFile[] {
         continue;
       } else if (l.startsWith('-')) {
         beforeLines.push(l.slice(1));
+        deletions++;
       } else if (l.startsWith('+')) {
         afterLines.push(l.slice(1));
+        additions++;
       } else if (l.startsWith(' ')) {
         beforeLines.push(l.slice(1));
         afterLines.push(l.slice(1));
@@ -67,7 +182,9 @@ export function parseDiffFiles(diffText: string): ParsedDiffFile[] {
     fileDiffs.push({
       file: filePath,
       before: beforeLines.join('\n'),
-      after: afterLines.join('\n')
+      after: afterLines.join('\n'),
+      additions,
+      deletions
     });
   }
 
@@ -76,10 +193,11 @@ export function parseDiffFiles(diffText: string): ParsedDiffFile[] {
 
 /**
  * Fetches the session patch and launches VS Code's native visual side-by-side diff editor.
+ * Operates 100% in-memory via virtual document URIs with zero disk scratch writes.
  *
  * @param sessionId - Target session ID to view diff for.
  * @param targetDir - Root workspace directory.
- * @returns A promise resolving when the diff viewer is launched.
+ * @returns A promise resolving when the native diff editor is launched.
  */
 export async function openVisualDiff(sessionId: string, targetDir: string): Promise<void> {
   let diffContent = '';
@@ -108,8 +226,8 @@ export async function openVisualDiff(sessionId: string, targetDir: string): Prom
   if (files.length > 1) {
     const picked = await vscode.window.showQuickPick(
       files.map(f => ({
-        label: `$(file) ${f.file}`,
-        description: `${f.after.split('\n').length} lines`,
+        label: `$(diff) ${f.file}`,
+        description: `+${f.additions} -${f.deletions} (${f.after.split('\n').length} lines)`,
         item: f
       })),
       { title: `Select File to Inspect Diff (#${sessionId.slice(0, 8)})` }
@@ -118,19 +236,47 @@ export async function openVisualDiff(sessionId: string, targetDir: string): Prom
     selected = picked.item;
   }
 
-  const scratchDir = path.join(targetDir, '.jules-companion', 'scratch', 'visual_diff', sessionId);
-  fs.mkdirSync(scratchDir, { recursive: true });
+  const provider = JulesDiffContentProvider.getInstance();
+  const beforeUri = getOriginalUri(sessionId, selected.file);
+  const afterUri = getProposedUri(sessionId, selected.file);
 
-  const safeFileName = path.basename(selected.file).replace(/[^a-zA-Z0-9._-]/g, '_');
-  const beforeFile = path.join(scratchDir, `${safeFileName}.original`);
-  const afterFile = path.join(scratchDir, `${safeFileName}.jules_patch`);
+  // Serve virtual in-memory content directly (zero disk writes)
+  provider.setContent(beforeUri, selected.before);
+  provider.setContent(afterUri, selected.after);
 
-  fs.writeFileSync(beforeFile, selected.before, 'utf8');
-  fs.writeFileSync(afterFile, selected.after, 'utf8');
-
-  const beforeUri = vscode.Uri.file(beforeFile);
-  const afterUri = vscode.Uri.file(afterFile);
   const title = `${path.basename(selected.file)} (#${sessionId.slice(0, 8)} Original ↔ Jules Patch)`;
+  await vscode.commands.executeCommand('vscode.diff', beforeUri, afterUri, title, { preview: true });
+}
 
-  await vscode.commands.executeCommand('vscode.diff', beforeUri, afterUri, title);
+/**
+ * Fetches the session patch and opens it as a unified git diff in an in-memory virtual document tab.
+ * Operates 100% in-memory with zero disk scratch writes.
+ *
+ * @param sessionId - Target session ID to view raw patch for.
+ * @param targetDir - Root workspace directory.
+ * @returns A promise resolving when the document is displayed.
+ */
+export async function openUnifiedDiff(sessionId: string, targetDir: string): Promise<void> {
+  let diffContent = '';
+  try {
+    diffContent = await pullDiffApi(sessionId, targetDir);
+  } catch (err: any) {
+    if (err.message?.includes('No git patch found')) {
+      vscode.window.showInformationMessage(`No code changes or git patch found for session #${sessionId.slice(0, 8)}.`);
+      return;
+    }
+    throw err;
+  }
+
+  if (!diffContent || !diffContent.trim()) {
+    vscode.window.showInformationMessage(`No diff changes found for session #${sessionId.slice(0, 8)}.`);
+    return;
+  }
+
+  const provider = JulesDiffContentProvider.getInstance();
+  const unifiedUri = getUnifiedDiffUri(sessionId);
+  provider.setContent(unifiedUri, diffContent);
+
+  const doc = await vscode.workspace.openTextDocument(unifiedUri);
+  await vscode.window.showTextDocument(doc, { preview: true });
 }

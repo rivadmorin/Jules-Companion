@@ -37,6 +37,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `Attestor` 🔏 (`attestor`): Security Policies, Threat Models & Compliance Documentation.
     - `Vscecraft` 💿 (`vscecraft`): VS Code Extension Bundling, Packaging & Marketplace Release.
   - Recompiled and verified `references/agents/registry.json` index (53 total agents: 30 coding + 23 advisory).
+- **Native Side-by-Side Diff Editor & In-Memory Virtual Document Provider**:
+  - Implemented `JulesDiffContentProvider` using VS Code's `registerTextDocumentContentProvider` with custom URI scheme `jules-diff://`.
+  - Upgraded `openVisualDiff` to launch native side-by-side diffs (`vscode.diff`) between `jules-diff://sessions/<id>/original/<file>` and `jules-diff://sessions/<id>/proposed/<file>` with automatic language syntax highlighting, diff minimap, and navigation shortcuts.
+  - Upgraded `openUnifiedDiff` to open in-memory unified diffs with native `.diff` syntax highlighting in an editor tab.
+  - Eliminated 100% of temporary scratch disk I/O (`.jules-companion/scratch/visual_diff/`) when inspecting session patches.
+  - Enhanced multi-file patch navigation via interactive QuickPick displaying per-file addition and deletion metrics (`+A -D`).
 
 ---
 
