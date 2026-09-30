@@ -8,27 +8,6 @@ const AGENTS_DIR = path.join(__dirname, '..', 'references', 'agents');
 const REGISTRY_PATH = path.join(AGENTS_DIR, 'registry.json');
 
 describe('Generate Registry Tests', () => {
-  let originalContent: string | null = null;
-
-  before(() => {
-    if (fs.existsSync(REGISTRY_PATH)) {
-      originalContent = fs.readFileSync(REGISTRY_PATH, 'utf8');
-    }
-  });
-
-  after(async () => {
-    if (originalContent !== null) {
-      for (let attempt = 0; attempt < 5; attempt++) {
-        try {
-          fs.writeFileSync(REGISTRY_PATH, originalContent, 'utf8');
-          break;
-        } catch {
-          if (attempt === 4) break;
-          await new Promise(resolve => setTimeout(resolve, 50 * (attempt + 1)));
-        }
-      }
-    }
-  });
 
   test('generateRegistry should generate valid registry.json', async () => {
     const registry = await generateRegistry();

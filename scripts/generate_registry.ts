@@ -109,10 +109,15 @@ export async function generateRegistry(): Promise<Registry> {
   // Concurrently parse all markdown templates
   await Promise.all(files.map(processFile));
 
+  const sortedAgents: Record<string, AgentMetadata> = {};
+  for (const k of Object.keys(agentsMap).sort()) {
+    sortedAgents[k] = agentsMap[k];
+  }
+
   const registry: Registry = {
     generatedAt: new Date().toISOString(),
-    totalAgents: Object.keys(agentsMap).length,
-    agents: agentsMap
+    totalAgents: Object.keys(sortedAgents).length,
+    agents: sortedAgents
   };
 
   // Persist the extracted metadata database to disk for fast runtime access
