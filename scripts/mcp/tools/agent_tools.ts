@@ -14,7 +14,7 @@ import { getProjectDirs, readAgentJournal, createCustomAgentScaffold } from '../
 export const agentTools: McpToolDefinition[] = [
   {
     name: 'list_agents',
-    description: 'Lists all 44 specialized agents and their roles from registry.json.',
+    description: 'Lists all specialized agents and their roles from registry.json.',
     inputSchema: {
       type: 'object',
       properties: { targetDir: { type: 'string', description: 'Target repository root directory' } }

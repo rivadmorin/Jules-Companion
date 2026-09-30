@@ -25,6 +25,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Integrated native `AbortSignal.timeout(15000)` into `scripts/client/http.ts` to prevent hanging requests when connecting to the Google Jules REST API.
 - **Antigravity IDE UI Compatibility**:
   - Replaced missing `$(git-branch)` codicon in `package.json` with universal glyph `$(source-control)` to prevent blank inline action buttons.
+- **Expanded Specialist Agent Roster (53 Agents)**:
+  - Added 9 new specialized agent personas across Coding and Advisory groups:
+    - `Hermetic` 🧊 (`hermetic`): Immutability, Pure Functions & Side-Effect Isolation.
+    - `Lexicon` 📖 (`lexicon`): Domain Glossary, Ubiquitous Language & Naming Consistency.
+    - `Decoupler` 🧩 (`decoupler`): Inversion of Control & Loose Module Coupling.
+    - `Monorepist` 🏗️ (`monorepist`): Monorepo Workspaces & Multi-Package Architecture.
+    - `Plugger` 🔌 (`plugger`): Plugin Architecture & Microkernel Extensibility.
+    - `Mutator` 🧬 (`mutator`): Mutation Testing & Test Suite Resilience.
+    - `Guildmaster` 🤝 (`guildmaster`): Contributor Experience, PR Guidelines & Open Source Governance.
+    - `Attestor` 🔏 (`attestor`): Security Policies, Threat Models & Compliance Documentation.
+    - `Vscecraft` 💿 (`vscecraft`): VS Code Extension Bundling, Packaging & Marketplace Release.
+  - Recompiled and verified `references/agents/registry.json` index (53 total agents: 30 coding + 23 advisory).
 
 ---
 

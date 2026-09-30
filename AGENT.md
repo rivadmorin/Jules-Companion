@@ -104,7 +104,7 @@ Google Jules Cloud sessions operate with two distinct pausing states that must *
 * **Network Timeout**: HTTP requests in [`scripts/client/http.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/client/http.ts) must declare native `AbortSignal.timeout(15000)` to prevent indefinite socket hanging.
 
 ### Invariant 12: Strict Truth in CLI Documentation & Agent Roster Alignment
-* **No Phantom Agents**: The sole authority for agent identity is [`references/agents/registry.json`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/references/agents/registry.json), registering exactly **44 specialist agents** (26 coding + 18 advisory).
+* **No Phantom Agents**: The sole authority for agent identity is [`references/agents/registry.json`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/references/agents/registry.json), registering exactly **53 specialist agents** (30 coding + 23 advisory).
 * **Executable CLI Commands**: Every CLI fallback command documented in `SKILL.md`, `AGENT.md`, and `README.md` must be 100% syntactically valid and runnable by Node.js.
 * **Automatic Global Sync**: The global IDE MCP schema repository (`~/.gemini/antigravity-ide/mcp/jules-companion/`) must be refreshed on every build (`npm run sync`).
 
@@ -153,7 +153,7 @@ Jules-Companion/
 │   │   ├── mission_control.ts       # Real-time Webview dashboard & CSP event router
 │   │   ├── sessions_provider.ts     # TreeDataProvider for Jules Sessions explorer
 │   │   ├── scheduled_provider.ts    # TreeDataProvider for Scheduled Tasks explorer
-│   │   ├── agents_provider.ts       # TreeDataProvider for 44 Specialist Agents
+│   │   ├── agents_provider.ts       # TreeDataProvider for 53 Specialist Agents
 │   │   ├── workspace_provider.ts    # TreeDataProvider for Workspace health & Git context
 │   │   ├── visual_diff.ts           # Unified diff parser & Gemini AI explanation panel
 │   │   ├── live_sync.ts             # Background polling engine with adaptive backoff
@@ -166,8 +166,8 @@ Jules-Companion/
 │   └── utils.ts                     # Tier 5: Shared utilities, Doctor checks, status helpers
 ├── references/                      # Specialist Agent Markdown definitions
 │   └── agents/
-│       ├── registry.json            # Compiled catalog of 44 specialist agents
-│       └── *.md                     # 44 individual agent prompt definitions
+│       ├── registry.json            # Compiled catalog of 53 specialist agents
+│       └── *.md                     # 53 individual agent prompt definitions
 ├── tests/                           # Tier 0: Native Node.js Test Suite (117 tests across 36 suites)
 │   ├── doc_coverage.test.ts         # 100% TSDoc coverage enforcement
 │   ├── scheduler.test.ts            # Task Scheduler test suite
@@ -255,7 +255,7 @@ Jules Companion registers **20 native MCP tools**. When calling tools, use these
 9. **`retry_failed_session`**: Restarts a failed session with preserved prompt and branch configuration.
 10. **`rollback_session`**: Rolls back an applied session branch.
 11. **`auto_process`**: Dispatches full autonomous loop (poll -> approve -> reply -> merge).
-12. **`list_agents`**: Returns the complete list of 44 specialist agents with metadata.
+12. **`list_agents`**: Returns the complete list of 53 specialist agents with metadata.
 13. **`get_agent_info`**: Retrieves full prompt documentation and capabilities for an agent.
 14. **`create_custom_agent`**: Scaffolds a new specialist agent persona and registers it in `registry.json`.
 15. **`read_agent_journal`**: Reads operational logs and retrospective journals.
@@ -267,13 +267,13 @@ Jules Companion registers **20 native MCP tools**. When calling tools, use these
 
 ---
 
-## 📋 7. Specialist Agent Roster Reference (44 Personas)
+## 📋 7. Specialist Agent Roster Reference (53 Personas)
 
-### 💻 Coding & Architecture Group (26 Personas)
-`adapter`, `alchemist`, `benchmarker`, `bolt`, `bridge`, `builder`, `chameleon`, `conduit`, `dockerist`, `enforcer`, `exterminator`, `gatekeeper`, `innovator`, `inspector`, `janitor`, `logger`, `materialist`, `modernizer`, `netrunner`, `nomad`, `octo`, `packager`, `palette`, `partisan`, `sentinel`, `watcher`.
+### 💻 Coding & Architecture Group (30 Personas)
+`adapter`, `alchemist`, `benchmarker`, `bolt`, `bridge`, `builder`, `chameleon`, `conduit`, `decoupler`, `dockerist`, `enforcer`, `exterminator`, `gatekeeper`, `hermetic`, `innovator`, `inspector`, `janitor`, `logger`, `materialist`, `modernizer`, `monorepist`, `netrunner`, `nomad`, `octo`, `packager`, `palette`, `partisan`, `plugger`, `sentinel`, `watcher`.
 
-### 📋 Advisory, Review & Documentation Group (18 Personas)
-`annotator`, `archivist`, `cartographer`, `consultant`, `critic`, `curator`, `datasmith`, `grader`, `green`, `localizer`, `nexus`, `proteus`, `revenant`, `scaler`, `scribe`, `sleuth`, `smith`, `synapse`.
+### 📋 Advisory, Review & Documentation Group (23 Personas)
+`annotator`, `archivist`, `attestor`, `cartographer`, `consultant`, `critic`, `curator`, `datasmith`, `grader`, `green`, `guildmaster`, `lexicon`, `localizer`, `mutator`, `nexus`, `proteus`, `revenant`, `scaler`, `scribe`, `sleuth`, `smith`, `synapse`, `vscecraft`.
 
 ---
 

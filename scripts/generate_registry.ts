@@ -60,7 +60,7 @@ export async function generateRegistry(): Promise<Registry> {
     'builder', 'conduit', 'alchemist', 'gatekeeper', 'bridge', 'dockerist',
     'modernizer', 'inspector', 'janitor', 'logger', 'benchmarker', 'watcher',
     'chameleon', 'innovator', 'materialist', 'partisan', 'netrunner', 'adapter',
-    'enforcer', 'octo'
+    'enforcer', 'octo', 'hermetic', 'decoupler', 'monorepist', 'plugger'
   ]);
 
   const files = fs.readdirSync(agentsDir).filter(f => f.endsWith('.md'));
@@ -117,7 +117,15 @@ export async function generateRegistry(): Promise<Registry> {
 
   // Persist the extracted metadata database to disk for fast runtime access
   const registryPath = path.join(agentsDir, 'registry.json');
-  await fs.promises.writeFile(registryPath, JSON.stringify(registry, null, 2), 'utf8');
+  for (let attempt = 0; attempt < 5; attempt++) {
+    try {
+      await fs.promises.writeFile(registryPath, JSON.stringify(registry, null, 2), 'utf8');
+      break;
+    } catch (err) {
+      if (attempt === 4) throw err;
+      await new Promise(resolve => setTimeout(resolve, 50 * (attempt + 1)));
+    }
+  }
   console.log(`Registry generated successfully at ${registryPath} (${registry.totalAgents} agents index).`);
 
   return registry;

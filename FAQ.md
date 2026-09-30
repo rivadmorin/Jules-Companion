@@ -34,7 +34,7 @@ The Mission Control Webview is an interactive panel within the IDE extension tha
 ## Customization & Agents
 
 ### How many agents are available?
-Jules Companion comes with **44 specialized agents** fine-tuned for various roles, including Coding, Testing, Security, Architecture, DevOps, and Documentation.
+Jules Companion comes with **53 specialized agents** fine-tuned for various roles, including Coding, Testing, Security, Architecture, DevOps, and Documentation.
 
 ### Can I add my own agents?
 **Yes.** The system is designed to be extensible. You can define custom agents using template markdown files in the `references/agents/` directory.

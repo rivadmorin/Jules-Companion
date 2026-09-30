@@ -16,9 +16,17 @@ describe('Generate Registry Tests', () => {
     }
   });
 
-  after(() => {
+  after(async () => {
     if (originalContent !== null) {
-      fs.writeFileSync(REGISTRY_PATH, originalContent, 'utf8');
+      for (let attempt = 0; attempt < 5; attempt++) {
+        try {
+          fs.writeFileSync(REGISTRY_PATH, originalContent, 'utf8');
+          break;
+        } catch {
+          if (attempt === 4) break;
+          await new Promise(resolve => setTimeout(resolve, 50 * (attempt + 1)));
+        }
+      }
     }
   });
 
