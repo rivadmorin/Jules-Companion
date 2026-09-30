@@ -7,7 +7,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
 import { WorkspaceTreeDataProvider } from './ui/workspace_provider';
-import { SessionsTreeDataProvider, SessionTreeItem } from './ui/sessions_provider';
+import { SessionsTreeDataProvider, SessionTreeItem, cleanAgentName } from './ui/sessions_provider';
 import { AgentsTreeDataProvider, AgentTreeItem } from './ui/agents_provider';
 import { JournalsTreeDataProvider } from './ui/journals_provider';
 import { deploySessionCore } from './deploy_session';
@@ -1436,12 +1436,27 @@ function getAgentQuickPickList(extensionPath: string, root: string): AgentPickIt
     }),
     vscode.commands.registerCommand('jules.streamActivityLog', async (item?: any) => {
       const root = getWorkspaceRoot();
-      const sessionId = resolveSessionId(item);
-      if (sessionId) {
-        await JulesActivityChannel.getInstance().streamSessionActivities(sessionId, root);
-      } else {
-        JulesActivityChannel.getInstance().show(true);
+      let sessionId = resolveSessionId(item);
+      if (!sessionId) {
+        const sessions = loadSessions(root);
+        if (sessions.length === 0) {
+          vscode.window.showInformationMessage('No Jules sessions available to stream.');
+          JulesActivityChannel.getInstance().show(true);
+          return;
+        }
+        const pickItems = sessions.map(s => ({
+          label: `#${s.id.slice(0, 8)} • ${cleanAgentName(s.agent)}`,
+          description: `[${s.status}] • ${s.branch || 'main'}`,
+          detail: s.task,
+          session: s
+        }));
+        const picked = await vscode.window.showQuickPick(pickItems, {
+          placeHolder: 'Select a Jules session to stream activities and logs:'
+        });
+        if (!picked) return;
+        sessionId = picked.session.id;
       }
+      await JulesActivityChannel.getInstance().streamSessionActivities(sessionId, root);
     })
   );
 

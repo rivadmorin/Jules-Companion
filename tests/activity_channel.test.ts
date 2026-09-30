@@ -102,4 +102,32 @@ describe('JulesActivityChannel Unit Tests', () => {
     const patchFormatted = channel.formatActivity(patchAct);
     assert.ok(patchFormatted.includes('[CHANGESET] Patch ready: feat: add unit tests'));
   });
+
+  test('should support appendLine, clear, and show without throwing', () => {
+    const channel = JulesActivityChannel.getInstance();
+    assert.doesNotThrow(() => {
+      channel.show(true);
+      channel.appendLine('[TEST] Info message');
+      channel.clear();
+    });
+  });
+
+  test('appendActivity should append formatted log line', () => {
+    const channel = JulesActivityChannel.getInstance();
+    assert.doesNotThrow(() => {
+      channel.appendActivity('12345678', {
+        createTime: '2026-10-01T00:10:00Z',
+        originator: 'AGENT',
+        description: 'Compiling project'
+      });
+    });
+  });
+
+  test('streamSessionActivities should handle errors gracefully', async () => {
+    const channel = JulesActivityChannel.getInstance();
+    // Non-existent session ID without valid API key should not crash
+    await assert.doesNotReject(async () => {
+      await channel.streamSessionActivities('invalid-session-id', process.cwd());
+    });
+  });
 });

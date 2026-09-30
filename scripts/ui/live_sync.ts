@@ -8,6 +8,7 @@ import { listSessionsApi, approvePlanApi } from '../client/jules_api';
 import { SessionRecord } from '../core/types';
 import { isSessionAwaitingApproval, isSessionAwaitingInput, executeDueTasks } from '../utils';
 import { JulesStatusBar } from './status_bar';
+import { JulesActivityChannel } from './activity_channel';
 
 /**
  * Manages periodic background polling of cloud session states and dispatches notifications on transitions.
@@ -36,6 +37,9 @@ export class LiveSyncManager {
   start(intervalMs: number = 15000): void {
     if (this.running) return;
     this.running = true;
+    JulesActivityChannel.getInstance().appendLine(
+      `[${new Date().toLocaleTimeString()}] [LIVE_SYNC] Background polling started (${Math.round(intervalMs / 1000)}s interval)`
+    );
     this.pollOnce();
     this.timer = setInterval(() => {
       this.pollOnce().catch(() => {});
@@ -46,6 +50,11 @@ export class LiveSyncManager {
    * Stops background polling and clears active timers.
    */
   stop(): void {
+    if (this.running) {
+      JulesActivityChannel.getInstance().appendLine(
+        `[${new Date().toLocaleTimeString()}] [LIVE_SYNC] Background polling paused`
+      );
+    }
     this.running = false;
     if (this.timer) {
       clearInterval(this.timer);
@@ -110,6 +119,9 @@ export class LiveSyncManager {
     try {
       const executed = await executeDueTasks(root, (task) => {
         const idShort = task.sessionId ? `#${task.sessionId.slice(0, 8)}` : '';
+        JulesActivityChannel.getInstance().appendLine(
+          `[${new Date().toLocaleTimeString()}] [SCHEDULED] Task executed for ${task.agent} ${idShort}: "${task.task.slice(0, 40)}"`
+        );
         vscode.window.showInformationMessage(
           `⏰ Scheduled Jules task "${task.task.slice(0, 30)}" executed for ${task.agent} ${idShort}!`,
           '🚀 Action Center'
@@ -143,6 +155,11 @@ export class LiveSyncManager {
   ): void {
     const idPrefix = session.id.slice(0, 8);
     const agent = session.agent || 'Jules Agent';
+    const time = new Date().toLocaleTimeString();
+
+    JulesActivityChannel.getInstance().appendLine(
+      `[${time}] [LIVE_SYNC] #${idPrefix} (${agent}) transition: [${prevStatus}] -> [${nextStatus}]`
+    );
 
     if (isSessionAwaitingInput(nextStatus)) {
       vscode.window.showInformationMessage(
