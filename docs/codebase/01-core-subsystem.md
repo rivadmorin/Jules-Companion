@@ -104,6 +104,20 @@ Executes Git commands via Node.js `child_process.spawnSync`.
   - Automatically trims whitespace on stdout and stderr.
   - Catches spawning errors gracefully (`exitCode: -1` when git binary is not found).
 
+### `checkPatchConflict(patchContent: string, cwd?: string): PatchCheckResult`
+Performs dry-run patch verification via `git apply --check` against the active working tree:
+- **In-Memory TTL Caching (`patchCheckCache`)**:
+  - Results are cached in-memory with a 30-second TTL keyed by `${cwd}::${length}::${head}::${tail}`.
+  - Prevents continuous disk write/unlink cycles and subprocess spawning during 4-second webview polling loops when the patch remains unchanged.
+  - Maximum cache capacity is capped at 50 entries with oldest-entry eviction.
+- **Cache Invalidation**:
+  - `clearPatchCheckCache()` explicitly purges the in-memory cache when required.
+
+### `cleanSessionScratch(sessionId: string, targetDir?: string): string[]`
+Safely purges leftover scratch, diff, and patch files associated with a session ID:
+- Target directories: `.jules-companion/scratch/` and `.jules-companion/diffs/`.
+- Triggered automatically on session archiving and deletion to prevent repository and workspace clutter.
+
 ---
 
 ## 4. Task Scheduler Engine (`scheduler.ts`)

@@ -80,7 +80,7 @@ export function resetApiKeyCache(): void {
  */
 export async function request<T = any>(
   url: string,
-  options: { method?: string; headers?: Record<string, string> } = {},
+  options: { method?: string; headers?: Record<string, string>; timeoutMs?: number } = {},
   body: any = null
 ): Promise<T> {
   const headers: Record<string, string> = {
@@ -89,9 +89,14 @@ export async function request<T = any>(
     ...options.headers
   };
 
+  const timeoutMs = options.timeoutMs ?? 15000;
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+
   const init: RequestInit = {
     method: options.method || 'GET',
-    headers
+    headers,
+    signal: controller.signal
   };
 
   if (body) {
@@ -121,7 +126,12 @@ export async function request<T = any>(
     }
     throw new Error(errMsg);
   } catch (e: any) {
+    if (e.name === 'AbortError' || e.message?.includes('aborted')) {
+      throw new Error(`Request timed out after ${timeoutMs}ms connecting to Google Jules API (${url})`);
+    }
     if (e.message?.startsWith('HTTP ')) throw e;
     throw new Error(`Network error connecting to Google Jules API: ${e.message}`);
+  } finally {
+    clearTimeout(timer);
   }
 }

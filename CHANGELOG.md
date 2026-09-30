@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.2.2] - 2026-09-30
+
+### 🚀 Added & Improved
+- **Real-Time Execution Plan Tracking in Mission Control**:
+  - Dynamically calculates step completion and active execution progress directly from cloud `progressUpdated` activity events.
+  - Automatically advances active steps from `PENDING` to `IN_PROGRESS` and `COMPLETED` (`100%`) without manual webview refreshing.
+- **Mission Control Webview Polling & Rendering Optimizations**:
+  - Implemented render signature dirty-checking (`lastRenderSig`) inside `updateView()` to bypass redundant DOM updates when status and activities remain unchanged.
+  - Preserves user text input (e.g. `<textarea id="msgInput">`) and tab selection by preventing full iframe rebuilds every 4 seconds.
+  - Added dirty-checking in `fetchCloudData` to eliminate disk I/O churn by only executing `saveSessions()` when the session status actually changes.
+  - Wired viewstate listeners (`panel.onDidChangeViewState` and `panel.onDidDispose`) to automatically suspend polling when the tab is hidden and safely release timers.
+- **In-Memory Git Patch Conflict Dry-Run Cache**:
+  - Added `patchCheckCache` in `scripts/core/git.ts` with 30-second TTL and automatic eviction.
+  - Prevents continuous scratch file writes and `git apply --check` process spawning during repeated polling iterations.
+- **HTTP Client Network Timeout & Resilience**:
+  - Integrated native `AbortSignal.timeout(15000)` into `scripts/client/http.ts` to prevent hanging requests when connecting to the Google Jules REST API.
+- **Antigravity IDE UI Compatibility**:
+  - Replaced missing `$(git-branch)` codicon in `package.json` with universal glyph `$(source-control)` to prevent blank inline action buttons.
+
+---
+
 ## [1.2.1] - 2026-09-29
 
 ### 🚀 Added

@@ -237,6 +237,10 @@ export function renderMissionControlHtml(
   }
 
   // 5. Render Stepper Timeline
+  const completedProgressCount = activities.filter(
+    (act) => act.progressUpdated && (act.progressUpdated.title || act.progressUpdated.description || Object.keys(act.progressUpdated).length > 0)
+  ).length;
+
   const stepsHtml = planSteps.length > 0
     ? `
       <div class="stepper-timeline">
@@ -247,18 +251,17 @@ export function renderMissionControlHtml(
           if (isPlanPendingApproval) {
             isCompleted = false;
             isCurrent = false;
-          } else if (hasPlanApproved) {
-            if (status === 'COMPLETED' || status === 'SUCCEEDED') {
-              isCompleted = true;
-            } else if (status === 'IN_PROGRESS' || status === 'RUNNING') {
-              isCompleted = idx < planSteps.length - 1;
-              isCurrent = !isCompleted;
-            }
           } else if (status === 'COMPLETED' || status === 'SUCCEEDED') {
             isCompleted = true;
           } else if (status === 'IN_PROGRESS' || status === 'RUNNING') {
-            isCompleted = idx < planSteps.length - 1;
-            isCurrent = !isCompleted;
+            if (idx < completedProgressCount) {
+              isCompleted = true;
+            } else if (idx === completedProgressCount) {
+              isCurrent = true;
+            } else {
+              isCompleted = false;
+              isCurrent = false;
+            }
           }
 
           const stepStatusText = isCompleted ? 'Completed' : (isCurrent ? 'In Progress' : 'Pending');
@@ -1569,12 +1572,18 @@ export async function openMissionControlWebview(
 
   let patchStatus: PatchCheckResult | null = null;
 
-  const updateView = (loading: boolean = false) => {
+  let lastRenderSig = '';
+  const updateView = (loading: boolean = false, force: boolean = false) => {
+    const currentSig = `${loading}:${sessionData.status}:${sessionData.state}:${activities.length}:${activities[activities.length - 1]?.createTime || ''}:${patchStatus?.canApplyCleanly}`;
+    if (!force && !loading && currentSig === lastRenderSig) {
+      return;
+    }
+    lastRenderSig = currentSig;
     panel.webview.html = renderMissionControlHtml(sessionData, activities, loading, patchStatus);
   };
 
   // 1. Initial immediate render for instantaneous UI responsiveness
-  updateView(true);
+  updateView(true, true);
 
   // 2. Asynchronous background cloud sync
   const fetchCloudData = async () => {
@@ -1589,7 +1598,7 @@ export async function openMissionControlWebview(
 
       const currentSessions = loadSessions(targetDir);
       const idx = currentSessions.findIndex(s => s.id === sessionId);
-      if (idx !== -1) {
+      if (idx !== -1 && currentSessions[idx].status !== liveStatus) {
         currentSessions[idx].status = liveStatus;
         saveSessions(currentSessions, targetDir);
       }
@@ -1622,7 +1631,45 @@ export async function openMissionControlWebview(
 
   fetchCloudData();
 
-  // 3. Message handler for user interactions
+  // 3. Background real-time polling while panel is active
+  let pollInterval: NodeJS.Timeout | null = null;
+  const startPolling = () => {
+    if (pollInterval) return;
+    pollInterval = setInterval(async () => {
+      if (!panel.visible) return;
+      const currentStatus = String(sessionData.status || '').toUpperCase();
+      if (!['COMPLETED', 'SUCCEEDED', 'FAILED', 'ERROR', 'CANCELLED'].includes(currentStatus)) {
+        await fetchCloudData();
+        if (onUpdate) onUpdate();
+      } else {
+        stopPolling();
+      }
+    }, 4000);
+  };
+
+  const stopPolling = () => {
+    if (pollInterval) {
+      clearInterval(pollInterval);
+      pollInterval = null;
+    }
+  };
+
+  startPolling();
+
+  panel.onDidChangeViewState((e) => {
+    if (e.webviewPanel.visible) {
+      fetchCloudData();
+      startPolling();
+    } else {
+      stopPolling();
+    }
+  });
+
+  panel.onDidDispose(() => {
+    stopPolling();
+  });
+
+  // 4. Message handler for user interactions
   panel.webview.onDidReceiveMessage(async (msg) => {
     switch (msg.command) {
       case 'approvePlan': {
@@ -1693,7 +1740,7 @@ export async function openMissionControlWebview(
         }
 
         patchStatus = checkPatchConflict(rawPatch, targetDir);
-        updateView(false);
+        updateView(false, true);
         if (patchStatus.canApplyCleanly) {
           vscode.window.showInformationMessage(`✓ Patch applies cleanly to current branch (${sessionData.branch || 'main'}) with 0 conflicts.`);
         } else {
@@ -1720,13 +1767,13 @@ export async function openMissionControlWebview(
       case 'archiveSession': {
         await vscode.commands.executeCommand('jules.archiveSession', sessionId);
         sessionData.archived = true;
-        updateView(false);
+        updateView(false, true);
         break;
       }
       case 'unarchiveSession': {
         await vscode.commands.executeCommand('jules.unarchiveSession', sessionId);
         sessionData.archived = false;
-        updateView(false);
+        updateView(false, true);
         break;
       }
       case 'copySessionUrl': {
@@ -1734,7 +1781,7 @@ export async function openMissionControlWebview(
         break;
       }
       case 'refresh': {
-        updateView(true);
+        updateView(true, true);
         await fetchCloudData();
         if (onUpdate) onUpdate();
         break;

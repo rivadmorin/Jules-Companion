@@ -43,8 +43,7 @@ export interface HttpResponse<T = any> {
   ```
 - **Status Code Evaluation**:
   - `200 - 299`: Success; response body is parsed automatically as JSON if applicable.
-  - `400 - 599`: Thrown as an informative `HttpError` containing status code, status message, and raw error body for straightforward debugging.
-- **Timeout**: Default request timeout is `30,000 ms` (30 seconds).
+- **Timeout & Resilience**: Default request timeout is `15,000 ms` (15 seconds), enforced natively via `AbortController` and `setTimeout` to prevent indefinite socket hanging during cloud API delays. Throws descriptive error on abort.
 
 ---
 

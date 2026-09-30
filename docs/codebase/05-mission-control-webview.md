@@ -135,3 +135,42 @@ Mission Control clearly differentiates between two distinct pause states:
    - Real-time stream of bash commands, tool invocations, and agent output in cloud sandbox.
 5. **Code Changeset Viewer**:
    - File modification statistics, additions (`+`), and deletions (`-`).
+
+---
+
+## 6. Real-Time Execution Plan Tracking
+
+Mission Control dynamically syncs execution plan progress directly with Google Jules Cloud activity events:
+
+1. **Plan Formulation (`planGenerated`)**:
+   - Formulates the structured milestone steps (`planGenerated.plan.steps`).
+2. **Approval Gate (`planApproved`)**:
+   - If `planGenerated` exists without `planApproved`, all steps remain in pending/waiting status regardless of overall session status.
+3. **Step Completion Calculation (`progressUpdated`)**:
+   - When the plan is approved, Mission Control calculates active step progress dynamically:
+     - `completedCount` = Total count of `progressUpdated` activity entries.
+     - Steps with index `< completedCount` are marked as **`COMPLETED`** (`✓`).
+     - The step at index `=== completedCount` is marked as **`IN_PROGRESS`** (`⏳`).
+     - Steps with index `> completedCount` remain **`PENDING`** (`○`).
+     - When the session transitions to `COMPLETED` or `SUCCEEDED`, all formulated steps are marked completed (`100%`).
+
+---
+
+## 7. Polling Architecture & Webview Performance Optimizations
+
+To deliver real-time cloud reactivity without degrading host CPU, disk I/O, or webview rendering performance, Mission Control employs three layers of optimization:
+
+### 7.1. ViewState-Aware Polling Lifecycle
+- An active background polling interval (4,000ms) runs exclusively while the webview panel is visible (`panel.visible === true`) and the session is in an active state (`IN_PROGRESS`, `PENDING`, etc.).
+- Event listeners on `panel.onDidChangeViewState` automatically pause polling when the tab is hidden or backgrounded, and resume polling upon becoming visible.
+- `panel.onDidDispose` guarantees total teardown of the timer to eliminate memory leaks.
+
+### 7.2. Render Signature Dirty-Checking (`lastRenderSig`)
+- Reassigning `panel.webview.html` causes the entire webview iframe to rebuild from scratch, resetting scripts, input states, and scroll positions.
+- Mission Control calculates a composite render signature (`loading:status:state:activitiesCount:lastActivityTime:patchCleanliness`).
+- If none of these parameters change between 4-second polling ticks, the DOM assignment is bypassed entirely (`panel.webview.html` is not reassigned).
+- User input inside `<textarea id="msgInput">` and active tab selection remain completely undisturbed during background updates.
+
+### 7.3. Zero-Churn Disk Persistence & Patch Check Caching
+- **Session Persistence**: Local `sessions.json` is updated via `saveSessions()` only when `currentSessions[idx].status !== liveStatus`.
+- **Patch Dry-Run Caching**: Unidiff conflict checks run through an in-memory TTL cache (`patchCheckCache` in `scripts/core/git.ts`), eliminating redundant temporary file creation and child process spawning (`git apply --check`) when incoming patch content has not changed.

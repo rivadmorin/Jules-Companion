@@ -36,16 +36,16 @@
     "semantic_hash": "1678aa5289ca66b4e257141ed2cfcb0d"
   },
   "package.json": {
-    "mtime": 1790675661.996704,
-    "seen": 1790676621.3286495,
-    "ast_hash": "c6aa61fac10b3d8f481cb956bbbd974f",
+    "mtime": 1790763796.8523946,
+    "seen": 1790763821.0514736,
+    "ast_hash": "f795bf13b04a3e0c36934ea944c21adf",
     "semantic_hash": ""
   },
   "references/agents/registry.json": {
-    "mtime": 1790676613.4203153,
-    "seen": 1790676621.3286495,
-    "ast_hash": "1936634734b5ece4e864851771e6677a",
-    "semantic_hash": "1936634734b5ece4e864851771e6677a"
+    "mtime": 1790763737.682388,
+    "seen": 1790763821.0514736,
+    "ast_hash": "e13aa99876bbc2f78060c62d37fabea0",
+    "semantic_hash": ""
   },
   "scripts/auto_process.ts": {
     "mtime": 1790626031.3827622,
@@ -60,10 +60,10 @@
     "semantic_hash": "31b01a00d33193fcae3eb680e511e83e"
   },
   "scripts/client/http.ts": {
-    "mtime": 1790575601.6067069,
-    "seen": 1790674108.7382,
-    "ast_hash": "4dd1b542eda82e36bad4242bee7105b8",
-    "semantic_hash": "4dd1b542eda82e36bad4242bee7105b8"
+    "mtime": 1790763710.7906587,
+    "seen": 1790763821.0514736,
+    "ast_hash": "7f96ef44d42f11264399ca30198b7d71",
+    "semantic_hash": ""
   },
   "scripts/client/jules_api.ts": {
     "mtime": 1790621418.6114268,
@@ -72,10 +72,10 @@
     "semantic_hash": "da40d6d162776cd9fafa8e23483f9c30"
   },
   "scripts/core/git.ts": {
-    "mtime": 1790622862.9104764,
-    "seen": 1790674108.7382,
-    "ast_hash": "492bf718b19871e56a2347a6e1e817ba",
-    "semantic_hash": "492bf718b19871e56a2347a6e1e817ba"
+    "mtime": 1790763680.565184,
+    "seen": 1790763821.0514736,
+    "ast_hash": "d8f19b38025457f0fec3738e21586d96",
+    "semantic_hash": ""
   },
   "scripts/core/scheduler.ts": {
     "mtime": 1790616161.0622997,
@@ -222,10 +222,10 @@
     "semantic_hash": "5d75007e725377924145babc86248024"
   },
   "scripts/ui/mission_control.ts": {
-    "mtime": 1790625373.6086886,
-    "seen": 1790674108.7382,
-    "ast_hash": "7e24151da45ba27c38aaf1cce5925072",
-    "semantic_hash": "7e24151da45ba27c38aaf1cce5925072"
+    "mtime": 1790763698.605514,
+    "seen": 1790763821.0514736,
+    "ast_hash": "c6c02a0daf5ca85c0f3973836f04c8c7",
+    "semantic_hash": ""
   },
   "scripts/ui/sessions_provider.ts": {
     "mtime": 1790597896.5233612,
@@ -282,10 +282,10 @@
     "semantic_hash": "2ca98aa6df250c1378cb416c56f4ade7"
   },
   "tests/generate_registry.test.ts": {
-    "mtime": 1785768906.0637918,
-    "seen": 1790674108.7382,
-    "ast_hash": "785b998624a12b5a572c25b1096d1cd0",
-    "semantic_hash": "785b998624a12b5a572c25b1096d1cd0"
+    "mtime": 1790676763.791925,
+    "seen": 1790763455.3258328,
+    "ast_hash": "47096674586f0967dcdae890300ace34",
+    "semantic_hash": ""
   },
   "tests/jules_client.test.ts": {
     "mtime": 1785782892.900833,
@@ -480,9 +480,9 @@
     "semantic_hash": ""
   },
   "CHANGELOG.md": {
-    "mtime": 1790675995.0818913,
-    "seen": 1790676621.3296602,
-    "ast_hash": "ebd5fcb70ee8e8295952fa1fce198ed7",
+    "mtime": 1790763785.981651,
+    "seen": 1790763821.0514736,
+    "ast_hash": "71c3213a872616fcaaeba090b75322df",
     "semantic_hash": ""
   },
   "FAQ.md": {
@@ -528,16 +528,16 @@
     "semantic_hash": "d534f189bdc7118f39c59c3e4ae57951"
   },
   "docs/codebase/01-core-subsystem.md": {
-    "mtime": 1790616900.537107,
-    "seen": 1790674108.7382,
-    "ast_hash": "fbadc3598cc18cbdc6912f959f0409c3",
-    "semantic_hash": "fbadc3598cc18cbdc6912f959f0409c3"
+    "mtime": 1790763770.2104225,
+    "seen": 1790763821.0514736,
+    "ast_hash": "f88adb48f3b35a02d17c10ca05caf5c8",
+    "semantic_hash": ""
   },
   "docs/codebase/02-api-client-subsystem.md": {
-    "mtime": 1790599087.7183857,
-    "seen": 1790674108.7382,
-    "ast_hash": "c746708af2945c74e47bbfe5ad0bde59",
-    "semantic_hash": "c746708af2945c74e47bbfe5ad0bde59"
+    "mtime": 1790763776.0298023,
+    "seen": 1790763821.0514736,
+    "ast_hash": "d2609c6eec58da202c7ce8d8b1557395",
+    "semantic_hash": ""
   },
   "docs/codebase/03-session-lifecycle.md": {
     "mtime": 1790599087.741129,
@@ -552,10 +552,10 @@
     "semantic_hash": "893dbec3d4c3335caae5996daac672b6"
   },
   "docs/codebase/05-mission-control-webview.md": {
-    "mtime": 1790599087.7446408,
-    "seen": 1790674108.7382,
-    "ast_hash": "2c21634acc8c28b7f72d3f820a32a04c",
-    "semantic_hash": "2c21634acc8c28b7f72d3f820a32a04c"
+    "mtime": 1790763760.925012,
+    "seen": 1790763821.0514736,
+    "ast_hash": "d1ffc915094aedf8a4f827026fddf850",
+    "semantic_hash": ""
   },
   "docs/codebase/06-mcp-server-subsystem.md": {
     "mtime": 1790599087.7680514,

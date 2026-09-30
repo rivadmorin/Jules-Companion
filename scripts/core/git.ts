@@ -68,9 +68,18 @@ export interface PatchCheckResult {
   message: string;
 }
 
+const patchCheckCache = new Map<string, { result: PatchCheckResult; timestamp: number }>();
+
+/**
+ * Clears the in-memory patch conflict check cache.
+ */
+export function clearPatchCheckCache(): void {
+  patchCheckCache.clear();
+}
+
 /**
  * Checks whether a unified diff patch can be applied cleanly to the current working tree without conflicts.
- * Uses a temporary patch file and runs `git apply --check`.
+ * Uses a temporary patch file and runs `git apply --check` with in-memory caching.
  *
  * @param patchContent - The unidiff patch string to verify.
  * @param cwd - Working directory to test against (defaults to process.cwd()).
@@ -84,25 +93,33 @@ export function checkPatchConflict(
     return { canApplyCleanly: true, message: 'Empty patch: no changes to apply.' };
   }
 
+  const cacheKey = `${cwd}::${patchContent.length}::${patchContent.slice(0, 100)}::${patchContent.slice(-100)}`;
+  const cached = patchCheckCache.get(cacheKey);
+  if (cached && Date.now() - cached.timestamp < 30000) {
+    return cached.result;
+  }
+
   const scratchDir = path.join(cwd, '.jules-companion', 'scratch');
   const tempDir = fs.existsSync(scratchDir) ? scratchDir : os.tmpdir();
   const tempPatchPath = path.join(tempDir, `patch-check-${Date.now()}-${Math.random().toString(36).slice(2, 8)}.patch`);
 
+  let result: PatchCheckResult;
   try {
     fs.writeFileSync(tempPatchPath, patchContent, 'utf8');
     const res = runGit(['apply', '--check', tempPatchPath], cwd);
     if (res.success) {
-      return {
+      result = {
         canApplyCleanly: true,
         message: 'Patch applies cleanly with 0 conflicts.'
       };
+    } else {
+      result = {
+        canApplyCleanly: false,
+        message: res.stderr || res.stdout || 'Conflict detected during patch dry-run.'
+      };
     }
-    return {
-      canApplyCleanly: false,
-      message: res.stderr || res.stdout || 'Conflict detected during patch dry-run.'
-    };
   } catch (err: any) {
-    return {
+    result = {
       canApplyCleanly: false,
       message: `Failed to execute patch check: ${err.message}`
     };
@@ -113,5 +130,13 @@ export function checkPatchConflict(
       }
     } catch (_) {}
   }
+
+  if (patchCheckCache.size > 50) {
+    const oldestKey = patchCheckCache.keys().next().value;
+    if (oldestKey) patchCheckCache.delete(oldestKey);
+  }
+  patchCheckCache.set(cacheKey, { result, timestamp: Date.now() });
+
+  return result;
 }
 
