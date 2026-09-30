@@ -1,6 +1,8 @@
 /**
  * Session lifecycle MCP tool handlers.
  * @module mcp/tools/session_tools
+ * @description Implements 10 modular JSON-RPC MCP tool handlers managing the full lifecycle
+ * of Google Jules sessions: deployment, status retrieval, messaging, merge, diff pulling, and rollback.
  */
 
 import * as path from 'path';
@@ -32,11 +34,16 @@ export const sessionTools: McpToolDefinition[] = [
       required: ['type', 'agents', 'task']
     },
     execute: async (args: any) => {
+      // Step 1: Validate required deployment arguments
       if (!args?.type || !args?.agents || !args?.task) {
         return { content: [{ type: 'text', text: 'Validation Error: Required fields (type, agents, task) are missing.' }] };
       }
+
+      // Step 2: Extract options and delegate to core deployment workflow
       const { type, agents, task, mode, branch, targetDir } = args;
       const res = await deploySessionCore({ type, agents, task, mode, branch, targetDir });
+
+      // Step 3: Handle deployment errors and format response payload
       if (!res.success) {
         return { content: [{ type: 'text', text: `Error deploying session: ${res.error}` }] };
       }
@@ -56,8 +63,13 @@ export const sessionTools: McpToolDefinition[] = [
       }
     },
     execute: async (args: any) => {
+      // Step 1: Parse inspection and approval flags from input
       const { sessionId, inspect, approve, inspectAll } = args || {};
+
+      // Step 2: Delegate to Two-Stage Merge Engine and safety gate
       const res = await mergeSessionCore({ sessionId, inspect, approve, inspectAll });
+
+      // Step 3: Check merge outcome and format diagnostic output
       if (!res.success) {
         return { content: [{ type: 'text', text: `Error merging session: ${res.error}` }] };
       }
@@ -73,12 +85,18 @@ export const sessionTools: McpToolDefinition[] = [
       required: ['sessionId']
     },
     execute: async (args: any) => {
+      // Step 1: Validate session identifier presence
       if (!args?.sessionId) {
         return { content: [{ type: 'text', text: 'Validation Error: Required field "sessionId" is missing.' }] };
       }
+
       const { sessionId, targetDir } = args;
+
+      // Step 2: Authenticate with Google Jules API key
       const apiKey = getApiKey(targetDir);
       if (!apiKey) return { content: [{ type: 'text', text: 'Error: JULES_API_KEY not found.' }] };
+
+      // Step 3: Fetch cloud session metadata via REST API
       try {
         const data = await request(`https://jules.googleapis.com/v1alpha/sessions/${sessionId}`, {
           headers: { 'X-Goog-Api-Key': apiKey }
@@ -101,10 +119,14 @@ export const sessionTools: McpToolDefinition[] = [
       required: ['sessionId']
     },
     execute: async (args: any) => {
+      // Step 1: Validate target session parameter
       if (!args?.sessionId) {
         return { content: [{ type: 'text', text: 'Validation Error: Required field "sessionId" is missing.' }] };
       }
+
       const { sessionId, targetDir } = args;
+
+      // Step 2: Issue cancellation request to cloud API endpoint
       try {
         const res = await cancelSessionApi(sessionId, targetDir);
         return { content: [{ type: 'text', text: `Session ${sessionId} cancelled: ${JSON.stringify(res)}` }] };
@@ -126,10 +148,14 @@ export const sessionTools: McpToolDefinition[] = [
       required: ['sessionId', 'message']
     },
     execute: async (args: any) => {
+      // Step 1: Validate session identifier and message prompt
       if (!args?.sessionId || !args?.message) {
         return { content: [{ type: 'text', text: 'Validation Error: Required fields "sessionId" and "message" are missing.' }] };
       }
+
       const { sessionId, message, targetDir } = args;
+
+      // Step 2: Post prompt payload to active agent conversational thread
       try {
         const res = await sendMessageApi(sessionId, message, targetDir);
         return { content: [{ type: 'text', text: JSON.stringify(res, null, 2) }] };
@@ -151,14 +177,20 @@ export const sessionTools: McpToolDefinition[] = [
       required: ['sessionId']
     },
     execute: async (args: any) => {
+      // Step 1: Validate target session ID
       if (!args?.sessionId) {
         return { content: [{ type: 'text', text: 'Validation Error: Required field "sessionId" is missing.' }] };
       }
+
       const { sessionId, newTask, targetDir } = args;
       const resolvedDir = targetDir || process.cwd();
+
+      // Step 2: Load historical session record from local repository state
       const sessions = loadSessions(resolvedDir);
       const session = sessions.find(s => s.id === sessionId);
       if (!session) return { content: [{ type: 'text', text: `Error: Session ID ${sessionId} not found in state.` }] };
+
+      // Step 3: Determine task prompt and redeploy session cleanly
       const task = newTask || session.task || 'Retry task';
       const res = await deploySessionCore({
         agents: session.agent,
@@ -167,6 +199,7 @@ export const sessionTools: McpToolDefinition[] = [
         mode: session.mode || 'code',
         targetDir: resolvedDir
       });
+
       if (!res.success) {
         return { content: [{ type: 'text', text: `Error retrying session: ${res.error}` }] };
       }
@@ -188,14 +221,20 @@ export const sessionTools: McpToolDefinition[] = [
       required: ['preset', 'task']
     },
     execute: async (args: any) => {
+      // Step 1: Validate team preset name and task prompt
       if (!args?.preset || !args?.task) {
         return { content: [{ type: 'text', text: 'Validation Error: Required fields "preset" and "task" are missing.' }] };
       }
+
       const { preset, task, mode, branch, targetDir } = args;
+
+      // Step 2: Lookup predefined agent combination from TEAM_PRESETS catalog
       const agentListStr = TEAM_PRESETS[preset];
       if (!agentListStr) {
         return { content: [{ type: 'text', text: `Validation Error: Invalid preset "${preset}". Valid options: ${Object.keys(TEAM_PRESETS).join(', ')}` }] };
       }
+
+      // Step 3: Deploy composite multi-agent session
       const resolvedDir = targetDir || process.cwd();
       const res = await deploySessionCore({
         agents: agentListStr,
@@ -205,6 +244,7 @@ export const sessionTools: McpToolDefinition[] = [
         branch,
         targetDir: resolvedDir
       });
+
       if (!res.success) {
         return { content: [{ type: 'text', text: `Error deploying team: ${res.error}` }] };
       }
@@ -224,12 +264,18 @@ export const sessionTools: McpToolDefinition[] = [
       required: ['sessionId']
     },
     execute: async (args: any) => {
+      // Step 1: Validate session identifier
       if (!args?.sessionId) {
         return { content: [{ type: 'text', text: 'Validation Error: Required field "sessionId" is missing.' }] };
       }
+
       const { sessionId, outputPath, targetDir } = args;
+
+      // Step 2: Extract unified git patch via REST API activities
       try {
         const patchContent = await pullDiffApi(sessionId, targetDir);
+
+        // Step 3: Optionally persist patch file to custom output path
         if (outputPath) {
           const fullPath = path.resolve(targetDir || process.cwd(), outputPath);
           fs.mkdirSync(path.dirname(fullPath), { recursive: true });
@@ -255,10 +301,14 @@ export const sessionTools: McpToolDefinition[] = [
       required: ['sessionId']
     },
     execute: async (args: any) => {
+      // Step 1: Validate session identifier
       if (!args?.sessionId) {
         return { content: [{ type: 'text', text: 'Validation Error: Required field "sessionId" is missing.' }] };
       }
+
       const { sessionId, branchName, targetDir } = args;
+
+      // Step 2: Delegate branch creation and patch application to merge engine
       try {
         const res = await checkoutSessionBranch(sessionId, branchName, targetDir);
         return { content: [{ type: 'text', text: res }] };
@@ -278,7 +328,10 @@ export const sessionTools: McpToolDefinition[] = [
       }
     },
     execute: async (args: any) => {
+      // Step 1: Parse rollback context arguments
       const { sessionId, targetDir } = args || {};
+
+      // Step 2: Execute git working tree cleanup and branch restoration
       try {
         const res = await rollbackSession(sessionId, targetDir);
         return { content: [{ type: 'text', text: res }] };

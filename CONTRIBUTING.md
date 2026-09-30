@@ -306,7 +306,7 @@ To ensure that every human contributor and autonomous AI coding agent works with
 We use the native Node.js test runner (`node:test`) for zero-overhead, ultra-fast test execution.
 
 ```bash
-# Run all 114 tests across 38 test suites
+# Run all 120 tests across 38 test suites
 npm test
 
 # Run a specific test suite directly

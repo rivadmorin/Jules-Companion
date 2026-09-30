@@ -234,6 +234,19 @@
       "source_location": "L117"
     },
     {
+      "id": "scripts_core_types_projectdirs",
+      "label": "ProjectDirs",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "extension.ts",
+      "file_type": "code",
+      "norm_label": "projectdirs",
+      "source_file": "scripts/core/types.ts",
+      "source_location": "L22"
+    },
+    {
       "id": "scripts_core_types_scheduledtask",
       "label": "ScheduledTask",
       "_callable": true,
@@ -260,6 +273,19 @@
       "source_location": "L44"
     },
     {
+      "id": "scripts_core_types_sessionstatus",
+      "label": "SessionStatus",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "extension.ts",
+      "file_type": "code",
+      "norm_label": "sessionstatus",
+      "source_file": "scripts/core/types.ts",
+      "source_location": "L9"
+    },
+    {
       "id": "scripts_ui_action_center_sessionactionitem",
       "label": "SessionActionItem",
       "_callable": true,
@@ -273,69 +299,17 @@
       "source_location": "L22"
     },
     {
-      "id": "scripts_ui_agents_provider_agententry",
-      "label": "AgentEntry",
+      "id": "scripts_ui_live_sync_livesyncmanager",
+      "label": "LiveSyncManager",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 0,
       "community_name": "extension.ts",
       "file_type": "code",
-      "norm_label": "agententry",
-      "source_file": "scripts/ui/agents_provider.ts",
-      "source_location": "L13"
-    },
-    {
-      "id": "scripts_ui_agents_provider_agentstreedataprovider",
-      "label": "AgentsTreeDataProvider",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "extension.ts",
-      "file_type": "code",
-      "norm_label": "agentstreedataprovider",
-      "source_file": "scripts/ui/agents_provider.ts",
-      "source_location": "L62"
-    },
-    {
-      "id": "scripts_ui_agents_provider_agenttreeitem",
-      "label": "AgentTreeItem",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "extension.ts",
-      "file_type": "code",
-      "norm_label": "agenttreeitem",
-      "source_file": "scripts/ui/agents_provider.ts",
-      "source_location": "L25"
-    },
-    {
-      "id": "scripts_ui_journals_provider_journalstreedataprovider",
-      "label": "JournalsTreeDataProvider",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "extension.ts",
-      "file_type": "code",
-      "norm_label": "journalstreedataprovider",
-      "source_file": "scripts/ui/journals_provider.ts",
-      "source_location": "L42"
-    },
-    {
-      "id": "scripts_ui_journals_provider_journaltreeitem",
-      "label": "JournalTreeItem",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "extension.ts",
-      "file_type": "code",
-      "norm_label": "journaltreeitem",
-      "source_file": "scripts/ui/journals_provider.ts",
-      "source_location": "L13"
+      "norm_label": "livesyncmanager",
+      "source_file": "scripts/ui/live_sync.ts",
+      "source_location": "L16"
     },
     {
       "id": "scripts_ui_sessions_provider_sessionstreedataprovider",
@@ -377,6 +351,45 @@
       "source_location": "L19"
     },
     {
+      "id": "scripts_ui_agents_provider_agententry",
+      "label": "AgentEntry",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "agents_provider.ts",
+      "file_type": "code",
+      "norm_label": "agententry",
+      "source_file": "scripts/ui/agents_provider.ts",
+      "source_location": "L13"
+    },
+    {
+      "id": "scripts_ui_agents_provider_agentstreedataprovider",
+      "label": "AgentsTreeDataProvider",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "agents_provider.ts",
+      "file_type": "code",
+      "norm_label": "agentstreedataprovider",
+      "source_file": "scripts/ui/agents_provider.ts",
+      "source_location": "L62"
+    },
+    {
+      "id": "scripts_ui_agents_provider_agenttreeitem",
+      "label": "AgentTreeItem",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "agents_provider.ts",
+      "file_type": "code",
+      "norm_label": "agenttreeitem",
+      "source_file": "scripts/ui/agents_provider.ts",
+      "source_location": "L25"
+    },
+    {
       "id": "scripts_auto_process_autoprocessoptions",
       "label": "AutoProcessOptions",
       "_callable": true,
@@ -414,45 +427,6 @@
       "norm_label": "julessource",
       "source_file": "scripts/core/types.ts",
       "source_location": "L86"
-    },
-    {
-      "id": "scripts_core_types_mcptooldefinition",
-      "label": "McpToolDefinition",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "merge_session.ts",
-      "file_type": "code",
-      "norm_label": "mcptooldefinition",
-      "source_file": "scripts/core/types.ts",
-      "source_location": "L99"
-    },
-    {
-      "id": "scripts_core_types_projectdirs",
-      "label": "ProjectDirs",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "merge_session.ts",
-      "file_type": "code",
-      "norm_label": "projectdirs",
-      "source_file": "scripts/core/types.ts",
-      "source_location": "L22"
-    },
-    {
-      "id": "scripts_core_types_sessionstatus",
-      "label": "SessionStatus",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "merge_session.ts",
-      "file_type": "code",
-      "norm_label": "sessionstatus",
-      "source_file": "scripts/core/types.ts",
-      "source_location": "L9"
     },
     {
       "id": "scripts_deploy_session_deploysessionoptions",
@@ -507,30 +481,17 @@
       "source_location": "L350"
     },
     {
-      "id": "scripts_ui_activity_channel_julesactivitychannel",
-      "label": "JulesActivityChannel",
+      "id": "scripts_core_types_mcptooldefinition",
+      "label": "McpToolDefinition",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
-      "community": 21,
-      "community_name": "JulesActivityChannel",
+      "community": 3,
+      "community_name": "registry.ts",
       "file_type": "code",
-      "norm_label": "julesactivitychannel",
-      "source_file": "scripts/ui/activity_channel.ts",
-      "source_location": "L13"
-    },
-    {
-      "id": "scripts_ui_live_sync_livesyncmanager",
-      "label": "LiveSyncManager",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 21,
-      "community_name": "JulesActivityChannel",
-      "file_type": "code",
-      "norm_label": "livesyncmanager",
-      "source_file": "scripts/ui/live_sync.ts",
-      "source_location": "L16"
+      "norm_label": "mcptooldefinition",
+      "source_file": "scripts/core/types.ts",
+      "source_location": "L99"
     },
     {
       "id": "scripts_sync_global_syncresult",
@@ -611,6 +572,19 @@
       "source_location": "L26"
     },
     {
+      "id": "scripts_ui_activity_channel_julesactivitychannel",
+      "label": "JulesActivityChannel",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 47,
+      "community_name": "ref_node_assert",
+      "file_type": "code",
+      "norm_label": "julesactivitychannel",
+      "source_file": "scripts/ui/activity_channel.ts",
+      "source_location": "L13"
+    },
+    {
       "id": "tests_slash_command_test_mcptoolcall",
       "label": "MCPToolCall",
       "_callable": true,
@@ -622,6 +596,32 @@
       "norm_label": "mcptoolcall",
       "source_file": "tests/slash_command.test.ts",
       "source_location": "L4"
+    },
+    {
+      "id": "scripts_ui_journals_provider_journalstreedataprovider",
+      "label": "JournalsTreeDataProvider",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 48,
+      "community_name": "journals_provider.ts",
+      "file_type": "code",
+      "norm_label": "journalstreedataprovider",
+      "source_file": "scripts/ui/journals_provider.ts",
+      "source_location": "L42"
+    },
+    {
+      "id": "scripts_ui_journals_provider_journaltreeitem",
+      "label": "JournalTreeItem",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 48,
+      "community_name": "journals_provider.ts",
+      "file_type": "code",
+      "norm_label": "journaltreeitem",
+      "source_file": "scripts/ui/journals_provider.ts",
+      "source_location": "L13"
     },
     {
       "id": "scripts_ui_workspace_provider_gitorigininfo",
@@ -883,6 +883,18 @@
       "source_location": "L1597"
     },
     {
+      "id": "scripts_extension_deactivate",
+      "label": "deactivate()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "extension.ts",
+      "file_type": "code",
+      "norm_label": "deactivate()",
+      "source_file": "scripts/extension.ts",
+      "source_location": "L1899"
+    },
+    {
       "id": "scripts_extension_getworkspaceroot",
       "label": "getWorkspaceRoot()",
       "_callable": true,
@@ -931,7 +943,19 @@
       "source_location": "L33"
     },
     {
-      "id": "scripts_ui_agents_provider_agentstreedataprovider_constructor",
+      "id": "scripts_ui_activity_channel_julesactivitychannel_getinstance",
+      "label": ".getInstance()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "extension.ts",
+      "file_type": "code",
+      "norm_label": ".getinstance()",
+      "source_file": "scripts/ui/activity_channel.ts",
+      "source_location": "L25"
+    },
+    {
+      "id": "scripts_ui_live_sync_livesyncmanager_constructor",
       "label": ".constructor()",
       "_callable": true,
       "_origin": "ast",
@@ -939,140 +963,80 @@
       "community_name": "extension.ts",
       "file_type": "code",
       "norm_label": ".constructor()",
-      "source_file": "scripts/ui/agents_provider.ts",
+      "source_file": "scripts/ui/live_sync.ts",
+      "source_location": "L27"
+    },
+    {
+      "id": "scripts_ui_live_sync_livesyncmanager_handlestatetransition",
+      "label": ".handleStateTransition()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "extension.ts",
+      "file_type": "code",
+      "norm_label": ".handlestatetransition()",
+      "source_file": "scripts/ui/live_sync.ts",
+      "source_location": "L150"
+    },
+    {
+      "id": "scripts_ui_live_sync_livesyncmanager_isactive",
+      "label": ".isActive()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "extension.ts",
+      "file_type": "code",
+      "norm_label": ".isactive()",
+      "source_file": "scripts/ui/live_sync.ts",
+      "source_location": "L84"
+    },
+    {
+      "id": "scripts_ui_live_sync_livesyncmanager_pollonce",
+      "label": ".pollOnce()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "extension.ts",
+      "file_type": "code",
+      "norm_label": ".pollonce()",
+      "source_file": "scripts/ui/live_sync.ts",
+      "source_location": "L93"
+    },
+    {
+      "id": "scripts_ui_live_sync_livesyncmanager_start",
+      "label": ".start()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "extension.ts",
+      "file_type": "code",
+      "norm_label": ".start()",
+      "source_file": "scripts/ui/live_sync.ts",
+      "source_location": "L37"
+    },
+    {
+      "id": "scripts_ui_live_sync_livesyncmanager_stop",
+      "label": ".stop()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "extension.ts",
+      "file_type": "code",
+      "norm_label": ".stop()",
+      "source_file": "scripts/ui/live_sync.ts",
+      "source_location": "L52"
+    },
+    {
+      "id": "scripts_ui_live_sync_livesyncmanager_toggle",
+      "label": ".toggle()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "extension.ts",
+      "file_type": "code",
+      "norm_label": ".toggle()",
+      "source_file": "scripts/ui/live_sync.ts",
       "source_location": "L70"
-    },
-    {
-      "id": "scripts_ui_agents_provider_agentstreedataprovider_getchildren",
-      "label": ".getChildren()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "extension.ts",
-      "file_type": "code",
-      "norm_label": ".getchildren()",
-      "source_file": "scripts/ui/agents_provider.ts",
-      "source_location": "L104"
-    },
-    {
-      "id": "scripts_ui_agents_provider_agentstreedataprovider_gettreeitem",
-      "label": ".getTreeItem()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "extension.ts",
-      "file_type": "code",
-      "norm_label": ".gettreeitem()",
-      "source_file": "scripts/ui/agents_provider.ts",
-      "source_location": "L77"
-    },
-    {
-      "id": "scripts_ui_agents_provider_agentstreedataprovider_loadregistry",
-      "label": ".loadRegistry()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "extension.ts",
-      "file_type": "code",
-      "norm_label": ".loadregistry()",
-      "source_file": "scripts/ui/agents_provider.ts",
-      "source_location": "L81"
-    },
-    {
-      "id": "scripts_ui_agents_provider_agentstreedataprovider_refresh",
-      "label": ".refresh()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "extension.ts",
-      "file_type": "code",
-      "norm_label": ".refresh()",
-      "source_file": "scripts/ui/agents_provider.ts",
-      "source_location": "L72"
-    },
-    {
-      "id": "scripts_ui_agents_provider_agenttreeitem_constructor",
-      "label": ".constructor()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "extension.ts",
-      "file_type": "code",
-      "norm_label": ".constructor()",
-      "source_file": "scripts/ui/agents_provider.ts",
-      "source_location": "L26"
-    },
-    {
-      "id": "scripts_ui_custom_agent_wizard_runcustomagentwizard",
-      "label": "runCustomAgentWizard()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "extension.ts",
-      "file_type": "code",
-      "norm_label": "runcustomagentwizard()",
-      "source_file": "scripts/ui/custom_agent_wizard.ts",
-      "source_location": "L17"
-    },
-    {
-      "id": "scripts_ui_journals_provider_journalstreedataprovider_constructor",
-      "label": ".constructor()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "extension.ts",
-      "file_type": "code",
-      "norm_label": ".constructor()",
-      "source_file": "scripts/ui/journals_provider.ts",
-      "source_location": "L48"
-    },
-    {
-      "id": "scripts_ui_journals_provider_journalstreedataprovider_getchildren",
-      "label": ".getChildren()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "extension.ts",
-      "file_type": "code",
-      "norm_label": ".getchildren()",
-      "source_file": "scripts/ui/journals_provider.ts",
-      "source_location": "L58"
-    },
-    {
-      "id": "scripts_ui_journals_provider_journalstreedataprovider_gettreeitem",
-      "label": ".getTreeItem()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "extension.ts",
-      "file_type": "code",
-      "norm_label": ".gettreeitem()",
-      "source_file": "scripts/ui/journals_provider.ts",
-      "source_location": "L54"
-    },
-    {
-      "id": "scripts_ui_journals_provider_journalstreedataprovider_refresh",
-      "label": ".refresh()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "extension.ts",
-      "file_type": "code",
-      "norm_label": ".refresh()",
-      "source_file": "scripts/ui/journals_provider.ts",
-      "source_location": "L50"
-    },
-    {
-      "id": "scripts_ui_journals_provider_journaltreeitem_constructor",
-      "label": ".constructor()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "extension.ts",
-      "file_type": "code",
-      "norm_label": ".constructor()",
-      "source_file": "scripts/ui/journals_provider.ts",
-      "source_location": "L14"
     },
     {
       "id": "scripts_ui_sessions_provider_cleanagentname",
@@ -1219,6 +1183,18 @@
       "source_location": "L125"
     },
     {
+      "id": "scripts_ui_status_bar_julesstatusbar_getinstance",
+      "label": ".getInstance()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "extension.ts",
+      "file_type": "code",
+      "norm_label": ".getinstance()",
+      "source_file": "scripts/ui/status_bar.ts",
+      "source_location": "L37"
+    },
+    {
       "id": "scripts_ui_status_bar_julesstatusbar_update",
       "label": ".update()",
       "_callable": true,
@@ -1229,30 +1205,6 @@
       "norm_label": ".update()",
       "source_file": "scripts/ui/status_bar.ts",
       "source_location": "L48"
-    },
-    {
-      "id": "scripts_utils_archivesession",
-      "label": "archiveSession()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "extension.ts",
-      "file_type": "code",
-      "norm_label": "archivesession()",
-      "source_file": "scripts/utils.ts",
-      "source_location": "L181"
-    },
-    {
-      "id": "scripts_utils_createcustomagentscaffold",
-      "label": "createCustomAgentScaffold()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "extension.ts",
-      "file_type": "code",
-      "norm_label": "createcustomagentscaffold()",
-      "source_file": "scripts/utils.ts",
-      "source_location": "L334"
     },
     {
       "id": "scripts_utils_issessionactive",
@@ -1327,16 +1279,76 @@
       "source_location": "L245"
     },
     {
-      "id": "scripts_utils_unarchivesession",
-      "label": "unarchiveSession()",
+      "id": "scripts_ui_agents_provider_agentstreedataprovider_constructor",
+      "label": ".constructor()",
       "_callable": true,
       "_origin": "ast",
-      "community": 0,
-      "community_name": "extension.ts",
+      "community": 1,
+      "community_name": "agents_provider.ts",
       "file_type": "code",
-      "norm_label": "unarchivesession()",
-      "source_file": "scripts/utils.ts",
-      "source_location": "L216"
+      "norm_label": ".constructor()",
+      "source_file": "scripts/ui/agents_provider.ts",
+      "source_location": "L70"
+    },
+    {
+      "id": "scripts_ui_agents_provider_agentstreedataprovider_getchildren",
+      "label": ".getChildren()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "agents_provider.ts",
+      "file_type": "code",
+      "norm_label": ".getchildren()",
+      "source_file": "scripts/ui/agents_provider.ts",
+      "source_location": "L104"
+    },
+    {
+      "id": "scripts_ui_agents_provider_agentstreedataprovider_gettreeitem",
+      "label": ".getTreeItem()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "agents_provider.ts",
+      "file_type": "code",
+      "norm_label": ".gettreeitem()",
+      "source_file": "scripts/ui/agents_provider.ts",
+      "source_location": "L77"
+    },
+    {
+      "id": "scripts_ui_agents_provider_agentstreedataprovider_loadregistry",
+      "label": ".loadRegistry()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "agents_provider.ts",
+      "file_type": "code",
+      "norm_label": ".loadregistry()",
+      "source_file": "scripts/ui/agents_provider.ts",
+      "source_location": "L81"
+    },
+    {
+      "id": "scripts_ui_agents_provider_agentstreedataprovider_refresh",
+      "label": ".refresh()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "agents_provider.ts",
+      "file_type": "code",
+      "norm_label": ".refresh()",
+      "source_file": "scripts/ui/agents_provider.ts",
+      "source_location": "L72"
+    },
+    {
+      "id": "scripts_ui_agents_provider_agenttreeitem_constructor",
+      "label": ".constructor()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "agents_provider.ts",
+      "file_type": "code",
+      "norm_label": ".constructor()",
+      "source_file": "scripts/ui/agents_provider.ts",
+      "source_location": "L26"
     },
     {
       "id": "scripts_build_gettsfiles",
@@ -1348,7 +1360,7 @@
       "file_type": "code",
       "norm_label": "gettsfiles()",
       "source_file": "scripts/build.js",
-      "source_location": "L5"
+      "source_location": "L18"
     },
     {
       "id": "scripts_auto_process_autoprocess",
@@ -1684,7 +1696,7 @@
       "file_type": "code",
       "norm_label": "main()",
       "source_file": "scripts/jules_client.ts",
-      "source_location": "L33"
+      "source_location": "L35"
     },
     {
       "id": "scripts_merge_session_approvemerge",
@@ -1795,6 +1807,18 @@
       "source_location": "L558"
     },
     {
+      "id": "scripts_utils_archivesession",
+      "label": "archiveSession()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "merge_session.ts",
+      "file_type": "code",
+      "norm_label": "archivesession()",
+      "source_file": "scripts/utils.ts",
+      "source_location": "L181"
+    },
+    {
       "id": "scripts_utils_getformatteddateddmmyyyy",
       "label": "getFormattedDateDDMMYYYY()",
       "_callable": true,
@@ -1805,18 +1829,6 @@
       "norm_label": "getformatteddateddmmyyyy()",
       "source_file": "scripts/utils.ts",
       "source_location": "L84"
-    },
-    {
-      "id": "scripts_utils_getreviewreports",
-      "label": "getReviewReports()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "merge_session.ts",
-      "file_type": "code",
-      "norm_label": "getreviewreports()",
-      "source_file": "scripts/utils.ts",
-      "source_location": "L304"
     },
     {
       "id": "scripts_utils_parseargs",
@@ -1831,232 +1843,52 @@
       "source_location": "L59"
     },
     {
-      "id": "scripts_utils_readagentjournal",
-      "label": "readAgentJournal()",
+      "id": "scripts_utils_unarchivesession",
+      "label": "unarchiveSession()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "merge_session.ts",
+      "file_type": "code",
+      "norm_label": "unarchivesession()",
+      "source_file": "scripts/utils.ts",
+      "source_location": "L216"
+    },
+    {
+      "id": "scripts_mcp_server_main",
+      "label": "main()",
       "_callable": true,
       "_origin": "ast",
       "community": 20,
-      "community_name": "agent_tools.ts",
+      "community_name": "mcp_server.ts",
       "file_type": "code",
-      "norm_label": "readagentjournal()",
-      "source_file": "scripts/utils.ts",
-      "source_location": "L290"
+      "norm_label": "main()",
+      "source_file": "scripts/mcp_server.ts",
+      "source_location": "L104"
     },
     {
-      "id": "scripts_extension_deactivate",
-      "label": "deactivate()",
+      "id": "scripts_ui_custom_agent_wizard_runcustomagentwizard",
+      "label": "runCustomAgentWizard()",
       "_callable": true,
       "_origin": "ast",
       "community": 21,
-      "community_name": "JulesActivityChannel",
+      "community_name": "04 - VS Code Extension & UI Layer Reference",
       "file_type": "code",
-      "norm_label": "deactivate()",
-      "source_file": "scripts/extension.ts",
-      "source_location": "L1899"
-    },
-    {
-      "id": "scripts_ui_activity_channel_julesactivitychannel_appendactivity",
-      "label": ".appendActivity()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 21,
-      "community_name": "JulesActivityChannel",
-      "file_type": "code",
-      "norm_label": ".appendactivity()",
-      "source_file": "scripts/ui/activity_channel.ts",
-      "source_location": "L121"
-    },
-    {
-      "id": "scripts_ui_activity_channel_julesactivitychannel_appendline",
-      "label": ".appendLine()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 21,
-      "community_name": "JulesActivityChannel",
-      "file_type": "code",
-      "norm_label": ".appendline()",
-      "source_file": "scripts/ui/activity_channel.ts",
-      "source_location": "L36"
-    },
-    {
-      "id": "scripts_ui_activity_channel_julesactivitychannel_clear",
-      "label": ".clear()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 21,
-      "community_name": "JulesActivityChannel",
-      "file_type": "code",
-      "norm_label": ".clear()",
-      "source_file": "scripts/ui/activity_channel.ts",
-      "source_location": "L51"
-    },
-    {
-      "id": "scripts_ui_activity_channel_julesactivitychannel_constructor",
-      "label": ".constructor()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 21,
-      "community_name": "JulesActivityChannel",
-      "file_type": "code",
-      "norm_label": ".constructor()",
-      "source_file": "scripts/ui/activity_channel.ts",
+      "norm_label": "runcustomagentwizard()",
+      "source_file": "scripts/ui/custom_agent_wizard.ts",
       "source_location": "L17"
     },
     {
-      "id": "scripts_ui_activity_channel_julesactivitychannel_dispose",
-      "label": ".dispose()",
+      "id": "scripts_utils_createcustomagentscaffold",
+      "label": "createCustomAgentScaffold()",
       "_callable": true,
       "_origin": "ast",
       "community": 21,
-      "community_name": "JulesActivityChannel",
+      "community_name": "04 - VS Code Extension & UI Layer Reference",
       "file_type": "code",
-      "norm_label": ".dispose()",
-      "source_file": "scripts/ui/activity_channel.ts",
-      "source_location": "L151"
-    },
-    {
-      "id": "scripts_ui_activity_channel_julesactivitychannel_formatactivity",
-      "label": ".formatActivity()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 21,
-      "community_name": "JulesActivityChannel",
-      "file_type": "code",
-      "norm_label": ".formatactivity()",
-      "source_file": "scripts/ui/activity_channel.ts",
-      "source_location": "L60"
-    },
-    {
-      "id": "scripts_ui_activity_channel_julesactivitychannel_getinstance",
-      "label": ".getInstance()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 21,
-      "community_name": "JulesActivityChannel",
-      "file_type": "code",
-      "norm_label": ".getinstance()",
-      "source_file": "scripts/ui/activity_channel.ts",
-      "source_location": "L25"
-    },
-    {
-      "id": "scripts_ui_activity_channel_julesactivitychannel_show",
-      "label": ".show()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 21,
-      "community_name": "JulesActivityChannel",
-      "file_type": "code",
-      "norm_label": ".show()",
-      "source_file": "scripts/ui/activity_channel.ts",
-      "source_location": "L44"
-    },
-    {
-      "id": "scripts_ui_activity_channel_julesactivitychannel_streamsessionactivities",
-      "label": ".streamSessionActivities()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 21,
-      "community_name": "JulesActivityChannel",
-      "file_type": "code",
-      "norm_label": ".streamsessionactivities()",
-      "source_file": "scripts/ui/activity_channel.ts",
-      "source_location": "L131"
-    },
-    {
-      "id": "scripts_ui_live_sync_livesyncmanager_constructor",
-      "label": ".constructor()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 21,
-      "community_name": "JulesActivityChannel",
-      "file_type": "code",
-      "norm_label": ".constructor()",
-      "source_file": "scripts/ui/live_sync.ts",
-      "source_location": "L27"
-    },
-    {
-      "id": "scripts_ui_live_sync_livesyncmanager_handlestatetransition",
-      "label": ".handleStateTransition()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 21,
-      "community_name": "JulesActivityChannel",
-      "file_type": "code",
-      "norm_label": ".handlestatetransition()",
-      "source_file": "scripts/ui/live_sync.ts",
-      "source_location": "L150"
-    },
-    {
-      "id": "scripts_ui_live_sync_livesyncmanager_isactive",
-      "label": ".isActive()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 21,
-      "community_name": "JulesActivityChannel",
-      "file_type": "code",
-      "norm_label": ".isactive()",
-      "source_file": "scripts/ui/live_sync.ts",
-      "source_location": "L84"
-    },
-    {
-      "id": "scripts_ui_live_sync_livesyncmanager_pollonce",
-      "label": ".pollOnce()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 21,
-      "community_name": "JulesActivityChannel",
-      "file_type": "code",
-      "norm_label": ".pollonce()",
-      "source_file": "scripts/ui/live_sync.ts",
-      "source_location": "L93"
-    },
-    {
-      "id": "scripts_ui_live_sync_livesyncmanager_start",
-      "label": ".start()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 21,
-      "community_name": "JulesActivityChannel",
-      "file_type": "code",
-      "norm_label": ".start()",
-      "source_file": "scripts/ui/live_sync.ts",
-      "source_location": "L37"
-    },
-    {
-      "id": "scripts_ui_live_sync_livesyncmanager_stop",
-      "label": ".stop()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 21,
-      "community_name": "JulesActivityChannel",
-      "file_type": "code",
-      "norm_label": ".stop()",
-      "source_file": "scripts/ui/live_sync.ts",
-      "source_location": "L52"
-    },
-    {
-      "id": "scripts_ui_live_sync_livesyncmanager_toggle",
-      "label": ".toggle()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 21,
-      "community_name": "JulesActivityChannel",
-      "file_type": "code",
-      "norm_label": ".toggle()",
-      "source_file": "scripts/ui/live_sync.ts",
-      "source_location": "L70"
-    },
-    {
-      "id": "scripts_ui_status_bar_julesstatusbar_getinstance",
-      "label": ".getInstance()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 21,
-      "community_name": "JulesActivityChannel",
-      "file_type": "code",
-      "norm_label": ".getinstance()",
-      "source_file": "scripts/ui/status_bar.ts",
-      "source_location": "L37"
+      "norm_label": "createcustomagentscaffold()",
+      "source_file": "scripts/utils.ts",
+      "source_location": "L334"
     },
     {
       "id": "scripts_mcp_registry_executetool",
@@ -2095,18 +1927,6 @@
       "source_location": "L42"
     },
     {
-      "id": "scripts_mcp_server_main",
-      "label": "main()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "registry.ts",
-      "file_type": "code",
-      "norm_label": "main()",
-      "source_file": "scripts/mcp_server.ts",
-      "source_location": "L104"
-    },
-    {
       "id": "scripts_sync_global_syncglobalinstallation",
       "label": "syncGlobalInstallation()",
       "_callable": true,
@@ -2117,6 +1937,30 @@
       "norm_label": "syncglobalinstallation()",
       "source_file": "scripts/sync_global.ts",
       "source_location": "L31"
+    },
+    {
+      "id": "scripts_utils_getreviewreports",
+      "label": "getReviewReports()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "registry.ts",
+      "file_type": "code",
+      "norm_label": "getreviewreports()",
+      "source_file": "scripts/utils.ts",
+      "source_location": "L304"
+    },
+    {
+      "id": "scripts_utils_readagentjournal",
+      "label": "readAgentJournal()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "registry.ts",
+      "file_type": "code",
+      "norm_label": "readagentjournal()",
+      "source_file": "scripts/utils.ts",
+      "source_location": "L290"
     },
     {
       "id": "scripts_ui_visual_diff_getoriginaluri",
@@ -2311,6 +2155,126 @@
       "source_location": "L135"
     },
     {
+      "id": "scripts_run_tests_ensurevscodemock",
+      "label": "ensureVsCodeMock()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 47,
+      "community_name": "ref_node_assert",
+      "file_type": "code",
+      "norm_label": "ensurevscodemock()",
+      "source_file": "scripts/run_tests.js",
+      "source_location": "L16"
+    },
+    {
+      "id": "scripts_ui_activity_channel_julesactivitychannel_appendactivity",
+      "label": ".appendActivity()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 47,
+      "community_name": "ref_node_assert",
+      "file_type": "code",
+      "norm_label": ".appendactivity()",
+      "source_file": "scripts/ui/activity_channel.ts",
+      "source_location": "L121"
+    },
+    {
+      "id": "scripts_ui_activity_channel_julesactivitychannel_appendline",
+      "label": ".appendLine()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 47,
+      "community_name": "ref_node_assert",
+      "file_type": "code",
+      "norm_label": ".appendline()",
+      "source_file": "scripts/ui/activity_channel.ts",
+      "source_location": "L36"
+    },
+    {
+      "id": "scripts_ui_activity_channel_julesactivitychannel_clear",
+      "label": ".clear()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 47,
+      "community_name": "ref_node_assert",
+      "file_type": "code",
+      "norm_label": ".clear()",
+      "source_file": "scripts/ui/activity_channel.ts",
+      "source_location": "L51"
+    },
+    {
+      "id": "scripts_ui_activity_channel_julesactivitychannel_constructor",
+      "label": ".constructor()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 47,
+      "community_name": "ref_node_assert",
+      "file_type": "code",
+      "norm_label": ".constructor()",
+      "source_file": "scripts/ui/activity_channel.ts",
+      "source_location": "L17"
+    },
+    {
+      "id": "scripts_ui_activity_channel_julesactivitychannel_dispose",
+      "label": ".dispose()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 47,
+      "community_name": "ref_node_assert",
+      "file_type": "code",
+      "norm_label": ".dispose()",
+      "source_file": "scripts/ui/activity_channel.ts",
+      "source_location": "L151"
+    },
+    {
+      "id": "scripts_ui_activity_channel_julesactivitychannel_formatactivity",
+      "label": ".formatActivity()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 47,
+      "community_name": "ref_node_assert",
+      "file_type": "code",
+      "norm_label": ".formatactivity()",
+      "source_file": "scripts/ui/activity_channel.ts",
+      "source_location": "L60"
+    },
+    {
+      "id": "scripts_ui_activity_channel_julesactivitychannel_show",
+      "label": ".show()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 47,
+      "community_name": "ref_node_assert",
+      "file_type": "code",
+      "norm_label": ".show()",
+      "source_file": "scripts/ui/activity_channel.ts",
+      "source_location": "L44"
+    },
+    {
+      "id": "scripts_ui_activity_channel_julesactivitychannel_streamsessionactivities",
+      "label": ".streamSessionActivities()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 47,
+      "community_name": "ref_node_assert",
+      "file_type": "code",
+      "norm_label": ".streamsessionactivities()",
+      "source_file": "scripts/ui/activity_channel.ts",
+      "source_location": "L131"
+    },
+    {
+      "id": "tests_doc_coverage_test_getallscriptfiles",
+      "label": "getAllScriptFiles()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 47,
+      "community_name": "ref_node_assert",
+      "file_type": "code",
+      "norm_label": "getallscriptfiles()",
+      "source_file": "tests/doc_coverage.test.ts",
+      "source_location": "L136"
+    },
+    {
       "id": "tests_doc_coverage_test_gettsfilesrecursive",
       "label": "getTsFilesRecursive()",
       "_callable": true,
@@ -2347,16 +2311,64 @@
       "source_location": "L15"
     },
     {
-      "id": "scripts_run_tests_ensurevscodemock",
-      "label": "ensureVsCodeMock()",
+      "id": "scripts_ui_journals_provider_journalstreedataprovider_constructor",
+      "label": ".constructor()",
       "_callable": true,
       "_origin": "ast",
       "community": 48,
-      "community_name": "run_tests.js",
+      "community_name": "journals_provider.ts",
       "file_type": "code",
-      "norm_label": "ensurevscodemock()",
-      "source_file": "scripts/run_tests.js",
-      "source_location": "L5"
+      "norm_label": ".constructor()",
+      "source_file": "scripts/ui/journals_provider.ts",
+      "source_location": "L48"
+    },
+    {
+      "id": "scripts_ui_journals_provider_journalstreedataprovider_getchildren",
+      "label": ".getChildren()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 48,
+      "community_name": "journals_provider.ts",
+      "file_type": "code",
+      "norm_label": ".getchildren()",
+      "source_file": "scripts/ui/journals_provider.ts",
+      "source_location": "L58"
+    },
+    {
+      "id": "scripts_ui_journals_provider_journalstreedataprovider_gettreeitem",
+      "label": ".getTreeItem()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 48,
+      "community_name": "journals_provider.ts",
+      "file_type": "code",
+      "norm_label": ".gettreeitem()",
+      "source_file": "scripts/ui/journals_provider.ts",
+      "source_location": "L54"
+    },
+    {
+      "id": "scripts_ui_journals_provider_journalstreedataprovider_refresh",
+      "label": ".refresh()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 48,
+      "community_name": "journals_provider.ts",
+      "file_type": "code",
+      "norm_label": ".refresh()",
+      "source_file": "scripts/ui/journals_provider.ts",
+      "source_location": "L50"
+    },
+    {
+      "id": "scripts_ui_journals_provider_journaltreeitem_constructor",
+      "label": ".constructor()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 48,
+      "community_name": "journals_provider.ts",
+      "file_type": "code",
+      "norm_label": ".constructor()",
+      "source_file": "scripts/ui/journals_provider.ts",
+      "source_location": "L14"
     },
     {
       "id": "scripts_installer_configureapikey",
@@ -2368,7 +2380,7 @@
       "file_type": "code",
       "norm_label": "configureapikey()",
       "source_file": "scripts/installer.js",
-      "source_location": "L193"
+      "source_location": "L222"
     },
     {
       "id": "scripts_installer_findinstallededitors",
@@ -2380,7 +2392,7 @@
       "file_type": "code",
       "norm_label": "findinstallededitors()",
       "source_file": "scripts/installer.js",
-      "source_location": "L22"
+      "source_location": "L35"
     },
     {
       "id": "scripts_installer_findinstallededitors_testcmd",
@@ -2392,7 +2404,7 @@
       "file_type": "code",
       "norm_label": "testcmd()",
       "source_file": "scripts/installer.js",
-      "source_location": "L26"
+      "source_location": "L40"
     },
     {
       "id": "scripts_installer_installmcpserver",
@@ -2404,7 +2416,7 @@
       "file_type": "code",
       "norm_label": "installmcpserver()",
       "source_file": "scripts/installer.js",
-      "source_location": "L125"
+      "source_location": "L151"
     },
     {
       "id": "scripts_installer_installvsix",
@@ -2416,7 +2428,7 @@
       "file_type": "code",
       "norm_label": "installvsix()",
       "source_file": "scripts/installer.js",
-      "source_location": "L83"
+      "source_location": "L103"
     },
     {
       "id": "scripts_installer_main",
@@ -2428,7 +2440,7 @@
       "file_type": "code",
       "norm_label": "main()",
       "source_file": "scripts/installer.js",
-      "source_location": "L242"
+      "source_location": "L277"
     },
     {
       "id": "scripts_installer_printheader",
@@ -2440,7 +2452,7 @@
       "file_type": "code",
       "norm_label": "printheader()",
       "source_file": "scripts/installer.js",
-      "source_location": "L15"
+      "source_location": "L22"
     },
     {
       "id": "scripts_release_formatsemver",
@@ -2691,6 +2703,39 @@
       "source_location": "L1"
     },
     {
+      "id": "scripts_core_storage",
+      "label": "storage.ts",
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "extension.ts",
+      "file_type": "code",
+      "norm_label": "storage.ts",
+      "source_file": "scripts/core/storage.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "scripts_core_storage_projectdirscache",
+      "label": "projectDirsCache",
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "extension.ts",
+      "file_type": "code",
+      "norm_label": "projectdirscache",
+      "source_file": "scripts/core/storage.ts",
+      "source_location": "L13"
+    },
+    {
+      "id": "scripts_core_types",
+      "label": "types.ts",
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "extension.ts",
+      "file_type": "code",
+      "norm_label": "types.ts",
+      "source_file": "scripts/core/types.ts",
+      "source_location": "L1"
+    },
+    {
       "id": "scripts_extension",
       "label": "extension.ts",
       "_origin": "ast",
@@ -2721,39 +2766,6 @@
       "file_type": "code",
       "norm_label": "activity_channel.ts",
       "source_file": "scripts/ui/activity_channel.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "scripts_ui_agents_provider",
-      "label": "agents_provider.ts",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "extension.ts",
-      "file_type": "code",
-      "norm_label": "agents_provider.ts",
-      "source_file": "scripts/ui/agents_provider.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "scripts_ui_custom_agent_wizard",
-      "label": "custom_agent_wizard.ts",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "extension.ts",
-      "file_type": "code",
-      "norm_label": "custom_agent_wizard.ts",
-      "source_file": "scripts/ui/custom_agent_wizard.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "scripts_ui_journals_provider",
-      "label": "journals_provider.ts",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "extension.ts",
-      "file_type": "code",
-      "norm_label": "journals_provider.ts",
-      "source_file": "scripts/ui/journals_provider.ts",
       "source_location": "L1"
     },
     {
@@ -2845,158 +2857,15 @@
       "source_location": "L1"
     },
     {
-      "id": "tests_e2e_test",
-      "label": "e2e.test.ts",
+      "id": "scripts_ui_agents_provider",
+      "label": "agents_provider.ts",
       "_origin": "ast",
       "community": 1,
-      "community_name": "ref_path",
+      "community_name": "agents_provider.ts",
       "file_type": "code",
-      "norm_label": "e2e.test.ts",
-      "source_file": "tests/e2e.test.ts",
+      "norm_label": "agents_provider.ts",
+      "source_file": "scripts/ui/agents_provider.ts",
       "source_location": "L1"
-    },
-    {
-      "id": "tests_e2e_test_dist_dir",
-      "label": "DIST_DIR",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "ref_path",
-      "file_type": "code",
-      "norm_label": "dist_dir",
-      "source_file": "tests/e2e.test.ts",
-      "source_location": "L8"
-    },
-    {
-      "id": "tests_e2e_test_test_dir",
-      "label": "TEST_DIR",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "ref_path",
-      "file_type": "code",
-      "norm_label": "test_dir",
-      "source_file": "tests/e2e.test.ts",
-      "source_location": "L7"
-    },
-    {
-      "id": "tests_generate_registry_test",
-      "label": "generate_registry.test.ts",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "ref_path",
-      "file_type": "code",
-      "norm_label": "generate_registry.test.ts",
-      "source_file": "tests/generate_registry.test.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "tests_generate_registry_test_agents_dir",
-      "label": "AGENTS_DIR",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "ref_path",
-      "file_type": "code",
-      "norm_label": "agents_dir",
-      "source_file": "tests/generate_registry.test.ts",
-      "source_location": "L7"
-    },
-    {
-      "id": "tests_generate_registry_test_registry_path",
-      "label": "REGISTRY_PATH",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "ref_path",
-      "file_type": "code",
-      "norm_label": "registry_path",
-      "source_file": "tests/generate_registry.test.ts",
-      "source_location": "L8"
-    },
-    {
-      "id": "tests_jules_client_test",
-      "label": "jules_client.test.ts",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "ref_path",
-      "file_type": "code",
-      "norm_label": "jules_client.test.ts",
-      "source_file": "tests/jules_client.test.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "tests_jules_client_test_dist_dir",
-      "label": "DIST_DIR",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "ref_path",
-      "file_type": "code",
-      "norm_label": "dist_dir",
-      "source_file": "tests/jules_client.test.ts",
-      "source_location": "L8"
-    },
-    {
-      "id": "tests_jules_client_test_test_dir",
-      "label": "TEST_DIR",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "ref_path",
-      "file_type": "code",
-      "norm_label": "test_dir",
-      "source_file": "tests/jules_client.test.ts",
-      "source_location": "L7"
-    },
-    {
-      "id": "tests_mcp_test",
-      "label": "mcp.test.ts",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "ref_path",
-      "file_type": "code",
-      "norm_label": "mcp.test.ts",
-      "source_file": "tests/mcp.test.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "tests_mcp_test_dist_dir",
-      "label": "DIST_DIR",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "ref_path",
-      "file_type": "code",
-      "norm_label": "dist_dir",
-      "source_file": "tests/mcp.test.ts",
-      "source_location": "L8"
-    },
-    {
-      "id": "tests_mcp_test_test_dir",
-      "label": "TEST_DIR",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "ref_path",
-      "file_type": "code",
-      "norm_label": "test_dir",
-      "source_file": "tests/mcp.test.ts",
-      "source_location": "L7"
-    },
-    {
-      "id": "tests_setup_test",
-      "label": "setup.test.ts",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "ref_path",
-      "file_type": "code",
-      "norm_label": "setup.test.ts",
-      "source_file": "tests/setup.test.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "tests_setup_test_test_dir",
-      "label": "TEST_DIR",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "ref_path",
-      "file_type": "code",
-      "norm_label": "test_dir",
-      "source_file": "tests/setup.test.ts",
-      "source_location": "L7"
     },
     {
       "id": "package_configuration_properties",
@@ -3327,7 +3196,7 @@
       "file_type": "code",
       "norm_label": "entrypoints",
       "source_file": "scripts/build.js",
-      "source_location": "L20"
+      "source_location": "L39"
     },
     {
       "id": "scripts_build_esbuild",
@@ -3338,7 +3207,7 @@
       "file_type": "code",
       "norm_label": "esbuild",
       "source_file": "scripts/build.js",
-      "source_location": "L1"
+      "source_location": "L7"
     },
     {
       "id": "scripts_build_fs",
@@ -3349,7 +3218,7 @@
       "file_type": "code",
       "norm_label": "fs",
       "source_file": "scripts/build.js",
-      "source_location": "L2"
+      "source_location": "L8"
     },
     {
       "id": "scripts_build_path",
@@ -3360,7 +3229,7 @@
       "file_type": "code",
       "norm_label": "path",
       "source_file": "scripts/build.js",
-      "source_location": "L3"
+      "source_location": "L9"
     },
     {
       "id": "scripts_build_scriptsdir",
@@ -3371,7 +3240,7 @@
       "file_type": "code",
       "norm_label": "scriptsdir",
       "source_file": "scripts/build.js",
-      "source_location": "L19"
+      "source_location": "L38"
     },
     {
       "id": "ref_esbuild",
@@ -3718,39 +3587,6 @@
       "source_location": "L1"
     },
     {
-      "id": "scripts_core_storage",
-      "label": "storage.ts",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "merge_session.ts",
-      "file_type": "code",
-      "norm_label": "storage.ts",
-      "source_file": "scripts/core/storage.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "scripts_core_storage_projectdirscache",
-      "label": "projectDirsCache",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "merge_session.ts",
-      "file_type": "code",
-      "norm_label": "projectdirscache",
-      "source_file": "scripts/core/storage.ts",
-      "source_location": "L13"
-    },
-    {
-      "id": "scripts_core_types",
-      "label": "types.ts",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "merge_session.ts",
-      "file_type": "code",
-      "norm_label": "types.ts",
-      "source_file": "scripts/core/types.ts",
-      "source_location": "L1"
-    },
-    {
       "id": "scripts_deploy_session",
       "label": "deploy_session.ts",
       "_origin": "ast",
@@ -3792,17 +3628,6 @@
       "file_type": "code",
       "norm_label": "session_tools.ts",
       "source_file": "scripts/mcp/tools/session_tools.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "scripts_mcp_tools_system_tools",
-      "label": "system_tools.ts",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "merge_session.ts",
-      "file_type": "code",
-      "norm_label": "system_tools.ts",
-      "source_file": "scripts/mcp/tools/system_tools.ts",
       "source_location": "L1"
     },
     {
@@ -3883,6 +3708,28 @@
       "source_location": "L8"
     },
     {
+      "id": "tests_setup_test",
+      "label": "setup.test.ts",
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "merge_session.ts",
+      "file_type": "code",
+      "norm_label": "setup.test.ts",
+      "source_file": "tests/setup.test.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "tests_setup_test_test_dir",
+      "label": "TEST_DIR",
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "merge_session.ts",
+      "file_type": "code",
+      "norm_label": "test_dir",
+      "source_file": "tests/setup.test.ts",
+      "source_location": "L7"
+    },
+    {
       "id": "tests_utils_test",
       "label": "utils.test.ts",
       "_origin": "ast",
@@ -3917,36 +3764,59 @@
       "source_location": "L102"
     },
     {
-      "id": "scripts_mcp_tools_agent_tools",
-      "label": "agent_tools.ts",
+      "id": "note_3_1_atomic_json_file_persistence",
+      "label": "3.1 Atomic JSON File Persistence",
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "merge_session.ts",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "3.1 atomic json file persistence",
+      "source_file": "NOTE.md",
+      "source_location": "L57"
+    },
+    {
+      "id": "scripts_mcp_server",
+      "label": "mcp_server.ts",
       "_origin": "ast",
       "community": 20,
-      "community_name": "agent_tools.ts",
+      "community_name": "mcp_server.ts",
       "file_type": "code",
-      "norm_label": "agent_tools.ts",
-      "source_file": "scripts/mcp/tools/agent_tools.ts",
+      "norm_label": "mcp_server.ts",
+      "source_file": "scripts/mcp_server.ts",
       "source_location": "L1"
     },
     {
-      "id": "scripts_mcp_tools_agent_tools_agenttools",
-      "label": "agentTools",
+      "id": "scripts_mcp_server_server",
+      "label": "server",
       "_origin": "ast",
       "community": 20,
-      "community_name": "agent_tools.ts",
+      "community_name": "mcp_server.ts",
       "file_type": "code",
-      "norm_label": "agenttools",
-      "source_file": "scripts/mcp/tools/agent_tools.ts",
-      "source_location": "L14"
+      "norm_label": "server",
+      "source_file": "scripts/mcp_server.ts",
+      "source_location": "L25"
     },
     {
-      "id": "tests_activity_channel_test",
-      "label": "activity_channel.test.ts",
+      "id": "ref_modelcontextprotocol_sdk",
+      "label": "@modelcontextprotocol/sdk",
+      "_origin": "ast",
+      "community": 20,
+      "community_name": "mcp_server.ts",
+      "file_type": "concept",
+      "norm_label": "@modelcontextprotocol/sdk",
+      "source_file": "package.json",
+      "source_location": "L480"
+    },
+    {
+      "id": "scripts_ui_custom_agent_wizard",
+      "label": "custom_agent_wizard.ts",
       "_origin": "ast",
       "community": 21,
-      "community_name": "JulesActivityChannel",
+      "community_name": "04 - VS Code Extension & UI Layer Reference",
       "file_type": "code",
-      "norm_label": "activity_channel.test.ts",
-      "source_file": "tests/activity_channel.test.ts",
+      "norm_label": "custom_agent_wizard.ts",
+      "source_file": "scripts/ui/custom_agent_wizard.ts",
       "source_location": "L1"
     },
     {
@@ -4060,26 +3930,26 @@
       "source_location": "L22"
     },
     {
-      "id": "scripts_mcp_server",
-      "label": "mcp_server.ts",
+      "id": "scripts_mcp_tools_agent_tools",
+      "label": "agent_tools.ts",
       "_origin": "ast",
       "community": 3,
       "community_name": "registry.ts",
       "file_type": "code",
-      "norm_label": "mcp_server.ts",
-      "source_file": "scripts/mcp_server.ts",
+      "norm_label": "agent_tools.ts",
+      "source_file": "scripts/mcp/tools/agent_tools.ts",
       "source_location": "L1"
     },
     {
-      "id": "scripts_mcp_server_server",
-      "label": "server",
+      "id": "scripts_mcp_tools_agent_tools_agenttools",
+      "label": "agentTools",
       "_origin": "ast",
       "community": 3,
       "community_name": "registry.ts",
       "file_type": "code",
-      "norm_label": "server",
-      "source_file": "scripts/mcp_server.ts",
-      "source_location": "L25"
+      "norm_label": "agenttools",
+      "source_file": "scripts/mcp/tools/agent_tools.ts",
+      "source_location": "L16"
     },
     {
       "id": "scripts_mcp_tools_session_tools_sessiontools",
@@ -4090,7 +3960,18 @@
       "file_type": "code",
       "norm_label": "sessiontools",
       "source_file": "scripts/mcp/tools/session_tools.ts",
-      "source_location": "L18"
+      "source_location": "L20"
+    },
+    {
+      "id": "scripts_mcp_tools_system_tools",
+      "label": "system_tools.ts",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "registry.ts",
+      "file_type": "code",
+      "norm_label": "system_tools.ts",
+      "source_file": "scripts/mcp/tools/system_tools.ts",
+      "source_location": "L1"
     },
     {
       "id": "scripts_mcp_tools_system_tools_systemtools",
@@ -4101,7 +3982,7 @@
       "file_type": "code",
       "norm_label": "systemtools",
       "source_file": "scripts/mcp/tools/system_tools.ts",
-      "source_location": "L16"
+      "source_location": "L18"
     },
     {
       "id": "scripts_sync_global",
@@ -4124,17 +4005,6 @@
       "norm_label": "unit_mcp_registry.test.ts",
       "source_file": "tests/unit_mcp_registry.test.ts",
       "source_location": "L1"
-    },
-    {
-      "id": "ref_modelcontextprotocol_sdk",
-      "label": "@modelcontextprotocol/sdk",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "registry.ts",
-      "file_type": "concept",
-      "norm_label": "@modelcontextprotocol/sdk",
-      "source_file": "package.json",
-      "source_location": "L480"
     },
     {
       "id": "package_repository",
@@ -4348,18 +4218,6 @@
       "source_location": "L32"
     },
     {
-      "id": "note_3_1_atomic_json_file_persistence",
-      "label": "3.1 Atomic JSON File Persistence",
-      "_origin": "ast",
-      "community": 44,
-      "community_name": "\ud83d\udcd3 Development Notes, Gotchas & Operational Autopsy",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "3.1 atomic json file persistence",
-      "source_file": "NOTE.md",
-      "source_location": "L57"
-    },
-    {
       "id": "note_3_2_secret_storage_vs_environment_variables",
       "label": "3.2 Secret Storage vs Environment Variables",
       "_origin": "ast",
@@ -4570,6 +4428,193 @@
       "source_location": "L11"
     },
     {
+      "id": "tests_generate_registry_test",
+      "label": "generate_registry.test.ts",
+      "_origin": "ast",
+      "community": 46,
+      "community_name": "setup.ts",
+      "file_type": "code",
+      "norm_label": "generate_registry.test.ts",
+      "source_file": "tests/generate_registry.test.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "tests_generate_registry_test_agents_dir",
+      "label": "AGENTS_DIR",
+      "_origin": "ast",
+      "community": 46,
+      "community_name": "setup.ts",
+      "file_type": "code",
+      "norm_label": "agents_dir",
+      "source_file": "tests/generate_registry.test.ts",
+      "source_location": "L7"
+    },
+    {
+      "id": "tests_generate_registry_test_registry_path",
+      "label": "REGISTRY_PATH",
+      "_origin": "ast",
+      "community": 46,
+      "community_name": "setup.ts",
+      "file_type": "code",
+      "norm_label": "registry_path",
+      "source_file": "tests/generate_registry.test.ts",
+      "source_location": "L8"
+    },
+    {
+      "id": "scripts_install_hooks",
+      "label": "install_hooks.js",
+      "_origin": "ast",
+      "community": 47,
+      "community_name": "ref_node_assert",
+      "file_type": "code",
+      "norm_label": "install_hooks.js",
+      "source_file": "scripts/install_hooks.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "scripts_install_hooks_execsync",
+      "label": "{ execSync }",
+      "_origin": "ast",
+      "community": 47,
+      "community_name": "ref_node_assert",
+      "file_type": "code",
+      "norm_label": "{ execsync }",
+      "source_file": "scripts/install_hooks.js",
+      "source_location": "L10"
+    },
+    {
+      "id": "scripts_install_hooks_fs",
+      "label": "fs",
+      "_origin": "ast",
+      "community": 47,
+      "community_name": "ref_node_assert",
+      "file_type": "code",
+      "norm_label": "fs",
+      "source_file": "scripts/install_hooks.js",
+      "source_location": "L8"
+    },
+    {
+      "id": "scripts_install_hooks_hookdir",
+      "label": "hookDir",
+      "_origin": "ast",
+      "community": 47,
+      "community_name": "ref_node_assert",
+      "file_type": "code",
+      "norm_label": "hookdir",
+      "source_file": "scripts/install_hooks.js",
+      "source_location": "L13"
+    },
+    {
+      "id": "scripts_install_hooks_hookfile",
+      "label": "hookFile",
+      "_origin": "ast",
+      "community": 47,
+      "community_name": "ref_node_assert",
+      "file_type": "code",
+      "norm_label": "hookfile",
+      "source_file": "scripts/install_hooks.js",
+      "source_location": "L14"
+    },
+    {
+      "id": "scripts_install_hooks_path",
+      "label": "path",
+      "_origin": "ast",
+      "community": 47,
+      "community_name": "ref_node_assert",
+      "file_type": "code",
+      "norm_label": "path",
+      "source_file": "scripts/install_hooks.js",
+      "source_location": "L9"
+    },
+    {
+      "id": "scripts_run_tests",
+      "label": "run_tests.js",
+      "_origin": "ast",
+      "community": 47,
+      "community_name": "ref_node_assert",
+      "file_type": "code",
+      "norm_label": "run_tests.js",
+      "source_file": "scripts/run_tests.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "scripts_run_tests_fs",
+      "label": "fs",
+      "_origin": "ast",
+      "community": 47,
+      "community_name": "ref_node_assert",
+      "file_type": "code",
+      "norm_label": "fs",
+      "source_file": "scripts/run_tests.js",
+      "source_location": "L9"
+    },
+    {
+      "id": "scripts_run_tests_path",
+      "label": "path",
+      "_origin": "ast",
+      "community": 47,
+      "community_name": "ref_node_assert",
+      "file_type": "code",
+      "norm_label": "path",
+      "source_file": "scripts/run_tests.js",
+      "source_location": "L10"
+    },
+    {
+      "id": "scripts_run_tests_result",
+      "label": "result",
+      "_origin": "ast",
+      "community": 47,
+      "community_name": "ref_node_assert",
+      "file_type": "code",
+      "norm_label": "result",
+      "source_file": "scripts/run_tests.js",
+      "source_location": "L151"
+    },
+    {
+      "id": "scripts_run_tests_spawnsync",
+      "label": "{ spawnSync }",
+      "_origin": "ast",
+      "community": 47,
+      "community_name": "ref_node_assert",
+      "file_type": "code",
+      "norm_label": "{ spawnsync }",
+      "source_file": "scripts/run_tests.js",
+      "source_location": "L8"
+    },
+    {
+      "id": "scripts_run_tests_testdir",
+      "label": "testDir",
+      "_origin": "ast",
+      "community": 47,
+      "community_name": "ref_node_assert",
+      "file_type": "code",
+      "norm_label": "testdir",
+      "source_file": "scripts/run_tests.js",
+      "source_location": "L141"
+    },
+    {
+      "id": "scripts_run_tests_testfiles",
+      "label": "testFiles",
+      "_origin": "ast",
+      "community": 47,
+      "community_name": "ref_node_assert",
+      "file_type": "code",
+      "norm_label": "testfiles",
+      "source_file": "scripts/run_tests.js",
+      "source_location": "L142"
+    },
+    {
+      "id": "tests_activity_channel_test",
+      "label": "activity_channel.test.ts",
+      "_origin": "ast",
+      "community": 47,
+      "community_name": "ref_node_assert",
+      "file_type": "code",
+      "norm_label": "activity_channel.test.ts",
+      "source_file": "tests/activity_channel.test.ts",
+      "source_location": "L1"
+    },
+    {
       "id": "tests_doc_coverage_test",
       "label": "doc_coverage.test.ts",
       "_origin": "ast",
@@ -4603,6 +4648,72 @@
       "source_location": "L6"
     },
     {
+      "id": "tests_e2e_test",
+      "label": "e2e.test.ts",
+      "_origin": "ast",
+      "community": 47,
+      "community_name": "ref_node_assert",
+      "file_type": "code",
+      "norm_label": "e2e.test.ts",
+      "source_file": "tests/e2e.test.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "tests_e2e_test_dist_dir",
+      "label": "DIST_DIR",
+      "_origin": "ast",
+      "community": 47,
+      "community_name": "ref_node_assert",
+      "file_type": "code",
+      "norm_label": "dist_dir",
+      "source_file": "tests/e2e.test.ts",
+      "source_location": "L8"
+    },
+    {
+      "id": "tests_e2e_test_test_dir",
+      "label": "TEST_DIR",
+      "_origin": "ast",
+      "community": 47,
+      "community_name": "ref_node_assert",
+      "file_type": "code",
+      "norm_label": "test_dir",
+      "source_file": "tests/e2e.test.ts",
+      "source_location": "L7"
+    },
+    {
+      "id": "tests_jules_client_test",
+      "label": "jules_client.test.ts",
+      "_origin": "ast",
+      "community": 47,
+      "community_name": "ref_node_assert",
+      "file_type": "code",
+      "norm_label": "jules_client.test.ts",
+      "source_file": "tests/jules_client.test.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "tests_jules_client_test_dist_dir",
+      "label": "DIST_DIR",
+      "_origin": "ast",
+      "community": 47,
+      "community_name": "ref_node_assert",
+      "file_type": "code",
+      "norm_label": "dist_dir",
+      "source_file": "tests/jules_client.test.ts",
+      "source_location": "L8"
+    },
+    {
+      "id": "tests_jules_client_test_test_dir",
+      "label": "TEST_DIR",
+      "_origin": "ast",
+      "community": 47,
+      "community_name": "ref_node_assert",
+      "file_type": "code",
+      "norm_label": "test_dir",
+      "source_file": "tests/jules_client.test.ts",
+      "source_location": "L7"
+    },
+    {
       "id": "tests_live_sync_test",
       "label": "live_sync.test.ts",
       "_origin": "ast",
@@ -4612,6 +4723,39 @@
       "norm_label": "live_sync.test.ts",
       "source_file": "tests/live_sync.test.ts",
       "source_location": "L1"
+    },
+    {
+      "id": "tests_mcp_test",
+      "label": "mcp.test.ts",
+      "_origin": "ast",
+      "community": 47,
+      "community_name": "ref_node_assert",
+      "file_type": "code",
+      "norm_label": "mcp.test.ts",
+      "source_file": "tests/mcp.test.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "tests_mcp_test_dist_dir",
+      "label": "DIST_DIR",
+      "_origin": "ast",
+      "community": 47,
+      "community_name": "ref_node_assert",
+      "file_type": "code",
+      "norm_label": "dist_dir",
+      "source_file": "tests/mcp.test.ts",
+      "source_location": "L8"
+    },
+    {
+      "id": "tests_mcp_test_test_dir",
+      "label": "TEST_DIR",
+      "_origin": "ast",
+      "community": 47,
+      "community_name": "ref_node_assert",
+      "file_type": "code",
+      "norm_label": "test_dir",
+      "source_file": "tests/mcp.test.ts",
+      "source_location": "L7"
     },
     {
       "id": "tests_slash_command_test",
@@ -4625,81 +4769,15 @@
       "source_location": "L1"
     },
     {
-      "id": "scripts_run_tests",
-      "label": "run_tests.js",
+      "id": "scripts_ui_journals_provider",
+      "label": "journals_provider.ts",
       "_origin": "ast",
       "community": 48,
-      "community_name": "run_tests.js",
+      "community_name": "journals_provider.ts",
       "file_type": "code",
-      "norm_label": "run_tests.js",
-      "source_file": "scripts/run_tests.js",
+      "norm_label": "journals_provider.ts",
+      "source_file": "scripts/ui/journals_provider.ts",
       "source_location": "L1"
-    },
-    {
-      "id": "scripts_run_tests_fs",
-      "label": "fs",
-      "_origin": "ast",
-      "community": 48,
-      "community_name": "run_tests.js",
-      "file_type": "code",
-      "norm_label": "fs",
-      "source_file": "scripts/run_tests.js",
-      "source_location": "L2"
-    },
-    {
-      "id": "scripts_run_tests_path",
-      "label": "path",
-      "_origin": "ast",
-      "community": 48,
-      "community_name": "run_tests.js",
-      "file_type": "code",
-      "norm_label": "path",
-      "source_file": "scripts/run_tests.js",
-      "source_location": "L3"
-    },
-    {
-      "id": "scripts_run_tests_result",
-      "label": "result",
-      "_origin": "ast",
-      "community": 48,
-      "community_name": "run_tests.js",
-      "file_type": "code",
-      "norm_label": "result",
-      "source_file": "scripts/run_tests.js",
-      "source_location": "L99"
-    },
-    {
-      "id": "scripts_run_tests_spawnsync",
-      "label": "{ spawnSync }",
-      "_origin": "ast",
-      "community": 48,
-      "community_name": "run_tests.js",
-      "file_type": "code",
-      "norm_label": "{ spawnsync }",
-      "source_file": "scripts/run_tests.js",
-      "source_location": "L1"
-    },
-    {
-      "id": "scripts_run_tests_testdir",
-      "label": "testDir",
-      "_origin": "ast",
-      "community": 48,
-      "community_name": "run_tests.js",
-      "file_type": "code",
-      "norm_label": "testdir",
-      "source_file": "scripts/run_tests.js",
-      "source_location": "L92"
-    },
-    {
-      "id": "scripts_run_tests_testfiles",
-      "label": "testFiles",
-      "_origin": "ast",
-      "community": 48,
-      "community_name": "run_tests.js",
-      "file_type": "code",
-      "norm_label": "testfiles",
-      "source_file": "scripts/run_tests.js",
-      "source_location": "L93"
     },
     {
       "id": "references_agents_attestor",
@@ -4901,7 +4979,7 @@
       "file_type": "code",
       "norm_label": "{ execsync }",
       "source_file": "scripts/installer.js",
-      "source_location": "L9"
+      "source_location": "L12"
     },
     {
       "id": "scripts_installer_fs",
@@ -4912,7 +4990,7 @@
       "file_type": "code",
       "norm_label": "fs",
       "source_file": "scripts/installer.js",
-      "source_location": "L6"
+      "source_location": "L9"
     },
     {
       "id": "scripts_installer_homedir",
@@ -4923,7 +5001,7 @@
       "file_type": "code",
       "norm_label": "homedir",
       "source_file": "scripts/installer.js",
-      "source_location": "L13"
+      "source_location": "L17"
     },
     {
       "id": "scripts_installer_os",
@@ -4934,7 +5012,7 @@
       "file_type": "code",
       "norm_label": "os",
       "source_file": "scripts/installer.js",
-      "source_location": "L8"
+      "source_location": "L11"
     },
     {
       "id": "scripts_installer_path",
@@ -4945,7 +5023,7 @@
       "file_type": "code",
       "norm_label": "path",
       "source_file": "scripts/installer.js",
-      "source_location": "L7"
+      "source_location": "L10"
     },
     {
       "id": "scripts_installer_readline",
@@ -4956,7 +5034,7 @@
       "file_type": "code",
       "norm_label": "readline",
       "source_file": "scripts/installer.js",
-      "source_location": "L10"
+      "source_location": "L13"
     },
     {
       "id": "scripts_installer_rootdir",
@@ -4967,7 +5045,7 @@
       "file_type": "code",
       "norm_label": "rootdir",
       "source_file": "scripts/installer.js",
-      "source_location": "L12"
+      "source_location": "L16"
     },
     {
       "id": "scripts_release",
@@ -5149,72 +5227,6 @@
       "norm_label": "output formatting & communication style",
       "source_file": "references/agents/hermetic.md",
       "source_location": "L77"
-    },
-    {
-      "id": "scripts_install_hooks",
-      "label": "install_hooks.js",
-      "_origin": "ast",
-      "community": 63,
-      "community_name": "install_hooks.js",
-      "file_type": "code",
-      "norm_label": "install_hooks.js",
-      "source_file": "scripts/install_hooks.js",
-      "source_location": "L1"
-    },
-    {
-      "id": "scripts_install_hooks_execsync",
-      "label": "{ execSync }",
-      "_origin": "ast",
-      "community": 63,
-      "community_name": "install_hooks.js",
-      "file_type": "code",
-      "norm_label": "{ execsync }",
-      "source_file": "scripts/install_hooks.js",
-      "source_location": "L28"
-    },
-    {
-      "id": "scripts_install_hooks_fs",
-      "label": "fs",
-      "_origin": "ast",
-      "community": 63,
-      "community_name": "install_hooks.js",
-      "file_type": "code",
-      "norm_label": "fs",
-      "source_file": "scripts/install_hooks.js",
-      "source_location": "L1"
-    },
-    {
-      "id": "scripts_install_hooks_hookdir",
-      "label": "hookDir",
-      "_origin": "ast",
-      "community": 63,
-      "community_name": "install_hooks.js",
-      "file_type": "code",
-      "norm_label": "hookdir",
-      "source_file": "scripts/install_hooks.js",
-      "source_location": "L4"
-    },
-    {
-      "id": "scripts_install_hooks_hookfile",
-      "label": "hookFile",
-      "_origin": "ast",
-      "community": 63,
-      "community_name": "install_hooks.js",
-      "file_type": "code",
-      "norm_label": "hookfile",
-      "source_file": "scripts/install_hooks.js",
-      "source_location": "L5"
-    },
-    {
-      "id": "scripts_install_hooks_path",
-      "label": "path",
-      "_origin": "ast",
-      "community": 63,
-      "community_name": "install_hooks.js",
-      "file_type": "code",
-      "norm_label": "path",
-      "source_file": "scripts/install_hooks.js",
-      "source_location": "L2"
     },
     {
       "id": "references_agents_lexicon",
@@ -5561,28 +5573,6 @@
       "source_location": "L71"
     },
     {
-      "id": "package_dependencies",
-      "label": "dependencies",
-      "_origin": "ast",
-      "community": 72,
-      "community_name": "dependencies",
-      "file_type": "code",
-      "norm_label": "dependencies",
-      "source_file": "package.json",
-      "source_location": "L479"
-    },
-    {
-      "id": "package_dependencies_modelcontextprotocol_sdk",
-      "label": "@modelcontextprotocol/sdk",
-      "_origin": "ast",
-      "community": 72,
-      "community_name": "dependencies",
-      "file_type": "code",
-      "norm_label": "@modelcontextprotocol/sdk",
-      "source_file": "package.json",
-      "source_location": "L480"
-    },
-    {
       "id": "package_engines",
       "label": "engines",
       "_origin": "ast",
@@ -5647,6 +5637,28 @@
       "norm_label": "categories",
       "source_file": "package.json",
       "source_location": "L11"
+    },
+    {
+      "id": "package_dependencies",
+      "label": "dependencies",
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "package.json",
+      "file_type": "code",
+      "norm_label": "dependencies",
+      "source_file": "package.json",
+      "source_location": "L479"
+    },
+    {
+      "id": "package_dependencies_modelcontextprotocol_sdk",
+      "label": "@modelcontextprotocol/sdk",
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "package.json",
+      "file_type": "code",
+      "norm_label": "@modelcontextprotocol/sdk",
+      "source_file": "package.json",
+      "source_location": "L480"
     },
     {
       "id": "package_description",
@@ -6032,102 +6044,6 @@
       "norm_label": "verify",
       "source_file": "package.json",
       "source_location": "L460"
-    },
-    {
-      "id": "docs_codebase_04_vscode_extension_ui_custom_agent_wizard__ui_custom",
-      "label": "Custom Agent Wizard (ui/custom_agent_wizard.ts) (04-vscode-extension-ui)",
-      "_origin": "semantic",
-      "author": null,
-      "captured_at": null,
-      "community": 0,
-      "community_name": "extension.ts",
-      "contributor": null,
-      "file_type": "concept",
-      "norm_label": "custom agent wizard (ui/custom_agent_wizard.ts) (04-vscode-extension-ui)",
-      "rationale": "Key concept from 04 - VS Code Extension & UI Layer Reference",
-      "source_file": "docs/codebase/04-vscode-extension-ui.md",
-      "source_location": null,
-      "source_url": null
-    },
-    {
-      "id": "docs_codebase_04_vscode_extension_ui_extension_controller__extensio",
-      "label": "Extension Controller (extension.ts) (04-vscode-extension-ui)",
-      "_origin": "semantic",
-      "author": null,
-      "captured_at": null,
-      "community": 0,
-      "community_name": "extension.ts",
-      "contributor": null,
-      "file_type": "concept",
-      "norm_label": "extension controller (extension.ts) (04-vscode-extension-ui)",
-      "rationale": "Key concept from 04 - VS Code Extension & UI Layer Reference",
-      "source_file": "docs/codebase/04-vscode-extension-ui.md",
-      "source_location": null,
-      "source_url": null
-    },
-    {
-      "id": "docs_codebase_04_vscode_extension_ui_live_sync_manager_subsystem__u",
-      "label": "Live Sync Manager Subsystem (ui/live_sync.ts) (04-vscode-extension-ui)",
-      "_origin": "semantic",
-      "author": null,
-      "captured_at": null,
-      "community": 0,
-      "community_name": "extension.ts",
-      "contributor": null,
-      "file_type": "concept",
-      "norm_label": "live sync manager subsystem (ui/live_sync.ts) (04-vscode-extension-ui)",
-      "rationale": "Key concept from 04 - VS Code Extension & UI Layer Reference",
-      "source_file": "docs/codebase/04-vscode-extension-ui.md",
-      "source_location": null,
-      "source_url": null
-    },
-    {
-      "id": "docs_codebase_04_vscode_extension_ui_tree_data_providers_subsystem",
-      "label": "Tree Data Providers Subsystem (04-vscode-extension-ui)",
-      "_origin": "semantic",
-      "author": null,
-      "captured_at": null,
-      "community": 0,
-      "community_name": "extension.ts",
-      "contributor": null,
-      "file_type": "concept",
-      "norm_label": "tree data providers subsystem (04-vscode-extension-ui)",
-      "rationale": "Key concept from 04 - VS Code Extension & UI Layer Reference",
-      "source_file": "docs/codebase/04-vscode-extension-ui.md",
-      "source_location": null,
-      "source_url": null
-    },
-    {
-      "id": "docs_codebase_04_vscode_extension_ui_visual_diff_viewer__ui_visual",
-      "label": "Visual Diff Viewer (ui/visual_diff.ts) (04-vscode-extension-ui)",
-      "_origin": "semantic",
-      "author": null,
-      "captured_at": null,
-      "community": 0,
-      "community_name": "extension.ts",
-      "contributor": null,
-      "file_type": "concept",
-      "norm_label": "visual diff viewer (ui/visual_diff.ts) (04-vscode-extension-ui)",
-      "rationale": "Key concept from 04 - VS Code Extension & UI Layer Reference",
-      "source_file": "docs/codebase/04-vscode-extension-ui.md",
-      "source_location": null,
-      "source_url": null
-    },
-    {
-      "id": "docs_codebase_04_vscode_extension_ui_document",
-      "label": "04 - VS Code Extension & UI Layer Reference",
-      "_origin": "semantic",
-      "author": null,
-      "captured_at": null,
-      "community": 0,
-      "community_name": "extension.ts",
-      "contributor": null,
-      "file_type": "document",
-      "norm_label": "04 - vs code extension & ui layer reference",
-      "rationale": null,
-      "source_file": "docs/codebase/04-vscode-extension-ui.md",
-      "source_location": null,
-      "source_url": null
     },
     {
       "id": "references_agents_benchmarker_daily_process",
@@ -7069,269 +6985,13 @@
       "source_url": null
     },
     {
-      "id": "docs_codebase_02_api_client_subsystem_google_jules_rest_api_mapping",
-      "label": "Google Jules REST API Mapping (jules_api.ts) (02-api-client-subsystem)",
-      "_origin": "semantic",
-      "author": null,
-      "captured_at": null,
-      "community": 2,
-      "community_name": "merge_session.ts",
-      "contributor": null,
-      "file_type": "concept",
-      "norm_label": "google jules rest api mapping (jules_api.ts) (02-api-client-subsystem)",
-      "rationale": "Key concept from 02 - API Client Subsystem Reference",
-      "source_file": "docs/codebase/02-api-client-subsystem.md",
-      "source_location": null,
-      "source_url": null
-    },
-    {
-      "id": "docs_codebase_02_api_client_subsystem_jules_cli_subprocess_wrapper",
-      "label": "Jules CLI Subprocess Wrapper (jules_client.ts) (02-api-client-subsystem)",
-      "_origin": "semantic",
-      "author": null,
-      "captured_at": null,
-      "community": 2,
-      "community_name": "merge_session.ts",
-      "contributor": null,
-      "file_type": "concept",
-      "norm_label": "jules cli subprocess wrapper (jules_client.ts) (02-api-client-subsystem)",
-      "rationale": "Key concept from 02 - API Client Subsystem Reference",
-      "source_file": "docs/codebase/02-api-client-subsystem.md",
-      "source_location": null,
-      "source_url": null
-    },
-    {
-      "id": "docs_codebase_02_api_client_subsystem_native_http_client_architectur",
-      "label": "Native HTTP Client Architecture (http.ts) (02-api-client-subsystem)",
-      "_origin": "semantic",
-      "author": null,
-      "captured_at": null,
-      "community": 2,
-      "community_name": "merge_session.ts",
-      "contributor": null,
-      "file_type": "concept",
-      "norm_label": "native http client architecture (http.ts) (02-api-client-subsystem)",
-      "rationale": "Key concept from 02 - API Client Subsystem Reference",
-      "source_file": "docs/codebase/02-api-client-subsystem.md",
-      "source_location": null,
-      "source_url": null
-    },
-    {
-      "id": "docs_development_and_contribution_guide_peta_jalan_pengembangan_berkel",
-      "label": "Peta Jalan Pengembangan Berkelanjutan (Development Roadmap) (development-and-contribution-guide)",
-      "_origin": "semantic",
-      "author": null,
-      "captured_at": null,
-      "community": 2,
-      "community_name": "merge_session.ts",
-      "contributor": null,
-      "file_type": "concept",
-      "norm_label": "peta jalan pengembangan berkelanjutan (development roadmap) (development-and-contribution-guide)",
-      "rationale": "Key concept from \ud83d\udee1\ufe0f Panduan Keberlanjutan Kode, Quality Assurance & Roadmap Jules-Companion",
-      "source_file": "docs/development-and-contribution-guide.md",
-      "source_location": null,
-      "source_url": null
-    },
-    {
-      "id": "docs_development_and_contribution_guide_piramida_pengujian___standar_q",
-      "label": "Piramida Pengujian & Standar Quality Assurance (53 Tests) (development-and-contribution-guide)",
-      "_origin": "semantic",
-      "author": null,
-      "captured_at": null,
-      "community": 2,
-      "community_name": "merge_session.ts",
-      "contributor": null,
-      "file_type": "concept",
-      "norm_label": "piramida pengujian & standar quality assurance (53 tests) (development-and-contribution-guide)",
-      "rationale": "Key concept from \ud83d\udee1\ufe0f Panduan Keberlanjutan Kode, Quality Assurance & Roadmap Jules-Companion",
-      "source_file": "docs/development-and-contribution-guide.md",
-      "source_location": null,
-      "source_url": null
-    },
-    {
-      "id": "docs_development_and_contribution_guide_pola_arsitektur__programmatic",
-      "label": "Pola Arsitektur: Programmatic Core Pattern (development-and-contribution-guide)",
-      "_origin": "semantic",
-      "author": null,
-      "captured_at": null,
-      "community": 2,
-      "community_name": "merge_session.ts",
-      "contributor": null,
-      "file_type": "concept",
-      "norm_label": "pola arsitektur: programmatic core pattern (development-and-contribution-guide)",
-      "rationale": "Key concept from \ud83d\udee1\ufe0f Panduan Keberlanjutan Kode, Quality Assurance & Roadmap Jules-Companion",
-      "source_file": "docs/development-and-contribution-guide.md",
-      "source_location": null,
-      "source_url": null
-    },
-    {
-      "id": "docs_development_and_contribution_guide_prinsip_inti_keberlanjutan_ars",
-      "label": "Prinsip Inti Keberlanjutan Arsitektur (Core Principles) (development-and-contribution-guide)",
-      "_origin": "semantic",
-      "author": null,
-      "captured_at": null,
-      "community": 2,
-      "community_name": "merge_session.ts",
-      "contributor": null,
-      "file_type": "concept",
-      "norm_label": "prinsip inti keberlanjutan arsitektur (core principles) (development-and-contribution-guide)",
-      "rationale": "Key concept from \ud83d\udee1\ufe0f Panduan Keberlanjutan Kode, Quality Assurance & Roadmap Jules-Companion",
-      "source_file": "docs/development-and-contribution-guide.md",
-      "source_location": null,
-      "source_url": null
-    },
-    {
-      "id": "docs_development_and_contribution_guide_protokol_ekstensi_fitur__featu",
-      "label": "Protokol Ekstensi Fitur (Feature Extension Protocols) (development-and-contribution-guide)",
-      "_origin": "semantic",
-      "author": null,
-      "captured_at": null,
-      "community": 2,
-      "community_name": "merge_session.ts",
-      "contributor": null,
-      "file_type": "concept",
-      "norm_label": "protokol ekstensi fitur (feature extension protocols) (development-and-contribution-guide)",
-      "rationale": "Key concept from \ud83d\udee1\ufe0f Panduan Keberlanjutan Kode, Quality Assurance & Roadmap Jules-Companion",
-      "source_file": "docs/development-and-contribution-guide.md",
-      "source_location": null,
-      "source_url": null
-    },
-    {
-      "id": "docs_ponytail_audit_plan_1__hasil_audit_ponytail_mend",
-      "label": "\ud83d\udcca 1. Hasil Audit Ponytail Mendalam (Ranked Findings) (ponytail-audit-plan)",
-      "_origin": "semantic",
-      "author": null,
-      "captured_at": null,
-      "community": 2,
-      "community_name": "merge_session.ts",
-      "contributor": null,
-      "file_type": "concept",
-      "norm_label": "\ud83d\udcca 1. hasil audit ponytail mendalam (ranked findings) (ponytail-audit-plan)",
-      "rationale": "Key concept from \ud83d\udccb Laporan Audit Ponytail Mendalam & Rencana Aksi Perampingan Codebase",
-      "source_file": "docs/ponytail-audit-plan.md",
-      "source_location": null,
-      "source_url": null
-    },
-    {
-      "id": "docs_ponytail_audit_plan_2__investigasi___akar_masala",
-      "label": "\ud83d\udd0d 2. Investigasi & Akar Masalah Kegagalan Tes tests/merge_session.test.ts (ponytail-audit-plan)",
-      "_origin": "semantic",
-      "author": null,
-      "captured_at": null,
-      "community": 2,
-      "community_name": "merge_session.ts",
-      "contributor": null,
-      "file_type": "concept",
-      "norm_label": "\ud83d\udd0d 2. investigasi & akar masalah kegagalan tes tests/merge_session.test.ts (ponytail-audit-plan)",
-      "rationale": "Key concept from \ud83d\udccb Laporan Audit Ponytail Mendalam & Rencana Aksi Perampingan Codebase",
-      "source_file": "docs/ponytail-audit-plan.md",
-      "source_location": null,
-      "source_url": null
-    },
-    {
-      "id": "docs_ponytail_audit_plan_3__catatan_hasil_uji_coba_de",
-      "label": "\ud83e\uddea 3. Catatan Hasil Uji Coba Deployment Agent ke Google Jules API (ponytail-audit-plan)",
-      "_origin": "semantic",
-      "author": null,
-      "captured_at": null,
-      "community": 2,
-      "community_name": "merge_session.ts",
-      "contributor": null,
-      "file_type": "concept",
-      "norm_label": "\ud83e\uddea 3. catatan hasil uji coba deployment agent ke google jules api (ponytail-audit-plan)",
-      "rationale": "Key concept from \ud83d\udccb Laporan Audit Ponytail Mendalam & Rencana Aksi Perampingan Codebase",
-      "source_file": "docs/ponytail-audit-plan.md",
-      "source_location": null,
-      "source_url": null
-    },
-    {
-      "id": "docs_ponytail_audit_plan_4__rencana_kerja_bertahap",
-      "label": "\ud83d\udee0\ufe0f 4. Rencana Kerja Bertahap (Action Plan Eksekusi) (ponytail-audit-plan)",
-      "_origin": "semantic",
-      "author": null,
-      "captured_at": null,
-      "community": 2,
-      "community_name": "merge_session.ts",
-      "contributor": null,
-      "file_type": "concept",
-      "norm_label": "\ud83d\udee0\ufe0f 4. rencana kerja bertahap (action plan eksekusi) (ponytail-audit-plan)",
-      "rationale": "Key concept from \ud83d\udccb Laporan Audit Ponytail Mendalam & Rencana Aksi Perampingan Codebase",
-      "source_file": "docs/ponytail-audit-plan.md",
-      "source_location": null,
-      "source_url": null
-    },
-    {
-      "id": "docs_ponytail_audit_plan_panduan_eksekusi",
-      "label": "\ud83d\ude80 Panduan Eksekusi (ponytail-audit-plan)",
-      "_origin": "semantic",
-      "author": null,
-      "captured_at": null,
-      "community": 2,
-      "community_name": "merge_session.ts",
-      "contributor": null,
-      "file_type": "concept",
-      "norm_label": "\ud83d\ude80 panduan eksekusi (ponytail-audit-plan)",
-      "rationale": "Key concept from \ud83d\udccb Laporan Audit Ponytail Mendalam & Rencana Aksi Perampingan Codebase",
-      "source_file": "docs/ponytail-audit-plan.md",
-      "source_location": null,
-      "source_url": null
-    },
-    {
-      "id": "docs_codebase_02_api_client_subsystem_document",
-      "label": "02 - API Client Subsystem Reference",
-      "_origin": "semantic",
-      "author": null,
-      "captured_at": null,
-      "community": 2,
-      "community_name": "merge_session.ts",
-      "contributor": null,
-      "file_type": "document",
-      "norm_label": "02 - api client subsystem reference",
-      "rationale": null,
-      "source_file": "docs/codebase/02-api-client-subsystem.md",
-      "source_location": null,
-      "source_url": null
-    },
-    {
-      "id": "docs_development_and_contribution_guide_document",
-      "label": "\ud83d\udee1\ufe0f Panduan Keberlanjutan Kode, Quality Assurance & Roadmap Jules-Companion",
-      "_origin": "semantic",
-      "author": null,
-      "captured_at": null,
-      "community": 2,
-      "community_name": "merge_session.ts",
-      "contributor": null,
-      "file_type": "document",
-      "norm_label": "\ud83d\udee1\ufe0f panduan keberlanjutan kode, quality assurance & roadmap jules-companion",
-      "rationale": null,
-      "source_file": "docs/development-and-contribution-guide.md",
-      "source_location": null,
-      "source_url": null
-    },
-    {
-      "id": "docs_ponytail_audit_plan_document",
-      "label": "\ud83d\udccb Laporan Audit Ponytail Mendalam & Rencana Aksi Perampingan Codebase",
-      "_origin": "semantic",
-      "author": null,
-      "captured_at": null,
-      "community": 2,
-      "community_name": "merge_session.ts",
-      "contributor": null,
-      "file_type": "document",
-      "norm_label": "\ud83d\udccb laporan audit ponytail mendalam & rencana aksi perampingan codebase",
-      "rationale": null,
-      "source_file": "docs/ponytail-audit-plan.md",
-      "source_location": null,
-      "source_url": null
-    },
-    {
       "id": "docs_codebase_06_mcp_server_subsystem_catalog_of_the_20_native_mcp_t",
       "label": "Catalog of the 20 Native MCP Tools (06-mcp-server-subsystem)",
       "_origin": "semantic",
       "author": null,
       "captured_at": null,
       "community": 20,
-      "community_name": "agent_tools.ts",
+      "community_name": "mcp_server.ts",
       "contributor": null,
       "file_type": "concept",
       "norm_label": "catalog of the 20 native mcp tools (06-mcp-server-subsystem)",
@@ -7347,7 +7007,7 @@
       "author": null,
       "captured_at": null,
       "community": 20,
-      "community_name": "agent_tools.ts",
+      "community_name": "mcp_server.ts",
       "contributor": null,
       "file_type": "concept",
       "norm_label": "dynamic tool registry (mcp/registry.ts) (06-mcp-server-subsystem)",
@@ -7363,7 +7023,7 @@
       "author": null,
       "captured_at": null,
       "community": 20,
-      "community_name": "agent_tools.ts",
+      "community_name": "mcp_server.ts",
       "contributor": null,
       "file_type": "concept",
       "norm_label": "mcp client configuration example (06-mcp-server-subsystem)",
@@ -7379,7 +7039,7 @@
       "author": null,
       "captured_at": null,
       "community": 20,
-      "community_name": "agent_tools.ts",
+      "community_name": "mcp_server.ts",
       "contributor": null,
       "file_type": "concept",
       "norm_label": "mcp server architecture (06-mcp-server-subsystem)",
@@ -7395,12 +7055,108 @@
       "author": null,
       "captured_at": null,
       "community": 20,
-      "community_name": "agent_tools.ts",
+      "community_name": "mcp_server.ts",
       "contributor": null,
       "file_type": "document",
       "norm_label": "06 - model context protocol (mcp) server subsystem",
       "rationale": null,
       "source_file": "docs/codebase/06-mcp-server-subsystem.md",
+      "source_location": null,
+      "source_url": null
+    },
+    {
+      "id": "docs_codebase_04_vscode_extension_ui_custom_agent_wizard__ui_custom",
+      "label": "Custom Agent Wizard (ui/custom_agent_wizard.ts) (04-vscode-extension-ui)",
+      "_origin": "semantic",
+      "author": null,
+      "captured_at": null,
+      "community": 21,
+      "community_name": "04 - VS Code Extension & UI Layer Reference",
+      "contributor": null,
+      "file_type": "concept",
+      "norm_label": "custom agent wizard (ui/custom_agent_wizard.ts) (04-vscode-extension-ui)",
+      "rationale": "Key concept from 04 - VS Code Extension & UI Layer Reference",
+      "source_file": "docs/codebase/04-vscode-extension-ui.md",
+      "source_location": null,
+      "source_url": null
+    },
+    {
+      "id": "docs_codebase_04_vscode_extension_ui_extension_controller__extensio",
+      "label": "Extension Controller (extension.ts) (04-vscode-extension-ui)",
+      "_origin": "semantic",
+      "author": null,
+      "captured_at": null,
+      "community": 21,
+      "community_name": "04 - VS Code Extension & UI Layer Reference",
+      "contributor": null,
+      "file_type": "concept",
+      "norm_label": "extension controller (extension.ts) (04-vscode-extension-ui)",
+      "rationale": "Key concept from 04 - VS Code Extension & UI Layer Reference",
+      "source_file": "docs/codebase/04-vscode-extension-ui.md",
+      "source_location": null,
+      "source_url": null
+    },
+    {
+      "id": "docs_codebase_04_vscode_extension_ui_live_sync_manager_subsystem__u",
+      "label": "Live Sync Manager Subsystem (ui/live_sync.ts) (04-vscode-extension-ui)",
+      "_origin": "semantic",
+      "author": null,
+      "captured_at": null,
+      "community": 21,
+      "community_name": "04 - VS Code Extension & UI Layer Reference",
+      "contributor": null,
+      "file_type": "concept",
+      "norm_label": "live sync manager subsystem (ui/live_sync.ts) (04-vscode-extension-ui)",
+      "rationale": "Key concept from 04 - VS Code Extension & UI Layer Reference",
+      "source_file": "docs/codebase/04-vscode-extension-ui.md",
+      "source_location": null,
+      "source_url": null
+    },
+    {
+      "id": "docs_codebase_04_vscode_extension_ui_tree_data_providers_subsystem",
+      "label": "Tree Data Providers Subsystem (04-vscode-extension-ui)",
+      "_origin": "semantic",
+      "author": null,
+      "captured_at": null,
+      "community": 21,
+      "community_name": "04 - VS Code Extension & UI Layer Reference",
+      "contributor": null,
+      "file_type": "concept",
+      "norm_label": "tree data providers subsystem (04-vscode-extension-ui)",
+      "rationale": "Key concept from 04 - VS Code Extension & UI Layer Reference",
+      "source_file": "docs/codebase/04-vscode-extension-ui.md",
+      "source_location": null,
+      "source_url": null
+    },
+    {
+      "id": "docs_codebase_04_vscode_extension_ui_visual_diff_viewer__ui_visual",
+      "label": "Visual Diff Viewer (ui/visual_diff.ts) (04-vscode-extension-ui)",
+      "_origin": "semantic",
+      "author": null,
+      "captured_at": null,
+      "community": 21,
+      "community_name": "04 - VS Code Extension & UI Layer Reference",
+      "contributor": null,
+      "file_type": "concept",
+      "norm_label": "visual diff viewer (ui/visual_diff.ts) (04-vscode-extension-ui)",
+      "rationale": "Key concept from 04 - VS Code Extension & UI Layer Reference",
+      "source_file": "docs/codebase/04-vscode-extension-ui.md",
+      "source_location": null,
+      "source_url": null
+    },
+    {
+      "id": "docs_codebase_04_vscode_extension_ui_document",
+      "label": "04 - VS Code Extension & UI Layer Reference",
+      "_origin": "semantic",
+      "author": null,
+      "captured_at": null,
+      "community": 21,
+      "community_name": "04 - VS Code Extension & UI Layer Reference",
+      "contributor": null,
+      "file_type": "document",
+      "norm_label": "04 - vs code extension & ui layer reference",
+      "rationale": null,
+      "source_file": "docs/codebase/04-vscode-extension-ui.md",
       "source_location": null,
       "source_url": null
     },
@@ -7622,8 +7378,8 @@
       "source_url": null
     },
     {
-      "id": "docs_codebase_01_core_subsystem_domain_types___contracts__type",
-      "label": "Domain Types & Contracts (types.ts) (01-core-subsystem)",
+      "id": "docs_codebase_02_api_client_subsystem_google_jules_rest_api_mapping",
+      "label": "Google Jules REST API Mapping (jules_api.ts) (02-api-client-subsystem)",
       "_origin": "semantic",
       "author": null,
       "captured_at": null,
@@ -7631,15 +7387,15 @@
       "community_name": "Jules Companion - Codebase Architecture Map & Governance Guide",
       "contributor": null,
       "file_type": "concept",
-      "norm_label": "domain types & contracts (types.ts) (01-core-subsystem)",
-      "rationale": "Key concept from 01 - Core Subsystem Reference",
-      "source_file": "docs/codebase/01-core-subsystem.md",
+      "norm_label": "google jules rest api mapping (jules_api.ts) (02-api-client-subsystem)",
+      "rationale": "Key concept from 02 - API Client Subsystem Reference",
+      "source_file": "docs/codebase/02-api-client-subsystem.md",
       "source_location": null,
       "source_url": null
     },
     {
-      "id": "docs_codebase_01_core_subsystem_git_cli_subsystem__git_ts",
-      "label": "Git CLI Subsystem (git.ts) (01-core-subsystem)",
+      "id": "docs_codebase_02_api_client_subsystem_jules_cli_subprocess_wrapper",
+      "label": "Jules CLI Subprocess Wrapper (jules_client.ts) (02-api-client-subsystem)",
       "_origin": "semantic",
       "author": null,
       "captured_at": null,
@@ -7647,15 +7403,15 @@
       "community_name": "Jules Companion - Codebase Architecture Map & Governance Guide",
       "contributor": null,
       "file_type": "concept",
-      "norm_label": "git cli subsystem (git.ts) (01-core-subsystem)",
-      "rationale": "Key concept from 01 - Core Subsystem Reference",
-      "source_file": "docs/codebase/01-core-subsystem.md",
+      "norm_label": "jules cli subprocess wrapper (jules_client.ts) (02-api-client-subsystem)",
+      "rationale": "Key concept from 02 - API Client Subsystem Reference",
+      "source_file": "docs/codebase/02-api-client-subsystem.md",
       "source_location": null,
       "source_url": null
     },
     {
-      "id": "docs_codebase_01_core_subsystem_storage_subsystem__storage_ts",
-      "label": "Storage Subsystem (storage.ts) (01-core-subsystem)",
+      "id": "docs_codebase_02_api_client_subsystem_native_http_client_architectur",
+      "label": "Native HTTP Client Architecture (http.ts) (02-api-client-subsystem)",
       "_origin": "semantic",
       "author": null,
       "captured_at": null,
@@ -7663,25 +7419,9 @@
       "community_name": "Jules Companion - Codebase Architecture Map & Governance Guide",
       "contributor": null,
       "file_type": "concept",
-      "norm_label": "storage subsystem (storage.ts) (01-core-subsystem)",
-      "rationale": "Key concept from 01 - Core Subsystem Reference",
-      "source_file": "docs/codebase/01-core-subsystem.md",
-      "source_location": null,
-      "source_url": null
-    },
-    {
-      "id": "docs_codebase_01_core_subsystem_task_scheduler_engine__schedul",
-      "label": "Task Scheduler Engine (scheduler.ts) (01-core-subsystem)",
-      "_origin": "semantic",
-      "author": null,
-      "captured_at": null,
-      "community": 25,
-      "community_name": "Jules Companion - Codebase Architecture Map & Governance Guide",
-      "contributor": null,
-      "file_type": "concept",
-      "norm_label": "task scheduler engine (scheduler.ts) (01-core-subsystem)",
-      "rationale": "Key concept from 01 - Core Subsystem Reference",
-      "source_file": "docs/codebase/01-core-subsystem.md",
+      "norm_label": "native http client architecture (http.ts) (02-api-client-subsystem)",
+      "rationale": "Key concept from 02 - API Client Subsystem Reference",
+      "source_file": "docs/codebase/02-api-client-subsystem.md",
       "source_location": null,
       "source_url": null
     },
@@ -7766,8 +7506,8 @@
       "source_url": null
     },
     {
-      "id": "docs_codebase_01_core_subsystem_document",
-      "label": "01 - Core Subsystem Reference",
+      "id": "docs_codebase_02_api_client_subsystem_document",
+      "label": "02 - API Client Subsystem Reference",
       "_origin": "semantic",
       "author": null,
       "captured_at": null,
@@ -7775,9 +7515,9 @@
       "community_name": "Jules Companion - Codebase Architecture Map & Governance Guide",
       "contributor": null,
       "file_type": "document",
-      "norm_label": "01 - core subsystem reference",
+      "norm_label": "02 - api client subsystem reference",
       "rationale": null,
-      "source_file": "docs/codebase/01-core-subsystem.md",
+      "source_file": "docs/codebase/02-api-client-subsystem.md",
       "source_location": null,
       "source_url": null
     },
@@ -8134,6 +7874,38 @@
       "source_url": null
     },
     {
+      "id": "docs_codebase_08_utilities_and_cli_central_utilities_hub__utils_t",
+      "label": "Central Utilities Hub (utils.ts) (08-utilities-and-cli)",
+      "_origin": "semantic",
+      "author": null,
+      "captured_at": null,
+      "community": 29,
+      "community_name": "Jules Companion - Codebase Master Documentation Index",
+      "contributor": null,
+      "file_type": "concept",
+      "norm_label": "central utilities hub (utils.ts) (08-utilities-and-cli)",
+      "rationale": "Key concept from 08 - Utilities & CLI Tooling Reference",
+      "source_file": "docs/codebase/08-utilities-and-cli.md",
+      "source_location": null,
+      "source_url": null
+    },
+    {
+      "id": "docs_codebase_08_utilities_and_cli_cli_tooling_scripts",
+      "label": "CLI Tooling Scripts (08-utilities-and-cli)",
+      "_origin": "semantic",
+      "author": null,
+      "captured_at": null,
+      "community": 29,
+      "community_name": "Jules Companion - Codebase Master Documentation Index",
+      "contributor": null,
+      "file_type": "concept",
+      "norm_label": "cli tooling scripts (08-utilities-and-cli)",
+      "rationale": "Key concept from 08 - Utilities & CLI Tooling Reference",
+      "source_file": "docs/codebase/08-utilities-and-cli.md",
+      "source_location": null,
+      "source_url": null
+    },
+    {
       "id": "docs_codebase_readme_complete_module_documentatio",
       "label": "\ud83d\udcda Complete Module Documentation Directory (README)",
       "_origin": "semantic",
@@ -8178,6 +7950,22 @@
       "norm_label": "03 - session lifecycle & execution modes reference",
       "rationale": null,
       "source_file": "docs/codebase/03-session-lifecycle.md",
+      "source_location": null,
+      "source_url": null
+    },
+    {
+      "id": "docs_codebase_08_utilities_and_cli_document",
+      "label": "08 - Utilities & CLI Tooling Reference",
+      "_origin": "semantic",
+      "author": null,
+      "captured_at": null,
+      "community": 29,
+      "community_name": "Jules Companion - Codebase Master Documentation Index",
+      "contributor": null,
+      "file_type": "document",
+      "norm_label": "08 - utilities & cli tooling reference",
+      "rationale": null,
+      "source_file": "docs/codebase/08-utilities-and-cli.md",
       "source_location": null,
       "source_url": null
     },
@@ -9396,8 +9184,8 @@
       "source_url": null
     },
     {
-      "id": "docs_codebase_08_utilities_and_cli_central_utilities_hub__utils_t",
-      "label": "Central Utilities Hub (utils.ts) (08-utilities-and-cli)",
+      "id": "docs_ponytail_audit_plan_1__hasil_audit_ponytail_mend",
+      "label": "\ud83d\udcca 1. Hasil Audit Ponytail Mendalam (Ranked Findings) (ponytail-audit-plan)",
       "_origin": "semantic",
       "author": null,
       "captured_at": null,
@@ -9405,15 +9193,15 @@
       "community_name": "setup.ts",
       "contributor": null,
       "file_type": "concept",
-      "norm_label": "central utilities hub (utils.ts) (08-utilities-and-cli)",
-      "rationale": "Key concept from 08 - Utilities & CLI Tooling Reference",
-      "source_file": "docs/codebase/08-utilities-and-cli.md",
+      "norm_label": "\ud83d\udcca 1. hasil audit ponytail mendalam (ranked findings) (ponytail-audit-plan)",
+      "rationale": "Key concept from \ud83d\udccb Laporan Audit Ponytail Mendalam & Rencana Aksi Perampingan Codebase",
+      "source_file": "docs/ponytail-audit-plan.md",
       "source_location": null,
       "source_url": null
     },
     {
-      "id": "docs_codebase_08_utilities_and_cli_cli_tooling_scripts",
-      "label": "CLI Tooling Scripts (08-utilities-and-cli)",
+      "id": "docs_ponytail_audit_plan_2__investigasi___akar_masala",
+      "label": "\ud83d\udd0d 2. Investigasi & Akar Masalah Kegagalan Tes tests/merge_session.test.ts (ponytail-audit-plan)",
       "_origin": "semantic",
       "author": null,
       "captured_at": null,
@@ -9421,15 +9209,63 @@
       "community_name": "setup.ts",
       "contributor": null,
       "file_type": "concept",
-      "norm_label": "cli tooling scripts (08-utilities-and-cli)",
-      "rationale": "Key concept from 08 - Utilities & CLI Tooling Reference",
-      "source_file": "docs/codebase/08-utilities-and-cli.md",
+      "norm_label": "\ud83d\udd0d 2. investigasi & akar masalah kegagalan tes tests/merge_session.test.ts (ponytail-audit-plan)",
+      "rationale": "Key concept from \ud83d\udccb Laporan Audit Ponytail Mendalam & Rencana Aksi Perampingan Codebase",
+      "source_file": "docs/ponytail-audit-plan.md",
       "source_location": null,
       "source_url": null
     },
     {
-      "id": "docs_codebase_08_utilities_and_cli_document",
-      "label": "08 - Utilities & CLI Tooling Reference",
+      "id": "docs_ponytail_audit_plan_3__catatan_hasil_uji_coba_de",
+      "label": "\ud83e\uddea 3. Catatan Hasil Uji Coba Deployment Agent ke Google Jules API (ponytail-audit-plan)",
+      "_origin": "semantic",
+      "author": null,
+      "captured_at": null,
+      "community": 46,
+      "community_name": "setup.ts",
+      "contributor": null,
+      "file_type": "concept",
+      "norm_label": "\ud83e\uddea 3. catatan hasil uji coba deployment agent ke google jules api (ponytail-audit-plan)",
+      "rationale": "Key concept from \ud83d\udccb Laporan Audit Ponytail Mendalam & Rencana Aksi Perampingan Codebase",
+      "source_file": "docs/ponytail-audit-plan.md",
+      "source_location": null,
+      "source_url": null
+    },
+    {
+      "id": "docs_ponytail_audit_plan_4__rencana_kerja_bertahap",
+      "label": "\ud83d\udee0\ufe0f 4. Rencana Kerja Bertahap (Action Plan Eksekusi) (ponytail-audit-plan)",
+      "_origin": "semantic",
+      "author": null,
+      "captured_at": null,
+      "community": 46,
+      "community_name": "setup.ts",
+      "contributor": null,
+      "file_type": "concept",
+      "norm_label": "\ud83d\udee0\ufe0f 4. rencana kerja bertahap (action plan eksekusi) (ponytail-audit-plan)",
+      "rationale": "Key concept from \ud83d\udccb Laporan Audit Ponytail Mendalam & Rencana Aksi Perampingan Codebase",
+      "source_file": "docs/ponytail-audit-plan.md",
+      "source_location": null,
+      "source_url": null
+    },
+    {
+      "id": "docs_ponytail_audit_plan_panduan_eksekusi",
+      "label": "\ud83d\ude80 Panduan Eksekusi (ponytail-audit-plan)",
+      "_origin": "semantic",
+      "author": null,
+      "captured_at": null,
+      "community": 46,
+      "community_name": "setup.ts",
+      "contributor": null,
+      "file_type": "concept",
+      "norm_label": "\ud83d\ude80 panduan eksekusi (ponytail-audit-plan)",
+      "rationale": "Key concept from \ud83d\udccb Laporan Audit Ponytail Mendalam & Rencana Aksi Perampingan Codebase",
+      "source_file": "docs/ponytail-audit-plan.md",
+      "source_location": null,
+      "source_url": null
+    },
+    {
+      "id": "docs_ponytail_audit_plan_document",
+      "label": "\ud83d\udccb Laporan Audit Ponytail Mendalam & Rencana Aksi Perampingan Codebase",
       "_origin": "semantic",
       "author": null,
       "captured_at": null,
@@ -9437,9 +9273,9 @@
       "community_name": "setup.ts",
       "contributor": null,
       "file_type": "document",
-      "norm_label": "08 - utilities & cli tooling reference",
+      "norm_label": "\ud83d\udccb laporan audit ponytail mendalam & rencana aksi perampingan codebase",
       "rationale": null,
-      "source_file": "docs/codebase/08-utilities-and-cli.md",
+      "source_file": "docs/ponytail-audit-plan.md",
       "source_location": null,
       "source_url": null
     },
@@ -9948,13 +9784,93 @@
       "source_url": null
     },
     {
+      "id": "docs_development_and_contribution_guide_peta_jalan_pengembangan_berkel",
+      "label": "Peta Jalan Pengembangan Berkelanjutan (Development Roadmap) (development-and-contribution-guide)",
+      "_origin": "semantic",
+      "author": null,
+      "captured_at": null,
+      "community": 54,
+      "community_name": "\ud83d\udee1\ufe0f Panduan Keberlanjutan Kode, Quality Assurance & Roadmap Jules-Companion",
+      "contributor": null,
+      "file_type": "concept",
+      "norm_label": "peta jalan pengembangan berkelanjutan (development roadmap) (development-and-contribution-guide)",
+      "rationale": "Key concept from \ud83d\udee1\ufe0f Panduan Keberlanjutan Kode, Quality Assurance & Roadmap Jules-Companion",
+      "source_file": "docs/development-and-contribution-guide.md",
+      "source_location": null,
+      "source_url": null
+    },
+    {
+      "id": "docs_development_and_contribution_guide_piramida_pengujian___standar_q",
+      "label": "Piramida Pengujian & Standar Quality Assurance (53 Tests) (development-and-contribution-guide)",
+      "_origin": "semantic",
+      "author": null,
+      "captured_at": null,
+      "community": 54,
+      "community_name": "\ud83d\udee1\ufe0f Panduan Keberlanjutan Kode, Quality Assurance & Roadmap Jules-Companion",
+      "contributor": null,
+      "file_type": "concept",
+      "norm_label": "piramida pengujian & standar quality assurance (53 tests) (development-and-contribution-guide)",
+      "rationale": "Key concept from \ud83d\udee1\ufe0f Panduan Keberlanjutan Kode, Quality Assurance & Roadmap Jules-Companion",
+      "source_file": "docs/development-and-contribution-guide.md",
+      "source_location": null,
+      "source_url": null
+    },
+    {
+      "id": "docs_development_and_contribution_guide_pola_arsitektur__programmatic",
+      "label": "Pola Arsitektur: Programmatic Core Pattern (development-and-contribution-guide)",
+      "_origin": "semantic",
+      "author": null,
+      "captured_at": null,
+      "community": 54,
+      "community_name": "\ud83d\udee1\ufe0f Panduan Keberlanjutan Kode, Quality Assurance & Roadmap Jules-Companion",
+      "contributor": null,
+      "file_type": "concept",
+      "norm_label": "pola arsitektur: programmatic core pattern (development-and-contribution-guide)",
+      "rationale": "Key concept from \ud83d\udee1\ufe0f Panduan Keberlanjutan Kode, Quality Assurance & Roadmap Jules-Companion",
+      "source_file": "docs/development-and-contribution-guide.md",
+      "source_location": null,
+      "source_url": null
+    },
+    {
+      "id": "docs_development_and_contribution_guide_prinsip_inti_keberlanjutan_ars",
+      "label": "Prinsip Inti Keberlanjutan Arsitektur (Core Principles) (development-and-contribution-guide)",
+      "_origin": "semantic",
+      "author": null,
+      "captured_at": null,
+      "community": 54,
+      "community_name": "\ud83d\udee1\ufe0f Panduan Keberlanjutan Kode, Quality Assurance & Roadmap Jules-Companion",
+      "contributor": null,
+      "file_type": "concept",
+      "norm_label": "prinsip inti keberlanjutan arsitektur (core principles) (development-and-contribution-guide)",
+      "rationale": "Key concept from \ud83d\udee1\ufe0f Panduan Keberlanjutan Kode, Quality Assurance & Roadmap Jules-Companion",
+      "source_file": "docs/development-and-contribution-guide.md",
+      "source_location": null,
+      "source_url": null
+    },
+    {
+      "id": "docs_development_and_contribution_guide_protokol_ekstensi_fitur__featu",
+      "label": "Protokol Ekstensi Fitur (Feature Extension Protocols) (development-and-contribution-guide)",
+      "_origin": "semantic",
+      "author": null,
+      "captured_at": null,
+      "community": 54,
+      "community_name": "\ud83d\udee1\ufe0f Panduan Keberlanjutan Kode, Quality Assurance & Roadmap Jules-Companion",
+      "contributor": null,
+      "file_type": "concept",
+      "norm_label": "protokol ekstensi fitur (feature extension protocols) (development-and-contribution-guide)",
+      "rationale": "Key concept from \ud83d\udee1\ufe0f Panduan Keberlanjutan Kode, Quality Assurance & Roadmap Jules-Companion",
+      "source_file": "docs/development-and-contribution-guide.md",
+      "source_location": null,
+      "source_url": null
+    },
+    {
       "id": "docs_penjelasan_aplikasi_alur_inspeksi___penggabungan_d",
       "label": "Alur Inspeksi & Penggabungan Dua Tahap (Two-Stage Merge Engine) (penjelasan-aplikasi)",
       "_origin": "semantic",
       "author": null,
       "captured_at": null,
       "community": 54,
-      "community_name": "Panduan & Dokumentasi Lengkap Aplikasi Jules Companion",
+      "community_name": "\ud83d\udee1\ufe0f Panduan Keberlanjutan Kode, Quality Assurance & Roadmap Jules-Companion",
       "contributor": null,
       "file_type": "concept",
       "norm_label": "alur inspeksi & penggabungan dua tahap (two-stage merge engine) (penjelasan-aplikasi)",
@@ -9970,7 +9886,7 @@
       "author": null,
       "captured_at": null,
       "community": 54,
-      "community_name": "Panduan & Dokumentasi Lengkap Aplikasi Jules Companion",
+      "community_name": "\ud83d\udee1\ufe0f Panduan Keberlanjutan Kode, Quality Assurance & Roadmap Jules-Companion",
       "contributor": null,
       "file_type": "concept",
       "norm_label": "direktori & penyimpanan state (.jules-companion/) (penjelasan-aplikasi)",
@@ -9986,7 +9902,7 @@
       "author": null,
       "captured_at": null,
       "community": 54,
-      "community_name": "Panduan & Dokumentasi Lengkap Aplikasi Jules Companion",
+      "community_name": "\ud83d\udee1\ufe0f Panduan Keberlanjutan Kode, Quality Assurance & Roadmap Jules-Companion",
       "contributor": null,
       "file_type": "concept",
       "norm_label": "finite state machine (fsm) siklus hidup sesi cloud (penjelasan-aplikasi)",
@@ -10002,7 +9918,7 @@
       "author": null,
       "captured_at": null,
       "community": 54,
-      "community_name": "Panduan & Dokumentasi Lengkap Aplikasi Jules Companion",
+      "community_name": "\ud83d\udee1\ufe0f Panduan Keberlanjutan Kode, Quality Assurance & Roadmap Jules-Companion",
       "contributor": null,
       "file_type": "concept",
       "norm_label": "katalog 20 mcp tools & pembagian kategori (penjelasan-aplikasi)",
@@ -10018,12 +9934,28 @@
       "author": null,
       "captured_at": null,
       "community": 54,
-      "community_name": "Panduan & Dokumentasi Lengkap Aplikasi Jules Companion",
+      "community_name": "\ud83d\udee1\ufe0f Panduan Keberlanjutan Kode, Quality Assurance & Roadmap Jules-Companion",
       "contributor": null,
       "file_type": "concept",
       "norm_label": "tiga antarmuka akses (interaction modalities) (penjelasan-aplikasi)",
       "rationale": "Key concept from Panduan & Dokumentasi Lengkap Aplikasi Jules Companion",
       "source_file": "docs/penjelasan-aplikasi.md",
+      "source_location": null,
+      "source_url": null
+    },
+    {
+      "id": "docs_development_and_contribution_guide_document",
+      "label": "\ud83d\udee1\ufe0f Panduan Keberlanjutan Kode, Quality Assurance & Roadmap Jules-Companion",
+      "_origin": "semantic",
+      "author": null,
+      "captured_at": null,
+      "community": 54,
+      "community_name": "\ud83d\udee1\ufe0f Panduan Keberlanjutan Kode, Quality Assurance & Roadmap Jules-Companion",
+      "contributor": null,
+      "file_type": "document",
+      "norm_label": "\ud83d\udee1\ufe0f panduan keberlanjutan kode, quality assurance & roadmap jules-companion",
+      "rationale": null,
+      "source_file": "docs/development-and-contribution-guide.md",
       "source_location": null,
       "source_url": null
     },
@@ -10034,7 +9966,7 @@
       "author": null,
       "captured_at": null,
       "community": 54,
-      "community_name": "Panduan & Dokumentasi Lengkap Aplikasi Jules Companion",
+      "community_name": "\ud83d\udee1\ufe0f Panduan Keberlanjutan Kode, Quality Assurance & Roadmap Jules-Companion",
       "contributor": null,
       "file_type": "document",
       "norm_label": "panduan & dokumentasi lengkap aplikasi jules companion",
@@ -10688,6 +10620,86 @@
       "source_url": null
     },
     {
+      "id": "docs_codebase_01_core_subsystem_domain_types___contracts__type",
+      "label": "Domain Types & Contracts (types.ts) (01-core-subsystem)",
+      "_origin": "semantic",
+      "author": null,
+      "captured_at": null,
+      "community": 71,
+      "community_name": "git.ts",
+      "contributor": null,
+      "file_type": "concept",
+      "norm_label": "domain types & contracts (types.ts) (01-core-subsystem)",
+      "rationale": "Key concept from 01 - Core Subsystem Reference",
+      "source_file": "docs/codebase/01-core-subsystem.md",
+      "source_location": null,
+      "source_url": null
+    },
+    {
+      "id": "docs_codebase_01_core_subsystem_git_cli_subsystem__git_ts",
+      "label": "Git CLI Subsystem (git.ts) (01-core-subsystem)",
+      "_origin": "semantic",
+      "author": null,
+      "captured_at": null,
+      "community": 71,
+      "community_name": "git.ts",
+      "contributor": null,
+      "file_type": "concept",
+      "norm_label": "git cli subsystem (git.ts) (01-core-subsystem)",
+      "rationale": "Key concept from 01 - Core Subsystem Reference",
+      "source_file": "docs/codebase/01-core-subsystem.md",
+      "source_location": null,
+      "source_url": null
+    },
+    {
+      "id": "docs_codebase_01_core_subsystem_storage_subsystem__storage_ts",
+      "label": "Storage Subsystem (storage.ts) (01-core-subsystem)",
+      "_origin": "semantic",
+      "author": null,
+      "captured_at": null,
+      "community": 71,
+      "community_name": "git.ts",
+      "contributor": null,
+      "file_type": "concept",
+      "norm_label": "storage subsystem (storage.ts) (01-core-subsystem)",
+      "rationale": "Key concept from 01 - Core Subsystem Reference",
+      "source_file": "docs/codebase/01-core-subsystem.md",
+      "source_location": null,
+      "source_url": null
+    },
+    {
+      "id": "docs_codebase_01_core_subsystem_task_scheduler_engine__schedul",
+      "label": "Task Scheduler Engine (scheduler.ts) (01-core-subsystem)",
+      "_origin": "semantic",
+      "author": null,
+      "captured_at": null,
+      "community": 71,
+      "community_name": "git.ts",
+      "contributor": null,
+      "file_type": "concept",
+      "norm_label": "task scheduler engine (scheduler.ts) (01-core-subsystem)",
+      "rationale": "Key concept from 01 - Core Subsystem Reference",
+      "source_file": "docs/codebase/01-core-subsystem.md",
+      "source_location": null,
+      "source_url": null
+    },
+    {
+      "id": "docs_codebase_01_core_subsystem_document",
+      "label": "01 - Core Subsystem Reference",
+      "_origin": "semantic",
+      "author": null,
+      "captured_at": null,
+      "community": 71,
+      "community_name": "git.ts",
+      "contributor": null,
+      "file_type": "document",
+      "norm_label": "01 - core subsystem reference",
+      "rationale": null,
+      "source_file": "docs/codebase/01-core-subsystem.md",
+      "source_location": null,
+      "source_url": null
+    },
+    {
       "id": "ref_vscode",
       "label": "ref_vscode",
       "_origin": "semantic",
@@ -10784,23 +10796,11 @@
       "type": "external"
     },
     {
-      "id": "ref_child_process",
-      "label": "ref_child_process",
-      "_origin": "semantic",
-      "community": 1,
-      "community_name": "ref_path",
-      "external": true,
-      "file_type": "concept",
-      "norm_label": "ref_child_process",
-      "source_file": "",
-      "type": "external"
-    },
-    {
       "id": "ref_fs",
       "label": "ref_fs",
       "_origin": "semantic",
-      "community": 1,
-      "community_name": "ref_path",
+      "community": 2,
+      "community_name": "merge_session.ts",
       "external": true,
       "file_type": "concept",
       "norm_label": "ref_fs",
@@ -10811,23 +10811,11 @@
       "id": "ref_path",
       "label": "ref_path",
       "_origin": "semantic",
-      "community": 1,
-      "community_name": "ref_path",
+      "community": 2,
+      "community_name": "merge_session.ts",
       "external": true,
       "file_type": "concept",
       "norm_label": "ref_path",
-      "source_file": "",
-      "type": "external"
-    },
-    {
-      "id": "scripts_utils_rungit",
-      "label": "scripts_utils_rungit",
-      "_origin": "semantic",
-      "community": 1,
-      "community_name": "ref_path",
-      "external": true,
-      "file_type": "concept",
-      "norm_label": "scripts_utils_rungit",
       "source_file": "",
       "type": "external"
     },
@@ -10892,6 +10880,18 @@
       "type": "external"
     },
     {
+      "id": "scripts_utils_rungit",
+      "label": "scripts_utils_rungit",
+      "_origin": "semantic",
+      "community": 2,
+      "community_name": "merge_session.ts",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "scripts_utils_rungit",
+      "source_file": "",
+      "type": "external"
+    },
+    {
       "id": "scripts_utils_savesessions",
       "label": "scripts_utils_savesessions",
       "_origin": "semantic",
@@ -10916,18 +10916,6 @@
       "type": "external"
     },
     {
-      "id": "ref_os",
-      "label": "ref_os",
-      "_origin": "semantic",
-      "community": 3,
-      "community_name": "registry.ts",
-      "external": true,
-      "file_type": "concept",
-      "norm_label": "ref_os",
-      "source_file": "",
-      "type": "external"
-    },
-    {
       "id": "ref_util",
       "label": "ref_util",
       "_origin": "semantic",
@@ -10936,6 +10924,18 @@
       "external": true,
       "file_type": "concept",
       "norm_label": "ref_util",
+      "source_file": "",
+      "type": "external"
+    },
+    {
+      "id": "ref_child_process",
+      "label": "ref_child_process",
+      "_origin": "semantic",
+      "community": 47,
+      "community_name": "ref_node_assert",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "ref_child_process",
       "source_file": "",
       "type": "external"
     },
@@ -10972,6 +10972,18 @@
       "external": true,
       "file_type": "concept",
       "norm_label": "ref_readline",
+      "source_file": "",
+      "type": "external"
+    },
+    {
+      "id": "ref_os",
+      "label": "ref_os",
+      "_origin": "semantic",
+      "community": 71,
+      "community_name": "git.ts",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "ref_os",
       "source_file": "",
       "type": "external"
     }
@@ -11094,7 +11106,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "scripts/build.js",
-      "source_location": "L11",
+      "source_location": "L28",
       "weight": 1.0
     },
     {
@@ -12402,7 +12414,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "scripts/installer.js",
-      "source_location": "L243",
+      "source_location": "L278",
       "weight": 1.0
     },
     {
@@ -12414,7 +12426,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "scripts/installer.js",
-      "source_location": "L245",
+      "source_location": "L281",
       "weight": 1.0
     },
     {
@@ -12426,7 +12438,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "scripts/installer.js",
-      "source_location": "L248",
+      "source_location": "L284",
       "weight": 1.0
     },
     {
@@ -12438,7 +12450,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "scripts/installer.js",
-      "source_location": "L249",
+      "source_location": "L287",
       "weight": 1.0
     },
     {
@@ -12450,7 +12462,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "scripts/installer.js",
-      "source_location": "L250",
+      "source_location": "L290",
       "weight": 1.0
     },
     {
@@ -12462,7 +12474,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "scripts/jules_client.ts",
-      "source_location": "L135",
+      "source_location": "L151",
       "weight": 1.0
     },
     {
@@ -12474,7 +12486,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "scripts/jules_client.ts",
-      "source_location": "L34",
+      "source_location": "L37",
       "weight": 1.0
     },
     {
@@ -12486,7 +12498,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "scripts/jules_client.ts",
-      "source_location": "L62",
+      "source_location": "L68",
       "weight": 1.0
     },
     {
@@ -12498,7 +12510,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "scripts/jules_client.ts",
-      "source_location": "L65",
+      "source_location": "L73",
       "weight": 1.0
     },
     {
@@ -14062,6 +14074,18 @@
       "weight": 1.0
     },
     {
+      "source": "tests_doc_coverage_test_getallscriptfiles",
+      "target": "tests_doc_coverage_test_getallscriptfiles",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "tests/doc_coverage.test.ts",
+      "source_location": "L141",
+      "weight": 1.0
+    },
+    {
       "source": "tests_doc_coverage_test_gettsfilesrecursive",
       "target": "tests_doc_coverage_test_gettsfilesrecursive",
       "relation": "calls",
@@ -14106,7 +14130,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "scripts/installer.js",
-      "source_location": "L26",
+      "source_location": "L40",
       "weight": 1.0
     },
     {
@@ -14119,6 +14143,18 @@
       "context": "call",
       "source_file": "tests/doc_coverage.test.ts",
       "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "tests_doc_coverage_test",
+      "target": "tests_doc_coverage_test_getallscriptfiles",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "tests/doc_coverage.test.ts",
+      "source_location": "L136",
       "weight": 1.0
     },
     {
@@ -14166,7 +14202,7 @@
       "confidence_score": 1.0,
       "context": "export",
       "source_file": "scripts/jules_client.ts",
-      "source_location": "L18",
+      "source_location": "L20",
       "weight": 1.0
     },
     {
@@ -14178,7 +14214,7 @@
       "confidence_score": 1.0,
       "context": "export",
       "source_file": "scripts/jules_client.ts",
-      "source_location": "L18",
+      "source_location": "L20",
       "weight": 1.0
     },
     {
@@ -14190,7 +14226,7 @@
       "confidence_score": 1.0,
       "context": "export",
       "source_file": "scripts/jules_client.ts",
-      "source_location": "L18",
+      "source_location": "L20",
       "weight": 1.0
     },
     {
@@ -15435,42 +15471,6 @@
     },
     {
       "source": "scripts_jules_client",
-      "target": "scripts_core_storage_loadsessions",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "scripts/jules_client.ts",
-      "source_location": "L15",
-      "weight": 1.0
-    },
-    {
-      "source": "scripts_jules_client",
-      "target": "scripts_core_types_julessource",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "scripts/jules_client.ts",
-      "source_location": "L16",
-      "weight": 1.0
-    },
-    {
-      "source": "scripts_jules_client",
-      "target": "scripts_core_types_sessionrecord",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "scripts/jules_client.ts",
-      "source_location": "L16",
-      "weight": 1.0
-    },
-    {
-      "source": "scripts_jules_client",
       "target": "scripts_client_http_getapikey",
       "relation": "imports",
       "_origin": "ast",
@@ -15478,7 +15478,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "scripts/jules_client.ts",
-      "source_location": "L8",
+      "source_location": "L10",
       "weight": 1.0
     },
     {
@@ -15490,7 +15490,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "scripts/jules_client.ts",
-      "source_location": "L8",
+      "source_location": "L10",
       "weight": 1.0
     },
     {
@@ -15502,7 +15502,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "scripts/jules_client.ts",
-      "source_location": "L8",
+      "source_location": "L10",
       "weight": 1.0
     },
     {
@@ -15514,7 +15514,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "scripts/jules_client.ts",
-      "source_location": "L9",
+      "source_location": "L11",
       "weight": 1.0
     },
     {
@@ -15526,7 +15526,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "scripts/jules_client.ts",
-      "source_location": "L9",
+      "source_location": "L11",
       "weight": 1.0
     },
     {
@@ -15538,7 +15538,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "scripts/jules_client.ts",
-      "source_location": "L9",
+      "source_location": "L11",
       "weight": 1.0
     },
     {
@@ -15550,7 +15550,43 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "scripts/jules_client.ts",
-      "source_location": "L9",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_jules_client",
+      "target": "scripts_core_storage_loadsessions",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "scripts/jules_client.ts",
+      "source_location": "L17",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_jules_client",
+      "target": "scripts_core_types_julessource",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "scripts/jules_client.ts",
+      "source_location": "L18",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_jules_client",
+      "target": "scripts_core_types_sessionrecord",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "scripts/jules_client.ts",
+      "source_location": "L18",
       "weight": 1.0
     },
     {
@@ -15646,7 +15682,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "scripts/mcp/tools/agent_tools.ts",
-      "source_location": "L8",
+      "source_location": "L10",
       "weight": 1.0
     },
     {
@@ -15658,7 +15694,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "scripts/mcp/tools/agent_tools.ts",
-      "source_location": "L9",
+      "source_location": "L11",
       "weight": 1.0
     },
     {
@@ -15670,7 +15706,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "scripts/mcp/tools/agent_tools.ts",
-      "source_location": "L9",
+      "source_location": "L11",
       "weight": 1.0
     },
     {
@@ -15682,7 +15718,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "scripts/mcp/tools/agent_tools.ts",
-      "source_location": "L9",
+      "source_location": "L11",
       "weight": 1.0
     },
     {
@@ -15694,115 +15730,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "scripts/mcp/tools/agent_tools.ts",
-      "source_location": "L9",
-      "weight": 1.0
-    },
-    {
-      "source": "scripts_mcp_tools_session_tools",
-      "target": "scripts_merge_session_checkoutsessionbranch",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "scripts/mcp/tools/session_tools.ts",
-      "source_location": "L10",
-      "weight": 1.0
-    },
-    {
-      "source": "scripts_mcp_tools_session_tools",
-      "target": "scripts_merge_session_mergesessioncore",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "scripts/mcp/tools/session_tools.ts",
-      "source_location": "L10",
-      "weight": 1.0
-    },
-    {
-      "source": "scripts_mcp_tools_session_tools",
-      "target": "scripts_merge_session_rollbacksession",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "scripts/mcp/tools/session_tools.ts",
-      "source_location": "L10",
-      "weight": 1.0
-    },
-    {
-      "source": "scripts_mcp_tools_session_tools",
-      "target": "scripts_core_storage_loadsessions",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "scripts/mcp/tools/session_tools.ts",
       "source_location": "L11",
-      "weight": 1.0
-    },
-    {
-      "source": "scripts_mcp_tools_session_tools",
-      "target": "scripts_client_http_getapikey",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "scripts/mcp/tools/session_tools.ts",
-      "source_location": "L12",
-      "weight": 1.0
-    },
-    {
-      "source": "scripts_mcp_tools_session_tools",
-      "target": "scripts_client_http_request",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "scripts/mcp/tools/session_tools.ts",
-      "source_location": "L12",
-      "weight": 1.0
-    },
-    {
-      "source": "scripts_mcp_tools_session_tools",
-      "target": "scripts_client_jules_api_cancelsessionapi",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "scripts/mcp/tools/session_tools.ts",
-      "source_location": "L13",
-      "weight": 1.0
-    },
-    {
-      "source": "scripts_mcp_tools_session_tools",
-      "target": "scripts_client_jules_api_pulldiffapi",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "scripts/mcp/tools/session_tools.ts",
-      "source_location": "L13",
-      "weight": 1.0
-    },
-    {
-      "source": "scripts_mcp_tools_session_tools",
-      "target": "scripts_client_jules_api_sendmessageapi",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "scripts/mcp/tools/session_tools.ts",
-      "source_location": "L13",
       "weight": 1.0
     },
     {
@@ -15814,7 +15742,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "scripts/mcp/tools/session_tools.ts",
-      "source_location": "L8",
+      "source_location": "L10",
       "weight": 1.0
     },
     {
@@ -15826,7 +15754,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "scripts/mcp/tools/session_tools.ts",
-      "source_location": "L9",
+      "source_location": "L11",
       "weight": 1.0
     },
     {
@@ -15838,55 +15766,115 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "scripts/mcp/tools/session_tools.ts",
-      "source_location": "L9",
-      "weight": 1.0
-    },
-    {
-      "source": "scripts_mcp_tools_system_tools",
-      "target": "scripts_utils_getreviewreports",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "scripts/mcp/tools/system_tools.ts",
-      "source_location": "L10",
-      "weight": 1.0
-    },
-    {
-      "source": "scripts_mcp_tools_system_tools",
-      "target": "scripts_utils_rundoctorchecks",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "scripts/mcp/tools/system_tools.ts",
-      "source_location": "L10",
-      "weight": 1.0
-    },
-    {
-      "source": "scripts_mcp_tools_system_tools",
-      "target": "scripts_client_jules_api_listsourcesapi",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "scripts/mcp/tools/system_tools.ts",
       "source_location": "L11",
       "weight": 1.0
     },
     {
-      "source": "scripts_mcp_tools_system_tools",
-      "target": "scripts_core_types_mcptooldefinition",
+      "source": "scripts_mcp_tools_session_tools",
+      "target": "scripts_merge_session_checkoutsessionbranch",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "import",
-      "source_file": "scripts/mcp/tools/system_tools.ts",
-      "source_location": "L7",
+      "source_file": "scripts/mcp/tools/session_tools.ts",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_mcp_tools_session_tools",
+      "target": "scripts_merge_session_mergesessioncore",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "scripts/mcp/tools/session_tools.ts",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_mcp_tools_session_tools",
+      "target": "scripts_merge_session_rollbacksession",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "scripts/mcp/tools/session_tools.ts",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_mcp_tools_session_tools",
+      "target": "scripts_core_storage_loadsessions",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "scripts/mcp/tools/session_tools.ts",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_mcp_tools_session_tools",
+      "target": "scripts_client_http_getapikey",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "scripts/mcp/tools/session_tools.ts",
+      "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_mcp_tools_session_tools",
+      "target": "scripts_client_http_request",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "scripts/mcp/tools/session_tools.ts",
+      "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_mcp_tools_session_tools",
+      "target": "scripts_client_jules_api_cancelsessionapi",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "scripts/mcp/tools/session_tools.ts",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_mcp_tools_session_tools",
+      "target": "scripts_client_jules_api_pulldiffapi",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "scripts/mcp/tools/session_tools.ts",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_mcp_tools_session_tools",
+      "target": "scripts_client_jules_api_sendmessageapi",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "scripts/mcp/tools/session_tools.ts",
+      "source_location": "L15",
       "weight": 1.0
     },
     {
@@ -15898,12 +15886,60 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "scripts/mcp/tools/system_tools.ts",
-      "source_location": "L8",
+      "source_location": "L10",
       "weight": 1.0
     },
     {
       "source": "scripts_mcp_tools_system_tools",
       "target": "scripts_setup_runsetup",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "scripts/mcp/tools/system_tools.ts",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_mcp_tools_system_tools",
+      "target": "scripts_utils_getreviewreports",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "scripts/mcp/tools/system_tools.ts",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_mcp_tools_system_tools",
+      "target": "scripts_utils_rundoctorchecks",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "scripts/mcp/tools/system_tools.ts",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_mcp_tools_system_tools",
+      "target": "scripts_client_jules_api_listsourcesapi",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "scripts/mcp/tools/system_tools.ts",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_mcp_tools_system_tools",
+      "target": "scripts_core_types_mcptooldefinition",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -17890,7 +17926,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "scripts/build.js",
-      "source_location": "L1",
+      "source_location": "L7",
       "weight": 1.0
     },
     {
@@ -17902,7 +17938,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "scripts/build.js",
-      "source_location": "L2",
+      "source_location": "L8",
       "weight": 1.0
     },
     {
@@ -17914,7 +17950,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "scripts/build.js",
-      "source_location": "L3",
+      "source_location": "L9",
       "weight": 1.0
     },
     {
@@ -18411,6 +18447,18 @@
     },
     {
       "source": "scripts_install_hooks",
+      "target": "ref_child_process",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "scripts/install_hooks.js",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_install_hooks",
       "target": "ref_fs",
       "relation": "imports_from",
       "_origin": "ast",
@@ -18418,7 +18466,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "scripts/install_hooks.js",
-      "source_location": "L1",
+      "source_location": "L8",
       "weight": 1.0
     },
     {
@@ -18430,24 +18478,12 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "scripts/install_hooks.js",
-      "source_location": "L2",
-      "weight": 1.0
-    },
-    {
-      "source": "scripts_install_hooks",
-      "target": "ref_child_process",
-      "relation": "imports_from",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "scripts/install_hooks.js",
-      "source_location": "L28",
+      "source_location": "L9",
       "weight": 1.0
     },
     {
       "source": "scripts_installer",
-      "target": "ref_readline",
+      "target": "ref_path",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -18459,30 +18495,6 @@
     },
     {
       "source": "scripts_installer",
-      "target": "ref_fs",
-      "relation": "imports_from",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "scripts/installer.js",
-      "source_location": "L6",
-      "weight": 1.0
-    },
-    {
-      "source": "scripts_installer",
-      "target": "ref_path",
-      "relation": "imports_from",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "scripts/installer.js",
-      "source_location": "L7",
-      "weight": 1.0
-    },
-    {
-      "source": "scripts_installer",
       "target": "ref_os",
       "relation": "imports_from",
       "_origin": "ast",
@@ -18490,12 +18502,36 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "scripts/installer.js",
-      "source_location": "L8",
+      "source_location": "L11",
       "weight": 1.0
     },
     {
       "source": "scripts_installer",
       "target": "ref_child_process",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "scripts/installer.js",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_installer",
+      "target": "ref_readline",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "scripts/installer.js",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_installer",
+      "target": "ref_fs",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -18514,7 +18550,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "scripts/jules_client.ts",
-      "source_location": "L15",
+      "source_location": "L17",
       "weight": 1.0
     },
     {
@@ -18526,7 +18562,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "scripts/jules_client.ts",
-      "source_location": "L6",
+      "source_location": "L8",
       "weight": 1.0
     },
     {
@@ -18538,7 +18574,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "scripts/jules_client.ts",
-      "source_location": "L7",
+      "source_location": "L9",
       "weight": 1.0
     },
     {
@@ -18615,30 +18651,6 @@
     },
     {
       "source": "scripts_mcp_tools_agent_tools",
-      "target": "ref_fs",
-      "relation": "imports_from",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "scripts/mcp/tools/agent_tools.ts",
-      "source_location": "L6",
-      "weight": 1.0
-    },
-    {
-      "source": "scripts_mcp_tools_agent_tools",
-      "target": "ref_path",
-      "relation": "imports_from",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "scripts/mcp/tools/agent_tools.ts",
-      "source_location": "L7",
-      "weight": 1.0
-    },
-    {
-      "source": "scripts_mcp_tools_agent_tools",
       "target": "scripts_core_types",
       "relation": "imports_from",
       "_origin": "ast",
@@ -18646,7 +18658,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "scripts/mcp/tools/agent_tools.ts",
-      "source_location": "L8",
+      "source_location": "L10",
       "weight": 1.0
     },
     {
@@ -18658,79 +18670,31 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "scripts/mcp/tools/agent_tools.ts",
-      "source_location": "L9",
-      "weight": 1.0
-    },
-    {
-      "source": "scripts_mcp_tools_session_tools",
-      "target": "scripts_merge_session",
-      "relation": "imports_from",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "scripts/mcp/tools/session_tools.ts",
-      "source_location": "L10",
-      "weight": 1.0
-    },
-    {
-      "source": "scripts_mcp_tools_session_tools",
-      "target": "scripts_core_storage",
-      "relation": "imports_from",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "scripts/mcp/tools/session_tools.ts",
       "source_location": "L11",
       "weight": 1.0
     },
     {
-      "source": "scripts_mcp_tools_session_tools",
-      "target": "scripts_client_http",
-      "relation": "imports_from",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "scripts/mcp/tools/session_tools.ts",
-      "source_location": "L12",
-      "weight": 1.0
-    },
-    {
-      "source": "scripts_mcp_tools_session_tools",
-      "target": "scripts_client_jules_api",
-      "relation": "imports_from",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "scripts/mcp/tools/session_tools.ts",
-      "source_location": "L13",
-      "weight": 1.0
-    },
-    {
-      "source": "scripts_mcp_tools_session_tools",
-      "target": "ref_path",
-      "relation": "imports_from",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "scripts/mcp/tools/session_tools.ts",
-      "source_location": "L6",
-      "weight": 1.0
-    },
-    {
-      "source": "scripts_mcp_tools_session_tools",
+      "source": "scripts_mcp_tools_agent_tools",
       "target": "ref_fs",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "import",
-      "source_file": "scripts/mcp/tools/session_tools.ts",
-      "source_location": "L7",
+      "source_file": "scripts/mcp/tools/agent_tools.ts",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_mcp_tools_agent_tools",
+      "target": "ref_path",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "scripts/mcp/tools/agent_tools.ts",
+      "source_location": "L9",
       "weight": 1.0
     },
     {
@@ -18742,7 +18706,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "scripts/mcp/tools/session_tools.ts",
-      "source_location": "L8",
+      "source_location": "L10",
       "weight": 1.0
     },
     {
@@ -18754,55 +18718,79 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "scripts/mcp/tools/session_tools.ts",
-      "source_location": "L9",
+      "source_location": "L11",
       "weight": 1.0
     },
     {
-      "source": "scripts_mcp_tools_system_tools",
-      "target": "scripts_utils",
+      "source": "scripts_mcp_tools_session_tools",
+      "target": "scripts_merge_session",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "import",
-      "source_file": "scripts/mcp/tools/system_tools.ts",
-      "source_location": "L10",
+      "source_file": "scripts/mcp/tools/session_tools.ts",
+      "source_location": "L12",
       "weight": 1.0
     },
     {
-      "source": "scripts_mcp_tools_system_tools",
+      "source": "scripts_mcp_tools_session_tools",
+      "target": "scripts_core_storage",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "scripts/mcp/tools/session_tools.ts",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_mcp_tools_session_tools",
+      "target": "scripts_client_http",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "scripts/mcp/tools/session_tools.ts",
+      "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_mcp_tools_session_tools",
       "target": "scripts_client_jules_api",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "import",
-      "source_file": "scripts/mcp/tools/system_tools.ts",
-      "source_location": "L11",
+      "source_file": "scripts/mcp/tools/session_tools.ts",
+      "source_location": "L15",
       "weight": 1.0
     },
     {
-      "source": "scripts_mcp_tools_system_tools",
-      "target": "ref_child_process",
+      "source": "scripts_mcp_tools_session_tools",
+      "target": "ref_path",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "import",
-      "source_file": "scripts/mcp/tools/system_tools.ts",
-      "source_location": "L6",
+      "source_file": "scripts/mcp/tools/session_tools.ts",
+      "source_location": "L8",
       "weight": 1.0
     },
     {
-      "source": "scripts_mcp_tools_system_tools",
-      "target": "scripts_core_types",
+      "source": "scripts_mcp_tools_session_tools",
+      "target": "ref_fs",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "import",
-      "source_file": "scripts/mcp/tools/system_tools.ts",
-      "source_location": "L7",
+      "source_file": "scripts/mcp/tools/session_tools.ts",
+      "source_location": "L9",
       "weight": 1.0
     },
     {
@@ -18814,12 +18802,60 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "scripts/mcp/tools/system_tools.ts",
-      "source_location": "L8",
+      "source_location": "L10",
       "weight": 1.0
     },
     {
       "source": "scripts_mcp_tools_system_tools",
       "target": "scripts_setup",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "scripts/mcp/tools/system_tools.ts",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_mcp_tools_system_tools",
+      "target": "scripts_utils",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "scripts/mcp/tools/system_tools.ts",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_mcp_tools_system_tools",
+      "target": "scripts_client_jules_api",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "scripts/mcp/tools/system_tools.ts",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_mcp_tools_system_tools",
+      "target": "ref_child_process",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "scripts/mcp/tools/system_tools.ts",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_mcp_tools_system_tools",
+      "target": "scripts_core_types",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -18939,6 +18975,18 @@
     },
     {
       "source": "scripts_run_tests",
+      "target": "ref_path",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "scripts/run_tests.js",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_run_tests",
       "target": "ref_child_process",
       "relation": "imports_from",
       "_origin": "ast",
@@ -18946,7 +18994,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "scripts/run_tests.js",
-      "source_location": "L1",
+      "source_location": "L8",
       "weight": 1.0
     },
     {
@@ -18958,19 +19006,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "scripts/run_tests.js",
-      "source_location": "L2",
-      "weight": 1.0
-    },
-    {
-      "source": "scripts_run_tests",
-      "target": "ref_path",
-      "relation": "imports_from",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "scripts/run_tests.js",
-      "source_location": "L3",
+      "source_location": "L9",
       "weight": 1.0
     },
     {
@@ -22448,13 +22484,13 @@
     },
     {
       "source": "scripts_build",
-      "target": "scripts_build_esbuild",
+      "target": "scripts_build_gettsfiles",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "scripts/build.js",
-      "source_location": "L1",
+      "source_location": "L18",
       "weight": 1.0
     },
     {
@@ -22465,18 +22501,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "scripts/build.js",
-      "source_location": "L19",
-      "weight": 1.0
-    },
-    {
-      "source": "scripts_build",
-      "target": "scripts_build_fs",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "scripts/build.js",
-      "source_location": "L2",
+      "source_location": "L38",
       "weight": 1.0
     },
     {
@@ -22487,7 +22512,29 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "scripts/build.js",
-      "source_location": "L20",
+      "source_location": "L39",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_build",
+      "target": "scripts_build_esbuild",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/build.js",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_build",
+      "target": "scripts_build_fs",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/build.js",
+      "source_location": "L8",
       "weight": 1.0
     },
     {
@@ -22498,18 +22545,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "scripts/build.js",
-      "source_location": "L3",
-      "weight": 1.0
-    },
-    {
-      "source": "scripts_build",
-      "target": "scripts_build_gettsfiles",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "scripts/build.js",
-      "source_location": "L5",
+      "source_location": "L9",
       "weight": 1.0
     },
     {
@@ -23174,35 +23210,13 @@
     },
     {
       "source": "scripts_install_hooks",
-      "target": "scripts_install_hooks_fs",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "scripts/install_hooks.js",
-      "source_location": "L1",
-      "weight": 1.0
-    },
-    {
-      "source": "scripts_install_hooks",
-      "target": "scripts_install_hooks_path",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "scripts/install_hooks.js",
-      "source_location": "L2",
-      "weight": 1.0
-    },
-    {
-      "source": "scripts_install_hooks",
       "target": "scripts_install_hooks_execsync",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "scripts/install_hooks.js",
-      "source_location": "L28",
+      "source_location": "L10",
       "weight": 1.0
     },
     {
@@ -23213,7 +23227,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "scripts/install_hooks.js",
-      "source_location": "L4",
+      "source_location": "L13",
       "weight": 1.0
     },
     {
@@ -23224,106 +23238,29 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "scripts/install_hooks.js",
-      "source_location": "L5",
+      "source_location": "L14",
       "weight": 1.0
     },
     {
-      "source": "scripts_installer",
-      "target": "scripts_installer_readline",
+      "source": "scripts_install_hooks",
+      "target": "scripts_install_hooks_fs",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "scripts/installer.js",
-      "source_location": "L10",
+      "source_file": "scripts/install_hooks.js",
+      "source_location": "L8",
       "weight": 1.0
     },
     {
-      "source": "scripts_installer",
-      "target": "scripts_installer_rootdir",
+      "source": "scripts_install_hooks",
+      "target": "scripts_install_hooks_path",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "scripts/installer.js",
-      "source_location": "L12",
-      "weight": 1.0
-    },
-    {
-      "source": "scripts_installer",
-      "target": "scripts_installer_installmcpserver",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "scripts/installer.js",
-      "source_location": "L125",
-      "weight": 1.0
-    },
-    {
-      "source": "scripts_installer",
-      "target": "scripts_installer_homedir",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "scripts/installer.js",
-      "source_location": "L13",
-      "weight": 1.0
-    },
-    {
-      "source": "scripts_installer",
-      "target": "scripts_installer_printheader",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "scripts/installer.js",
-      "source_location": "L15",
-      "weight": 1.0
-    },
-    {
-      "source": "scripts_installer",
-      "target": "scripts_installer_configureapikey",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "scripts/installer.js",
-      "source_location": "L193",
-      "weight": 1.0
-    },
-    {
-      "source": "scripts_installer",
-      "target": "scripts_installer_findinstallededitors",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "scripts/installer.js",
-      "source_location": "L22",
-      "weight": 1.0
-    },
-    {
-      "source": "scripts_installer",
-      "target": "scripts_installer_main",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "scripts/installer.js",
-      "source_location": "L242",
-      "weight": 1.0
-    },
-    {
-      "source": "scripts_installer",
-      "target": "scripts_installer_fs",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "scripts/installer.js",
-      "source_location": "L6",
+      "source_file": "scripts/install_hooks.js",
+      "source_location": "L9",
       "weight": 1.0
     },
     {
@@ -23334,18 +23271,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "scripts/installer.js",
-      "source_location": "L7",
-      "weight": 1.0
-    },
-    {
-      "source": "scripts_installer",
-      "target": "scripts_installer_os",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "scripts/installer.js",
-      "source_location": "L8",
+      "source_location": "L10",
       "weight": 1.0
     },
     {
@@ -23356,12 +23282,122 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "scripts/installer.js",
-      "source_location": "L83",
+      "source_location": "L103",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_installer",
+      "target": "scripts_installer_os",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/installer.js",
+      "source_location": "L11",
       "weight": 1.0
     },
     {
       "source": "scripts_installer",
       "target": "scripts_installer_execsync",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/installer.js",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_installer",
+      "target": "scripts_installer_readline",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/installer.js",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_installer",
+      "target": "scripts_installer_installmcpserver",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/installer.js",
+      "source_location": "L151",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_installer",
+      "target": "scripts_installer_rootdir",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/installer.js",
+      "source_location": "L16",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_installer",
+      "target": "scripts_installer_homedir",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/installer.js",
+      "source_location": "L17",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_installer",
+      "target": "scripts_installer_printheader",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/installer.js",
+      "source_location": "L22",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_installer",
+      "target": "scripts_installer_configureapikey",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/installer.js",
+      "source_location": "L222",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_installer",
+      "target": "scripts_installer_main",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/installer.js",
+      "source_location": "L277",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_installer",
+      "target": "scripts_installer_findinstallededitors",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/installer.js",
+      "source_location": "L35",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_installer",
+      "target": "scripts_installer_fs",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -23378,7 +23414,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "scripts/jules_client.ts",
-      "source_location": "L33",
+      "source_location": "L35",
       "weight": 1.0
     },
     {
@@ -23466,7 +23502,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "scripts/mcp/tools/agent_tools.ts",
-      "source_location": "L14",
+      "source_location": "L16",
       "weight": 1.0
     },
     {
@@ -23477,7 +23513,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "scripts/mcp/tools/session_tools.ts",
-      "source_location": "L18",
+      "source_location": "L20",
       "weight": 1.0
     },
     {
@@ -23488,7 +23524,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "scripts/mcp/tools/system_tools.ts",
-      "source_location": "L16",
+      "source_location": "L18",
       "weight": 1.0
     },
     {
@@ -23735,46 +23771,13 @@
     },
     {
       "source": "scripts_run_tests",
-      "target": "scripts_run_tests_spawnsync",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "scripts/run_tests.js",
-      "source_location": "L1",
-      "weight": 1.0
-    },
-    {
-      "source": "scripts_run_tests",
-      "target": "scripts_run_tests_fs",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "scripts/run_tests.js",
-      "source_location": "L2",
-      "weight": 1.0
-    },
-    {
-      "source": "scripts_run_tests",
       "target": "scripts_run_tests_path",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "scripts/run_tests.js",
-      "source_location": "L3",
-      "weight": 1.0
-    },
-    {
-      "source": "scripts_run_tests",
-      "target": "scripts_run_tests_ensurevscodemock",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "scripts/run_tests.js",
-      "source_location": "L5",
+      "source_location": "L10",
       "weight": 1.0
     },
     {
@@ -23785,7 +23788,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "scripts/run_tests.js",
-      "source_location": "L92",
+      "source_location": "L141",
       "weight": 1.0
     },
     {
@@ -23796,7 +23799,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "scripts/run_tests.js",
-      "source_location": "L93",
+      "source_location": "L142",
       "weight": 1.0
     },
     {
@@ -23807,7 +23810,40 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "scripts/run_tests.js",
-      "source_location": "L99",
+      "source_location": "L151",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_run_tests",
+      "target": "scripts_run_tests_ensurevscodemock",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/run_tests.js",
+      "source_location": "L16",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_run_tests",
+      "target": "scripts_run_tests_spawnsync",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/run_tests.js",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_run_tests",
+      "target": "scripts_run_tests_fs",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/run_tests.js",
+      "source_location": "L9",
       "weight": 1.0
     },
     {
@@ -30606,5 +30642,5 @@
       "source_file": "references/jules-cli.md"
     }
   ],
-  "built_at_commit": "549d1abd55ec5ea7d81a731ca8ffec57efcbecc2"
+  "built_at_commit": "c14b76a735935cb5cf68b33014347bed1ee29060"
 }

@@ -171,7 +171,7 @@ Jules-Companion/
 │   └── agents/
 │       ├── registry.json            # Compiled catalog of 53 specialist agents
 │       └── *.md                     # 53 individual agent prompt definitions
-├── tests/                           # Tier 0: Native Node.js Test Suite (114 tests across 38 suites)
+├── tests/                           # Tier 0: Native Node.js Test Suite (120 tests across 38 suites)
 │   ├── doc_coverage.test.ts         # 100% TSDoc coverage enforcement
 │   ├── scheduler.test.ts            # Task Scheduler test suite
 │   ├── action_center.test.ts        # Native QuickPick Action Center test suite
