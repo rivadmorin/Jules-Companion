@@ -114,14 +114,26 @@ export async function generateRegistry(): Promise<Registry> {
     sortedAgents[k] = agentsMap[k];
   }
 
+  const registryPath = path.join(agentsDir, 'registry.json');
+  let generatedAt = new Date().toISOString();
+  if (fs.existsSync(registryPath)) {
+    try {
+      const existing = JSON.parse(await fs.promises.readFile(registryPath, 'utf8'));
+      if (
+        existing.totalAgents === Object.keys(sortedAgents).length &&
+        JSON.stringify(existing.agents) === JSON.stringify(sortedAgents) &&
+        existing.generatedAt
+      ) {
+        generatedAt = existing.generatedAt;
+      }
+    } catch {}
+  }
+
   const registry: Registry = {
-    generatedAt: new Date().toISOString(),
+    generatedAt,
     totalAgents: Object.keys(sortedAgents).length,
     agents: sortedAgents
   };
-
-  // Persist the extracted metadata database to disk for fast runtime access
-  const registryPath = path.join(agentsDir, 'registry.json');
   for (let attempt = 0; attempt < 5; attempt++) {
     try {
       await fs.promises.writeFile(registryPath, JSON.stringify(registry, null, 2), 'utf8');
