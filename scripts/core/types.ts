@@ -70,6 +70,14 @@ export interface SessionRecord {
   message?: string;
   /** Whether the session has been archived */
   archived?: boolean;
+  /** Optional execution plan proposed by the agent */
+  plan?: {
+    steps: Array<{
+      title: string;
+      description?: string;
+      status?: 'PENDING' | 'IN_PROGRESS' | 'COMPLETED' | string;
+    }>;
+  };
 }
 
 /**

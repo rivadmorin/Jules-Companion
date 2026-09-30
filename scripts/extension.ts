@@ -40,7 +40,9 @@ import {
 } from './utils';
 import { openVisualDiff, openUnifiedDiff, JulesDiffContentProvider, JULES_DIFF_SCHEME } from './ui/visual_diff';
 import { LiveSyncManager } from './ui/live_sync';
-import { openMissionControlWebview } from './ui/mission_control';
+import { openSessionActionCenter } from './ui/action_center';
+import { JulesActivityChannel } from './ui/activity_channel';
+import { JulesStatusBar } from './ui/status_bar';
 import { runCustomAgentWizard } from './ui/custom_agent_wizard';
 import { runGit, checkPatchConflict } from './core/git';
 
@@ -175,6 +177,7 @@ export function activate(context: vscode.ExtensionContext): void {
     journalsProvider.refresh();
     updateStatusBar();
     updateLiveSyncBar();
+    JulesStatusBar.getInstance().update(loadSessions(getWorkspaceRoot()));
   };
 
   // Synchronize API key from settings or secrets on activate
@@ -1418,33 +1421,27 @@ function getAgentQuickPickList(extensionPath: string, root: string): AgentPickIt
     })
   );
 
-  // 11. Open Mission Control Webview Command
+  // 11. Open Session Action Center Command (Native QuickPick Hub)
   context.subscriptions.push(
-    vscode.commands.registerCommand('jules.openMissionControl', async (item?: any) => {
+    vscode.commands.registerCommand('jules.openSessionActionCenter', async (item?: any) => {
       const root = getWorkspaceRoot();
-      let sessionId = resolveSessionId(item);
-
-      if (!sessionId) {
-        const sessions = loadSessions(root);
-        if (sessions.length === 0) {
-          vscode.window.showInformationMessage('No sessions found.');
-          return;
-        }
-
-        const picked = await vscode.window.showQuickPick(
-          sessions.map(s => ({
-            label: `#${s.id.slice(0, 8)} • ${s.agent}`,
-            description: `[${s.status}] ${s.task || ''}`,
-            id: s.id
-          })),
-          { title: 'Select Session to Open Mission Control' }
-        );
-
-        if (!picked) return;
-        sessionId = picked.id;
+      const sessionId = resolveSessionId(item);
+      await openSessionActionCenter(sessionId, root);
+    }),
+    vscode.commands.registerCommand('jules.openMissionControl', async (item?: any) => {
+      // Backward-compatible alias routing to native action center
+      const root = getWorkspaceRoot();
+      const sessionId = resolveSessionId(item);
+      await openSessionActionCenter(sessionId, root);
+    }),
+    vscode.commands.registerCommand('jules.streamActivityLog', async (item?: any) => {
+      const root = getWorkspaceRoot();
+      const sessionId = resolveSessionId(item);
+      if (sessionId) {
+        await JulesActivityChannel.getInstance().streamSessionActivities(sessionId, root);
+      } else {
+        JulesActivityChannel.getInstance().show(true);
       }
-
-      await openMissionControlWebview(sessionId!, context, root, () => refreshAll());
     })
   );
 
@@ -1878,6 +1875,7 @@ function getAgentQuickPickList(extensionPath: string, root: string): AgentPickIt
   watcher.onDidCreate(() => refreshAll());
   watcher.onDidDelete(() => refreshAll());
   context.subscriptions.push(watcher);
+  JulesStatusBar.getInstance().update(loadSessions(getWorkspaceRoot()));
 }
 
 /**
@@ -1893,4 +1891,6 @@ export function deactivate(): void {
   if (liveSyncBarItem) {
     liveSyncBarItem.dispose();
   }
+  JulesStatusBar.getInstance().dispose();
+  JulesActivityChannel.getInstance().dispose();
 }

@@ -7,6 +7,7 @@ import * as vscode from 'vscode';
 import { listSessionsApi, approvePlanApi } from '../client/jules_api';
 import { SessionRecord } from '../core/types';
 import { isSessionAwaitingApproval, isSessionAwaitingInput, executeDueTasks } from '../utils';
+import { JulesStatusBar } from './status_bar';
 
 /**
  * Manages periodic background polling of cloud session states and dispatches notifications on transitions.
@@ -101,6 +102,7 @@ export class LiveSyncManager {
       }
 
       this.onUpdate();
+      JulesStatusBar.getInstance().update(sessions);
     } catch {
       // Ignore background transient network hiccups
     }
@@ -110,10 +112,10 @@ export class LiveSyncManager {
         const idShort = task.sessionId ? `#${task.sessionId.slice(0, 8)}` : '';
         vscode.window.showInformationMessage(
           `⏰ Scheduled Jules task "${task.task.slice(0, 30)}" executed for ${task.agent} ${idShort}!`,
-          '🧭 Mission Control'
+          '🚀 Action Center'
         ).then(action => {
-          if (action === '🧭 Mission Control' && task.sessionId) {
-            vscode.commands.executeCommand('jules.openMissionControl', { session: { id: task.sessionId } });
+          if (action === '🚀 Action Center' && task.sessionId) {
+            vscode.commands.executeCommand('jules.openSessionActionCenter', { session: { id: task.sessionId } });
           }
         });
       });
@@ -146,19 +148,19 @@ export class LiveSyncManager {
       vscode.window.showInformationMessage(
         `💬 Jules Session #${idPrefix} (${agent}) is waiting for your response/input!`,
         '💬 Reply to Agent',
-        '🧭 Mission Control'
+        '🚀 Action Center'
       ).then(action => {
         if (action === '💬 Reply to Agent') {
           vscode.commands.executeCommand('jules.sendMessage', { session });
-        } else if (action === '🧭 Mission Control') {
-          vscode.commands.executeCommand('jules.openMissionControl', { session });
+        } else if (action === '🚀 Action Center') {
+          vscode.commands.executeCommand('jules.openSessionActionCenter', { session });
         }
       });
     } else if (isSessionAwaitingApproval(nextStatus)) {
       vscode.window.showWarningMessage(
         `🔔 Jules Session #${idPrefix} (${agent}) is awaiting your Plan Approval!`,
         '✅ Approve Plan',
-        '🧭 Mission Control'
+        '🚀 Action Center'
       ).then(async action => {
         if (action === '✅ Approve Plan') {
           try {
@@ -168,8 +170,8 @@ export class LiveSyncManager {
           } catch (err: any) {
             vscode.window.showErrorMessage(`Failed to approve plan: ${err.message}`);
           }
-        } else if (action === '🧭 Mission Control') {
-          vscode.commands.executeCommand('jules.openMissionControl', { session });
+        } else if (action === '🚀 Action Center') {
+          vscode.commands.executeCommand('jules.openSessionActionCenter', { session });
         }
       });
     } else if (nextStatus === 'COMPLETED' || nextStatus === 'SUCCEEDED') {
@@ -190,10 +192,10 @@ export class LiveSyncManager {
     } else if (nextStatus === 'FAILED' || nextStatus === 'ERROR') {
       vscode.window.showErrorMessage(
         `❌ Jules Session #${idPrefix} (${agent}) failed.`,
-        '📜 View Activities'
+        '📜 Stream Activity Log'
       ).then(action => {
-        if (action === '📜 View Activities') {
-          vscode.commands.executeCommand('jules.viewActivities', { session });
+        if (action === '📜 Stream Activity Log') {
+          vscode.commands.executeCommand('jules.streamActivityLog', { session });
         }
       });
     }

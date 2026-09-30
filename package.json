@@ -34,6 +34,8 @@
     "onCommand:jules.openAgentDoc",
     "onCommand:jules.viewVisualDiff",
     "onCommand:jules.pullSessionDiff",
+    "onCommand:jules.openSessionActionCenter",
+    "onCommand:jules.streamActivityLog",
     "onCommand:jules.openMissionControl",
     "onCommand:jules.toggleLiveSync",
     "onCommand:jules.createGitHubPR",
@@ -189,9 +191,19 @@
         "icon": "$(file-code)"
       },
       {
+        "command": "jules.openSessionActionCenter",
+        "title": "Open Session Action Center",
+        "icon": "$(rocket)"
+      },
+      {
+        "command": "jules.streamActivityLog",
+        "title": "Stream Session Activity Logs",
+        "icon": "$(output)"
+      },
+      {
         "command": "jules.openMissionControl",
-        "title": "Open Mission Control Dashboard",
-        "icon": "$(dashboard)"
+        "title": "Open Session Action Center",
+        "icon": "$(rocket)"
       },
       {
         "command": "jules.toggleLiveSync",
@@ -314,7 +326,7 @@
       ],
       "view/item/context": [
         {
-          "command": "jules.openMissionControl",
+          "command": "jules.openSessionActionCenter",
           "when": "view == jules.sessionsView && viewItem =~ /^session/",
           "group": "inline@0"
         },

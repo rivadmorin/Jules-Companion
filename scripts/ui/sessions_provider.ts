@@ -310,11 +310,11 @@ export class SessionTreeItem extends vscode.TreeItem {
         case 'activities & logs':
         case 'logs': {
           this.description = detailValue;
-          this.iconPath = new vscode.ThemeIcon('history');
-          this.tooltip = new vscode.MarkdownString('Click to view execution activities, plans, and bash logs');
+          this.iconPath = new vscode.ThemeIcon('output');
+          this.tooltip = new vscode.MarkdownString('Click to stream execution activities and bash logs into Output Channel');
           this.command = {
-            command: 'jules.viewActivities',
-            title: 'View Activities & Plan Logs',
+            command: 'jules.streamActivityLog',
+            title: 'Stream Activity Logs',
             arguments: [session]
           };
           break;
@@ -356,13 +356,14 @@ export class SessionTreeItem extends vscode.TreeItem {
           };
           break;
         }
+        case 'action center':
         case 'mission control': {
           this.description = detailValue;
-          this.iconPath = new vscode.ThemeIcon('dashboard');
-          this.tooltip = new vscode.MarkdownString('Open full interactive Mission Control dashboard');
+          this.iconPath = new vscode.ThemeIcon('rocket');
+          this.tooltip = new vscode.MarkdownString('Open native Session Action Center');
           this.command = {
-            command: 'jules.openMissionControl',
-            title: 'Open Mission Control',
+            command: 'jules.openSessionActionCenter',
+            title: 'Open Action Center',
             arguments: [session]
           };
           break;
@@ -632,6 +633,27 @@ export class SessionsTreeDataProvider implements vscode.TreeDataProvider<Session
           s
         );
       });
+    } else if (element.detailKey === 'execution-plan-group' && element.session?.plan?.steps) {
+      // Sub-level: show individual execution plan steps
+      const steps = element.session.plan.steps;
+      return steps.map((step, idx) => {
+        let icon = 'circle-outline';
+        if (step.status === 'COMPLETED') icon = 'pass';
+        else if (step.status === 'IN_PROGRESS') icon = 'sync~spin';
+
+        const stepItem = new SessionTreeItem(
+          `Step ${idx + 1}: ${step.title}`,
+          vscode.TreeItemCollapsibleState.None,
+          element.session,
+          `step-${idx + 1}`,
+          step.status || 'PENDING'
+        );
+        stepItem.iconPath = new vscode.ThemeIcon(icon);
+        if (step.description) {
+          stepItem.tooltip = new vscode.MarkdownString(`### Step ${idx + 1}: ${step.title}\n\n${step.description}`);
+        }
+        return stepItem;
+      });
     } else if (element.session && !element.detailKey) {
       // Sub-level: show expandable details of this session
       const s = element.session;
@@ -669,14 +691,28 @@ export class SessionsTreeDataProvider implements vscode.TreeDataProvider<Session
       const webUrl = s.url || `https://jules.google.com/session/${s.id}`;
       details.push(new SessionTreeItem('Jules Web', vscode.TreeItemCollapsibleState.None, s, 'Jules Web', webUrl));
 
-      // 7. 🧭 Mission Control Dashboard
-      details.push(new SessionTreeItem('Mission Control', vscode.TreeItemCollapsibleState.None, s, 'Mission Control', 'Open interactive dashboard'));
+      // 7. 🚀 Session Action Center
+      details.push(new SessionTreeItem('Action Center', vscode.TreeItemCollapsibleState.None, s, 'Action Center', 'Open native QuickPick hub'));
+
+      // 7b. 📋 Execution Plan (if available)
+      if (s.plan?.steps && s.plan.steps.length > 0) {
+        const completedSteps = s.plan.steps.filter(st => st.status === 'COMPLETED').length;
+        const planGroup = new SessionTreeItem(
+          `Execution Plan (${completedSteps}/${s.plan.steps.length})`,
+          vscode.TreeItemCollapsibleState.Collapsed,
+          s,
+          'execution-plan-group',
+          `${Math.round((completedSteps / s.plan.steps.length) * 100)}%`
+        );
+        planGroup.iconPath = new vscode.ThemeIcon('checklist');
+        details.push(planGroup);
+      }
 
       // 8. 🔍 Visual Diff
       details.push(new SessionTreeItem('Visual Diff', vscode.TreeItemCollapsibleState.None, s, 'Visual Diff', 'Inspect side-by-side diff'));
 
       // 9. 📜 Activities & Logs
-      details.push(new SessionTreeItem('Activities & Logs', vscode.TreeItemCollapsibleState.None, s, 'Activities', 'View step logs & commands'));
+      details.push(new SessionTreeItem('Activities & Logs', vscode.TreeItemCollapsibleState.None, s, 'Activities', 'Stream live step logs'));
 
       // 10. 💬 Send Instruction
       details.push(new SessionTreeItem('Send Instruction', vscode.TreeItemCollapsibleState.None, s, 'Send Instruction', 'Add instructions or feedback'));

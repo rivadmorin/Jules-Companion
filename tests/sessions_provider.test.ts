@@ -240,9 +240,9 @@ describe('SessionsTreeDataProvider & SessionTreeItem Unit Tests', () => {
       // 7. 📜 Activities & Logs
       const actItem = children.find(c => c.detailKey === 'Activities');
       assert.ok(actItem, 'Activities detail item should exist');
-      assert.strictEqual((actItem.iconPath as any).id, 'history');
+      assert.strictEqual((actItem.iconPath as any).id, 'output');
       assert.ok(actItem.command, 'Activities item should have view command');
-      assert.strictEqual(actItem.command.command, 'jules.viewActivities');
+      assert.strictEqual(actItem.command.command, 'jules.streamActivityLog');
 
       // 8. 💬 Send Instruction
       const msgItem = children.find(c => c.detailKey === 'Send Instruction' || c.detailKey === 'Send Message');
@@ -270,6 +270,32 @@ describe('SessionsTreeDataProvider & SessionTreeItem Unit Tests', () => {
       const deleteItem = children.find(c => c.detailKey === 'Delete Session');
       assert.ok(deleteItem, 'Delete Session item should exist');
       assert.strictEqual(deleteItem.command?.command, 'jules.deleteSession');
+    });
+
+    test('should render Execution Plan group and sub-steps when session has plan', async () => {
+      const planSession: SessionRecord = {
+        ...mockSession,
+        id: 'sess-with-plan',
+        plan: {
+          steps: [
+            { title: 'Init workspace', status: 'COMPLETED' },
+            { title: 'Deploy services', status: 'IN_PROGRESS' }
+          ]
+        }
+      };
+      const sessionItem = new SessionTreeItem('label', 1, planSession);
+      const provider = new SessionsTreeDataProvider(() => tempDir);
+      const children = await provider.getChildren(sessionItem);
+
+      const planGroup = children.find(c => c.detailKey === 'execution-plan-group');
+      assert.ok(planGroup, 'Execution Plan group item should exist');
+      assert.strictEqual((planGroup.iconPath as any).id, 'checklist');
+
+      const planSteps = await provider.getChildren(planGroup);
+      assert.strictEqual(planSteps.length, 2);
+      assert.strictEqual(planSteps[0].label, 'Step 1: Init workspace');
+      assert.strictEqual((planSteps[0].iconPath as any).id, 'pass');
+      assert.strictEqual((planSteps[1].iconPath as any).id, 'sync~spin');
     });
 
     test('should assign session-awaiting-plan contextValue and provide Approve Plan item', async () => {

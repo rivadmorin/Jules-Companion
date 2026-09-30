@@ -43,6 +43,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Upgraded `openUnifiedDiff` to open in-memory unified diffs with native `.diff` syntax highlighting in an editor tab.
   - Eliminated 100% of temporary scratch disk I/O (`.jules-companion/scratch/visual_diff/`) when inspecting session patches.
   - Enhanced multi-file patch navigation via interactive QuickPick displaying per-file addition and deletion metrics (`+A -D`).
+- **100% Pure Native IDE GUI Migration (Zero Webview / Chromium Overhead)**:
+  - Decommissioned legacy HTML/Chromium Webview (`scripts/ui/mission_control.ts`, -62 KB) in favor of 100% native VS Code / Antigravity IDE primitives.
+  - Implemented **Native Session Action Center** (`scripts/ui/action_center.ts`): Fast, keyboard-accessible QuickPick hub for inspecting plans, launching diffs, streaming logs, approving plans, and managing git branches.
+  - Added **Native Activity Stream OutputChannel** (`scripts/ui/activity_channel.ts`): Streams live cloud execution milestones, progress, bash outputs, and messages directly into IDE's native Output panel.
+  - Added **Native Status Bar Item Controller** (`scripts/ui/status_bar.ts`): Persistent indicator prioritizing states (`Plan Approval Needed`, `Input Needed`, `Running [spinner]`, `Completed`, `Idle`).
+  - Implemented **Native Hierarchical Execution Plan in Sidebar TreeView** (`scripts/ui/sessions_provider.ts`): Collapsible `📋 Execution Plan (X/Y steps)` with native step icons (`$(pass)`, `$(sync~spin)`, `$(circle-outline)`).
 
 ---
 

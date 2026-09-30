@@ -13,8 +13,7 @@ function ensureVsCodeMock() {
     fs.writeFileSync(pkgPath, JSON.stringify({ name: 'vscode', version: '1.0.0', main: 'index.js' }));
   }
   const indexPath = path.join(vsCodeDir, 'index.js');
-  if (!fs.existsSync(indexPath)) {
-    fs.writeFileSync(indexPath, `
+  const mockContent = `
 class TreeItem {
   constructor(label, collapsibleState) {
     this.label = label;
@@ -39,6 +38,7 @@ class ThemeColor {
   }
 }
 const TreeItemCollapsibleState = { None: 0, Collapsed: 1, Expanded: 2 };
+const StatusBarAlignment = { Left: 1, Right: 2 };
 const Uri = {
   file: (p) => ({ fsPath: p, path: p, scheme: 'file', toString: () => 'file://' + p }),
   parse: (u) => ({ toString: () => u, scheme: u.split(':')[0], path: u })
@@ -49,21 +49,42 @@ class MarkdownString {
   appendText(val) { this.value += val; }
 }
 const workspace = {
+  workspaceFolders: [{ uri: { fsPath: process.cwd() } }],
   registerTextDocumentContentProvider: (scheme, provider) => ({ dispose: () => {} }),
-  openTextDocument: async (uri) => ({ uri })
+  openTextDocument: async (uri) => ({ uri }),
+  getConfiguration: () => ({ get: () => undefined })
 };
 const window = {
   showInformationMessage: async () => {},
   showErrorMessage: async () => {},
+  showWarningMessage: async () => {},
   showQuickPick: async () => null,
-  withProgress: async (opt, task) => task()
+  showInputBox: async () => '',
+  withProgress: async (opt, task) => task(),
+  createOutputChannel: (name) => ({
+    name,
+    appendLine: () => {},
+    append: () => {},
+    show: () => {},
+    clear: () => {},
+    dispose: () => {}
+  }),
+  createStatusBarItem: (alignment, priority) => ({
+    alignment,
+    priority,
+    text: '',
+    tooltip: '',
+    show: () => {},
+    hide: () => {},
+    dispose: () => {}
+  })
 };
 const commands = {
   executeCommand: async () => {}
 };
-module.exports = { TreeItem, TreeItemCollapsibleState, EventEmitter, ThemeIcon, ThemeColor, Uri, MarkdownString, workspace, window, commands };
-`);
-  }
+module.exports = { TreeItem, TreeItemCollapsibleState, StatusBarAlignment, EventEmitter, ThemeIcon, ThemeColor, Uri, MarkdownString, workspace, window, commands };
+`;
+  fs.writeFileSync(indexPath, mockContent.trim());
 }
 
 ensureVsCodeMock();
