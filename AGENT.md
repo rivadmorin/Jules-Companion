@@ -53,13 +53,15 @@ When inspecting, modifying, refactoring, or extending this codebase, you must ad
 * **No File Dumping**: Never flood the conversation context with raw file dumps (`print(FILE_CONTENT)` is forbidden). Print only derived summaries, line counts, or exact metrics.
 * **RTK Prefix Reflex**: Always prefix dev and git commands with `rtk` in `run_command` (e.g. `rtk git status`, `rtk npm test`, `rtk git commit ...`) to compress CLI output tokens.
 
-### Invariant 5: 100% TSDoc / JSDoc Coverage is Mandatory
+### Invariant 5: 100% TSDoc / JSDoc & Inline Code Documentation is Mandatory
 Every exported symbol (`export function`, `export class`, `export interface`, `export type`, `export const`) **must** include a comprehensive TSDoc comment block:
 * `@module <name>` header at the very top of each file.
 * Clear summary of purpose, behavior, and side effects.
 * `@param <name>` tag for every parameter, describing its type and semantics.
 * `@returns` tag documenting return values or Promise resolutions.
-* *Enforcement*: The CI pipeline and [`tests/doc_coverage.test.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/tests/doc_coverage.test.ts) will immediately fail if even a single exported symbol lacks documentation.
+* **Inline Documentation Density**: Every script in `scripts/` (both `.ts` and `.js`) must maintain non-zero inline comments and healthy comment density (>= 10% for libraries, utilities, and tools; >= 4% for monolithic entrypoints like `extension.ts`).
+* **Step-by-Step Logic Comments**: All build/test scripts (`build.js`, `run_tests.js`, `installer.js`, `install_hooks.js`, etc.) and MCP tool handlers (`scripts/mcp/tools/*.ts`) must document execution phases with structured comments (`// Step 1: ...`, `// Step 2: ...`).
+* *Enforcement*: The CI pipeline and [`tests/doc_coverage.test.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/tests/doc_coverage.test.ts) (6 automated audits) will immediately fail if documentation or inline comments are missing.
 
 ### Invariant 6: Strict Downward Layering & Zero Circular Dependencies
 * **Governing Sensor**: [**Sentrux** (`sentrux/sentrux`)](https://github.com/sentrux/sentrux) — AI Codebase Quality Sensor & Architectural Linter.
@@ -71,17 +73,17 @@ Every exported symbol (`export function`, `export class`, `export interface`, `e
 ### Invariant 7: Status Disambiguation — Plan Approval vs User Feedback
 Google Jules Cloud sessions operate with two distinct pausing states that must **never** be conflated:
 1. **`AWAITING_PLAN_APPROVAL`**: The cloud agent has formulated an execution plan and paused for human authorization.
-   - *Webview UI*: Render the green "Plan Approval Required" banner with the "Approve Plan & Authorize Execution" button.
+   - *Native UI*: Priority Status Bar renders green `$(bell-dot) Jules: Plan Approval Needed`, Sessions TreeView displays `$(pass) Approve Plan`, and Action Center offers `$(pass) Approve Proposed Execution Plan`.
    - *Action API*: Invoke [`approvePlanApi`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/client/jules_api.ts) (`jules.approvePlan`).
 2. **`AWAITING_USER_FEEDBACK` / `AWAITING_USER_INPUT`**: The cloud agent has paused to ask a clarifying question.
-   - *Webview UI*: Render the amber "Agent Paused for Feedback" banner with the conversational input box and "Reply to Agent" button.
+   - *Native UI*: Priority Status Bar renders amber `$(comment-discussion) Jules: Input Needed`, Sessions TreeView displays `$(comment-discussion) Send Response / Instructions`, and Action Center offers `$(comment-discussion) Send Response / Instructions to Agent`.
    - *Action API*: Invoke [`sendMessageApi`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/client/jules_api.ts) (`jules.sendMessage`).
-* **Rule**: It is a critical regression to display plan authorization buttons when the agent is waiting for user input, or vice-versa.
+* **Rule**: It is a critical regression to display plan authorization actions when the agent is waiting for user input, or vice-versa.
 
 ### Invariant 8: Pure Native IDE GUI & State Discipline
 * **Zero Webview Overhead**: The extension runs 100% on native VS Code / Antigravity IDE primitives (`vscode.window.createOutputChannel`, `vscode.window.createStatusBarItem`, `vscode.window.showQuickPick`, `vscode.diff`, `vscode.TreeDataProvider`). Legacy Chromium HTML webviews are strictly retired.
 * **Keyboard-Navigable Action Center**: All session inspections, plan authorizations, diff launches, and branch checkouts are accessible instantly via the native QuickPick Action Center (`jules.openSessionActionCenter`).
-* **Live Activity Streaming**: Activities and execution logs stream directly into the native OutputChannel (`Jules Activity Stream`), eliminating DOM parsing overhead while supporting full log searching and syntax highlighting.
+* **Live Activity Streaming**: Activities, bash outputs, and background LiveSync transitions stream directly into the native OutputChannel (`Jules Activity Stream`), eliminating DOM parsing overhead while supporting full log searching and syntax highlighting.
 * **Hierarchical TreeView Execution Plan**: Sessions render a collapsible `📋 Execution Plan (X/Y completed)` group in the sidebar, dynamically displaying step progress (`$(pass)`, `$(sync~spin)`, `$(circle-outline)`).
 * **Zero-Churn Disk Persistence**: In background sync loops, only call `saveSessions()` when `currentSessions[idx].status !== liveStatus`.
 
@@ -92,7 +94,8 @@ Google Jules Cloud sessions operate with two distinct pausing states that must *
 * **In-Memory TTL Patch Check Caching**: In [`scripts/core/git.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/core/git.ts), dry-run conflict checks (`checkPatchConflict`) MUST leverage `patchCheckCache` (30s TTL). Do not write scratch patch files or spawn `git apply --check` processes repeatedly on unchanged patch content.
 * **Scratch Cleanup**: Call `cleanSessionScratch(sessionId)` upon session archive or delete to prevent leftover files in `.jules-companion/diffs/` or `.jules-companion/scratch/`.
 
-### Invariant 10: Antigravity IDE & Windows Environment Specifics
+### Invariant 10: Antigravity IDE & Windows PowerShell Specifics
+* **PowerShell 5.1 Command Chaining**: Windows PowerShell 5.1 rejects the POSIX `&&` operator with a parser error (`The token '&&' is not a valid statement separator`). Always separate chained commands with `;` or execute them as distinct tool calls (e.g. `rtk git add -A; rtk git commit -m '...'`).
 * **Codicon Font Limitation**: Antigravity IDE's internal `codicon.ttf` omits `0xEC6F` (`$(git-branch)`), rendering blank square icons. Always use `$(source-control)` or `$(repo-forked)` in `package.json` for Git branching actions.
 * **PowerShell String Escaping**: In Windows PowerShell (`pwsh`), `$(...)` is parsed as subexpression syntax. When writing Git commit messages or shell strings containing codicons or variable interpolations, escape as `` `$(...) `` or wrap in single quotes `'...'`.
 * **Non-Admin Execution**: Antigravity IDE should be run as a standard non-admin user so UIPI (User Interface Privilege Isolation) does not block CUA input injection (`hotkey`, `type_text`, `press_key`).
@@ -180,7 +183,7 @@ Jules-Companion/
 │   ├── sessions_provider.test.ts    # TreeDataProvider test suite
 │   ├── mcp.test.ts                  # MCP registry and tool execution tests
 │   └── merge_session.test.ts        # Pre-merge safety gate tests
-├── graphify-out/                    # Codebase Knowledge Graph & Visualizer (749 nodes, 1577 edges, 62 communities)
+├── graphify-out/                    # Codebase Knowledge Graph & Visualizer (819 nodes, 1692 edges, 72 communities)
 │   ├── graph.json                   # GraphRAG knowledge graph export
 │   ├── graph.html                   # Interactive browser visualization
 │   └── GRAPH_REPORT.md              # Architectural health & God Nodes audit report
@@ -210,11 +213,11 @@ rtk npm test
 # or full verification (typecheck + tests):
 rtk npm run verify
 ```
-* **Success Criteria**: All **117 tests across 36 suites** must pass with `0 failures`.
+* **Success Criteria**: All **120 tests across 38 suites** must pass with `0 failures`.
 
 ### Step 4: Recompile & Verify Packaging
 ```powershell
-# 1. Compile TypeScript entrypoints & run global sync
+# 1. Compile 30 TypeScript entrypoints & run global sync
 rtk npm run build
 
 # 2. If agent definitions were modified, recompile registry
@@ -285,8 +288,11 @@ Jules Companion registers **20 native MCP tools**. When calling tools, use these
 ## ⚠️ 8. Development Gotchas & Operational Notes
 
 Refer to [`NOTE.md`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/NOTE.md) for full operational autopsy logs:
-* **PowerShell Subexpression Trap**: Never put unescaped `$(...)` in double-quoted strings.
-* **Antigravity IDE Font Glyph**: Never use `$(git-branch)` in UI contributions; always use `$(source-control)`.
+* **PowerShell 5.1 Statement Separator Trap**: The POSIX/bash `&&` operator is invalid in Windows PowerShell 5.1 (`ParserError: The token '&&' is not a valid statement separator`). Always separate chained commands with `;` (semicolon) or run them as distinct sequential commands.
+* **PowerShell Subexpression Trap**: Never put unescaped `$(...)` in double-quoted strings in PowerShell.
+* **Inline Documentation Density Standard**: All scripts in `scripts/` must maintain comment-to-code density (>= 10% for tools and utilities; >= 4% for monolithic entrypoints) and structured sequential step comments (`// Step 1: ...`, `// Step 2: ...`) to satisfy `tests/doc_coverage.test.ts`.
+* **Antigravity IDE Font Glyph**: Never use `$(git-branch)` in UI contributions; always use `$(source-control)` or `$(repo-forked)`.
+* **Pure Native IDE UI Primitives**: Avoid legacy Webview panels; use `vscode.OutputChannel` ("Jules Activity Stream") for live streaming/logs, `vscode.QuickPick` for action centers, and `vscode.TreeDataProvider` for hierarchical views.
 * **UAC / UIPI**: Do not run Antigravity IDE as Administrator if CUA driver control is required.
 * **Offline Mock Precedence**: Parameter and branch validation must execute before credential checks.
 * **Atomic JSON Storage**: Always use atomic write-rename routines with `.tmp` files for `.jules-companion/` state files.
@@ -299,13 +305,13 @@ Before completing any task, verify every single item:
 - [ ] Only minimal, targeted lines were modified (Shortest Working Diff).
 - [ ] No speculative or unused abstractions were added (Ponytail YAGNI).
 - [ ] Zero new external npm dependencies were added unless explicitly authorized.
-- [ ] All new or modified exported functions, classes, and types have 100% TSDoc blocks.
+- [ ] All new or modified exported functions, classes, and types have 100% TSDoc blocks and comply with inline doc density standards (`tests/doc_coverage.test.ts`).
 - [ ] No phantom agents were introduced; all personas align with `references/agents/registry.json`.
 - [ ] Architecture passes Sentrux verification (`sentrux check .`) with 0 cycle violations.
-- [ ] `rtk npm run verify` passes typechecking and all **117 tests across 36 suites** with 0 failures.
-- [ ] `rtk npm run build` compiles 28 entrypoints cleanly and completes global sync.
+- [ ] `rtk npm run verify` passes typechecking and all **120 tests across 38 suites** with 0 failures.
+- [ ] `rtk npm run build` compiles **30 TypeScript entrypoints** cleanly and completes global sync.
 - [ ] `rtk npm run package` produces `jules-companion-1.2.2.vsix`.
 - [ ] Extension was re-installed to Antigravity IDE via `antigravity-ide.cmd --install-extension jules-companion-1.2.2.vsix --force`.
-- [ ] Knowledge graph was synchronized via `rtk graphify update .` (749 nodes, 1577 edges).
+- [ ] Knowledge graph was synchronized via `rtk graphify update .` (**819 nodes, 1692 edges, 72 communities**).
 - [ ] All relevant documentation (`CHANGELOG.md`, `README.md`, `docs/codebase/`, `AGENT.md`) is updated.
 - [ ] Git working tree is completely clean and pushed to `origin/main`.
