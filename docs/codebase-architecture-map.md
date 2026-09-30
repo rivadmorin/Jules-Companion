@@ -46,7 +46,7 @@ graph TD
         SESS_TOOLS["scripts/mcp/tools/session_tools.ts (10 tools)"]
         AGENT_TOOLS["scripts/mcp/tools/agent_tools.ts (4 tools)"]
         SYS_TOOLS["scripts/mcp/tools/system_tools.ts (6 tools)"]
-        UI_PROV["scripts/ui/*.ts (Sessions, Workspace, LiveSync, Mission Control)"]
+        UI_PROV["scripts/ui/*.ts (Sessions, Action Center, OutputChannel, LiveSync)"]
     end
 
     subgraph Tier_3 ["Tier 3: Workflows & Domain Core"]
@@ -221,7 +221,7 @@ For exhaustive technical references on each subsystem:
 * 👉 [**02 - API Client Subsystem Reference**](codebase/02-api-client-subsystem.md)
 * 👉 [**03 - Session Lifecycle & 4 Launch Modes**](codebase/03-session-lifecycle.md)
 * 👉 [**04 - VS Code Extension & UI Layer**](codebase/04-vscode-extension-ui.md)
-* 👉 [**05 - Mission Control Webview Subsystem**](codebase/05-mission-control-webview.md)
+* 👉 [**05 - Pure Native UI & Session Action Center Subsystem**](codebase/05-mission-control-webview.md)
 * 👉 [**06 - MCP Server Subsystem**](codebase/06-mcp-server-subsystem.md)
 * 👉 [**07 - Agent System & Customization**](codebase/07-agents-and-customization.md)
 * 👉 [**08 - Utilities & CLI Tooling**](codebase/08-utilities-and-cli.md)

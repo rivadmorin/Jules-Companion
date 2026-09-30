@@ -19,11 +19,11 @@ It acts as an intelligent co-pilot to orchestrate local developer workflows (Git
   * **Review** (`review`): Generates step-by-step plan and pauses for your authorization (`requirePlanApproval: true`).
   * **Interactive plan** (`interactive`): Jules engages in a dialogue to clarify goals before planning and approval.
   * **Scheduled task** (`scheduled` [NEW!]): Queue background tasks to execute autonomously at a future time or delay.
-* **⏰ Autonomous Task Scheduler Engine**: Background evaluation loop that triggers due tasks, captures cloud session IDs, and alerts the developer.
-* **🎛️ Mission Control Webview**: Interactive panel with live cloud state reconciliation, execution plan stepper, activity timeline, and differentiated Plan Approval vs User Feedback banners.
-* **💻 Native IDE Extension**: Sidebar TreeViews for Active Sessions, Scheduled Tasks, Archived Sessions, Workspace Git context, Agent Roster, and Decision Journals.
+* **🚀 100% Pure Native IDE GUI**: Fast, keyboard-accessible QuickPick Action Center, Status Bar indicators, and OutputChannel live log streaming with zero Chromium webview overhead.
+* **🔍 Native Side-by-Side Diff Editor**: In-memory visual diff inspection (`vscode.diff`) with syntax highlighting, change navigation, and zero disk scratch writes (`jules-diff://`).
+* **💻 Native IDE Extension**: Sidebar TreeViews for Active Sessions, Hierarchical Execution Plans, Scheduled Tasks, Archived Sessions, Workspace Git context, Agent Roster, and Decision Journals.
 * **🔌 Native MCP Server (20 Tools)**: Standard JSON-RPC server via `stdio` compatible with Claude, Antigravity CLI, Cursor, and any MCP client.
-* **🤖 30 Specialist Agents**: Fine-tuned agent roles across Coding, Testing, Security, Architecture, DevOps, and Documentation.
+* **🤖 53 Specialist Agents**: Fine-tuned agent roles across Coding, Testing, Security, Architecture, DevOps, and Documentation.
 * **🛡️ Fail-Safe Safety Gate**: Verifies cloud execution success (`SUCCEEDED`) and clean working tree before performing Git merges.
 
 ---
@@ -136,8 +136,8 @@ Aplikasi ini berfungsi sebagai ko-pilot pintar untuk mengintegrasikan alur kerja
   * **Interactive plan** (`interactive`): Jules berdialog interaktif untuk memperjelas tujuan sebelum merumuskan rencana.
   * **Scheduled task** (`scheduled` [BARU!]): Menjadwalkan tugas untuk dieksekusi secara otonom di masa mendatang.
 * **⏰ Mesin Penjadwalan Tugas Otonom**: Loop evaluasi latar belakang yang memicu tugas jatuh tempo, mencatat ID sesi cloud, dan memberi notifikasi ke IDE.
-* **🎛️ Mission Control Webview**: Panel interaktif dengan sinkronisasi status cloud live, stepper rencana eksekusi, timeline aktivitas, dan pemisahan tegas banner Approval Plan vs Masukan Pengguna.
-* **💻 Ekstensi IDE Native**: Sidebar TreeView untuk Sesi Aktif, Tugas Terjadwal, Arsip Sesi, Konteks Git Workspace, Katalog Agen, dan Jurnal Keputusan.
+* **🚀 100% Pure Native IDE GUI**: QuickPick Action Center instan, indikator Status Bar, dan streaming log OutputChannel tanpa beban Chromium webview.
+* **💻 Ekstensi IDE Native**: Sidebar TreeView untuk Sesi Aktif, Hierarchical Execution Plan, Tugas Terjadwal, Arsip Sesi, Konteks Git Workspace, Katalog 53 Agen, dan Jurnal Keputusan.
 * **🔍 Native Side-by-Side Diff Editor**: Inspeksi perubahan patch sesi cloud secara berdampingan (`vscode.diff`) atau unified patch tab tanpa penulisan berkas scratch ke disk (`jules-diff://`).
 * **🔌 Server MCP Native (20 Tools)**: Server standar JSON-RPC via `stdio` yang kompatibel dengan Claude, Antigravity CLI, Cursor, dan klien MCP lainnya.
 * **🤖 53 Agen Spesialis**: Peran agen yang telah dikalibrasi untuk Coding, Testing, Keamanan, Arsitektur, DevOps, dan Dokumentasi.

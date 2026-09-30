@@ -35,7 +35,7 @@ body:
     attributes:
       label: Proposed Solution or Implementation
       description: Describe what you would like to see happen.
-      placeholder: "Add a new button in Mission Control that allows..."
+      placeholder: "Add a new action in Session Action Center that allows..."
     validations:
       required: true
 

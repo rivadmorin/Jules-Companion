@@ -125,7 +125,9 @@ npm run package
 ### Essential Test Suites:
 - **`tests/doc_coverage.test.ts`**: Audits 100% of exported TypeScript symbols across `scripts/**/*.ts` to ensure complete documentation tags.
 - **`tests/scheduler.test.ts`**: Tests scheduled task persistence, due evaluation, cancellation, and execution.
-- **`tests/mission_control.test.ts`**: Validates CSP compliance, event delegation, and plan approval vs user feedback banner separation.
+- **`tests/action_center.test.ts`**: Validates native QuickPick items, dynamic action routing, and contextual fallback when no session is selected.
+- **`tests/activity_channel.test.ts`**: Tests OutputChannel streaming and step execution logs.
+- **`tests/status_bar.test.ts`**: Tests priority status bar item states and click triggers.
 - **`tests/sessions_provider.test.ts`**: Tests TreeView generation and universal session ID resolution.
 - **`scripts/build.js` & CI Pipeline**: Cross-platform Node compilation and GitHub Actions matrix tests ([`.github/workflows/ci.yml`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/.github/workflows/ci.yml)) across Ubuntu & Windows.
 
@@ -133,19 +135,19 @@ npm run package
 
 ## 4. Extension Distribution & Installation
 
-Once `jules-companion-1.1.0.vsix` is built:
+Once `jules-companion-1.2.2.vsix` is built:
 
 ### A. Local Development Direct Sync:
 Copy `dist/` and `package.json` directly into your IDE extensions folder:
-- **VS Code**: `C:\Users\<User>\.vscode\extensions\rivadmorin.jules-companion-1.1.0`
-- **Antigravity IDE**: `C:\Users\<User>\.antigravity-ide\extensions\rivadmorin.jules-companion-1.1.0`
+- **VS Code**: `C:\Users\<User>\.vscode\extensions\rivadmorin.jules-companion-1.2.2`
+- **Antigravity IDE**: `C:\Users\<User>\.antigravity-ide\extensions\rivadmorin.jules-companion-1.2.2`
 
 ### B. VSIX Installation via GUI:
 1. Open VS Code or Antigravity IDE.
 2. Go to **Extensions** panel (`Ctrl+Shift+X`).
 3. Click the `...` menu in the upper-right corner of the Extensions panel.
 4. Select **Install from VSIX...**.
-5. Choose `jules-companion-1.1.0.vsix`.
+5. Choose `jules-companion-1.2.2.vsix`.
 
 ---
 
@@ -155,5 +157,5 @@ Copy `dist/` and `package.json` directly into your IDE extensions folder:
 |---|---|---|
 | API requests return `401 Unauthorized` | Google Jules API key is missing or invalid. | Run `Jules: Set API Key` (`jules.setApiKey`) or check `JULES_API_KEY` environment variable. |
 | Safety Gate rejects merge | Cloud session is not `SUCCEEDED` or local working tree is dirty. | Wait for Jules to complete on web console, or commit/stash local changes before merging. |
-| Mission Control buttons unresponsive | CSP violation caused by inline script or onclick handler. | Ensure all clickable elements use `data-action="..."` handled by centralized delegation in `mission_control.ts`. |
+| Session Action Center options not appearing | No active session selected or session record missing. | Click a session in the Sessions TreeView, or select a session from the picker when prompted. |
 | Scheduled tasks not running at target time | LiveSync polling is disabled. | Turn on LiveSync (check `$(sync) Jules Sync` status bar or run `jules.toggleLiveSync`). |

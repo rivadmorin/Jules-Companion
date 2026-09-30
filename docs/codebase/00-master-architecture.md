@@ -11,7 +11,7 @@ The primary architectural goals of Jules Companion are:
 1. **Multi-Modal Execution**: Full support for all 4 official Google Jules launch modes (`start`, `review`, `interactive`, `scheduled`).
 2. **Autonomous Background Scheduling**: Standalone local task scheduler that evaluates due tasks and autonomously deploys them without manual developer intervention.
 3. **State Reconciliation & Safety Gate**: Transparent reconciliation between live cloud state (`ACTIVE`, `AWAITING_PLAN_APPROVAL`, `AWAITING_USER_FEEDBACK`, `SUCCEEDED`, `FAILED`) and local disk cache, protected by a fail-safe *Safety Gate* before any Git merge operations.
-4. **Dual Interface Compatibility**: Operable visually via IDE TreeViews & Mission Control Webview, or programmatically by Large Language Models (LLMs) via the Model Context Protocol (MCP) using 20 native tools.
+4. **Dual Interface Compatibility**: Operable visually via IDE TreeViews, Session Action Center, and OutputChannel, or programmatically by Large Language Models (LLMs) via the Model Context Protocol (MCP) using 20 native tools.
 5. **Clean Separation of Concerns**: Highly modular design strictly separating UI, Core Domain, API Client, MCP Server, and Storage layers.
 
 ---
@@ -25,8 +25,9 @@ graph TD
     subgraph Layer 1: Presentation & UI Layer
         EXT["Extension Controller\n(scripts/extension.ts)"]
         TV["Tree Data Providers\n(Sessions, Workspace, Agents, Journals)"]
-        MC["Mission Control Webview\n(scripts/ui/mission_control.ts)"]
-        VD["Visual Diff Viewer\n(scripts/ui/visual_diff.ts)"]
+        AC["Session Action Center & Status Bar\n(scripts/ui/action_center.ts, status_bar.ts)"]
+        LOG["Activity Stream OutputChannel\n(scripts/ui/activity_channel.ts)"]
+        VD["In-Memory Visual Diff\n(scripts/ui/visual_diff.ts)"]
         WIZ["Custom Agent Wizard\n(scripts/ui/custom_agent_wizard.ts)"]
     end
 
@@ -180,9 +181,8 @@ stateDiagram-v2
 
 ## 5. Security & Isolation Policies
 
-1. **Content Security Policy (CSP) in Webview**:
-   - The Mission Control Webview enforces strict CSP (`default-src 'none'; style-src 'unsafe-inline'; script-src 'nonce-...';`).
-   - Inline event handlers (`onclick="..."`) are strictly prohibited. All user actions utilize semantic Event Delegation via `data-action` attributes.
+1. **Pure Native UI Isolation**:
+   - The user interface runs 100% on native VS Code / Antigravity IDE host primitives (QuickPick, TreeView, OutputChannel, StatusBar), eliminating external webview browser engines, Chromium sandboxes, and DOM injection vectors entirely.
 2. **Credential Resolution**:
    - Google Jules API key is resolved hierarchically: VS Code configuration (`jules.apiKey`) -> Environment variable (`JULES_API_KEY` / `GEMINI_API_KEY`) -> local `.env` file -> Secure interactive prompt.
 3. **Safety Gate Merge Verification**:

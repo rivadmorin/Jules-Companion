@@ -39,9 +39,9 @@
 | | `jules.viewScheduledTaskDetail` | Views prompt, target time, and metadata. |
 | | `jules.runScheduledTaskNow` | Force-executes a scheduled task immediately. |
 | | `jules.cancelScheduledTask` | Cancels a pending scheduled task. |
-| **Views & Webview** | `jules.openMissionControl` | Opens interactive Mission Control Webview panel. |
-| | `jules.viewVisualDiff` | Opens native side-by-side diff for session code changes. |
-| | `jules.viewActivities` | Displays cloud execution step timeline. |
+| **Native UI Controls** | `jules.openSessionActionCenter` | Opens native QuickPick Action Center for full session control. |
+| | `jules.streamActivityLog` | Streams live cloud execution steps & bash logs to OutputChannel. |
+| | `jules.viewVisualDiff` | Opens native side-by-side diff (`vscode.diff`) with in-memory buffers. |
 | | `jules.openInWeb` | Opens session directly in Google Jules Web Console. |
 | | `jules.copySessionUrl` | Copies web console URL to clipboard. |
 | **Integrations & Utils**| `jules.createGitHubPR` | Creates a GitHub Pull Request using GitHub CLI or browser. |
@@ -118,7 +118,7 @@ export class LiveSyncManager {
 1. **Scheduler Trigger**: Calls `executeDueTasks(root)`. Automatically fires due tasks and alerts the developer.
 2. **Cloud Sync**: Calls `listSessionsApi()` to refresh cloud session statuses.
 3. **Interactive Notifications**:
-   - `AWAITING_PLAN_APPROVAL`: Shows `"Plan approval required for session #{id}!"` with action buttons `Approve Plan` and `Open Mission Control`.
+   - `AWAITING_PLAN_APPROVAL`: Shows `"Plan approval required for session #{id}!"` with action buttons `Approve Plan` and `Action Center`.
    - `AWAITING_USER_FEEDBACK`: Shows `"Jules needs your feedback on session #{id}!"` with button `Reply to Agent`.
 4. **View Updates**: Updates status bar metrics and triggers TreeView refresh.
 

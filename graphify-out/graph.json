@@ -3549,7 +3549,7 @@
       "node_kind": "heading",
       "norm_label": "1. branch naming",
       "source_file": "CONTRIBUTING.md",
-      "source_location": "L330"
+      "source_location": "L332"
     },
     {
       "id": "contributing_1_ponytail_the_pragmatic_senior_developer_engine",
@@ -3585,7 +3585,7 @@
       "node_kind": "heading",
       "norm_label": "2. commit message convention",
       "source_file": "CONTRIBUTING.md",
-      "source_location": "L336"
+      "source_location": "L338"
     },
     {
       "id": "contributing_2_implementing_a_new_mcp_tool",
@@ -3741,7 +3741,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udd00 git workflow & commit standards",
       "source_file": "CONTRIBUTING.md",
-      "source_location": "L328"
+      "source_location": "L330"
     },
     {
       "id": "contributing_packaging_local_installation",
@@ -3753,7 +3753,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 packaging & local installation",
       "source_file": "CONTRIBUTING.md",
-      "source_location": "L347"
+      "source_location": "L349"
     },
     {
       "id": "contributing_release_process_ci_cd",
@@ -3765,7 +3765,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\ude80 release process & ci/cd",
       "source_file": "CONTRIBUTING.md",
-      "source_location": "L363"
+      "source_location": "L365"
     },
     {
       "id": "contributing_security_vulnerability_reporting",
@@ -3777,7 +3777,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udd12 security & vulnerability reporting",
       "source_file": "CONTRIBUTING.md",
-      "source_location": "L377"
+      "source_location": "L379"
     },
     {
       "id": "contributing_step_by_step_developer_playbooks",
@@ -20774,7 +20774,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "CONTRIBUTING.md",
-      "source_location": "L328",
+      "source_location": "L330",
       "weight": 1.0
     },
     {
@@ -20785,7 +20785,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "CONTRIBUTING.md",
-      "source_location": "L347",
+      "source_location": "L349",
       "weight": 1.0
     },
     {
@@ -20796,7 +20796,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "CONTRIBUTING.md",
-      "source_location": "L363",
+      "source_location": "L365",
       "weight": 1.0
     },
     {
@@ -20807,7 +20807,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "CONTRIBUTING.md",
-      "source_location": "L377",
+      "source_location": "L379",
       "weight": 1.0
     },
     {
@@ -20917,7 +20917,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "CONTRIBUTING.md",
-      "source_location": "L330",
+      "source_location": "L332",
       "weight": 1.0
     },
     {
@@ -20928,7 +20928,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "CONTRIBUTING.md",
-      "source_location": "L336",
+      "source_location": "L338",
       "weight": 1.0
     },
     {
@@ -30510,5 +30510,5 @@
       "source_file": "references/jules-cli.md"
     }
   ],
-  "built_at_commit": "1d9244bf4a1977319bc551bdd4ff4b5c012917e7"
+  "built_at_commit": "2610737d222b199b74ee89362ad425529ae9e815"
 }

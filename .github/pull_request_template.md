@@ -26,7 +26,7 @@
 
 ### 📦 Affected Components
 - [ ] 💻 **VS Code Extension Host** (`scripts/extension.ts`, TreeViews, commands)
-- [ ] 🎛️ **Mission Control Webview** (`scripts/ui/mission_control.ts`, DOM, CSS, CSP)
+- [ ] ⚡ **Native Action Center & Channels** (`scripts/ui/action_center.ts`, `activity_channel.ts`, `status_bar.ts`)
 - [ ] 🔌 **MCP Server & Native Tools** (`scripts/mcp/`, JSON-RPC tools, registry)
 - [ ] ⏰ **Autonomous Task Scheduler Engine** (`scripts/core/scheduler.ts`, persistence)
 - [ ] 🤖 **Specialist Agent Roster** (`references/agents/`, `registry.json`, agent templates)
@@ -52,15 +52,15 @@
 
 ### 2. Architectural Guardrails & Quality Boundaries
 - [ ] **Zero Circular Dependencies**: Codebase maintains strict acyclic structure (`max_cycles = 0`).
-- [ ] **Strict CSP Compliance**: Webview contains zero inline event handlers (`onclick=...`). Strict reliance on cryptographic nonces and `data-action` event delegation.
+- [ ] **Pure Native IDE GUI Compliance**: All interactive UI uses native VS Code controls (QuickPick, TreeView, OutputChannel, StatusBar) with zero Chromium webview bloat.
 - [ ] **Zero Residual Debris**: No temporary scratch scripts (`fix_*.js`, `test_*.tmp`), leftover `.diff` artifacts, or `.env` credentials are committed.
 - [ ] **Cross-Platform Compatibility**: Path resolutions use `path.join()` and handle both Windows (`\`) and Unix (`/`) cleanly.
 
 ---
 
-## 📸 Visual Evidence (UI / Webview Changes)
+## 📸 Visual Evidence (UI / Interactive Changes)
 <!-- 
-  If this PR modifies any user interface (Mission Control Webview, Sidebar TreeView, QuickPick menus, or Notification popups),
+  If this PR modifies any user interface (Session Action Center, Sidebar TreeView, QuickPick menus, or Notification popups),
   please attach before/after screenshots or a short GIF/recording below.
 -->
 

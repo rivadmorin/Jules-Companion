@@ -40,10 +40,11 @@ Welcome to the Jules Companion troubleshooting guide! If you're running into iss
 
 ## 🎛️ UI & Extension Issues
 
-### ❌ Mission Control Buttons are Unresponsive
-**Cause:** Content Security Policy (CSP) violation. This often happens if inline scripts or standard `onclick` handlers are used improperly during custom extension development.
+### ❌ Session Action Center Fails to Open
+**Cause:** No active workspace folder or corrupt `sessions.json`.
 **Solution:**
-- If you are extending the UI, ensure all clickable elements use the `data-action="..."` attribute. These are securely handled by centralized event delegation in `mission_control.ts`.
+- Open a valid project directory in VS Code or Antigravity IDE (`File` ➔ `Open Folder...`).
+- Verify `.jules-companion/sessions.json` contains valid JSON syntax, or delete the file to allow fresh initialization.
 
 ### ❌ Scheduled Tasks Not Running at Target Time
 **Cause:** LiveSync polling might be disabled in your IDE.

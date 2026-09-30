@@ -28,8 +28,8 @@ This ensures your uncommitted work is never accidentally overwritten or entangle
 ### Can I use Jules Companion outside of VS Code?
 **Yes.** While it provides a native extension for VS Code and Antigravity IDE, Jules Companion also functions as a standard **Model Context Protocol (MCP) Server**. This means you can integrate it with any MCP-compatible client, such as Claude Desktop, Cursor, or Windsurf, by configuring it to run the `mcp_server.js` script.
 
-### What is the Mission Control Webview?
-The Mission Control Webview is an interactive panel within the IDE extension that provides real-time oversight of your AI sessions. It features live cloud state reconciliation, an execution plan stepper, an activity timeline, and clear distinctions between when the system is waiting for Plan Approval versus General User Feedback.
+### What is the Session Action Center & Pure Native GUI?
+The Session Action Center is a 100% native VS Code / Antigravity IDE control hub that replaces heavy browser webviews. It provides instant, keyboard-navigable QuickPick menus for approving execution plans, inspecting side-by-side diffs, reviewing step-by-step progress, streaming live logs to the IDE's native Output panel, and managing Git branches without any Chromium webview overhead.
 
 ## Customization & Agents
 

@@ -15,15 +15,15 @@ This comprehensive technical documentation is organized to ensure every subsyste
 | **02** | [**API Client Subsystem Reference**](02-api-client-subsystem.md) | Dependency-free native Node.js HTTP client ([`client/http.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/client/http.ts)), Google Jules Cloud REST API v1alpha endpoint mapping ([`client/jules_api.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/client/jules_api.ts)), and local CLI wrapper ([`jules_client.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/jules_client.ts)). |
 | **03** | [**Session Lifecycle & 4 Launch Modes**](03-session-lifecycle.md) | Detailed specifications for all 4 official launch modes (`start`, `review`, `interactive`, `scheduled`), deployment engine ([`deploy_session.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/deploy_session.ts)), pre-merge Safety Gate verification & rollback ([`merge_session.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/merge_session.ts)), GitHub PR automation, and autonomous processing loop ([`auto_process.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/auto_process.ts)). |
 | **04** | [**VS Code Extension & UI Layer**](04-vscode-extension-ui.md) | Master extension controller ([`extension.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/extension.ts)), 33 registered commands, 4 sidebar TreeDataProviders ([`sessions_provider.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/ui/sessions_provider.ts), [`workspace_provider.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/ui/workspace_provider.ts), [`agents_provider.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/ui/agents_provider.ts), [`journals_provider.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/ui/journals_provider.ts)), background heartbeat manager ([`live_sync.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/ui/live_sync.ts)), visual diff parser ([`visual_diff.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/ui/visual_diff.ts)), and agent creation wizard ([`custom_agent_wizard.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/ui/custom_agent_wizard.ts)). |
-| **05** | [**Mission Control Webview Subsystem**](05-mission-control-webview.md) | Isolated HTML5 webview panel ([`ui/mission_control.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/ui/mission_control.ts)), live cloud vs disk state reconciliation, CSP-compliant `data-action` event delegation, and strict separation between Plan Approval (`AWAITING_PLAN_APPROVAL`) and User Feedback (`AWAITING_USER_FEEDBACK`) banners. |
+| **05** | [**Pure Native UI & Session Action Center**](05-mission-control-webview.md) | Pure native IDE control hub ([`ui/action_center.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/ui/action_center.ts)), live activity log streaming ([`ui/activity_channel.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/ui/activity_channel.ts)), persistent status bar controller ([`ui/status_bar.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/ui/status_bar.ts)), and zero Chromium webview overhead. |
 | **06** | [**Model Context Protocol (MCP) Server**](06-mcp-server-subsystem.md) | Standard MCP AI server over stdio ([`mcp_server.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/mcp_server.ts)), centralized tool registry with JSON schema validation ([`mcp/registry.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/mcp/registry.ts)), and complete 20 native tools suite for external LLM clients (Claude, Antigravity CLI, Hermes). |
-| **07** | [**Agent System & Customization**](07-agents-and-customization.md) | Catalog of 30 specialized AI agent roles, template markdown schemas ([`references/agents/`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/references/agents/)), `registry.json` compilation, and persistent agent procedural memory journaling. |
+| **07** | [**Agent System & Customization**](07-agents-and-customization.md) | Catalog of 53 specialized AI agent roles, template markdown schemas ([`references/agents/`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/references/agents/)), `registry.json` compilation, and persistent agent procedural memory journaling. |
 | **08** | [**Utilities & CLI Tooling**](08-utilities-and-cli.md) | Shared utility library ([`utils.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/utils.ts)), status predicates, environment health checks, standardized `DD-MM-YYYY` date formatting, workspace scaffolding ([`setup.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/setup.ts)), registry compiling ([`generate_registry.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/generate_registry.ts)), and post-build synchronization ([`sync_global.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/sync_global.ts)). |
 | **09** | [**Maintenance & Extension Developer Guide**](09-maintenance-and-extension-guide.md) | Practical developer guide: how to add commands, MCP tools, and specialist agents; 100% TSDoc auditing rules; test suite execution; VSIX packaging; and troubleshooting matrix. |
 
 ---
 
-## 🛠️ TypeScript Scripts Inventory (28 Files)
+## 🛠️ TypeScript Scripts Inventory (30 Files)
 
 Every TypeScript source file in `scripts/` is fully covered in the documentation:
 
@@ -53,12 +53,14 @@ scripts/
 ├── setup.ts                       -> Chapter 08: Utilities & CLI
 ├── sync_global.ts                 -> Chapter 08: Utilities & CLI
 ├── ui/
+│   ├── action_center.ts           -> Chapter 05: Pure Native UI & Action Center
+│   ├── activity_channel.ts        -> Chapter 05: Pure Native UI & Action Center
 │   ├── agents_provider.ts         -> Chapter 04: VS Code Extension UI
 │   ├── custom_agent_wizard.ts     -> Chapter 04: VS Code Extension UI
 │   ├── journals_provider.ts       -> Chapter 04: VS Code Extension UI
 │   ├── live_sync.ts               -> Chapter 04: VS Code Extension UI
-│   ├── mission_control.ts         -> Chapter 05: Mission Control Webview
 │   ├── sessions_provider.ts       -> Chapter 04: VS Code Extension UI
+│   ├── status_bar.ts              -> Chapter 05: Pure Native UI & Action Center
 │   ├── visual_diff.ts             -> Chapter 04: VS Code Extension UI
 │   └── workspace_provider.ts      -> Chapter 04: VS Code Extension UI
 └── utils.ts                       -> Chapter 08: Utilities & CLI

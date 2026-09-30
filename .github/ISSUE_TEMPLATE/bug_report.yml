@@ -47,7 +47,7 @@ body:
     attributes:
       label: Bug Description
       description: A clear and concise description of what the bug is.
-      placeholder: "When opening Mission Control for session #12345, the stepper shows..."
+      placeholder: "When opening Session Action Center for session #12345, the options show..."
     validations:
       required: true
 

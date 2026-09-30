@@ -253,7 +253,7 @@ async function main() {
   console.log('         🎉 INSTALLATION COMPLETE & READY TO USE!           ');
   console.log('============================================================');
   console.log('1. In Antigravity IDE / VS Code: Look for the 🐙 Jules icon in the Activity Bar.');
-  console.log('2. Open the "Mission Control" panel to monitor sessions and deploy agents.');
+  console.log('2. Explore the Jules Sidebar or launch the "Session Action Center" to manage sessions.');
   console.log('3. AI Agents (Antigravity IDE, Claude, Cursor) now have access to all 20 jules tools.\n');
 }
 

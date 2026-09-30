@@ -78,11 +78,12 @@ Google Jules Cloud sessions operate with two distinct pausing states that must *
    - *Action API*: Invoke [`sendMessageApi`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/client/jules_api.ts) (`jules.sendMessage`).
 * **Rule**: It is a critical regression to display plan authorization buttons when the agent is waiting for user input, or vice-versa.
 
-### Invariant 8: Mission Control Webview Performance & State Preservation
-* **Content Security Policy (CSP)**: All scripts run under cryptographic CSP nonces with zero inline handlers (`onclick="..."` is forbidden; use event delegation via `data-action="..."`).
-* **Render Signature Dirty-Checking (`lastRenderSig`)**: Re-assigning `panel.webview.html` completely rebuilds the webview iframe. The controller MUST check composite state signatures (`loading:status:state:activitiesCount:lastActivityTime:patchCleanliness`) before rendering. If no data changed during a 4-second polling tick, skip DOM reassignment to preserve user textarea inputs and scroll positions.
-* **ViewState-Aware Polling Lifecycle**: Polling loops run only when `panel.visible === true` and session is active. Pause polling via `panel.onDidChangeViewState` when hidden, and cleanly clear timers on `panel.onDidDispose`.
-* **Zero-Churn Disk Persistence**: In `fetchCloudData()`, only call `saveSessions()` when `currentSessions[idx].status !== liveStatus`.
+### Invariant 8: Pure Native IDE GUI & State Discipline
+* **Zero Webview Overhead**: The extension runs 100% on native VS Code / Antigravity IDE primitives (`vscode.window.createOutputChannel`, `vscode.window.createStatusBarItem`, `vscode.window.showQuickPick`, `vscode.diff`, `vscode.TreeDataProvider`). Legacy Chromium HTML webviews are strictly retired.
+* **Keyboard-Navigable Action Center**: All session inspections, plan authorizations, diff launches, and branch checkouts are accessible instantly via the native QuickPick Action Center (`jules.openSessionActionCenter`).
+* **Live Activity Streaming**: Activities and execution logs stream directly into the native OutputChannel (`Jules Activity Stream`), eliminating DOM parsing overhead while supporting full log searching and syntax highlighting.
+* **Hierarchical TreeView Execution Plan**: Sessions render a collapsible `📋 Execution Plan (X/Y completed)` group in the sidebar, dynamically displaying step progress (`$(pass)`, `$(sync~spin)`, `$(circle-outline)`).
+* **Zero-Churn Disk Persistence**: In background sync loops, only call `saveSessions()` when `currentSessions[idx].status !== liveStatus`.
 
 ### Invariant 9: Fail-Safe Git Safety Gate & In-Memory Patch Caching
 * **Pre-Merge Safety Gate**: Before triggering any merge ([`mergeSessionCore`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/merge_session.ts)), verify:
@@ -150,7 +151,9 @@ Jules-Companion/
 │   ├── merge_session.ts             # Tier 3: Core Merge Engine & Safety Gate
 │   ├── jules_client.ts              # Tier 3: Consolidated Jules client facade
 │   ├── ui/                          # Tier 2: VS Code / Antigravity IDE Presentation Layer
-│   │   ├── mission_control.ts       # Real-time Webview dashboard & CSP event router
+│   │   ├── action_center.ts         # Native QuickPick action hub & execution coordinator
+│   │   ├── activity_channel.ts      # Native OutputChannel live step logging & streaming
+│   │   ├── status_bar.ts            # Priority status bar item & active session indicator
 │   │   ├── sessions_provider.ts     # TreeDataProvider for Jules Sessions explorer
 │   │   ├── scheduled_provider.ts    # TreeDataProvider for Scheduled Tasks explorer
 │   │   ├── agents_provider.ts       # TreeDataProvider for 53 Specialist Agents
@@ -168,10 +171,12 @@ Jules-Companion/
 │   └── agents/
 │       ├── registry.json            # Compiled catalog of 53 specialist agents
 │       └── *.md                     # 53 individual agent prompt definitions
-├── tests/                           # Tier 0: Native Node.js Test Suite (117 tests across 36 suites)
+├── tests/                           # Tier 0: Native Node.js Test Suite (114 tests across 38 suites)
 │   ├── doc_coverage.test.ts         # 100% TSDoc coverage enforcement
 │   ├── scheduler.test.ts            # Task Scheduler test suite
-│   ├── mission_control.test.ts      # Webview rendering & CSP test suite
+│   ├── action_center.test.ts        # Native QuickPick Action Center test suite
+│   ├── activity_channel.test.ts     # Native OutputChannel logging test suite
+│   ├── status_bar.test.ts           # Native StatusBar item lifecycle test suite
 │   ├── sessions_provider.test.ts    # TreeDataProvider test suite
 │   ├── mcp.test.ts                  # MCP registry and tool execution tests
 │   └── merge_session.test.ts        # Pre-merge safety gate tests

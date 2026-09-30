@@ -72,7 +72,7 @@ npm run setup
    ```
 2. Press <kbd>F5</kbd> (or go to **Run and Debug** ➔ select **Run Extension**).
 3. A new **Extension Development Host** window will open with Jules Companion loaded.
-4. Open the Command Palette (<kbd>Ctrl+Shift+P</kbd> or <kbd>Cmd+Shift+P</kbd>) and test commands such as `Jules: Open Mission Control` or `Jules: Deploy Session`.
+4. Open the Command Palette (<kbd>Ctrl+Shift+P</kbd> or <kbd>Cmd+Shift+P</kbd>) and test commands such as `Jules: Open Session Action Center` or `Jules: Deploy Session`.
 
 ---
 
@@ -306,19 +306,21 @@ To ensure that every human contributor and autonomous AI coding agent works with
 We use the native Node.js test runner (`node:test`) for zero-overhead, ultra-fast test execution.
 
 ```bash
-# Run all 108 tests across 35 test suites
+# Run all 114 tests across 38 test suites
 npm test
 
 # Run a specific test suite directly
 node --test dist/tests/scheduler.test.js
-node --test dist/tests/mission_control.test.js
+node --test dist/tests/action_center.test.js
 node --test dist/tests/doc_coverage.test.ts
 ```
 
 ### Test Suite Coverage:
 * [`tests/doc_coverage.test.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/tests/doc_coverage.test.ts): Verifies 100% TSDoc comment blocks on every exported symbol.
 * [`tests/scheduler.test.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/tests/scheduler.test.ts): Task scheduler persistence, due task discovery, cancellation.
-* [`tests/mission_control.test.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/tests/mission_control.test.ts): Webview rendering, CSP, status banner separation.
+* [`tests/action_center.test.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/tests/action_center.test.ts): QuickPick Action Center items, context resolution, and action routing.
+* [`tests/activity_channel.test.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/tests/activity_channel.test.ts): OutputChannel streaming, session header logging, and plan step tracking.
+* [`tests/status_bar.test.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/tests/status_bar.test.ts): Priority status bar item, spinner animations, and tooltip summaries.
 * [`tests/sessions_provider.test.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/tests/sessions_provider.test.ts): TreeView items, expandable nodes, universal session ID resolver.
 * [`tests/mcp.test.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/tests/mcp.test.ts): MCP 20-tool registry, schemas, and execution handlers.
 * [`tests/merge_session.test.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/tests/merge_session.test.ts): Safety Gate enforcement and clean working tree checks.
@@ -337,7 +339,7 @@ node --test dist/tests/doc_coverage.test.ts
 We adhere to [Conventional Commits](https://www.conventionalcommits.org/):
 ```text
 feat(scheduler): implement recurring cron task scheduling
-fix(mission_control): prevent plan approval banner rendering during feedback state
+fix(action_center): resolve fallback items when no active session is selected
 docs(codebase): document 10-chapter master architecture reference
 test(mcp): add unit tests for dynamic tool registration
 ```

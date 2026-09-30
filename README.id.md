@@ -16,8 +16,8 @@ Aplikasi ini berfungsi sebagai ko-pilot pintar untuk mengintegrasikan alur kerja
   * **Interactive plan** (`interactive`): Jules berdialog interaktif untuk memperjelas tujuan developer sebelum merumuskan rencana (berhenti di `AWAITING_USER_FEEDBACK`).
   * **Scheduled task** (`scheduled` [BARU!]): Menjadwalkan tugas otomatis di latar belakang yang dievaluasi oleh background scheduler engine.
 * **⏰ Mesin Penjadwalan Tugas Otonom**: Loop evaluasi latar belakang yang memicu tugas jatuh tempo, mencatat ID sesi cloud, dan memberi notifikasi ke IDE.
-* **🎛️ Mission Control Webview**: Panel interaktif dengan sinkronisasi status cloud live, stepper rencana eksekusi, timeline aktivitas, dan pemisahan tegas banner Approval Plan vs Masukan Pengguna.
-* **💻 Ekstensi IDE Native**: Sidebar TreeView untuk Sesi Aktif, Tugas Terjadwal, Arsip Sesi, Konteks Git Workspace, Katalog 53 Agen, dan Jurnal Keputusan.
+* **🚀 100% Pure Native IDE GUI**: QuickPick Action Center instan, indikator Status Bar, dan streaming log OutputChannel tanpa beban Chromium webview.
+* **💻 Ekstensi IDE Native**: Sidebar TreeView untuk Sesi Aktif, Hierarchical Execution Plan, Tugas Terjadwal, Arsip Sesi, Konteks Git Workspace, Katalog 53 Agen, dan Jurnal Keputusan.
 * **🔍 Native Side-by-Side Diff Editor**: Inspeksi perubahan patch sesi cloud secara berdampingan (`vscode.diff`) atau unified patch tab tanpa penulisan berkas scratch ke disk (`jules-diff://`).
 * **🔌 Server MCP Native (20 Tools)**: Server standar JSON-RPC via `stdio` yang kompatibel dengan Claude, Antigravity CLI, Cursor, dan klien MCP lainnya.
 * **🤖 53 Agen Spesialis**: Peran agen yang telah dikalibrasi untuk Coding, Testing, Keamanan, Arsitektur, DevOps, dan Dokumentasi.
@@ -46,7 +46,8 @@ Aplikasi ini berfungsi sebagai ko-pilot pintar untuk mengintegrasikan alur kerja
   * **Workspace View**: Menampilkan branch Git aktif, remote URL, status working tree, dan status health checks.
   * **Agent Roster**: Direktori 53 agen spesialis beserta deskripsi peran dan batasannya.
   * **Journals View**: Akses cepat ke catatan jurnal pembelajaran agen (`*.journal.md`).
-* **Mission Control Webview**: Antarmuka visual lengkap dengan kepatuhan CSP ketat (nonces kriptografis & event delegation `data-action`).
+* **Session Action Center**: Pop-up interaktif instan berbasis QuickPick untuk kendali penuh atas sesi, rencana eksekusi, dan branch Git tanpa beban webview.
+* **Activity Stream OutputChannel**: Saluran streaming log real-time langsung di panel Output bawaan IDE.
 * **Native Diff Integration**: Membuka perubahan kode berdampingan (*side-by-side*) menggunakan diff editor bawaan IDE via `vscode.diff`.
 
 ### 📦 Cara Instalasi Mudah (Untuk Siapa Saja)
