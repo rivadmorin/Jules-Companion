@@ -34,13 +34,13 @@ describe('WorkspaceTreeDataProvider & WorkspaceTreeItem Unit Tests', () => {
     assert.strictEqual(typeof info.isApiKeyConfigured, 'boolean');
   });
 
-  test('WorkspaceTreeDataProvider should build expected 5 context items', async () => {
+  test('WorkspaceTreeDataProvider should build expected 6 context items', async () => {
     const provider = new WorkspaceTreeDataProvider(() => process.cwd());
     const items = await provider.getChildren();
 
-    assert.strictEqual(items.length, 5, 'Should return exactly 5 context items');
+    assert.strictEqual(items.length, 6, 'Should return exactly 6 context items');
 
-    const [wsItem, originItem, branchItem, cloudItem, apiKeyItem] = items;
+    const [wsItem, originItem, branchItem, authItem, cloudItem, apiKeyItem] = items;
 
     // 1. 📁 Workspace
     assert.strictEqual(wsItem.category, 'workspace');
@@ -58,13 +58,19 @@ describe('WorkspaceTreeDataProvider & WorkspaceTreeItem Unit Tests', () => {
     assert.ok(branchItem.command);
     assert.strictEqual(branchItem.command.command, 'git.checkout');
 
-    // 4. ☁️ Jules Cloud Link
+    // 4. 🐙 GitHub Authentication
+    assert.strictEqual(authItem.category, 'github-auth');
+    assert.ok(authItem.label.startsWith('GitHub:'));
+    assert.ok(authItem.command);
+    assert.strictEqual(authItem.command.command, 'jules.signInGitHub');
+
+    // 5. ☁️ Jules Cloud Link
     assert.strictEqual(cloudItem.category, 'cloud-link');
     assert.ok(cloudItem.label.startsWith('Jules Cloud Link:'));
     assert.ok(cloudItem.command);
     assert.strictEqual(cloudItem.command.command, 'jules.refreshWorkspace');
 
-    // 5. 🔑 API Key
+    // 6. 🔑 API Key
     assert.strictEqual(apiKeyItem.category, 'api-key');
     assert.ok(apiKeyItem.label.startsWith('API Key:'));
     assert.ok(apiKeyItem.command);

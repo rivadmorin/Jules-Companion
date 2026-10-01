@@ -8,6 +8,7 @@ import * as path from 'path';
 import { runGit, getCurrentBranch } from '../core/git';
 import { listSourcesApi } from '../client/jules_api';
 import { getApiKey } from '../client/http';
+import { GitHubAuthManager } from './github_auth';
 
 /**
  * Categories of workspace metadata items displayed in the tree view.
@@ -16,6 +17,7 @@ export type WorkspaceItemCategory =
   | 'workspace'
   | 'git-origin'
   | 'git-branch'
+  | 'github-auth'
   | 'cloud-link'
   | 'api-key';
 
@@ -47,6 +49,10 @@ export interface WorkspaceContextInfo {
   currentBranch: string;
   /** Current Git working tree state summary (e.g. clean, X uncommitted files) */
   workingTreeStatus: string;
+  /** Authenticated GitHub username if available */
+  gitHubUser?: string;
+  /** Whether GitHub authentication is active */
+  isGitHubAuthenticated: boolean;
   /** Whether this repository is linked and verified with Google Jules Cloud Sources */
   isCloudLinked: boolean;
   /** Detailed human-readable Google Jules Cloud verification status */
@@ -192,12 +198,27 @@ export async function getWorkspaceContextInfo(rootPath: string): Promise<Workspa
     }
   }
 
+  let gitHubUser: string | undefined;
+  let isGitHubAuthenticated = false;
+  try {
+    const token = await GitHubAuthManager.getToken();
+    if (token) {
+      const user = await GitHubAuthManager.getUser();
+      gitHubUser = user?.login;
+      isGitHubAuthenticated = true;
+    }
+  } catch {
+    // Graceful fallback for non-VSCode headless/test execution
+  }
+
   return {
     workspacePath,
     workspaceName,
     gitOrigin,
     currentBranch,
     workingTreeStatus,
+    gitHubUser,
+    isGitHubAuthenticated,
     isCloudLinked,
     cloudStatus,
     isApiKeyConfigured
@@ -354,7 +375,31 @@ export class WorkspaceTreeDataProvider implements vscode.TreeDataProvider<Worksp
     };
     items.push(branchItem);
 
-    // 4. ☁️ Jules Cloud Link: Verified / Linked status checked against listSourcesApi
+    // 4. 🐙 GitHub Authentication: Status and click to sign in / manage
+    const ghUser = context.gitHubUser;
+    const ghAuthLabel = context.isGitHubAuthenticated
+      ? `GitHub: @${ghUser || 'connected'}`
+      : 'GitHub: Not connected';
+    const authItem = new WorkspaceTreeItem(
+      ghAuthLabel,
+      vscode.TreeItemCollapsibleState.None,
+      'github-auth',
+      context.isGitHubAuthenticated ? `@${ghUser || 'connected'}` : 'Not connected'
+    );
+    authItem.description = context.isGitHubAuthenticated ? 'Connected' : 'Click to Sign In';
+    authItem.tooltip = context.isGitHubAuthenticated
+      ? `Signed in to GitHub as @${ghUser || 'connected'}\nClick to manage or switch account`
+      : 'Not signed in to GitHub.\nClick to sign in with GitHub OAuth for seamless PR creation';
+    authItem.iconPath = context.isGitHubAuthenticated
+      ? new vscode.ThemeIcon('mark-github', new vscode.ThemeColor('testing.iconPassed'))
+      : new vscode.ThemeIcon('mark-github');
+    authItem.command = {
+      command: 'jules.signInGitHub',
+      title: 'Sign in to GitHub'
+    };
+    items.push(authItem);
+
+    // 5. ☁️ Jules Cloud Link: Verified / Linked status checked against listSourcesApi
     const cloudItem = new WorkspaceTreeItem(
       `Jules Cloud Link: ${context.isCloudLinked ? 'Linked' : 'Unlinked'}`,
       vscode.TreeItemCollapsibleState.None,

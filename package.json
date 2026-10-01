@@ -39,6 +39,9 @@
     "onCommand:jules.openMissionControl",
     "onCommand:jules.toggleLiveSync",
     "onCommand:jules.createGitHubPR",
+    "onCommand:jules.signInGitHub",
+    "onCommand:jules.signOutGitHub",
+    "onCommand:jules.openPRInBrowser",
     "onCommand:jules.createCustomAgent",
     "onCommand:jules.retryFailedSession",
     "onCommand:jules.archiveSession",
@@ -214,6 +217,21 @@
         "command": "jules.createGitHubPR",
         "title": "Create GitHub Pull Request",
         "icon": "$(git-pull-request)"
+      },
+      {
+        "command": "jules.signInGitHub",
+        "title": "Sign in to GitHub",
+        "icon": "$(mark-github)"
+      },
+      {
+        "command": "jules.signOutGitHub",
+        "title": "Sign out from GitHub",
+        "icon": "$(sign-out)"
+      },
+      {
+        "command": "jules.openPRInBrowser",
+        "title": "Open Pull Request in Browser",
+        "icon": "$(link-external)"
       },
       {
         "command": "jules.createCustomAgent",
@@ -434,6 +452,21 @@
           "command": "jules.scheduleTask",
           "when": "view == jules.sessionsView && viewItem == scheduled-tasks-group",
           "group": "inline@1"
+        },
+        {
+          "command": "jules.openPRInBrowser",
+          "when": "view == jules.sessionsView && viewItem =~ /with-pr/",
+          "group": "inline@2.5"
+        },
+        {
+          "command": "jules.signInGitHub",
+          "when": "view == jules.workspaceView && viewItem == workspace-item-github-auth",
+          "group": "inline@1"
+        },
+        {
+          "command": "jules.signOutGitHub",
+          "when": "view == jules.workspaceView && viewItem == workspace-item-github-auth",
+          "group": "inline@2"
         }
       ]
     }
