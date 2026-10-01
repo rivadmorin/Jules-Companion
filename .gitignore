@@ -46,6 +46,9 @@ tmp/
 task_plan.md
 findings.md
 progress.md
+AGENT.md
+agent.md
+AGENT.pseudo.md
 .gemini/
 .agents/
 .claude/
