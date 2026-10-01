@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.3.0] - 2026-10-02
+
+### 🚀 Highlights & Enterprise Performance Overhaul
+- **100% Pure Native IDE GUI Migration & Webview Retirement**:
+  - Completely retired legacy Chromium HTML webviews (MissionControlWebview) to achieve zero DOM parsing overhead and 100% native VS Code / Antigravity IDE UI responsiveness.
+  - Implemented keyboard-navigable QuickPick **Action Center** (jules.openSessionActionCenter) for instant session inspections, plan authorizations, diff launches, and branch checkouts.
+  - Introduced native OutputChannel **Jules Activity Stream** (JulesActivityChannel) with real-time log streaming, bash output parsing, and LiveSync state transition logging.
+  - Enhanced sidebar SessionsTreeDataProvider with collapsible Execution Plan group and step-by-step progress status indicators.
+- **Automated Inline Code Documentation Density Standard**:
+  - Implemented automated documentation audit suite (tests/doc_coverage.test.ts) enforcing >= 10% comment density for utilities and >= 4% for monolithic entrypoints.
+  - Fully documented all 36 scripts across scripts/ with structured step-by-step execution comments.
+- **Packaging & VSIX Distribution Optimization**:
+  - Optimized .vscodeignore to exclude internal development cache (graphify-out/**), local user state (.jules-companion/**), .github/**, .sentrux/**, and development notes.
+  - Reduced VSIX package file count by -60% (from 254 down to 101 files), shrinking package size and preventing leakage of local session history.
+- **Expanded Specialist Agent Roster (53 Agents)**:
+  - Added 9 new specialized agent personas across Coding and Advisory groups: hermetic, lexicon, decoupler, monorepist, plugger, mutator, guildmaster, attestor, and vscecraft.
+  - Recompiled and verified deterministic references/agents/registry.json index with automated retry logic and timestamp preservation.
+- **Test Suite Expansion**:
+  - Expanded test coverage to 120 unit tests across 38 suites with 100% passing rate.
+- **Operating Manual Alignment (AGENT.md)**:
+  - Codified PowerShell 5.1 command separator specifics, pure native IDE primitives, and accurate Graphify AST metrics (819 nodes, 1692 edges, 72 communities).
+
+---
+
 ## [1.2.2] - 2026-09-30
 
 ### 🚀 Added & Improved

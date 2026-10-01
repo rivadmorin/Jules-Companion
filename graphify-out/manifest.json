@@ -36,14 +36,14 @@
     "semantic_hash": "1678aa5289ca66b4e257141ed2cfcb0d"
   },
   "package.json": {
-    "mtime": 1790789020.1495447,
-    "seen": 1790789299.7334843,
-    "ast_hash": "bf0d36ee876ef9afed8438a69d530fc4",
+    "mtime": 1790884269.5164666,
+    "seen": 1790884400.570547,
+    "ast_hash": "45744bddc79272d50994964d9e1d205f",
     "semantic_hash": ""
   },
   "references/agents/registry.json": {
-    "mtime": 1790798533.2436328,
-    "seen": 1790798549.7658699,
+    "mtime": 1790884364.9510014,
+    "seen": 1790884400.570547,
     "ast_hash": "b9b44ee193efc015a7fa0582076a5b31",
     "semantic_hash": ""
   },
@@ -456,15 +456,15 @@
     "semantic_hash": "6a823e7ab10b21cf645fc4250b972e45"
   },
   "AGENT.md": {
-    "mtime": 1790798511.4818213,
-    "seen": 1790798549.7658699,
-    "ast_hash": "4d50df9e44d9b26c3d2474a0595d05ef",
+    "mtime": 1790884327.82099,
+    "seen": 1790884400.570547,
+    "ast_hash": "a5aacb1f2ad36fc1e95844ad67c59dee",
     "semantic_hash": ""
   },
   "CHANGELOG.md": {
-    "mtime": 1790789325.9029317,
-    "seen": 1790789380.353133,
-    "ast_hash": "210e229ab7d149e1ba08428039d30fb4",
+    "mtime": 1790884296.8817778,
+    "seen": 1790884400.570547,
+    "ast_hash": "0aeddb5e11f509b64d6275676e6c1a6d",
     "semantic_hash": ""
   },
   "FAQ.md": {

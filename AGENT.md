@@ -157,17 +157,17 @@ Jules-Companion/
 │   │   ├── action_center.ts         # Native QuickPick action hub & execution coordinator
 │   │   ├── activity_channel.ts      # Native OutputChannel live step logging & streaming
 │   │   ├── status_bar.ts            # Priority status bar item & active session indicator
-│   │   ├── sessions_provider.ts     # TreeDataProvider for Jules Sessions explorer
-│   │   ├── scheduled_provider.ts    # TreeDataProvider for Scheduled Tasks explorer
+│   │   ├── sessions_provider.ts     # TreeDataProvider for Jules Sessions & Scheduled Tasks
+│   │   ├── journals_provider.ts     # TreeDataProvider for Agent Journals and Review Reports
 │   │   ├── agents_provider.ts       # TreeDataProvider for 53 Specialist Agents
 │   │   ├── workspace_provider.ts    # TreeDataProvider for Workspace health & Git context
-│   │   ├── visual_diff.ts           # Unified diff parser & Gemini AI explanation panel
+│   │   ├── visual_diff.ts           # Native side-by-side & in-memory virtual diff provider
 │   │   ├── live_sync.ts             # Background polling engine with adaptive backoff
 │   │   └── custom_agent_wizard.ts   # Interactive multi-step agent creation wizard
 │   ├── mcp/                         # Tier 2: MCP Tool Registry & Handlers
 │   │   ├── registry.ts              # 20 modular native MCP tool declarations
 │   │   └── tools/                   # Individual tool handler implementations
-│   ├── extension.ts                 # Tier 1: IDE Extension Entrypoint (33 registered commands)
+│   ├── extension.ts                 # Tier 1: IDE Extension Entrypoint (35 registered commands)
 │   ├── mcp_server.ts                # Tier 1: Standalone JSON-RPC MCP Server Entrypoint
 │   └── utils.ts                     # Tier 5: Shared utilities, Doctor checks, status helpers
 ├── references/                      # Specialist Agent Markdown definitions
@@ -230,7 +230,7 @@ rtk npm run package
 ### Step 5: Install & Hot-Reload in Antigravity IDE
 Install the newly bundled `.vsix` into the host Antigravity IDE:
 ```powershell
-antigravity-ide.cmd --install-extension jules-companion-1.2.2.vsix --force
+antigravity-ide.cmd --install-extension jules-companion-1.3.0.vsix --force
 ```
 
 ### Step 6: Post-Edit Knowledge Graph Hygiene & Git Ship
@@ -310,8 +310,8 @@ Before completing any task, verify every single item:
 - [ ] Architecture passes Sentrux verification (`sentrux check .`) with 0 cycle violations.
 - [ ] `rtk npm run verify` passes typechecking and all **120 tests across 38 suites** with 0 failures.
 - [ ] `rtk npm run build` compiles **30 TypeScript entrypoints** cleanly and completes global sync.
-- [ ] `rtk npm run package` produces `jules-companion-1.2.2.vsix`.
-- [ ] Extension was re-installed to Antigravity IDE via `antigravity-ide.cmd --install-extension jules-companion-1.2.2.vsix --force`.
+- [ ] `rtk npm run package` produces `jules-companion-1.3.0.vsix`.
+- [ ] Extension was re-installed to Antigravity IDE via `antigravity-ide.cmd --install-extension jules-companion-1.3.0.vsix --force`.
 - [ ] Knowledge graph was synchronized via `rtk graphify update .` (**819 nodes, 1692 edges, 72 communities**).
 - [ ] All relevant documentation (`CHANGELOG.md`, `README.md`, `docs/codebase/`, `AGENT.md`) is updated.
 - [ ] Git working tree is completely clean and pushed to `origin/main`.

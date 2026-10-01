@@ -14,3 +14,15 @@ tsconfig.json
 *.sh
 dist/sync_global.js
 docs/**
+graphify-out/**
+.jules-companion/**
+.jules/**
+.sentrux/**
+.github/**
+*.vsix
+install.bat
+NOTE.md
+FAQ.md
+TROUBLESHOOTING.md
+AGENT.md
+SKILL.md
