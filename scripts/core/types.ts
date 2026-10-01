@@ -137,9 +137,11 @@ export interface ScheduledTask {
   /** Optional target Git branch */
   branch?: string;
   /** Lifecycle status of the scheduled task */
-  status: 'pending' | 'running' | 'completed' | 'cancelled';
+  status: 'pending' | 'running' | 'completed' | 'failed' | 'cancelled';
   /** ISO timestamp when the schedule was created */
   createdAt: string;
   /** Dispatched Jules session ID once triggered */
   sessionId?: string;
+  /** Optional error message if execution failed */
+  error?: string;
 }

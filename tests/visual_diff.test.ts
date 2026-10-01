@@ -57,6 +57,17 @@ new file mode 100644
     assert.strictEqual(f2.additions, 2);
     assert.strictEqual(f2.deletions, 0);
   });
+
+  test('should parse diff with Windows CRLF (\\r\\n) line endings cleanly', () => {
+    const crlfPatch = samplePatch.replace(/\n/g, '\r\n');
+    const parsed = parseDiffFiles(crlfPatch);
+    assert.strictEqual(parsed.length, 2);
+    assert.strictEqual(parsed[0].file, 'src/math.ts');
+    assert.ok(parsed[0].before.includes('return a - b;'));
+    assert.ok(parsed[0].after.includes('return a + b;'));
+    assert.strictEqual(parsed[1].file, 'docs/readme.md');
+    assert.ok(parsed[1].after.includes('# New Feature'));
+  });
 });
 
 describe('JulesDiffContentProvider Unit Tests', () => {

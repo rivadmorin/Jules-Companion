@@ -207,4 +207,61 @@ describe('Jules Task Scheduler Unit Tests', () => {
     assert.strictEqual(loaded[0].status, 'completed');
     assert.strictEqual(loaded[0].sessionId, 'sess-now-999');
   });
+
+  test('executeDueTasks should mark task as failed when executor fails to prevent infinite loop', async () => {
+    const pastDate = new Date(Date.now() - 60 * 1000).toISOString();
+    const created = addScheduledTask(
+      {
+        agent: 'invalid-agent',
+        mode: 'code',
+        type: 'start',
+        task: 'Failing task',
+        scheduledAt: pastDate
+      },
+      tempDir
+    );
+
+    const failingExecutor: TaskExecutor = async () => {
+      return { success: false, error: 'Agent not found in registry' };
+    };
+
+    const count = await executeDueTasks(tempDir, undefined, failingExecutor);
+    assert.strictEqual(count, 1);
+
+    const loaded = loadScheduledTasks(tempDir);
+    assert.strictEqual(loaded[0].status, 'failed');
+    assert.strictEqual(loaded[0].error, 'Agent not found in registry');
+
+    // Verification: Due tasks list must now be empty (no infinite loop)
+    const dueAgain = getDueScheduledTasks(tempDir);
+    assert.strictEqual(dueAgain.length, 0);
+  });
+
+  test('executeDueTasks should mark task as failed when executor throws', async () => {
+    const pastDate = new Date(Date.now() - 60 * 1000).toISOString();
+    addScheduledTask(
+      {
+        agent: 'developer',
+        mode: 'code',
+        type: 'start',
+        task: 'Crashing task',
+        scheduledAt: pastDate
+      },
+      tempDir
+    );
+
+    const crashingExecutor: TaskExecutor = async () => {
+      throw new Error('Network socket disconnected');
+    };
+
+    await executeDueTasks(tempDir, undefined, crashingExecutor);
+
+    const loaded = loadScheduledTasks(tempDir);
+    assert.strictEqual(loaded[0].status, 'failed');
+    assert.strictEqual(loaded[0].error, 'Network socket disconnected');
+
+    // Verification: Due tasks list must now be empty
+    const dueAgain = getDueScheduledTasks(tempDir);
+    assert.strictEqual(dueAgain.length, 0);
+  });
 });

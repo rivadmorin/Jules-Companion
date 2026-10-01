@@ -183,7 +183,7 @@ Jules-Companion/
 │   ├── sessions_provider.test.ts    # TreeDataProvider test suite
 │   ├── mcp.test.ts                  # MCP registry and tool execution tests
 │   └── merge_session.test.ts        # Pre-merge safety gate tests
-├── graphify-out/                    # Codebase Knowledge Graph & Visualizer (819 nodes, 1692 edges, 72 communities)
+├── graphify-out/                    # Codebase Knowledge Graph & Visualizer (820 nodes, 1696 edges, 73 communities)
 │   ├── graph.json                   # GraphRAG knowledge graph export
 │   ├── graph.html                   # Interactive browser visualization
 │   └── GRAPH_REPORT.md              # Architectural health & God Nodes audit report
@@ -213,7 +213,7 @@ rtk npm test
 # or full verification (typecheck + tests):
 rtk npm run verify
 ```
-* **Success Criteria**: All **120 tests across 38 suites** must pass with `0 failures`.
+* **Success Criteria**: All **124 tests across 39 suites** must pass with `0 failures`.
 
 ### Step 4: Recompile & Verify Packaging
 ```powershell
@@ -308,10 +308,10 @@ Before completing any task, verify every single item:
 - [ ] All new or modified exported functions, classes, and types have 100% TSDoc blocks and comply with inline doc density standards (`tests/doc_coverage.test.ts`).
 - [ ] No phantom agents were introduced; all personas align with `references/agents/registry.json`.
 - [ ] Architecture passes Sentrux verification (`sentrux check .`) with 0 cycle violations.
-- [ ] `rtk npm run verify` passes typechecking and all **120 tests across 38 suites** with 0 failures.
+- [ ] `rtk npm run verify` passes typechecking and all **124 tests across 39 suites** with 0 failures.
 - [ ] `rtk npm run build` compiles **30 TypeScript entrypoints** cleanly and completes global sync.
 - [ ] `rtk npm run package` produces `jules-companion-1.3.0.vsix`.
 - [ ] Extension was re-installed to Antigravity IDE via `antigravity-ide.cmd --install-extension jules-companion-1.3.0.vsix --force`.
-- [ ] Knowledge graph was synchronized via `rtk graphify update .` (**819 nodes, 1692 edges, 72 communities**).
+- [ ] Knowledge graph was synchronized via `rtk graphify update .` (**820 nodes, 1696 edges, 73 communities**).
 - [ ] All relevant documentation (`CHANGELOG.md`, `README.md`, `docs/codebase/`, `AGENT.md`) is updated.
 - [ ] Git working tree is completely clean and pushed to `origin/main`.

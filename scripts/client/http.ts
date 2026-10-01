@@ -6,7 +6,8 @@
 import * as path from 'path';
 import * as fs from 'fs';
 
-let cachedApiKey: string | null = null;
+let globalCachedApiKey: string | null = null;
+const directoryApiKeyCache = new Map<string, string | null>();
 
 /**
  * Retrieves the Google Jules API key from system environment variables
@@ -16,14 +17,22 @@ let cachedApiKey: string | null = null;
  * @returns The raw API key string if found, otherwise null.
  */
 export function getApiKey(targetDir?: string): string | null {
+  // Step 1: Check explicitly cleared environment variable
   if (process.env.JULES_API_KEY === '') return null;
-  if (process.env.JULES_API_KEY && !process.env.JULES_API_KEY.includes('your_jules_api_key_here')) {
-    cachedApiKey = process.env.JULES_API_KEY;
-    return cachedApiKey;
-  }
-  if (cachedApiKey) return cachedApiKey;
 
-  // 2. Define fallback paths where a `.env` file might be stored locally
+  // Step 2: System environment variable takes top precedence
+  if (process.env.JULES_API_KEY && !process.env.JULES_API_KEY.includes('your_jules_api_key_here')) {
+    globalCachedApiKey = process.env.JULES_API_KEY;
+    return globalCachedApiKey;
+  }
+
+  // Step 3: Check directory-specific cache if targetDir is provided
+  const dirKey = targetDir ? path.resolve(targetDir) : process.cwd();
+  if (directoryApiKeyCache.has(dirKey)) {
+    return directoryApiKeyCache.get(dirKey) || null;
+  }
+
+  // Step 4: Define fallback paths where a `.env` file might be stored locally
   const envPaths: string[] = [];
   if (targetDir) {
     envPaths.push(
@@ -38,7 +47,7 @@ export function getApiKey(targetDir?: string): string | null {
     path.join(__dirname, '..', '.env')
   );
 
-  // 3. Sequentially search paths and parse the .env structure if found
+  // Step 5: Sequentially search paths and parse the .env structure if found
   for (const p of envPaths) {
     if (fs.existsSync(p)) {
       try {
@@ -47,8 +56,8 @@ export function getApiKey(targetDir?: string): string | null {
         if (match && match[1]) {
           const parsedKey = match[1].trim().replace(/^['"]|['"]$/g, '');
           if (parsedKey && !parsedKey.includes('your_jules_api_key_here')) {
-            cachedApiKey = parsedKey;
-            return cachedApiKey;
+            directoryApiKeyCache.set(dirKey, parsedKey);
+            return parsedKey;
           }
         }
       } catch (_e) {
@@ -57,17 +66,19 @@ export function getApiKey(targetDir?: string): string | null {
     }
   }
 
-  cachedApiKey = (process.env.JULES_API_KEY && !process.env.JULES_API_KEY.includes('your_jules_api_key_here'))
+  const fallbackKey = (process.env.JULES_API_KEY && !process.env.JULES_API_KEY.includes('your_jules_api_key_here'))
     ? process.env.JULES_API_KEY
     : null;
-  return cachedApiKey;
+  directoryApiKeyCache.set(dirKey, fallbackKey);
+  return fallbackKey;
 }
 
 /**
  * Resets the in-memory cached API key, useful during testing and credential refreshes.
  */
 export function resetApiKeyCache(): void {
-  cachedApiKey = null;
+  globalCachedApiKey = null;
+  directoryApiKeyCache.clear();
 }
 
 /**

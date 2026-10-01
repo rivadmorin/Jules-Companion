@@ -191,23 +191,30 @@ export function executeDueTasks(
           targetDir
         });
 
-        taskRecord.status = deployRes.success ? 'completed' : 'pending';
-        let sessionId: string | undefined;
-        if (deployRes.sessions && deployRes.sessions.length > 0) {
-          sessionId = deployRes.sessions[0].id;
-        } else if ((deployRes as any).sessionId) {
-          sessionId = (deployRes as any).sessionId;
-        } else if (deployRes.output) {
-          const match = deployRes.output.match(/Session ID: ([a-zA-Z0-9_-]+)/);
-          if (match) sessionId = match[1];
-        }
-        if (sessionId) {
-          taskRecord.sessionId = sessionId;
+        // Step 1: Update task status and session ID based on execution result
+        if (deployRes.success) {
+          taskRecord.status = 'completed';
+          let sessionId: string | undefined;
+          if (deployRes.sessions && deployRes.sessions.length > 0) {
+            sessionId = deployRes.sessions[0].id;
+          } else if ((deployRes as any).sessionId) {
+            sessionId = (deployRes as any).sessionId;
+          } else if (deployRes.output) {
+            const match = deployRes.output.match(/Session ID: ([a-zA-Z0-9_-]+)/);
+            if (match) sessionId = match[1];
+          }
+          if (sessionId) {
+            taskRecord.sessionId = sessionId;
+          }
+        } else {
+          taskRecord.status = 'failed';
+          taskRecord.error = deployRes.error || 'Execution failed';
         }
         executedCount++;
         if (onExecute) onExecute(taskRecord, deployRes);
-      } catch {
-        taskRecord.status = 'pending';
+      } catch (err: any) {
+        taskRecord.status = 'failed';
+        taskRecord.error = err?.message || 'Unexpected execution error';
       }
     }
     saveScheduledTasks(tasks, targetDir);
@@ -251,7 +258,10 @@ export async function runScheduledTaskNow(
       targetDir
     });
 
-    taskRecord.status = deployRes.success ? 'completed' : 'pending';
+    taskRecord.status = deployRes.success ? 'completed' : 'failed';
+    if (!deployRes.success && deployRes.error) {
+      taskRecord.error = deployRes.error;
+    }
     let sessionId: string | undefined;
     if (deployRes.sessions && deployRes.sessions.length > 0) {
       sessionId = deployRes.sessions[0].id;
@@ -267,7 +277,8 @@ export async function runScheduledTaskNow(
     saveScheduledTasks(tasks, targetDir);
     return { success: deployRes.success, sessionId, error: deployRes.error };
   } catch (err: any) {
-    taskRecord.status = 'pending';
+    taskRecord.status = 'failed';
+    taskRecord.error = err?.message || String(err);
     saveScheduledTasks(tasks, targetDir);
     return { success: false, error: err.message || String(err) };
   }

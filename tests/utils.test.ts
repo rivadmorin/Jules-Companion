@@ -22,6 +22,7 @@ import {
   unarchiveSession
 } from '../scripts/utils';
 import { deleteSessionApi } from '../scripts/client/jules_api';
+import { getApiKey, resetApiKeyCache } from '../scripts/client/http';
 
 const TEST_DIR = path.join(process.cwd(), 'temp_test_dir_utils');
 
@@ -320,6 +321,33 @@ describe('Utils Comprehensive Tests', () => {
       const conflictRes = checkPatchConflict(conflictPatch, TEST_DIR);
       assert.strictEqual(conflictRes.canApplyCleanly, false);
       assert.ok(conflictRes.message.length > 0);
+    });
+  });
+
+  describe('getApiKey directory isolation', () => {
+    test('should resolve API key isolated by directory without cross-workspace leakage', () => {
+      const dirA = path.join(TEST_DIR, 'workspaceA');
+      const dirB = path.join(TEST_DIR, 'workspaceB');
+      fs.mkdirSync(dirA, { recursive: true });
+      fs.mkdirSync(dirB, { recursive: true });
+      fs.writeFileSync(path.join(dirA, '.env'), 'JULES_API_KEY=key_for_workspace_a\n', 'utf8');
+      fs.writeFileSync(path.join(dirB, '.env'), 'JULES_API_KEY=key_for_workspace_b\n', 'utf8');
+
+      resetApiKeyCache();
+      const oldEnv = process.env.JULES_API_KEY;
+      delete process.env.JULES_API_KEY;
+
+      try {
+        const keyA = getApiKey(dirA);
+        const keyB = getApiKey(dirB);
+        assert.strictEqual(keyA, 'key_for_workspace_a');
+        assert.strictEqual(keyB, 'key_for_workspace_b');
+      } finally {
+        if (oldEnv !== undefined) {
+          process.env.JULES_API_KEY = oldEnv;
+        }
+        resetApiKeyCache();
+      }
     });
   });
 });

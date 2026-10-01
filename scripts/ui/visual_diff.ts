@@ -144,11 +144,12 @@ export function parseDiffFiles(diffText: string): ParsedDiffFile[] {
 
   for (const part of parts) {
     if (!part.trim()) continue;
-    const lines = part.split('\n');
-    const header = lines[0];
+    // Step 1: Split patch into lines handling both CRLF and LF
+    const lines = part.split(/\r?\n/);
+    const header = lines[0].trim();
     const match = header.match(/a\/(.+?)\s+b\/(.+?)$/);
     if (!match) continue;
-    const filePath = match[2];
+    const filePath = match[2].trim();
 
     const beforeLines: string[] = [];
     const afterLines: string[] = [];

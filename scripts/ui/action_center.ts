@@ -60,7 +60,7 @@ export async function openSessionActionCenter(
     }
 
     const sessionPickItems = sessions.map(s => {
-      const shortId = s.id.slice(0, 8);
+      const shortId = (s.id || '').slice(0, 8) || 'unknown';
       const agent = cleanAgentName(s.agent);
       let statusIcon = '$(circle-outline)';
       if (isSessionAwaitingApproval(s.status)) statusIcon = '$(alert)';
@@ -88,7 +88,7 @@ export async function openSessionActionCenter(
 
   // Build native action menu items for selected session
   const s = selectedSession;
-  const shortId = s.id.slice(0, 8);
+  const shortId = (s.id || '').slice(0, 8) || 'unknown';
   const actions: SessionActionItem[] = [];
 
   // 1. High-priority approval action

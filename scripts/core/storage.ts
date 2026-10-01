@@ -70,7 +70,7 @@ export function saveSessions(sessions: SessionRecord[], targetDir: string = proc
     fs.mkdirSync(dirs.julesDir, { recursive: true });
   }
   const sessionFile = path.join(dirs.julesDir, 'sessions.json');
-  const tempFile = `${sessionFile}.tmp.${Date.now()}`;
+  const tempFile = `${sessionFile}.tmp.${Date.now()}.${Math.random().toString(36).slice(2, 8)}`;
   fs.writeFileSync(tempFile, JSON.stringify(sessions, null, 2), 'utf8');
   try {
     fs.renameSync(tempFile, sessionFile);

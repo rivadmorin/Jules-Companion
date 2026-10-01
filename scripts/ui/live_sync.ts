@@ -153,7 +153,7 @@ export class LiveSyncManager {
     nextStatus: string,
     root: string
   ): void {
-    const idPrefix = session.id.slice(0, 8);
+    const idPrefix = (session.id || '').slice(0, 8) || 'unknown';
     const agent = session.agent || 'Jules Agent';
     const time = new Date().toLocaleTimeString();
 

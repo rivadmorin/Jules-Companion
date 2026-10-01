@@ -51,9 +51,10 @@ export class JulesStatusBar {
     // 1. Highest priority: Awaiting Plan Approval
     const awaitingApproval = active.find(s => isSessionAwaitingApproval(s.status));
     if (awaitingApproval) {
+      const planShortId = (awaitingApproval.id || '').slice(0, 8) || 'unknown';
       this.statusBarItem.text = `$(alert) Jules: Plan Approval Needed`;
       this.statusBarItem.tooltip = new vscode.MarkdownString(
-        `### Jules Session #${awaitingApproval.id.slice(0, 8)}\n\n` +
+        `### Jules Session #${planShortId}\n\n` +
         `**Status:** Awaiting Plan Approval\n` +
         `**Task:** ${awaitingApproval.task}\n\n` +
         `*Click to open Action Center and review/approve.*`
@@ -66,9 +67,10 @@ export class JulesStatusBar {
     // 2. Second priority: Awaiting User Feedback / Input
     const awaitingInput = active.find(s => isSessionAwaitingInput(s.status));
     if (awaitingInput) {
+      const inputShortId = (awaitingInput.id || '').slice(0, 8) || 'unknown';
       this.statusBarItem.text = `$(comment-discussion) Jules: Input Needed`;
       this.statusBarItem.tooltip = new vscode.MarkdownString(
-        `### Jules Session #${awaitingInput.id.slice(0, 8)}\n\n` +
+        `### Jules Session #${inputShortId}\n\n` +
         `**Status:** Awaiting User Response\n` +
         `**Task:** ${awaitingInput.task}\n\n` +
         `*Click to open Action Center and send response.*`
@@ -81,7 +83,7 @@ export class JulesStatusBar {
     // 3. Third priority: Active / Running Session
     const running = active.find(s => isSessionActive(s.status));
     if (running) {
-      const shortId = running.id.slice(0, 8);
+      const shortId = (running.id || '').slice(0, 8) || 'unknown';
       this.statusBarItem.text = `$(sync~spin) Jules: #${shortId}`;
       this.statusBarItem.tooltip = new vscode.MarkdownString(
         `### Jules Session #${shortId}\n\n` +
@@ -98,9 +100,10 @@ export class JulesStatusBar {
     // 4. Completed session awaiting merge / PR
     const completed = active.find(s => isSessionCompleted(s.status));
     if (completed) {
-      this.statusBarItem.text = `$(check) Jules: #${completed.id.slice(0, 8)}`;
+      const compShortId = (completed.id || '').slice(0, 8) || 'unknown';
+      this.statusBarItem.text = `$(check) Jules: #${compShortId}`;
       this.statusBarItem.tooltip = new vscode.MarkdownString(
-        `### Jules Session #${completed.id.slice(0, 8)}\n\n` +
+        `### Jules Session #${compShortId}\n\n` +
         `**Status:** Completed\n` +
         `**Task:** ${completed.task}\n\n` +
         `*Click to open Action Center to merge or create PR.*`
