@@ -27,7 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Test Suite Expansion**:
   - Expanded test coverage to 120 unit tests across 38 suites with 100% passing rate.
 - **Operating Manual Alignment (AGENT.md)**:
-  - Codified PowerShell 5.1 command separator specifics, pure native IDE primitives, and accurate Graphify AST metrics (819 nodes, 1692 edges, 72 communities).
+  - Upgraded to an algorithmic TypeScript-like pseudocode specification with type-safe state guards, 14 Golden Invariants, dynamic bilingual conversation mirroring, and exact baseline metrics (124 tests across 39 suites, 53 specialist agents, 820 nodes / 1696 edges).
 
 ---
 

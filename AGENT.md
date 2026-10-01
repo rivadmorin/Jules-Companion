@@ -1,317 +1,647 @@
-# AGENT.md - Autonomous AI Coding Agent Operating Manual
+# AGENT.md - Autonomous AI Coding Agent Operating Specification (Algorithmic Protocol)
 
-> **Target Audience:** Autonomous AI Coding Agents (Antigravity CLI / `agy`, Google Jules, Claude Code, GitHub Copilot CLI, OpenAI Codex, Hermes, Cursor, Windsurf)  
-> **Repository:** [Jules Companion](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion)  
-> **Host Environment:** Windows 10/11, PowerShell (`pwsh`), Google Antigravity IDE (Antigravity 2.0 / VS Code engine), Node.js 20+, TypeScript 5.9, Model Context Protocol (MCP)  
-> **Active Knowledge Base:** Obsidian LLM Wiki (`E:\Markdown Artificial Intelligence\LLM Wiki`)
-
----
-
-## 🤖 1. Mission & System Overview
-
-Welcome, AI Agent! You are operating inside the codebase of **Jules Companion**, an enterprise developer orchestration platform that bridges modern IDEs (Visual Studio Code and Google Antigravity IDE) and external LLMs (via Model Context Protocol) with **Google Jules Cloud** autonomous agents.
-
-This manual defines the **non-negotiable operating invariants, architectural boundaries, communication schemas, toolchain protocols, and verification gates** tailored for this development environment.
+> **Audience**: Autonomous AI Coding Agents (`agy`, Jules, Claude Code, Copilot CLI, Codex, Hermes, Cursor, Windsurf)  
+> **Target Repository**: [Jules Companion](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion)  
+> **Environment Spec**: Windows 10/11, PowerShell (`pwsh`), Google Antigravity IDE (VS Code Engine), Node.js 20+, TypeScript 5.9, Model Context Protocol (MCP)  
+> **Knowledge Vault**: Obsidian LLM Wiki (`E:\Markdown Artificial Intelligence\LLM Wiki`)  
+> **Specification Paradigm**: Structured Pseudocode, Algorithmic State Guards, and Type-Safe Invariant Contracts.
 
 ---
 
-## ⚡ 2. The Golden Invariants (Non-Negotiable)
+```typescript
+// ============================================================================
+// SYSTEM MANIFEST & GLOBAL ENVIRONMENT CONFIGURATION
+// ============================================================================
+const SYSTEM_SPEC = {
+  platform: "Jules Companion",
+  role: "Enterprise Developer Orchestration Platform (IDEs + MCP <-> Google Jules Cloud)",
+  environment: {
+    os: "Windows 10/11 (PowerShell pwsh)",
+    runtime: "Node.js >= 20.x, TypeScript 5.9",
+    hostIde: "Google Antigravity IDE (VS Code Engine)",
+    mcpGlobalPath: "~/.gemini/antigravity-ide/mcp/jules-companion/",
+    wikiVaultPath: "E:\\Markdown Artificial Intelligence\\LLM Wiki"
+  },
+  metricsBaseline: {
+    specialistAgentsCount: 53, // 30 Coding & Architecture + 23 Advisory & Review
+    mcpToolsCount: 20,
+    testCoverage: { tests: 124, suites: 39, maxFailures: 0 },
+    entrypointsCount: 30,
+    graphifyGraph: { nodes: 820, edges: 1696, communities: 73 }
+  }
+} as const;
 
-When inspecting, modifying, refactoring, or extending this codebase, you must adhere to these foundational invariants:
+// ============================================================================
+// COMMUNICATION & MULTILINGUAL CONVERSATION PROTOCOL
+// ============================================================================
+const COMMUNICATION_PROTOCOL = {
+  conversationalLayer: {
+    rule: "Always dynamically mirror the language used by the user in their prompt.",
+    behavior: (userPrompt: string) => {
+      // E.g., If user prompts in Indonesian (id), respond fluently in Indonesian.
+      // If user prompts in English (en), respond in English.
+      return detectLanguage(userPrompt);
+    }
+  },
+  repositoryArtifactLayer: {
+    rule: "All codebase artifacts must remain strictly in professional English.",
+    artifacts: [
+      "Source code and variable/function/class naming",
+      "TSDoc / JSDoc comment blocks",
+      "Git commit messages and PR descriptions",
+      "CHANGELOG.md, README.md, and documentation files"
+    ]
+  }
+} as const;
 
-### Invariant 1: Ponytail Mode is Permanently Active (Lazy Senior Developer)
-* **Governing Engine**: [**Ponytail** (`DietrichGebert/ponytail`)](https://github.com/DietrichGebert/ponytail) — Anti-overengineering ruleset for AI coding agents.
-* **YAGNI (You Aren't Gonna Need It)**: Refuse speculative abstractions. Do not create interfaces with a single implementation, factories for a single class, or configuration flags for values that do not change.
-* **The Ladder Reflex**: Stop at the first rung that holds:
-  1. *Does this need to exist at all?* (YAGNI) — Skip speculative features.
-  2. *Already in this codebase?* — Reuse existing helpers, types, or utilities.
-  3. *Stdlib does it?* — Reach for Node.js built-ins (`node:fs`, `node:path`, `node:crypto`, `node:child_process`, `node:test`, `node:assert`).
-  4. *Native platform feature covers it?* — Browser/OS native capabilities over custom code.
-  5. *Already-installed dependency solves it?* — Never add a new dependency for what a few lines can do.
-  6. *Can it be one line?* — Make it one line.
-  7. *Only then:* Write the minimum code that works.
-* **Shortest Working Diff**: Touch only the exact target lines necessary to resolve the task. Zero unsolicited cleanup, style reformatting, or collateral edits.
-* **Fix Root Causes**: Trace bugs to their shared bottleneck and patch them once at the root rather than writing workarounds across multiple callers.
-
-### Invariant 2: Karpathy Behavioral Coding Principles
-* **Think Before Coding**: Surface hidden assumptions, name ambiguities, and list trade-offs explicitly before touching code.
-* **Simplicity First**: Write the minimum code that solves the problem. If 200 lines could be 50, rewrite it.
-* **Surgical Changes**: Every changed line must trace directly to the request. Do not "improve" adjacent code, comments, or formatting.
-* **Goal-Driven Execution**: Formulate minimal, verifiable success criteria before editing (`[Step] → verify: [check]`). Loop until verified.
-
-### Invariant 3: Cognitive Reasoning Foundation — Sequential Thinking (`sequentialthinking`)
-* Proactively utilize the `sequentialthinking` MCP tool (`sequential-thinking` server) as the primary cognitive and reasoning foundation for all non-trivial tasks, architectural investigations, multi-step problem solving, and edge-case evaluations.
-* **Parameter Protocol**:
-  - `thought`: Deep, reflective analysis, problem decomposition, and hypothesis falsification.
-  - `thoughtNumber` & `totalThoughts`: Strict sequential indexing with dynamic boundary adjustments.
-  - `nextThoughtNeeded`: Set to `true` while ambiguity persists; set to `false` ONLY when an unambiguous execution plan is formulated.
-  - `isRevision` & `revisesThought`: Enforce rigorous self-correction whenever assumptions contradict findings.
-  - `branchFromThought` & `branchId`: Explicitly model multi-path trade-offs before pruning or merging.
-
-### Invariant 4: Token Optimization via Context-Mode & RTK
-* **"Think in Code" Principle (Mandatory)**: When analyzing, filtering, counting, or extracting data from codebase files, program the analysis using `ctx_execute` or `ctx_execute_file` inside the sandboxed context-mode environment.
-* **No File Dumping**: Never flood the conversation context with raw file dumps (`print(FILE_CONTENT)` is forbidden). Print only derived summaries, line counts, or exact metrics.
-* **RTK Prefix Reflex**: Always prefix dev and git commands with `rtk` in `run_command` (e.g. `rtk git status`, `rtk npm test`, `rtk git commit ...`) to compress CLI output tokens.
-
-### Invariant 5: 100% TSDoc / JSDoc & Inline Code Documentation is Mandatory
-Every exported symbol (`export function`, `export class`, `export interface`, `export type`, `export const`) **must** include a comprehensive TSDoc comment block:
-* `@module <name>` header at the very top of each file.
-* Clear summary of purpose, behavior, and side effects.
-* `@param <name>` tag for every parameter, describing its type and semantics.
-* `@returns` tag documenting return values or Promise resolutions.
-* **Inline Documentation Density**: Every script in `scripts/` (both `.ts` and `.js`) must maintain non-zero inline comments and healthy comment density (>= 10% for libraries, utilities, and tools; >= 4% for monolithic entrypoints like `extension.ts`).
-* **Step-by-Step Logic Comments**: All build/test scripts (`build.js`, `run_tests.js`, `installer.js`, `install_hooks.js`, etc.) and MCP tool handlers (`scripts/mcp/tools/*.ts`) must document execution phases with structured comments (`// Step 1: ...`, `// Step 2: ...`).
-* *Enforcement*: The CI pipeline and [`tests/doc_coverage.test.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/tests/doc_coverage.test.ts) (6 automated audits) will immediately fail if documentation or inline comments are missing.
-
-### Invariant 6: Strict Downward Layering & Zero Circular Dependencies
-* **Governing Sensor**: [**Sentrux** (`sentrux/sentrux`)](https://github.com/sentrux/sentrux) — AI Codebase Quality Sensor & Architectural Linter.
-* Dependencies must flow in a single downward direction:
-  $$\text{Tier 0: Tests} \longrightarrow \text{Tier 1: Interfaces} \longrightarrow \text{Tier 2: Tools \& UI} \longrightarrow \text{Tier 3: Core Engines} \longrightarrow \text{Tier 4: Client} \longrightarrow \text{Tier 5: Foundation}$$
-* Foundation modules ([`scripts/core/*`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/core/) and [`scripts/client/*`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/client/)) must **never** import from UI ([`scripts/ui/*`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/ui/)) or MCP tool handlers ([`scripts/mcp/*`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/mcp/)).
-* Enforced statically by Sentrux via [`.sentrux/rules.toml`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/.sentrux/rules.toml) (`max_cycles = 0`).
-
-### Invariant 7: Status Disambiguation — Plan Approval vs User Feedback
-Google Jules Cloud sessions operate with two distinct pausing states that must **never** be conflated:
-1. **`AWAITING_PLAN_APPROVAL`**: The cloud agent has formulated an execution plan and paused for human authorization.
-   - *Native UI*: Priority Status Bar renders green `$(bell-dot) Jules: Plan Approval Needed`, Sessions TreeView displays `$(pass) Approve Plan`, and Action Center offers `$(pass) Approve Proposed Execution Plan`.
-   - *Action API*: Invoke [`approvePlanApi`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/client/jules_api.ts) (`jules.approvePlan`).
-2. **`AWAITING_USER_FEEDBACK` / `AWAITING_USER_INPUT`**: The cloud agent has paused to ask a clarifying question.
-   - *Native UI*: Priority Status Bar renders amber `$(comment-discussion) Jules: Input Needed`, Sessions TreeView displays `$(comment-discussion) Send Response / Instructions`, and Action Center offers `$(comment-discussion) Send Response / Instructions to Agent`.
-   - *Action API*: Invoke [`sendMessageApi`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/client/jules_api.ts) (`jules.sendMessage`).
-* **Rule**: It is a critical regression to display plan authorization actions when the agent is waiting for user input, or vice-versa.
-
-### Invariant 8: Pure Native IDE GUI & State Discipline
-* **Zero Webview Overhead**: The extension runs 100% on native VS Code / Antigravity IDE primitives (`vscode.window.createOutputChannel`, `vscode.window.createStatusBarItem`, `vscode.window.showQuickPick`, `vscode.diff`, `vscode.TreeDataProvider`). Legacy Chromium HTML webviews are strictly retired.
-* **Keyboard-Navigable Action Center**: All session inspections, plan authorizations, diff launches, and branch checkouts are accessible instantly via the native QuickPick Action Center (`jules.openSessionActionCenter`).
-* **Live Activity Streaming**: Activities, bash outputs, and background LiveSync transitions stream directly into the native OutputChannel (`Jules Activity Stream`), eliminating DOM parsing overhead while supporting full log searching and syntax highlighting.
-* **Hierarchical TreeView Execution Plan**: Sessions render a collapsible `📋 Execution Plan (X/Y completed)` group in the sidebar, dynamically displaying step progress (`$(pass)`, `$(sync~spin)`, `$(circle-outline)`).
-* **Zero-Churn Disk Persistence**: In background sync loops, only call `saveSessions()` when `currentSessions[idx].status !== liveStatus`.
-
-### Invariant 9: Fail-Safe Git Safety Gate & In-Memory Patch Caching
-* **Pre-Merge Safety Gate**: Before triggering any merge ([`mergeSessionCore`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/merge_session.ts)), verify:
-  1. Cloud session status is strictly `SUCCEEDED`.
-  2. Local working tree is completely clean (`git status --porcelain` returns empty).
-* **In-Memory TTL Patch Check Caching**: In [`scripts/core/git.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/core/git.ts), dry-run conflict checks (`checkPatchConflict`) MUST leverage `patchCheckCache` (30s TTL). Do not write scratch patch files or spawn `git apply --check` processes repeatedly on unchanged patch content.
-* **Scratch Cleanup**: Call `cleanSessionScratch(sessionId)` upon session archive or delete to prevent leftover files in `.jules-companion/diffs/` or `.jules-companion/scratch/`.
-
-### Invariant 10: Antigravity IDE & Windows PowerShell Specifics
-* **PowerShell 5.1 Command Chaining**: Windows PowerShell 5.1 rejects the POSIX `&&` operator with a parser error (`The token '&&' is not a valid statement separator`). Always separate chained commands with `;` or execute them as distinct tool calls (e.g. `rtk git add -A; rtk git commit -m '...'`).
-* **Codicon Font Limitation**: Antigravity IDE's internal `codicon.ttf` omits `0xEC6F` (`$(git-branch)`), rendering blank square icons. Always use `$(source-control)` or `$(repo-forked)` in `package.json` for Git branching actions.
-* **PowerShell String Escaping**: In Windows PowerShell (`pwsh`), `$(...)` is parsed as subexpression syntax. When writing Git commit messages or shell strings containing codicons or variable interpolations, escape as `` `$(...) `` or wrap in single quotes `'...'`.
-* **Non-Admin Execution**: Antigravity IDE should be run as a standard non-admin user so UIPI (User Interface Privilege Isolation) does not block CUA input injection (`hotkey`, `type_text`, `press_key`).
-* **VSIX Hot Installation**: After packaging, install directly to the local IDE via `antigravity-ide.cmd --install-extension jules-companion-<version>.vsix --force`.
-
-### Invariant 11: Cross-Platform Build & CI/CD Pipeline Integrity
-* Continuous Integration runs across Ubuntu Linux and Windows across Node.js LTS (20.x, 22.x).
-* **Zero Shell Globbing**: Never use shell-specific glob syntax in `package.json` (e.g. `scripts/**/*.ts` fails in Linux). Use Node.js script runners like [`scripts/build.js`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/build.js).
-* **Headless Mock Resilience**: Test suites must execute reliably without a graphical VS Code window or live API keys. Setup scripts must scaffold mock environments automatically.
-* **Network Timeout**: HTTP requests in [`scripts/client/http.ts`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/scripts/client/http.ts) must declare native `AbortSignal.timeout(15000)` to prevent indefinite socket hanging.
-
-### Invariant 12: Strict Truth in CLI Documentation & Agent Roster Alignment
-* **No Phantom Agents**: The sole authority for agent identity is [`references/agents/registry.json`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/references/agents/registry.json), registering exactly **53 specialist agents** (30 coding + 23 advisory).
-* **Executable CLI Commands**: Every CLI fallback command documented in `SKILL.md`, `AGENT.md`, and `README.md` must be 100% syntactically valid and runnable by Node.js.
-* **Automatic Global Sync**: The global IDE MCP schema repository (`~/.gemini/antigravity-ide/mcp/jules-companion/`) must be refreshed on every build (`npm run sync`).
-
-### Invariant 13: Codebase Knowledge Graph & Architecture Navigation (Graphify)
-* **Governing Framework**: [**Graphify** (`safishamsi/graphify`)](https://github.com/safishamsi/graphify) — Persistent Codebase Knowledge Graph.
-* **Query First**: Treat any codebase, data-flow, or architectural inquiry as a Graphify query first before attempting broad text greps (`graphify query "<question>"` or inspecting `graphify-out/GRAPH_REPORT.md`).
-* **Post-Edit Hygiene**: Keep the graph synchronized after modifying code via `graphify update .` (or `npm run graphify:update`).
-
-### Invariant 14: Documentation & Obsidian LLM Wiki Knowledge Preservation
-* **Mandatory Sync**: Every code change, refactoring, or feature addition MUST immediately update [`CHANGELOG.md`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/CHANGELOG.md), [`docs/codebase/`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/docs/codebase/), and [`README.md`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/README.md).
-* **Obsidian LLM Wiki**: Preserve architectural insights, debugging post-mortems, and session findings into the local vault at `E:\Markdown Artificial Intelligence\LLM Wiki` using the `llm-wiki` and `wiki-update` skills.
-
----
-
-## 🛠️ 3. Contributor & AI Agent Tooling Suite
-
-| Tool | Purpose in this Environment | Primary Command |
-|---|---|---|
-| **Ponytail** | Enforces minimalist, YAGNI, senior developer coding patterns | Active by default (`full`) |
-| **Sequential Thinking** | Deep cognitive reasoning, hypothesis testing, and architectural planning | MCP tool: `sequentialthinking` |
-| **Context-Mode** | Token-optimized in-memory code and file analysis | MCP tools: `ctx_execute_file`, `ctx_execute` |
-| **RTK** | Terminal CLI output token compression (git, npm, tsc) | Shell prefix: `rtk <cmd>` |
-| **Sentrux** | Architectural layering linter and quality sensor | `sentrux check .` |
-| **Graphify** | Persistent knowledge graph, AST dependency tracking, and visualizer | `graphify update .` / `graphify query` |
-| **Obsidian Wiki** | Persistent cross-session knowledge distillation | Vault: `E:\Markdown Artificial Intelligence\LLM Wiki` |
-
----
-
-## 🗺️ 4. Codebase Architectural Navigation Map
-
-```
-Jules-Companion/
-├── scripts/
-│   ├── core/                        # Tier 5: Foundation Layer
-│   │   ├── types.ts                 # Universal TypeScript contracts and interfaces
-│   │   ├── storage.ts               # Atomic JSON storage (.jules-companion/sessions.json)
-│   │   ├── scheduler.ts             # Background Task Scheduler engine (.jules-companion/schedules.json)
-│   │   └── git.ts                   # Git CLI subprocess abstractions with in-memory patch caching
-│   ├── client/                      # Tier 4: Communication Layer
-│   │   ├── http.ts                  # Native HTTPS transport engine with 15s AbortSignal timeout
-│   │   └── jules_api.ts             # Google Jules Cloud REST API endpoints
-│   ├── deploy_session.ts            # Tier 3: Core Deployment Engine (4 launch modes)
-│   ├── merge_session.ts             # Tier 3: Core Merge Engine & Safety Gate
-│   ├── jules_client.ts              # Tier 3: Consolidated Jules client facade
-│   ├── ui/                          # Tier 2: VS Code / Antigravity IDE Presentation Layer
-│   │   ├── action_center.ts         # Native QuickPick action hub & execution coordinator
-│   │   ├── activity_channel.ts      # Native OutputChannel live step logging & streaming
-│   │   ├── status_bar.ts            # Priority status bar item & active session indicator
-│   │   ├── sessions_provider.ts     # TreeDataProvider for Jules Sessions & Scheduled Tasks
-│   │   ├── journals_provider.ts     # TreeDataProvider for Agent Journals and Review Reports
-│   │   ├── agents_provider.ts       # TreeDataProvider for 53 Specialist Agents
-│   │   ├── workspace_provider.ts    # TreeDataProvider for Workspace health & Git context
-│   │   ├── visual_diff.ts           # Native side-by-side & in-memory virtual diff provider
-│   │   ├── live_sync.ts             # Background polling engine with adaptive backoff
-│   │   └── custom_agent_wizard.ts   # Interactive multi-step agent creation wizard
-│   ├── mcp/                         # Tier 2: MCP Tool Registry & Handlers
-│   │   ├── registry.ts              # 20 modular native MCP tool declarations
-│   │   └── tools/                   # Individual tool handler implementations
-│   ├── extension.ts                 # Tier 1: IDE Extension Entrypoint (35 registered commands)
-│   ├── mcp_server.ts                # Tier 1: Standalone JSON-RPC MCP Server Entrypoint
-│   └── utils.ts                     # Tier 5: Shared utilities, Doctor checks, status helpers
-├── references/                      # Specialist Agent Markdown definitions
-│   └── agents/
-│       ├── registry.json            # Compiled catalog of 53 specialist agents
-│       └── *.md                     # 53 individual agent prompt definitions
-├── tests/                           # Tier 0: Native Node.js Test Suite (120 tests across 38 suites)
-│   ├── doc_coverage.test.ts         # 100% TSDoc coverage enforcement
-│   ├── scheduler.test.ts            # Task Scheduler test suite
-│   ├── action_center.test.ts        # Native QuickPick Action Center test suite
-│   ├── activity_channel.test.ts     # Native OutputChannel logging test suite
-│   ├── status_bar.test.ts           # Native StatusBar item lifecycle test suite
-│   ├── sessions_provider.test.ts    # TreeDataProvider test suite
-│   ├── mcp.test.ts                  # MCP registry and tool execution tests
-│   └── merge_session.test.ts        # Pre-merge safety gate tests
-├── graphify-out/                    # Codebase Knowledge Graph & Visualizer (820 nodes, 1696 edges, 73 communities)
-│   ├── graph.json                   # GraphRAG knowledge graph export
-│   ├── graph.html                   # Interactive browser visualization
-│   └── GRAPH_REPORT.md              # Architectural health & God Nodes audit report
-└── docs/codebase/                   # Master Architecture Reference Suite (10 chapters)
+// ============================================================================
+// TOOLING SUITE & FAST COMMAND REFERENCE
+// ============================================================================
+const TOOLING_SUITE = {
+  ponytail: { role: "Anti-overengineering & YAGNI enforcement", invocation: "Active by default (full)" },
+  sequentialThinking: { role: "Cognitive reasoning & architectural analysis", invocation: "mcp: sequentialthinking" },
+  contextMode: { role: "Token-optimized in-memory file & data analysis", invocation: "mcp: ctx_execute_file, ctx_execute" },
+  rtk: { role: "CLI output token compression (git, npm, tsc)", invocation: "shell prefix: rtk <cmd>" },
+  sentrux: { role: "Architectural layering linter (zero cycles)", invocation: "rtk sentrux check ." },
+  graphify: { role: "Codebase AST knowledge graph & visualizer", invocation: "rtk graphify update . | rtk graphify query" },
+  obsidianWiki: { role: "Persistent cross-session knowledge distillation", vault: "E:\\Markdown Artificial Intelligence\\LLM Wiki" }
+} as const;
 ```
 
 ---
 
-## 🛠️ 5. AI Agent Operating Playbook (Windows & Antigravity IDE)
+## ⚡ 1. The 14 Golden Invariants (Executable Logic & State Guards)
 
-When executing tasks in this environment, strictly follow this sequence:
+```typescript
+// ============================================================================
+// INVARIANT 1: PONYTAIL MODE (ANTI-OVERENGINEERING PROTOCOL)
+// Source: DietrichGebert/ponytail | Default Intensity: FULL
+// ============================================================================
+function applyPonytailLadder<T>(task: Task, candidate: T): Diff {
+  // Step 1: Evaluate YAGNI
+  if (isSpeculativeAbstraction(candidate) || isSingleUseInterfaceOrFactory(candidate)) {
+    throw new SkipFeatureException("YAGNI: Do not add speculative interfaces, factories, or static configs.");
+  }
 
-### Step 1: Cognitive Analysis & Context Gathering
-1. Use `sequentialthinking` for decomposition, assumptions, and edge cases.
-2. Query Graphify first: `graphify query "<component>"` or inspect `graphify-out/GRAPH_REPORT.md`.
-3. Use `ctx_execute_file` to programmatically analyze code without dumping raw tokens.
+  // Step 2: Traverse Ponytail Ladder reflexively
+  const rungs = [
+    () => reuseExistingHelperOrUtil(candidate),
+    () => implementWithNodeStdlib(candidate, ["node:fs", "node:path", "node:crypto", "node:child_process", "node:test", "node:assert"]),
+    () => useNativePlatformFeature(candidate, "Browser/OS native API"),
+    () => useAlreadyInstalledDependency(candidate),
+    () => makeItOneLine(candidate),
+    () => implementShortestWorkingCode(candidate)
+  ];
 
-### Step 2: Implement Minimal Surgical Fixes
-* Adhere strictly to Ponytail's Ladder: shortest working diff, standard library first, zero unrequested abstractions.
-* Use `replace_file_content` for contiguous, targeted edits.
-* Maintain 100% TSDoc coverage (`@module`, `@param`, `@returns`).
+  const resolution = rungs.find(rung => rung().isViable())!();
 
-### Step 3: Run the Verification Suite
-Execute the native test runner via PowerShell:
-```powershell
-rtk npm test
-# or full verification (typecheck + tests):
-rtk npm run verify
-```
-* **Success Criteria**: All **124 tests across 39 suites** must pass with `0 failures`.
+  // Step 3: Enforce Shortest Working Diff & Root Cause Bottleneck Fix
+  assert(resolution.isShortestWorkingDiff(), "Touch only target lines. Zero unsolicited cleanups or reformatting.");
+  assert(resolution.fixesRootCauseAtSharedBottleneck(), "Fix root cause at shared bottleneck; no caller workarounds.");
 
-### Step 4: Recompile & Verify Packaging
-```powershell
-# 1. Compile 30 TypeScript entrypoints & run global sync
-rtk npm run build
+  return resolution.generateDiff();
+}
 
-# 2. If agent definitions were modified, recompile registry
-rtk npm run registry
+// ============================================================================
+// INVARIANT 2: KARPATHY BEHAVIORAL CODING PRINCIPLES
+// ============================================================================
+function enforceKarpathyProtocol(task: Task, diff: Diff): void {
+  // 1. Think Before Coding
+  assert(task.assumptionsStated() && task.ambiguitiesSurfaced(), "Surface all hidden assumptions and trade-offs explicitly.");
+  // 2. Simplicity First
+  assert(diff.lineCount <= diff.optimalMinimalLines, "Reject unnecessary complexity; rewrite 200 lines to 50 if possible.");
+  // 3. Surgical Changes
+  assert(diff.hasZeroCollateralModifications(), "Every changed line must trace directly to user request.");
+  // 4. Goal-Driven Execution
+  assert(task.hasVerifiableSuccessCriteria(), "Define [Step] -> verify: [check] loop before touching code.");
+}
 
-# 3. Package extension VSIX
-rtk npm run package
-```
+// ============================================================================
+// INVARIANT 3: COGNITIVE REASONING PROTOCOL (SEQUENTIAL THINKING)
+// Tool: mcp_sequential-thinking_sequentialthinking
+// ============================================================================
+async function executeSequentialThinkingProtocol(problem: ComplexProblem): Promise<VerifiedExecutionPlan> {
+  let step = 1;
+  let totalEstimated = 5;
+  let nextThoughtNeeded = true;
+  let currentThought = "";
 
-### Step 5: Install & Hot-Reload in Antigravity IDE
-Install the newly bundled `.vsix` into the host Antigravity IDE:
-```powershell
-antigravity-ide.cmd --install-extension jules-companion-1.3.0.vsix --force
-```
+  while (nextThoughtNeeded) {
+    const analysis = await callMcp("sequentialthinking", {
+      thought: analyzeDeeply(problem, step),
+      thoughtNumber: step,
+      totalThoughts: totalEstimated,
+      nextThoughtNeeded: nextThoughtNeeded,
+      isRevision: checkContradiction(step),
+      revisesThought: checkContradiction(step) ? getContradictedStep(step) : undefined,
+      branchFromThought: hasAlternativeArchitectures(step) ? step : undefined,
+      branchId: hasAlternativeArchitectures(step) ? "eval-tradeoffs" : undefined
+    });
 
-### Step 6: Post-Edit Knowledge Graph Hygiene & Git Ship
-```powershell
-# 1. Update Graphify knowledge graph
-rtk graphify update .
+    if (analysis.isFullyResolved && !analysis.hasAmbiguity) {
+      nextThoughtNeeded = false;
+    } else {
+      step++;
+      if (step >= totalEstimated) totalEstimated += 2;
+    }
+  }
 
-# 2. Stage and commit (remember to escape `$(...)` in PowerShell)
-rtk git add .
-rtk git commit -m "feat(<scope>): <concise message>"
+  return assembleVerifiedPlan();
+}
 
-# 3. Push to remote
-rtk git push origin main
+// ============================================================================
+// INVARIANT 4: TOKEN OPTIMIZATION VIA CONTEXT-MODE & RTK
+// ============================================================================
+class TokenOptimizationPolicy {
+  // Mandatory: Think in Code (Never dump raw file contents)
+  static async analyzeFile(filePath: string, analysisScript: string): Promise<SummaryResult> {
+    assert(!analysisScript.includes("print(FILE_CONTENT)") && !analysisScript.includes("console.log(FILE_CONTENT)"), 
+      "Context-Mode Violation: Dumping entire file content is strictly forbidden.");
+    
+    return await callMcp("context-mode", "ctx_execute_file", {
+      path: filePath,
+      language: "javascript",
+      code: analysisScript // Process in-memory; log only derived metrics, line counts, or exact summaries
+    });
+  }
+
+  // Shell Command Token Compression
+  static formatCommand(cmd: string): string {
+    const rtkSupportedPrefixes = ["git", "npm", "cargo", "pytest", "gh", "tsc", "pnpm"];
+    const needsPrefix = rtkSupportedPrefixes.some(prefix => cmd.trim().startsWith(prefix));
+    return needsPrefix ? `rtk ${cmd}` : cmd;
+  }
+}
+
+// ============================================================================
+// INVARIANT 5: 100% TSDoc / JSDoc & INLINE CODE DOCUMENTATION AUDIT
+// Enforced by: tests/doc_coverage.test.ts (6 Automated Audits)
+// ============================================================================
+function validateCodeDocumentation(file: SourceFile): void {
+  // Top-level module tag
+  assert(file.header.includes("@module"), "Missing @module tag at the top of file.");
+
+  // All exported symbols
+  for (const symbol of file.exportedSymbols) {
+    assert(symbol.hasDocBlock(), `Symbol ${symbol.name} lacks TSDoc docblock.`);
+    assert(symbol.hasDescription(), `Symbol ${symbol.name} lacks clear description.`);
+    for (const param of symbol.parameters) {
+      assert(symbol.hasParamTag(param.name), `Missing @param ${param.name} tag.`);
+    }
+    if (symbol.returnsValue) {
+      assert(symbol.hasReturnsTag(), `Missing @returns tag on ${symbol.name}.`);
+    }
+  }
+
+  // Inline comment density requirements
+  const density = file.inlineCommentLines / file.totalLines;
+  if (file.path.startsWith("scripts/ui/") || file.path.startsWith("scripts/core/") || file.path.startsWith("scripts/utils.ts")) {
+    assert(density >= 0.10, `Inline comment density (${(density*100).toFixed(1)}%) must be >= 10% for libraries/utils.`);
+  } else if (file.path === "scripts/extension.ts") {
+    assert(density >= 0.04, `Inline comment density must be >= 4% for monolithic extension.ts.`);
+  }
+
+  // Step-by-step logic phase comments
+  if (file.isScriptRunnerOrMcpHandler()) {
+    assert(file.hasCommentsPattern(/\/\/\s*Step\s*\d+:/), "Build/test scripts and MCP handlers must use '// Step N: ...' comments.");
+  }
+}
+
+// ============================================================================
+// INVARIANT 6: STRICT DOWNWARD LAYERING & ZERO CIRCULAR DEPENDENCIES
+// Sensor: Sentrux (sentrux/sentrux) | Config: .sentrux/rules.toml (max_cycles = 0)
+// ============================================================================
+enum ArchitecturalTier {
+  Tier0_Tests = 0,        // tests/
+  Tier1_Interfaces = 1,   // scripts/extension.ts, scripts/mcp_server.ts
+  Tier2_ToolsAndUI = 2,   // scripts/ui/*, scripts/mcp/*
+  Tier3_CoreEngines = 3,  // scripts/deploy_session.ts, scripts/merge_session.ts, scripts/jules_client.ts
+  Tier4_Client = 4,       // scripts/client/* (http.ts, jules_api.ts)
+  Tier5_Foundation = 5    // scripts/core/* (types.ts, storage.ts, git.ts, scheduler.ts, utils.ts)
+}
+
+function enforceLayeringRule(importer: SourceFile, imported: SourceFile): void {
+  const importerTier = getTier(importer);
+  const importedTier = getTier(imported);
+
+  // Downward layering: higher tier number = lower foundation level
+  assert(importedTier >= importerTier, 
+    `Layering Violation: Tier ${importerTier} (${importer.path}) cannot import from Tier ${importedTier} (${imported.path}).`);
+  
+  if (importerTier >= ArchitecturalTier.Tier4_Client) {
+    assert(importedTier !== ArchitecturalTier.Tier2_ToolsAndUI, 
+      "Foundation/Client modules must NEVER import from UI or MCP tools.");
+  }
+}
+
+// ============================================================================
+// INVARIANT 7: STATUS DISAMBIGUATION (PLAN APPROVAL vs USER INPUT)
+// ============================================================================
+type SessionStatus = "AWAITING_PLAN_APPROVAL" | "AWAITING_USER_INPUT" | "AWAITING_USER_FEEDBACK" | "SUCCEEDED" | "RUNNING";
+
+function renderSessionStatus(session: JulesSession): StatusUIConfiguration {
+  switch (session.status) {
+    case "AWAITING_PLAN_APPROVAL":
+      return {
+        statusBar: { color: "green", text: "$(bell-dot) Jules: Plan Approval Needed" },
+        treeViewAction: { icon: "$(pass)", label: "Approve Plan" },
+        actionCenterItem: { icon: "$(pass)", title: "Approve Proposed Execution Plan" },
+        actionApi: () => julesApi.approvePlan(session.id)
+      };
+
+    case "AWAITING_USER_INPUT":
+    case "AWAITING_USER_FEEDBACK":
+      return {
+        statusBar: { color: "amber", text: "$(comment-discussion) Jules: Input Needed" },
+        treeViewAction: { icon: "$(comment-discussion)", label: "Send Response / Instructions" },
+        actionCenterItem: { icon: "$(comment-discussion)", title: "Send Response / Instructions to Agent" },
+        actionApi: (msg: string) => julesApi.sendMessage(session.id, msg)
+      };
+
+    default:
+      return renderStandardStatus(session.status);
+  }
+  // Regression check: Never conflate plan authorization with user input
+}
+
+// ============================================================================
+// INVARIANT 8: PURE NATIVE IDE GUI & STATE DISCIPLINE
+// ============================================================================
+const NativeUiArchitecture = {
+  webviews: "STRICTLY_RETIRED (0% HTML webview usage)",
+  primitives: {
+    logsAndStreaming: "vscode.window.createOutputChannel('Jules Activity Stream')",
+    actionHub: "vscode.window.showQuickPick() -> Keyboard-Navigable Action Center",
+    hierarchicalViews: "vscode.TreeDataProvider -> Dynamic Execution Plan (X/Y completed)",
+    diffInspection: "vscode.diff -> Side-by-side native diff viewing",
+    statusBar: "vscode.window.createStatusBarItem()"
+  },
+  persistencePolicy: {
+    syncTrigger: (currentSession, liveSession) => {
+      // Zero-churn disk write: Only persist when state actually mutated
+      if (currentSession.status !== liveSession.status) {
+        saveSessions();
+      }
+    }
+  }
+};
+
+// ============================================================================
+// INVARIANT 9: FAIL-SAFE GIT SAFETY GATE & IN-MEMORY PATCH CACHING
+// ============================================================================
+class GitSafetyGate {
+  private static patchCheckCache = new Map<string, { result: boolean; timestamp: number }>();
+  private static readonly TTL_MS = 30_000; // 30 seconds TTL
+
+  static async verifyPreMergeCondition(session: JulesSession): Promise<void> {
+    // Condition 1: Cloud session must be SUCCEEDED
+    assert(session.status === "SUCCEEDED", `Cannot merge session ${session.id}: Status is ${session.status}, not SUCCEEDED.`);
+    
+    // Condition 2: Local working tree must be strictly clean
+    const status = await runShell("git status --porcelain");
+    assert(status.trim() === "", "Working tree contains uncommitted changes. Stash or commit before merging.");
+  }
+
+  static async checkPatchConflictCached(patchContent: string): Promise<boolean> {
+    const hash = crypto.createHash("sha256").update(patchContent).digest("hex");
+    const cached = this.patchCheckCache.get(hash);
+
+    if (cached && (Date.now() - cached.timestamp < this.TTL_MS)) {
+      return cached.result; // Zero disk write, zero spawn overhead
+    }
+
+    const checkResult = await gitCore.applyCheck(patchContent);
+    this.patchCheckCache.set(hash, { result: checkResult, timestamp: Date.now() });
+    return checkResult;
+  }
+
+  static cleanSessionScratch(sessionId: string): void {
+    removeDirectory(`.jules-companion/diffs/${sessionId}`);
+    removeDirectory(`.jules-companion/scratch/${sessionId}`);
+  }
+}
+
+// ============================================================================
+// INVARIANT 10: WINDOWS POWERSHELL & ANTIGRAVITY IDE SPECIFICS
+// ============================================================================
+const WindowsEnvironmentRules = {
+  commandChaining: {
+    invalidOperator: "&&", // Fails on PowerShell 5.1 (ParserError)
+    validSeparator: ";",   // Use semicolon or discrete sequential calls
+    example: "rtk git add -A; rtk git commit -m '...'"
+  },
+  codiconFonts: {
+    missingGlyph: "0xEC6F ($(git-branch)) renders blank box in Antigravity codicon.ttf",
+    replacements: ["$(source-control)", "$(repo-forked)"]
+  },
+  stringEscaping: {
+    subexpressionTrap: "pwsh evaluates $(...) inside double quotes",
+    remedy: "Use single quotes '...' or escape backtick `$(...)"
+  },
+  executionPrivilege: "Run Antigravity IDE as Standard User (Non-Admin) to preserve CUA input injection",
+  extensionInstallation: "antigravity-ide.cmd --install-extension jules-companion-1.3.0.vsix --force"
+};
+
+// ============================================================================
+// INVARIANT 11: CROSS-PLATFORM BUILD & CI/CD PIPELINE INTEGRITY
+// ============================================================================
+const CicdRules = {
+  runners: ["Ubuntu Linux", "Windows", "Node.js 20.x, 22.x"],
+  shellGlobbing: "FORBIDDEN in package.json (e.g. scripts/**/*.ts fails in Linux). Use scripts/build.js.",
+  headlessMocks: "All tests must pass headlessly without display or live API keys.",
+  networkTimeout: "All client requests in scripts/client/http.ts MUST use AbortSignal.timeout(15000)."
+};
+
+// ============================================================================
+// INVARIANT 12: CLI TRUTH & 53 AGENT ROSTER ALIGNMENT
+// ============================================================================
+const AgentRosterAuthority = {
+  authorityFile: "references/agents/registry.json",
+  totalPersonas: 53, // 30 Coding + 23 Advisory
+  prohibition: "Zero phantom agents allowed. Documented CLI commands must be 100% executable by Node.",
+  schemaSync: "npm run sync -> Refreshes ~/.gemini/antigravity-ide/mcp/jules-companion/"
+};
+
+// ============================================================================
+// INVARIANT 13: CODEBASE KNOWLEDGE GRAPH & ARCHITECTURE NAVIGATION (GRAPHIFY)
+// Source: safishamsi/graphify | Persistent AST Knowledge Graph
+// ============================================================================
+const GraphifyProtocol = {
+  artifacts: {
+    graphJson: "graphify-out/graph.json",
+    graphReport: "graphify-out/GRAPH_REPORT.md",
+    wikiIndex: "graphify-out/wiki/index.md",
+    visualization: "graphify-out/graph.html"
+  },
+  metrics: { nodes: 820, edges: 1696, communities: 73 },
+  queryFirstReflex: {
+    rule: "Treat any codebase, data-flow, or architectural inquiry as a Graphify query first before broad text grepping.",
+    operations: {
+      query: (question: string) => `rtk graphify query "${question}"`,           // Scoped subgraphs with minimal tokens
+      tracePath: (from: string, to: string) => `rtk graphify path "${from}" "${to}"`, // Cross-module call chains & dependencies
+      explain: (concept: string) => `rtk graphify explain "${concept}"`           // Inspect God Nodes or complex components
+    }
+  },
+  hierarchicalNavigation: "If graphify-out/wiki/index.md exists, navigate community-clustered markdown articles instead of reading raw code files.",
+  postEditHygiene: "Run 'rtk graphify update .' immediately after modifying code to synchronize AST and community clusters at zero API cost."
+};
+
+// ============================================================================
+// INVARIANT 14: DOCUMENTATION & OBSIDIAN LLM WIKI PRESERVATION
+// ============================================================================
+const KnowledgePreservationPolicy = {
+  repoDocs: ["CHANGELOG.md", "README.md", "docs/codebase/*"],
+  llmWikiVault: "E:\\Markdown Artificial Intelligence\\LLM Wiki",
+  skillsToUse: ["llm-wiki", "wiki-update", "wiki-capture"],
+  action: "Sync architectural decisions, post-mortems, and debugging logs to vault immediately."
+};
 ```
 
 ---
 
-## 🔌 6. Model Context Protocol (MCP) Tool Calling Reference
+## 🗺️ 2. Architectural Tier Mapping & Codebase Navigation
 
-Jules Companion registers **20 native MCP tools**. When calling tools, use these exact schemas:
+```text
+Tier 0: Tests (tests/)
+  └── tests/doc_coverage.test.ts (100% TSDoc check)
+  └── tests/scheduler.test.ts, action_center.test.ts, activity_channel.test.ts
+  └── tests/status_bar.test.ts, sessions_provider.test.ts, mcp.test.ts, merge_session.test.ts
 
-1. **`deploy_session`**: Deploys a session (`type: "start" | "review" | "interactive"`).
-2. **`deploy_team`**: Deploys multi-agent team presets (`preset: "github-ops" | "full-audit" | "feature-sprint" | "refactor-boost"`).
-3. **`merge_session`**: Evaluates pre-merge safety gate and merges session branch (`sessionId`, `inspect: boolean`, `approve: boolean`).
-4. **`pull_session_diff`**: Extracts raw `.diff` patch file and evaluates dry-run conflict status.
-5. **`checkout_session_branch`**: Fetches and checks out the session's Git branch locally for testing.
-6. **`send_session_message`**: Sends direct user feedback to an agent paused in `AWAITING_USER_INPUT`.
-7. **`get_session_status`**: Queries real-time session status from Google Jules Cloud REST API.
-8. **`cancel_session`**: Safely cancels a running cloud session.
-9. **`retry_failed_session`**: Restarts a failed session with preserved prompt and branch configuration.
-10. **`rollback_session`**: Rolls back an applied session branch.
-11. **`auto_process`**: Dispatches full autonomous loop (poll -> approve -> reply -> merge).
-12. **`list_agents`**: Returns the complete list of 53 specialist agents with metadata.
-13. **`get_agent_info`**: Retrieves full prompt documentation and capabilities for an agent.
-14. **`create_custom_agent`**: Scaffolds a new specialist agent persona and registers it in `registry.json`.
-15. **`read_agent_journal`**: Reads operational logs and retrospective journals.
-16. **`setup_workspace`**: Scaffolds directory layout and `.jules-companion` configurations.
-17. **`list_sources`**: Lists connected repository sources in the Jules account.
-18. **`run_doctor`**: Runs diagnostic health checks on workspace, API key, and Git origin.
-19. **`create_github_pr`**: Generates a GitHub Pull Request for a completed session.
-20. **`get_review_reports`**: Retrieves markdown audit reports from `docs/jules-reviews/`.
+Tier 1: Extension Entrypoints (scripts/)
+  ├── scripts/extension.ts       (IDE plugin entrypoint: 35 registered commands)
+  └── scripts/mcp_server.ts      (JSON-RPC MCP daemon entrypoint)
 
----
+Tier 2: Tools & Presentation (scripts/ui/, scripts/mcp/)
+  ├── scripts/ui/                (ActionCenter, ActivityChannel, StatusBar, TreeView Providers)
+  └── scripts/mcp/               (registry.ts [20 tools] + scripts/mcp/tools/*.ts)
 
-## 📋 7. Specialist Agent Roster Reference (53 Personas)
+Tier 3: Core Orchestration Engines (scripts/)
+  ├── scripts/deploy_session.ts  (4 launch modes: start, review, interactive, team)
+  ├── scripts/merge_session.ts   (Merge engine + pre-merge safety gate)
+  └── scripts/jules_client.ts    (Consolidated client facade)
 
-### 💻 Coding & Architecture Group (30 Personas)
-`adapter`, `alchemist`, `benchmarker`, `bolt`, `bridge`, `builder`, `chameleon`, `conduit`, `decoupler`, `dockerist`, `enforcer`, `exterminator`, `gatekeeper`, `hermetic`, `innovator`, `inspector`, `janitor`, `logger`, `materialist`, `modernizer`, `monorepist`, `netrunner`, `nomad`, `octo`, `packager`, `palette`, `partisan`, `plugger`, `sentinel`, `watcher`.
+Tier 4: Network & Remote Clients (scripts/client/)
+  ├── scripts/client/http.ts     (HTTPS transport + AbortSignal.timeout(15000))
+  └── scripts/client/jules_api.ts(Google Jules REST API bindings)
 
-### 📋 Advisory, Review & Documentation Group (23 Personas)
-`annotator`, `archivist`, `attestor`, `cartographer`, `consultant`, `critic`, `curator`, `datasmith`, `grader`, `green`, `guildmaster`, `lexicon`, `localizer`, `mutator`, `nexus`, `proteus`, `revenant`, `scaler`, `scribe`, `sleuth`, `smith`, `synapse`, `vscecraft`.
+Tier 5: Foundation Primitives (scripts/core/, scripts/utils.ts)
+  ├── scripts/core/types.ts      (Contracts & interfaces)
+  ├── scripts/core/storage.ts    (Atomic JSON read/write)
+  ├── scripts/core/scheduler.ts  (Background Task Scheduler engine)
+  ├── scripts/core/git.ts        (Git CLI abstraction + in-memory 30s TTL cache)
+  └── scripts/utils.ts           (Doctor checks, status helpers)
+```
 
 ---
 
-## ⚠️ 8. Development Gotchas & Operational Notes
+## 🛠️ 3. Autonomous AI Agent Operating Playbook (Windows / PowerShell)
 
-Refer to [`NOTE.md`](file:///E:/Data%20Utama/Coding/Antigravity/Jules-Companion/NOTE.md) for full operational autopsy logs:
-* **PowerShell 5.1 Statement Separator Trap**: The POSIX/bash `&&` operator is invalid in Windows PowerShell 5.1 (`ParserError: The token '&&' is not a valid statement separator`). Always separate chained commands with `;` (semicolon) or run them as distinct sequential commands.
-* **PowerShell Subexpression Trap**: Never put unescaped `$(...)` in double-quoted strings in PowerShell.
-* **Inline Documentation Density Standard**: All scripts in `scripts/` must maintain comment-to-code density (>= 10% for tools and utilities; >= 4% for monolithic entrypoints) and structured sequential step comments (`// Step 1: ...`, `// Step 2: ...`) to satisfy `tests/doc_coverage.test.ts`.
-* **Antigravity IDE Font Glyph**: Never use `$(git-branch)` in UI contributions; always use `$(source-control)` or `$(repo-forked)`.
-* **Pure Native IDE UI Primitives**: Avoid legacy Webview panels; use `vscode.OutputChannel` ("Jules Activity Stream") for live streaming/logs, `vscode.QuickPick` for action centers, and `vscode.TreeDataProvider` for hierarchical views.
-* **UAC / UIPI**: Do not run Antigravity IDE as Administrator if CUA driver control is required.
-* **Offline Mock Precedence**: Parameter and branch validation must execute before credential checks.
-* **Atomic JSON Storage**: Always use atomic write-rename routines with `.tmp` files for `.jules-companion/` state files.
+```typescript
+// ============================================================================
+// EXECUTABLE PLAYBOOK PIPELINE
+// ============================================================================
+async function runAgentOperatingPlaybook(task: Task): Promise<void> {
+  // --------------------------------------------------------------------------
+  // STEP 1: Cognitive Analysis & Context Gathering
+  // --------------------------------------------------------------------------
+  await executeSequentialThinkingProtocol(task);
+  
+  // Query persistent knowledge graph first
+  const graphContext = await runShell(`rtk graphify query "${task.componentName}"`);
+  
+  // In-memory code analysis without flooding tokens
+  const metrics = await TokenOptimizationPolicy.analyzeFile(task.targetFile, `
+    const lines = FILE_CONTENT.split('\\n');
+    console.log({ totalLines: lines.length, exports: lines.filter(l => l.startsWith('export')).length });
+  `);
+
+  // --------------------------------------------------------------------------
+  // STEP 2: Implement Minimal Surgical Fixes
+  // --------------------------------------------------------------------------
+  const diff = applyPonytailLadder(task, task.solutionCandidate);
+  enforceKarpathyProtocol(task, diff);
+  applySurgicalEdit(task.targetFile, diff);
+  validateCodeDocumentation(loadSourceFile(task.targetFile));
+
+  // --------------------------------------------------------------------------
+  // STEP 3: Run the Verification Suite
+  // --------------------------------------------------------------------------
+  await runShell("rtk npm test");
+  // Full verification (typecheck + 124 tests across 39 suites)
+  const verifyResult = await runShell("rtk npm run verify");
+  assert(verifyResult.includes("0 failures"), "Test failure detected. Rollback or fix immediately.");
+
+  // --------------------------------------------------------------------------
+  // STEP 4: Recompile & Verify Packaging
+  // --------------------------------------------------------------------------
+  await runShell("rtk npm run build");     // Compile 30 TypeScript entrypoints + sync global schema
+  await runShell("rtk npm run registry");  // If agents modified, rebuild registry.json
+  await runShell("rtk npm run package");   // Produces jules-companion-${pkg.version}.vsix
+  const vsixName = `jules-companion-${loadPackageJson().version}.vsix`;
+
+  // --------------------------------------------------------------------------
+  // STEP 5: Install & Hot-Reload in Antigravity IDE
+  // --------------------------------------------------------------------------
+  await runShell(`antigravity-ide.cmd --install-extension ${vsixName} --force`);
+
+  // --------------------------------------------------------------------------
+  // STEP 6: Post-Edit Knowledge Graph Hygiene & Git Ship
+  // --------------------------------------------------------------------------
+  await runShell("rtk graphify update .");  // Sync AST knowledge graph
+  
+  // Note: Escape $(...) or use single quotes in PowerShell
+  await runShell("rtk git add -A");
+  await runShell(`rtk git commit -m 'feat(${task.scope}): ${task.description}'`);
+  await runShell("rtk git push origin main");
+}
+```
 
 ---
 
-## ✅ 9. Pre-Completion Agent Checklist
+## 🔌 4. Model Context Protocol (MCP) Tool Calling Catalog (20 Tools)
 
-Before completing any task, verify every single item:
-- [ ] Only minimal, targeted lines were modified (Shortest Working Diff).
-- [ ] No speculative or unused abstractions were added (Ponytail YAGNI).
-- [ ] Zero new external npm dependencies were added unless explicitly authorized.
-- [ ] All new or modified exported functions, classes, and types have 100% TSDoc blocks and comply with inline doc density standards (`tests/doc_coverage.test.ts`).
-- [ ] No phantom agents were introduced; all personas align with `references/agents/registry.json`.
-- [ ] Architecture passes Sentrux verification (`sentrux check .`) with 0 cycle violations.
-- [ ] `rtk npm run verify` passes typechecking and all **124 tests across 39 suites** with 0 failures.
-- [ ] `rtk npm run build` compiles **30 TypeScript entrypoints** cleanly and completes global sync.
-- [ ] `rtk npm run package` produces `jules-companion-1.3.0.vsix`.
-- [ ] Extension was re-installed to Antigravity IDE via `antigravity-ide.cmd --install-extension jules-companion-1.3.0.vsix --force`.
-- [ ] Knowledge graph was synchronized via `rtk graphify update .` (**820 nodes, 1696 edges, 73 communities**).
-- [ ] All relevant documentation (`CHANGELOG.md`, `README.md`, `docs/codebase/`, `AGENT.md`) is updated.
-- [ ] Git working tree is completely clean and pushed to `origin/main`.
+```typescript
+interface JulesCompanionMcpTools {
+  // Session Lifecycle & Deployment
+  deploy_session(params: { type: "start" | "review" | "interactive"; prompt: string; branch?: string }): Promise<Session>;
+  deploy_team(params: { preset: "github-ops" | "full-audit" | "feature-sprint" | "refactor-boost"; prompt: string }): Promise<TeamResult>;
+  cancel_session(params: { sessionId: string }): Promise<void>;
+  retry_failed_session(params: { sessionId: string }): Promise<Session>;
+  get_session_status(params: { sessionId: string }): Promise<SessionStatus>;
+  auto_process(params: { sessionId: string }): Promise<AutoProcessSummary>;
+
+  // Code Review & Git Integration
+  merge_session(params: { sessionId: string; inspect: boolean; approve: boolean }): Promise<MergeResult>;
+  pull_session_diff(params: { sessionId: string }): Promise<{ diffPath: string; conflictStatus: boolean }>;
+  checkout_session_branch(params: { sessionId: string }): Promise<{ localBranch: string }>;
+  rollback_session(params: { sessionId: string }): Promise<void>;
+  create_github_pr(params: { sessionId: string; title?: string; body?: string }): Promise<{ prUrl: string }>;
+  get_review_reports(params: { sessionId?: string }): Promise<ReviewReport[]>;
+
+  // Human-in-the-Loop Feedback
+  send_session_message(params: { sessionId: string; message: string }): Promise<void>;
+
+  // Specialist Agent Personas (53 Agents)
+  list_agents(): Promise<AgentMetadata[]>;
+  get_agent_info(params: { agentName: string }): Promise<AgentPromptDetails>;
+  create_custom_agent(params: { name: string; role: string; instructions: string }): Promise<void>;
+  read_agent_journal(params: { agentName: string }): Promise<JournalEntry[]>;
+
+  // Workspace Diagnostics & Setup
+  setup_workspace(): Promise<{ initialized: boolean }>;
+  list_sources(): Promise<SourceRepository[]>;
+  run_doctor(): Promise<{ healthy: boolean; diagnostics: DiagnosticCheck[] }>;
+}
+```
+
+---
+
+## 📋 5. Specialist Agent Personas Catalog (53 Agents)
+
+```typescript
+const SPECIALIST_AGENT_ROSTER = {
+  // Coding & Architecture Specialists (30 Personas)
+  codingAndArchitecture: [
+    "adapter", "alchemist", "benchmarker", "bolt", "bridge", 
+    "builder", "chameleon", "conduit", "decoupler", "dockerist", 
+    "enforcer", "exterminator", "gatekeeper", "hermetic", "innovator", 
+    "inspector", "janitor", "logger", "materialist", "modernizer", 
+    "monorepist", "netrunner", "nomad", "octo", "packager", 
+    "palette", "partisan", "plugger", "sentinel", "watcher"
+  ],
+
+  // Advisory, Review & Documentation Specialists (23 Personas)
+  advisoryAndReview: [
+    "annotator", "archivist", "attestor", "cartographer", "consultant", 
+    "critic", "curator", "datasmith", "grader", "green", 
+    "guildmaster", "lexicon", "localizer", "mutator", "nexus", 
+    "proteus", "revenant", "scaler", "scribe", "sleuth", 
+    "smith", "synapse", "vscecraft"
+  ]
+} as const;
+
+// Invariant: Total length strictly equals 53
+assert(
+  SPECIALIST_AGENT_ROSTER.codingAndArchitecture.length + 
+  SPECIALIST_AGENT_ROSTER.advisoryAndReview.length === 53,
+  "Roster mismatch! references/agents/registry.json must define exactly 53 specialist agents."
+);
+```
+
+---
+
+## ⚠️ 6. Operational Gotchas & Defensive Execution Rules
+
+```python
+# ==============================================================================
+# DEFENSIVE EXECUTION TRAPS & RESOLUTIONS
+# ==============================================================================
+DEFENSIVE_TRAPS = {
+    "POWERSHELL_OPERATOR_TRAP": {
+        "hazard": "Using '&&' in PowerShell 5.1 throws ParserError.",
+        "remedy": "Separate statements with ';' or execute as separate tool calls."
+    },
+    "POWERSHELL_SUBEXPRESSION_TRAP": {
+        "hazard": "Unescaped '$(...)' evaluates inside double quotes in PowerShell.",
+        "remedy": "Use single quotes '...' or escape as `$(...)."
+    },
+    "INLINE_DOC_DENSITY_STANDARD": {
+        "hazard": "Missing comment density fails CI tests/doc_coverage.test.ts.",
+        "remedy": "Maintain >=10% comments in utils/core and >=4% in extension.ts; use '// Step N: ...'."
+    },
+    "CODICON_GLYPH_TRAP": {
+        "hazard": "$(git-branch) (0xEC6F) is missing in Antigravity codicon font.",
+        "remedy": "Use $(source-control) or $(repo-forked) instead."
+    },
+    "UI_PRIMITIVE_DISCIPLINE": {
+        "hazard": "Chromium Webviews incur heavy memory and DOM parsing overhead.",
+        "remedy": "Use vscode.OutputChannel for streaming, QuickPick for actions, TreeView for execution plan."
+    },
+    "UAC_UIPI_ISOLATION": {
+        "hazard": "Admin-elevated IDE blocks CUA input injection tools.",
+        "remedy": "Run Antigravity IDE strictly as a standard, non-elevated user."
+    },
+    "OFFLINE_TEST_RESILIENCE": {
+        "hazard": "Tests failing due to missing Jules API credentials or display.",
+        "remedy": "Validate inputs and branch logic before checking network credentials; mock APIs."
+    },
+    "STORAGE_ATOMICITY": {
+        "hazard": "Concurrent JSON write corruption.",
+        "remedy": "Use atomic write-then-rename pattern (.tmp -> .json) for .jules-companion/ files."
+    }
+}
+```
+
+---
+
+## ✅ 7. Pre-Completion Final Verification Gate (Automated Assertion Checklist)
+
+```typescript
+function executePreCompletionGate(): void {
+  // Invariant & Scope Checks
+  assert(isShortestWorkingDiff(), "Diff must be minimal and strictly targeted.");
+  assert(hasNoSpeculativeAbstractions(), "Ponytail YAGNI: No unrequested abstractions.");
+  assert(noNewNpmDependenciesAdded(), "No new npm packages added without explicit approval.");
+  
+  // Documentation & Roster Checks
+  assert(verifyDocCoverageTestPassed(), "All public symbols must have 100% TSDoc; density thresholds met.");
+  assert(verifyAgentRosterExact53(), "Specialist roster strictly matches references/agents/registry.json.");
+  
+  // Sentrux Architectural Layering Check
+  assert(runCommand("rtk sentrux check .").success, "Sentrux check failed: circular dependency or upward import detected.");
+
+  // Test & Build Suite Checks
+  assert(runCommand("rtk npm run verify").success, "Typecheck and 124 tests across 39 suites must pass with 0 failures.");
+  assert(runCommand("rtk npm run build").success, "All 30 TypeScript entrypoints must compile cleanly; global sync completed.");
+  assert(runCommand("rtk npm run package").success, `Package output jules-companion-${loadPackageJson().version}.vsix must be generated.`);
+  assert(reinstallExtensionToIde(), "VSIX successfully hot-reinstalled to Antigravity IDE.");
+
+  // Graphify & Knowledge Vault Checks
+  assert(runCommand("rtk graphify update .").success, "Graphify knowledge graph updated (820 nodes, 1696 edges, 73 communities).");
+  assert(verifyRepoDocsUpdated(["CHANGELOG.md", "README.md", "docs/codebase/"]), "Project documentation updated.");
+  assert(syncObsidianWikiVault("E:\\Markdown Artificial Intelligence\\LLM Wiki"), "Knowledge preserved to Obsidian LLM Wiki.");
+
+  // Clean Working Tree Check
+  assert(runCommand("git status --porcelain").stdout.trim() === "", "Working tree must be completely clean before concluding task.");
+}
+```
