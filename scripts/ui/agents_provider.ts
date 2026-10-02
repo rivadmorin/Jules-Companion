@@ -15,6 +15,7 @@ export interface AgentEntry {
   name: string;
   role: string;
   group: string;
+  category?: string;
   description: string;
   file: string;
 }
@@ -33,12 +34,16 @@ export class AgentTreeItem extends vscode.TreeItem {
 
     if (agent) {
       this.id = `agent-${agent.id}`;
-      this.description = agent.role || agent.group;
+      const mode = agent.group ? `[${agent.group.charAt(0).toUpperCase() + agent.group.slice(1)}]` : '';
+      this.description = agent.role ? `${mode} ${agent.role}` : mode;
       
       const tooltip = new vscode.MarkdownString();
       tooltip.appendMarkdown(`### Agent: **${agent.name}** (\`${agent.id}\`)\n\n`);
+      if (agent.category) {
+        tooltip.appendMarkdown(`- **Category:** \`${agent.category}\`\n`);
+      }
       tooltip.appendMarkdown(`- **Role:** \`${agent.role}\`\n`);
-      tooltip.appendMarkdown(`- **Group:** \`${agent.group}\`\n\n`);
+      tooltip.appendMarkdown(`- **Mode:** \`${agent.group}\`\n\n`);
       tooltip.appendMarkdown(`${agent.description}\n`);
       this.tooltip = tooltip;
 
@@ -110,20 +115,19 @@ export class AgentsTreeDataProvider implements vscode.TreeDataProvider<AgentTree
     }
 
     if (!element) {
-      // Group agents by their group property
+      // Group agents by their category property (fallback to group)
       const groups = new Map<string, AgentEntry[]>();
       for (const a of agents) {
-        const grp = a.group || 'general';
+        const grp = a.category || a.group || 'General';
         if (!groups.has(grp)) groups.set(grp, []);
         groups.get(grp)!.push(a);
       }
 
       const groupItems: AgentTreeItem[] = [];
       for (const [groupName, groupAgents] of groups.entries()) {
-        const title = groupName.charAt(0).toUpperCase() + groupName.slice(1);
         groupItems.push(
           new AgentTreeItem(
-            `${title} (${groupAgents.length})`,
+            `${groupName} (${groupAgents.length})`,
             vscode.TreeItemCollapsibleState.Collapsed,
             undefined,
             groupName
@@ -135,7 +139,7 @@ export class AgentsTreeDataProvider implements vscode.TreeDataProvider<AgentTree
     } else if (element.groupName) {
       // Return agents belonging to this group
       const filtered = agents
-        .filter(a => (a.group || 'general') === element.groupName)
+        .filter(a => (a.category || a.group || 'General') === element.groupName)
         .sort((a, b) => a.name.localeCompare(b.name));
 
       return filtered.map(

@@ -19,6 +19,8 @@ export interface AgentMetadata {
   role: string;
   /** The operational classification of the agent. 'coding' for implementation agents, 'advisory' for supportive roles. */
   group: 'coding' | 'advisory';
+  /** The specialized functional domain category of the agent (e.g., 'Testing & QA', 'Security & Compliance'). */
+  category: string;
   /** A concise summary of the agent's purpose, extracted from the first valid paragraph in the template. */
   description: string;
   /** The relative file path to the agent's source markdown template. */
@@ -63,6 +65,84 @@ export async function generateRegistry(): Promise<Registry> {
     'enforcer', 'octo', 'hermetic', 'decoupler', 'monorepist', 'plugger'
   ]);
 
+  // Canonical classification mapping all 53 agents to 11 intuitive functional domain categories.
+  const agentCategories: Record<string, string> = {
+    // 1. Testing & QA
+    inspector: 'Testing & QA',
+    mutator: 'Testing & QA',
+    benchmarker: 'Testing & QA',
+
+    // 2. Security & Compliance
+    sentinel: 'Security & Compliance',
+    gatekeeper: 'Security & Compliance',
+    attestor: 'Security & Compliance',
+    watcher: 'Security & Compliance',
+
+    // 3. Performance & Scalability
+    bolt: 'Performance & Scalability',
+    scaler: 'Performance & Scalability',
+    green: 'Performance & Scalability',
+    sleuth: 'Performance & Scalability',
+
+    // 4. Database & Persistence
+    alchemist: 'Database & Persistence',
+    datasmith: 'Database & Persistence',
+
+    // 5. Frontend, UX & Design
+    builder: 'Frontend, UX & Design',
+    palette: 'Frontend, UX & Design',
+    materialist: 'Frontend, UX & Design',
+    localizer: 'Frontend, UX & Design',
+
+    // 6. Backend, API & AI
+    conduit: 'Backend, API & AI',
+    bridge: 'Backend, API & AI',
+    netrunner: 'Backend, API & AI',
+    nexus: 'Backend, API & AI',
+    synapse: 'Backend, API & AI',
+
+    // 7. Architecture & Refactoring
+    consultant: 'Architecture & Refactoring',
+    decoupler: 'Architecture & Refactoring',
+    enforcer: 'Architecture & Refactoring',
+    hermetic: 'Architecture & Refactoring',
+    modernizer: 'Architecture & Refactoring',
+    monorepist: 'Architecture & Refactoring',
+    plugger: 'Architecture & Refactoring',
+    partisan: 'Architecture & Refactoring',
+    chameleon: 'Architecture & Refactoring',
+
+    // 8. Code Health & Debugging
+    janitor: 'Code Health & Debugging',
+    critic: 'Code Health & Debugging',
+    grader: 'Code Health & Debugging',
+    exterminator: 'Code Health & Debugging',
+    logger: 'Code Health & Debugging',
+    innovator: 'Code Health & Debugging',
+    proteus: 'Code Health & Debugging',
+
+    // 9. DevOps, CI/CD & Tooling
+    dockerist: 'DevOps, CI/CD & Tooling',
+    octo: 'DevOps, CI/CD & Tooling',
+    packager: 'DevOps, CI/CD & Tooling',
+    smith: 'DevOps, CI/CD & Tooling',
+    vscecraft: 'DevOps, CI/CD & Tooling',
+
+    // 10. System & Portability
+    adapter: 'System & Portability',
+    nomad: 'System & Portability',
+    revenant: 'System & Portability',
+
+    // 11. Documentation & Governance
+    scribe: 'Documentation & Governance',
+    archivist: 'Documentation & Governance',
+    annotator: 'Documentation & Governance',
+    curator: 'Documentation & Governance',
+    cartographer: 'Documentation & Governance',
+    guildmaster: 'Documentation & Governance',
+    lexicon: 'Documentation & Governance'
+  };
+
   const files = fs.readdirSync(agentsDir).filter(f => f.endsWith('.md'));
   const agentsMap: Record<string, AgentMetadata> = {};
 
@@ -94,6 +174,7 @@ export async function generateRegistry(): Promise<Registry> {
     }
 
     const group: 'coding' | 'advisory' = codingAgents.has(id) ? 'coding' : 'advisory';
+    const category = agentCategories[id] || 'General';
 
     // Populate the master mapping object
     agentsMap[id] = {
@@ -101,6 +182,7 @@ export async function generateRegistry(): Promise<Registry> {
       name: id.charAt(0).toUpperCase() + id.slice(1),
       role,
       group,
+      category,
       description,
       file: `references/agents/${file}`
     };

@@ -373,7 +373,7 @@ function getAgentQuickPickList(extensionPath: string, root: string): AgentPickIt
   for (const a of agentList) {
     items.push({
       label: `$(sparkle) ${a.name || a.id}`,
-      description: `[${(a.group || 'general').toUpperCase()}] ${a.role || ''}`,
+      description: `[${a.category || (a.group || 'general').toUpperCase()}] ${a.role || ''}`,
       detail: a.description || `Specialist agent: ${a.id}`,
       agentValue: a.id
     });

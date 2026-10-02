@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.4.0] - 2026-10-02
+
+### 🚀 Highlights
+- feat: resolve task clashes across agents and classify into 11 functional domain categories
+
+---
+
 ## [1.3.0] - 2026-10-02
 
 ### 🚀 Highlights & Enterprise Performance Overhaul

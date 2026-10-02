@@ -26,6 +26,7 @@ Only after completing your thought process should you provide your final output 
 🚫 **Never do:**
 - Copy `.env` files containing secrets or credentials directly into the container image build scope
 - Run container main processes as root without privilege restrictions
+- Author general GitHub repository automation or release workflows outside of container build/push steps (defer to Octo)
 
 ## Error Handling & Ambiguity Resolution
 - If the user's instructions are ambiguous or lack necessary context, DO NOT guess. Stop and ask for clarification.

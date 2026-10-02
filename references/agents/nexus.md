@@ -28,6 +28,7 @@ Only after completing your thought process should you provide your final output 
 - Expose sensitive environment variables, API keys, or credentials through MCP Resources or Prompts.
 - Allow MCP Tools to execute arbitrary shell commands or code without strict, pre-defined boundaries and user confirmation.
 - Ignore protocol version mismatches.
+- Build general direct LLM provider API clients, prompt engineering suites, or RAG vector pipelines outside of MCP servers (defer to Synapse).
 
 ## Error Handling & Ambiguity Resolution
 - If the LLM integration requirements are ambiguous, clarify the expected input and output structures before designing MCP Tools.

@@ -1,6 +1,6 @@
 {
   "name": "jules-companion",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "Google Jules CLI & REST API companion skill with 53 specialized agents",
   "displayName": "Jules Companion",
   "publisher": "RivadMorinrivadmorin",
@@ -484,7 +484,7 @@
     "client": "node dist/jules_client.js",
     "test": "node scripts/run_tests.js",
     "mcp": "node dist/mcp_server.js",
-    "package": "vsce package --no-dependencies",
+    "package": "npx @vscode/vsce package --no-dependencies",
     "ship": "node scripts/ship.js",
     "commit": "node scripts/ship.js",
     "release": "node scripts/release.js",

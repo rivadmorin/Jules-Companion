@@ -1,7 +1,7 @@
 # Graph Report - Jules-Companion  (2026-10-02)
 
 ## Corpus Check
-- 158 files · ~138,029 words
+- 158 files · ~138,873 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 9 file(s) not represented in the graph (top: (none) 6, .example 1, .toml 1)
 
@@ -11,7 +11,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `2551dd05`
+- Built from commit: `a21aed6b`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
