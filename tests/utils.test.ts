@@ -46,16 +46,19 @@ describe('Utils Comprehensive Tests', () => {
 
   describe('runGit', () => {
     test('should initialize a git repository', () => {
-      const resInit = runGit(['init'], TEST_DIR);
+      const gitTestDir = path.join(TEST_DIR, 'git_sub_' + Date.now());
+      fs.mkdirSync(gitTestDir, { recursive: true });
+
+      const resInit = runGit(['init'], gitTestDir);
       assert.strictEqual(resInit.success, true);
-      assert.ok(fs.existsSync(path.join(TEST_DIR, '.git')), '.git directory should exist');
+      assert.ok(fs.existsSync(path.join(gitTestDir, '.git')), '.git directory should exist');
 
-      runGit(['config', 'user.name', 'Test User'], TEST_DIR);
-      runGit(['config', 'user.email', 'test@example.com'], TEST_DIR);
+      runGit(['config', 'user.name', 'Test User'], gitTestDir);
+      runGit(['config', 'user.email', 'test@example.com'], gitTestDir);
 
-      fs.writeFileSync(path.join(TEST_DIR, 'test.txt'), 'hello world');
-      runGit(['add', 'test.txt'], TEST_DIR);
-      const resCommit = runGit(['commit', '-m', 'Initial commit'], TEST_DIR);
+      fs.writeFileSync(path.join(gitTestDir, 'test.txt'), 'hello world ' + Date.now());
+      runGit(['add', 'test.txt'], gitTestDir);
+      const resCommit = runGit(['commit', '-m', 'Initial commit'], gitTestDir);
 
       assert.strictEqual(resCommit.success, true);
     });

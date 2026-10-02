@@ -24,9 +24,9 @@
     "semantic_hash": "f6e7c4b01286840411d0509646149dde"
   },
   "install.ps1": {
-    "mtime": 1790915857.5539494,
-    "seen": 1790915931.330813,
-    "ast_hash": "8a5ee1305a2705467b3e2191291cb18d",
+    "mtime": 1790917351.5152233,
+    "seen": 1790917591.891468,
+    "ast_hash": "7576f44ba40d44f6907dc2bb2df8946f",
     "semantic_hash": ""
   },
   "install.sh": {
@@ -36,14 +36,14 @@
     "semantic_hash": ""
   },
   "package.json": {
-    "mtime": 1790915989.6704788,
-    "seen": 1790916011.5817142,
-    "ast_hash": "8b39267a34e5ddd2f9acd27ffbc8cd74",
+    "mtime": 1790917559.2231536,
+    "seen": 1790917591.891468,
+    "ast_hash": "832115e1edd8408e11dfd4ddffe10b58",
     "semantic_hash": ""
   },
   "references/agents/registry.json": {
-    "mtime": 1790917049.8870018,
-    "seen": 1790917332.0932956,
+    "mtime": 1790917581.9106743,
+    "seen": 1790917591.891468,
     "ast_hash": "a464435727a94e413c59d9a186152f34",
     "semantic_hash": ""
   },
@@ -456,9 +456,9 @@
     "semantic_hash": "6a823e7ab10b21cf645fc4250b972e45"
   },
   "CHANGELOG.md": {
-    "mtime": 1790908791.3922317,
-    "seen": 1790911088.7960322,
-    "ast_hash": "f08510f10d3a45c40369e2673b051ae6",
+    "mtime": 1790917559.3138845,
+    "seen": 1790917591.891468,
+    "ast_hash": "faa18bbe2eaacc5c8c818f636745b06c",
     "semantic_hash": ""
   },
   "FAQ.md": {

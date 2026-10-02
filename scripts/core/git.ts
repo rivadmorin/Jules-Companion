@@ -33,11 +33,17 @@ export function runGit(
   cwd: string = process.cwd()
 ): GitExecutionResult {
   const resolvedCwd = path.resolve(cwd);
-  let res = spawnSync('git', args, { encoding: 'utf8', cwd: resolvedCwd });
+  const cleanEnv = { ...process.env };
+  delete cleanEnv.GIT_DIR;
+  delete cleanEnv.GIT_INDEX_FILE;
+  delete cleanEnv.GIT_WORK_TREE;
+  delete cleanEnv.GIT_PREFIX;
+
+  let res = spawnSync('git', args, { encoding: 'utf8', cwd: resolvedCwd, env: cleanEnv });
   if (res.error && (res.error as any).code === 'ENOENT' && process.platform === 'win32') {
     const fallbackGit = 'C:\\Program Files\\Git\\cmd\\git.exe';
     if (fs.existsSync(fallbackGit)) {
-      res = spawnSync(fallbackGit, args, { encoding: 'utf8', cwd: resolvedCwd });
+      res = spawnSync(fallbackGit, args, { encoding: 'utf8', cwd: resolvedCwd, env: cleanEnv });
     }
   }
   return {
