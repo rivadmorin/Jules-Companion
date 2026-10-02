@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.6.0] - 2026-10-02
+
+### 🚀 Highlights
+- Universal 1-Click installer, 10 first-class Antigravity skills, and comprehensive installation guide
+
+---
+
 ## [1.5.0] - 2026-10-02
 
 ### 🚀 Highlights & General-Purpose Specialist Roster Expansion (63 Agents)
