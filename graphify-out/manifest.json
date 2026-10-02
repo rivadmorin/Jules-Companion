@@ -42,9 +42,9 @@
     "semantic_hash": ""
   },
   "references/agents/registry.json": {
-    "mtime": 1790906905.0818372,
-    "seen": 1790906915.7604692,
-    "ast_hash": "095cf81123c48a61e5f42e9d6613736d",
+    "mtime": 1790908586.130546,
+    "seen": 1790908657.812955,
+    "ast_hash": "a464435727a94e413c59d9a186152f34",
     "semantic_hash": ""
   },
   "scripts/auto_process.ts": {
@@ -108,9 +108,9 @@
     "semantic_hash": ""
   },
   "scripts/generate_registry.ts": {
-    "mtime": 1790906509.193875,
-    "seen": 1790906617.5056403,
-    "ast_hash": "44045382d3efd2cebadb14e9faf29838",
+    "mtime": 1790908558.0642421,
+    "seen": 1790908657.812955,
+    "ast_hash": "4779fdd23635075b0d53f917e999f9a9",
     "semantic_hash": ""
   },
   "scripts/install_hooks.js": {
@@ -480,9 +480,9 @@
     "semantic_hash": ""
   },
   "SKILL.md": {
-    "mtime": 1790778341.7981832,
-    "seen": 1790778442.2429748,
-    "ast_hash": "a4fa1bb8060c05246ea8fe569411cec5",
+    "mtime": 1790908639.8397145,
+    "seen": 1790908657.812955,
+    "ast_hash": "bcd31f1ea55d21725822dc525ac08232",
     "semantic_hash": ""
   },
   "TROUBLESHOOTING.md": {
@@ -1005,6 +1005,66 @@
     "mtime": 1790897021.222672,
     "seen": 1790897137.6144514,
     "ast_hash": "ea863069e26bf97de0042584ef80864b",
+    "semantic_hash": ""
+  },
+  "references/agents/consolidator.md": {
+    "mtime": 1790908485.9596362,
+    "seen": 1790908657.812955,
+    "ast_hash": "a0a91494b530de947e043dc8ae278052",
+    "semantic_hash": ""
+  },
+  "references/agents/explainer.md": {
+    "mtime": 1790908519.7876432,
+    "seen": 1790908657.812955,
+    "ast_hash": "a1535cefbdfedf978db99952d0c78f18",
+    "semantic_hash": ""
+  },
+  "references/agents/gitsmith.md": {
+    "mtime": 1790908537.6262112,
+    "seen": 1790908657.812955,
+    "ast_hash": "6cfa69fc9874af2f878a06b88a09798d",
+    "semantic_hash": ""
+  },
+  "references/agents/planner.md": {
+    "mtime": 1790908547.1987453,
+    "seen": 1790908657.812955,
+    "ast_hash": "9a833a6e19dd609dd030fd853c58582a",
+    "semantic_hash": ""
+  },
+  "references/agents/pruner.md": {
+    "mtime": 1790908496.3796017,
+    "seen": 1790908657.812955,
+    "ast_hash": "83c157e7573da5215c88027f0de54b44",
+    "semantic_hash": ""
+  },
+  "references/agents/scoper.md": {
+    "mtime": 1790908530.080797,
+    "seen": 1790908657.812955,
+    "ast_hash": "0534fb7940cb422fa89366bdaa7941b6",
+    "semantic_hash": ""
+  },
+  "references/agents/slimmer.md": {
+    "mtime": 1790908473.5152893,
+    "seen": 1790908657.812955,
+    "ast_hash": "2bbcd4016e925cd9927c007791b69768",
+    "semantic_hash": ""
+  },
+  "references/agents/specifier.md": {
+    "mtime": 1790908512.0939674,
+    "seen": 1790908657.812955,
+    "ast_hash": "4671d33a92dfee7520451fc6a783f182",
+    "semantic_hash": ""
+  },
+  "references/agents/speedster.md": {
+    "mtime": 1790908479.8471272,
+    "seen": 1790908657.812955,
+    "ast_hash": "d43dc254d52a303335faae9222dbeb46",
+    "semantic_hash": ""
+  },
+  "references/agents/standardizer.md": {
+    "mtime": 1790908503.988266,
+    "seen": 1790908657.812955,
+    "ast_hash": "cc545f0e46f2513d53d1c6038de736e5",
     "semantic_hash": ""
   }
 }

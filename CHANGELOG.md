@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.5.0] - 2026-10-02
+
+### 🚀 Highlights & General-Purpose Specialist Roster Expansion (63 Agents)
+- **10 New General-Purpose Specialist Agent Templates**:
+  - Expanded the agent roster from 53 to **63 specialized agents** across 4 fundamental software engineering pillars:
+    - **Pillar 1: Performa (Performance)**:
+      - `Slimmer` 📦: Production bundle size auditing, tree-shaking optimization, route/component code splitting (`dynamic import()`), unused CSS removal, and client asset diet.
+      - `Speedster` 🏎️: Local developer loop acceleration, incremental compilation (`tsBuildInfoFile`), build/test cache optimization, and parallelized test runners.
+    - **Pillar 2: Kebersihan Kode (Code Cleanliness)**:
+      - `Consolidator` 🧩: Cross-file DRY deduplication, extracting copy-pasted business logic and recurring helpers into unified shared utilities.
+      - `Pruner` ✂️: Manifest dependency diet, identifying and purging unimported ghost packages, and reclassifying dev tooling to `devDependencies`.
+      - `Standardizer` 📐: Uniform `AppError` exception hierarchies, predictable HTTP status codes, global error middleware, and consistent JSON API response envelopes.
+    - **Pillar 3: Dokumentasi (Documentation)**:
+      - `Specifier` 📑: OpenAPI 3.0/3.1 and Swagger machine-readable contract authoring, schema extraction, and Spectral validation.
+      - `Explainer` 💡: Deep-dive algorithmic walkthroughs, tricky state machine explanations, Mermaid visual lifecycles, and concrete input/output traces.
+    - **Pillar 4: Alur Kerja Coding (Coding Workflow)**:
+      - `Scoper` 🎯: MVP slicing, YAGNI enforcement, and ruthless scope pruning to deliver working 1-day software.
+      - `Gitsmith` 🌿: Git history hygiene, Conventional Commits drafting, interactive rebase squashing, and branch cleanliness.
+      - `Planner` 📋: Step-by-step pre-implementation blueprints adhering strictly to Test-Driven Development (TDD Red-Green-Refactor) with verifiable commands.
+- **Roster & Registry Synchronization**:
+  - Updated `scripts/generate_registry.ts` and `references/agents/registry.json` to categorize all 63 agents into their respective functional domains.
+  - Synchronized `SKILL.md` and global user skill profile at `~/.gemini/config/skills/jules-companion`.
+- **Knowledge Graph & Architecture Update**:
+  - Rebuilt code knowledge graph with 877 nodes, 1783 edges, and 76 community clusters via `graphify`.
+
+---
+
 ## [1.4.0] - 2026-10-02
 
 ### 🚀 Highlights

@@ -62,10 +62,11 @@ export async function generateRegistry(): Promise<Registry> {
     'builder', 'conduit', 'alchemist', 'gatekeeper', 'bridge', 'dockerist',
     'modernizer', 'inspector', 'janitor', 'logger', 'benchmarker', 'watcher',
     'chameleon', 'innovator', 'materialist', 'partisan', 'netrunner', 'adapter',
-    'enforcer', 'octo', 'hermetic', 'decoupler', 'monorepist', 'plugger'
+    'enforcer', 'octo', 'hermetic', 'decoupler', 'monorepist', 'plugger',
+    'slimmer', 'speedster', 'consolidator', 'pruner', 'standardizer', 'specifier'
   ]);
 
-  // Canonical classification mapping all 53 agents to 11 intuitive functional domain categories.
+  // Canonical classification mapping all 63 agents to 11 intuitive functional domain categories.
   const agentCategories: Record<string, string> = {
     // 1. Testing & QA
     inspector: 'Testing & QA',
@@ -83,6 +84,8 @@ export async function generateRegistry(): Promise<Registry> {
     scaler: 'Performance & Scalability',
     green: 'Performance & Scalability',
     sleuth: 'Performance & Scalability',
+    slimmer: 'Performance & Scalability',
+    speedster: 'Performance & Scalability',
 
     // 4. Database & Persistence
     alchemist: 'Database & Persistence',
@@ -111,6 +114,10 @@ export async function generateRegistry(): Promise<Registry> {
     plugger: 'Architecture & Refactoring',
     partisan: 'Architecture & Refactoring',
     chameleon: 'Architecture & Refactoring',
+    consolidator: 'Architecture & Refactoring',
+    standardizer: 'Architecture & Refactoring',
+    scoper: 'Architecture & Refactoring',
+    planner: 'Architecture & Refactoring',
 
     // 8. Code Health & Debugging
     janitor: 'Code Health & Debugging',
@@ -120,6 +127,7 @@ export async function generateRegistry(): Promise<Registry> {
     logger: 'Code Health & Debugging',
     innovator: 'Code Health & Debugging',
     proteus: 'Code Health & Debugging',
+    pruner: 'Code Health & Debugging',
 
     // 9. DevOps, CI/CD & Tooling
     dockerist: 'DevOps, CI/CD & Tooling',
@@ -127,6 +135,7 @@ export async function generateRegistry(): Promise<Registry> {
     packager: 'DevOps, CI/CD & Tooling',
     smith: 'DevOps, CI/CD & Tooling',
     vscecraft: 'DevOps, CI/CD & Tooling',
+    gitsmith: 'DevOps, CI/CD & Tooling',
 
     // 10. System & Portability
     adapter: 'System & Portability',
@@ -140,7 +149,9 @@ export async function generateRegistry(): Promise<Registry> {
     curator: 'Documentation & Governance',
     cartographer: 'Documentation & Governance',
     guildmaster: 'Documentation & Governance',
-    lexicon: 'Documentation & Governance'
+    lexicon: 'Documentation & Governance',
+    specifier: 'Documentation & Governance',
+    explainer: 'Documentation & Governance'
   };
 
   const files = fs.readdirSync(agentsDir).filter(f => f.endsWith('.md'));

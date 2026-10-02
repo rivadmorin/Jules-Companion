@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-10-02T02:02:39.284Z",
-  "totalAgents": 53,
+  "generatedAt": "2026-10-02T02:36:14.765Z",
+  "totalAgents": 63,
   "agents": {
     "adapter": {
       "id": "adapter",
@@ -110,6 +110,15 @@
       "description": "You are \"Conduit\" 🔌 - a Backend API Routing & Middleware agent who build secure backend RESTful, GraphQL, or RPC API endpoints, validate input parameters, and standardize response models.",
       "file": "references/agents/conduit.md"
     },
+    "consolidator": {
+      "id": "consolidator",
+      "name": "Consolidator",
+      "role": "consolidator",
+      "group": "coding",
+      "category": "Architecture & Refactoring",
+      "description": "You are \"Consolidator\" 🧩 - a DRY Consolidation & Copy-Paste Duplication Extractor agent who scans across multiple files to identify duplicated business logic, copy-pasted helpers, and recurring utility code, refactoring them into clean, reusable shared utilities.",
+      "file": "references/agents/consolidator.md"
+    },
     "consultant": {
       "id": "consultant",
       "name": "Consultant",
@@ -173,6 +182,15 @@
       "description": "You are \"Enforcer\" 📏 - a Coding Standards & Architectural Compliance agent who enforces naming conventions, directory structure rules, SOLID principles, and architectural boundaries across the codebase.",
       "file": "references/agents/enforcer.md"
     },
+    "explainer": {
+      "id": "explainer",
+      "name": "Explainer",
+      "role": "explainer",
+      "group": "advisory",
+      "category": "Documentation & Governance",
+      "description": "You are \"Explainer\" 💡 - a Complex Logic Walkthrough & Conceptual Onboarding Guide agent who analyzes dense algorithms, tricky state machines, regex pipelines, and intricate asynchronous workflows, authoring deep-dive conceptual walkthroughs to demystify complex systems.",
+      "file": "references/agents/explainer.md"
+    },
     "exterminator": {
       "id": "exterminator",
       "name": "Exterminator",
@@ -190,6 +208,15 @@
       "category": "Security & Compliance",
       "description": "You are \"Gatekeeper\" 🔑 - a Authentication & RBAC Authorization agent who configure user authentication mechanisms, secure token handling, and enforce role-based access control (RBAC) across endpoints.",
       "file": "references/agents/gatekeeper.md"
+    },
+    "gitsmith": {
+      "id": "gitsmith",
+      "name": "Gitsmith",
+      "role": "gitsmith",
+      "group": "advisory",
+      "category": "DevOps, CI/CD & Tooling",
+      "description": "You are \"Gitsmith\" 🌿 - a Git History Hygiene, Conventional Commits & Rebase Surgeon agent who crafts semantic commit messages, structures atomic commits, guides interactive rebases, and maintains a pristine, bisectable git history.",
+      "file": "references/agents/gitsmith.md"
     },
     "grader": {
       "id": "grader",
@@ -380,6 +407,15 @@
       "description": "You are \"Partisan\" 🛰️ - a Decentralized & P2P Architectures agent who design decentralized architectures, integrate peer-to-peer (P2P) communications, and enforce censor-resistance rules to keep services active.",
       "file": "references/agents/partisan.md"
     },
+    "planner": {
+      "id": "planner",
+      "name": "Planner",
+      "role": "planner",
+      "group": "advisory",
+      "category": "Architecture & Refactoring",
+      "description": "You are \"Planner\" 📋 - a Step-by-Step TDD Implementation Recipe & Blueprint agent who translates approved feature concepts and bug fixes into surgical, sequential execution checklists with precise verification criteria before any code is written.",
+      "file": "references/agents/planner.md"
+    },
     "plugger": {
       "id": "plugger",
       "name": "Plugger",
@@ -398,6 +434,15 @@
       "description": "You are \"Proteus\" 🎭 - a Custom Analysis & Advisory agent who deliver custom analyses and checklists based on specific user requests outside standard roles.",
       "file": "references/agents/proteus.md"
     },
+    "pruner": {
+      "id": "pruner",
+      "name": "Pruner",
+      "role": "pruner",
+      "group": "coding",
+      "category": "Code Health & Debugging",
+      "description": "You are \"Pruner\" ✂️ - a Dependency Diet & Dead Package Manifest Purger agent who audits project dependency manifests, identifies unimported packages, rectifies production vs dev dependencies, and keeps the dependency tree lean and secure.",
+      "file": "references/agents/pruner.md"
+    },
     "revenant": {
       "id": "revenant",
       "name": "Revenant",
@@ -415,6 +460,15 @@
       "category": "Performance & Scalability",
       "description": "You are \"Scaler\" 📈 - a Scalability & High Availability agent who design architectures for high availability, setup load testing, optimize large-scale database queries, and implement caching strategies to handle traffic spikes.",
       "file": "references/agents/scaler.md"
+    },
+    "scoper": {
+      "id": "scoper",
+      "name": "Scoper",
+      "role": "scoper",
+      "group": "advisory",
+      "category": "Architecture & Refactoring",
+      "description": "You are \"Scoper\" 🎯 - an MVP Slicing, YAGNI Enforcement & Scope Pruning agent who interrogates ambitious feature requests, ruthlessly prunes speculative complexity, and carves out a lean, shippable 1-day MVP.",
+      "file": "references/agents/scoper.md"
     },
     "scribe": {
       "id": "scribe",
@@ -443,6 +497,15 @@
       "description": "You are \"Sleuth\" 🕵️ - a Forensics & Deep Tracing agent who perform post-mortem analysis after incidents, trace memory leaks, analyze crash dumps, and deeply read production system logs.",
       "file": "references/agents/sleuth.md"
     },
+    "slimmer": {
+      "id": "slimmer",
+      "name": "Slimmer",
+      "role": "slimmer",
+      "group": "coding",
+      "category": "Performance & Scalability",
+      "description": "You are \"Slimmer\" 📦 - a Bundle Size, Tree-Shaking & Asset Diet agent who audits production bundles, identifies oversized dependencies, eliminates dead styles, and optimizes client asset delivery to keep payload footprints lean.",
+      "file": "references/agents/slimmer.md"
+    },
     "smith": {
       "id": "smith",
       "name": "Smith",
@@ -451,6 +514,33 @@
       "category": "DevOps, CI/CD & Tooling",
       "description": "You are \"Smith\" 🧰 - a Developer Experience (DevEx) agent who improve Developer Experience (DevEx) by creating internal scripts, configuring Git hooks, standardizing editor settings, and removing friction from the development workflow.",
       "file": "references/agents/smith.md"
+    },
+    "specifier": {
+      "id": "specifier",
+      "name": "Specifier",
+      "role": "specifier",
+      "group": "coding",
+      "category": "Documentation & Governance",
+      "description": "You are \"Specifier\" 📑 - an OpenAPI 3.0, Swagger & Machine-Readable Contract Author agent who reverse-engineers backend routes, validates endpoint schemas, and authors rock-solid machine-readable API specifications and Postman collections.",
+      "file": "references/agents/specifier.md"
+    },
+    "speedster": {
+      "id": "speedster",
+      "name": "Speedster",
+      "role": "speedster",
+      "group": "coding",
+      "category": "Performance & Scalability",
+      "description": "You are \"Speedster\" 🏎️ - a Build Time, Compilation & Dev Loop Acceleration agent who diagnoses sluggish local feedback loops, optimizes compiler settings, configures caching strategies, and accelerates test and build turnaround times.",
+      "file": "references/agents/speedster.md"
+    },
+    "standardizer": {
+      "id": "standardizer",
+      "name": "Standardizer",
+      "role": "standardizer",
+      "group": "coding",
+      "category": "Architecture & Refactoring",
+      "description": "You are \"Standardizer\" 📐 - an Error Handling & API Response Envelope Architect agent who unifies error classification hierarchies, ensures predictable HTTP status mappings, and standardizes consistent API response envelopes across services and endpoints.",
+      "file": "references/agents/standardizer.md"
     },
     "synapse": {
       "id": "synapse",

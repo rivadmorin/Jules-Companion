@@ -1,11 +1,11 @@
 ---
 name: jules-companion
-description: Assists the user to view, study, develop, and test code using Google Jules CLI (jules) and GitHub CLI (gh) with 53 specialized language-agnostic agents via native MCP tools or CLI wrappers.
+description: Assists the user to view, study, develop, and test code using Google Jules CLI (jules) and GitHub CLI (gh) with 63 specialized language-agnostic agents via native MCP tools or CLI wrappers.
 ---
 
 # Jules Companion: Specialized AI-Agent Coordination Skill
 
-This custom skill serves as the primary coordinator to launch, synchronize, test, and maintain autonomous **Google Jules** work sessions inside your project by mobilizing **53 language-agnostic specialized agent roles** divided into Coding and Advisory groups.
+This custom skill serves as the primary coordinator to launch, synchronize, test, and maintain autonomous **Google Jules** work sessions inside your project by mobilizing **63 language-agnostic specialized agent roles** divided into Coding and Advisory groups.
 
 ---
 
@@ -18,7 +18,7 @@ At the start of every Jules session, the assistant **MUST** query or identify th
    - 📑 **Review (`review`)**: Jules drafts an execution plan and pauses in `AWAITING_PLAN_APPROVAL`. The developer must authorize the plan before code edits begin. Recommended for complex/core updates.
    - 🎯 **Interactive plan (`interactive`)**: Jules engages in conversational dialogue to clarify goals before formulating an execution plan (pauses in `AWAITING_USER_FEEDBACK`). Best when requirements are exploratory.
    - ⏰ **Scheduled task (`scheduled`)**: Queues a task into `.jules-companion/schedules.json` to execute autonomously at a target future timestamp or delay. Best for overnight/off-peak work.
-2. **Agent Assignment**: Which specialized agent (from the 53 agents below) should be deployed? Select the most relevant role based on the task description.
+2. **Agent Assignment**: Which specialized agent (from the 63 agents below) should be deployed? Select the most relevant role based on the task description.
 3. **Execution Delegation**: Once sessions are deployed, monitoring is non-blocking. The assistant checks statuses, verifies cloud completion, and assists in inspecting diffs, running tests, and merging completed patches.
 
 ---
@@ -42,9 +42,9 @@ Example prompt format:
 
 ---
 
-## 🛠️ The 53 Specialist Agents Roster
+## 🛠️ The 63 Specialist Agents Roster
 
-### 💻 Coding & Architecture Group (30 Agents)
+### 💻 Coding & Architecture Group (36 Agents)
 - **adapter 🔌**: Cross-Platform Compatibility (Windows/Linux/macOS) ensuring zero path resolution or shell failures.
 - **alchemist 🧪**: Database migrations, model relationships, indexing lookup columns, and SQL query tuning.
 - **benchmarker ⏱️**: Stress testing scripts, concurrent traffic simulation, and latency profiling under load.
@@ -53,6 +53,7 @@ Example prompt format:
 - **builder 🧱**: Clean, modular, reusable, and responsive frontend UI component scaffolding.
 - **chameleon 🦎**: Language and stack porting, translating modules idiomatically between ecosystems.
 - **conduit 🔌**: Backend API routing, middleware, RESTful/GraphQL endpoints, and response models.
+- **consolidator 🧩**: DRY consolidation, extracting copy-pasted duplicate logic across files into clean shared helpers.
 - **decoupler 🧩**: Inversion of Control & Loose Coupling, breaking module knots and untangling circular dependencies.
 - **dockerist 🐳**: Dockerfiles, modular docker-compose environments, and containerized test execution.
 - **enforcer 📏**: Coding standards, directory conventions, SOLID principles, and architectural boundaries.
@@ -73,10 +74,15 @@ Example prompt format:
 - **palette 🎨**: Micro-UX enhancements and frontend accessibility compliance (WCAG/ARIA).
 - **partisan 🛰️**: Decentralized architectures, peer-to-peer (P2P) communications, and censor-resistance.
 - **plugger 🔌**: Plugin architecture, lifecycle hooks, and extensible microkernel registries without core modifications.
+- **pruner ✂️**: Dependency diet and dead package manifest purging, eliminating unimported ghost dependencies.
 - **sentinel 🛡️**: Code security audits, input sanitization, and SQL injection/XSS prevention.
+- **slimmer 📦**: Bundle size, tree-shaking, code splitting, and client-side asset diet optimization.
+- **specifier 📑**: OpenAPI 3.0/3.1 and Swagger machine-readable contract authoring and validation.
+- **speedster 🏎️**: Build time, incremental compiler tuning, persistent caching, and dev loop acceleration.
+- **standardizer 📐**: Error handling hierarchies, predictable HTTP status codes, and unified API response envelopes.
 - **watcher 👁️**: Data integrity, incoming/outgoing schema validations, and runtime type safety constraints.
 
-### 📋 Advisory, Review & Documentation Group (23 Agents)
+### 📋 Advisory, Review & Documentation Group (27 Agents)
 - **annotator 🏷️**: Precise inline code comments, block documentation (TSDoc/JSDoc), and code clarity.
 - **archivist 📜**: Structured changelogs, release documentation, deprecated API tracking, and migration guides.
 - **attestor 🔏**: Security policies, STRIDE threat modeling, vulnerability disclosure protocols, and compliance documentation.
@@ -85,6 +91,8 @@ Example prompt format:
 - **critic 🗣️**: Senior code review, critiquing diffs, design anti-patterns, and logic efficiency.
 - **curator 📚**: Repository knowledge bases, developer onboarding guides, and architectural notes.
 - **datasmith 🗄️**: SQLite database specialist, schema normalization, query indexing, and local data integrity.
+- **explainer 💡**: Complex logic walkthroughs, conceptual guides, and algorithmic step-by-step traces.
+- **gitsmith 🌿**: Git history hygiene, Conventional Commits, interactive rebase squashing, and branch cleanliness.
 - **grader 📊**: Code health audits, cognitive complexity calculation, and technical debt prioritization.
 - **green 🌱**: Energy efficiency, minimizing carbon footprint, reducing CPU/RAM, and green computing.
 - **guildmaster 🤝**: Contributor experience, CONTRIBUTING guidelines, PR templates, and open-source governance.
@@ -92,9 +100,11 @@ Example prompt format:
 - **localizer 🌍**: UI localization, i18n string extraction, date/number formatting, and RTL support.
 - **mutator 🧬**: Mutation testing, test resilience audits, and synthetic bug injection to eliminate false coverage.
 - **nexus 🔗**: MCP (Model Context Protocol) AI integration specialist designing context servers and LLM tools.
+- **planner 📋**: Step-by-step TDD implementation blueprints with verifiable execution criteria before coding.
 - **proteus 🎭**: Flexible, adaptive analysis tailored to unique custom developer requests.
 - **revenant 🧟**: Cross-platform background service persistence (Windows, Linux, macOS).
 - **scaler 📈**: High availability, caching strategies, load balancing, and traffic spike handling.
+- **scoper 🎯**: MVP slicing, YAGNI enforcement, and ruthless scope pruning for 1-day shippable delivery.
 - **scribe ✍️**: README.md authoring, technical documentation, API specifications, and developer guides.
 - **sleuth 🕵️**: Forensics, memory leak tracing, crash dump analysis, and deep production log inspection.
 - **smith 🧰**: Developer Experience (DevEx), internal tooling, Git hooks, and developer workflow tuning.
@@ -124,7 +134,7 @@ When operating in an MCP-compliant host environment (Antigravity IDE, Claude Cod
 3. **`auto_process`**: Autonomous pipeline: deploy -> monitor -> approve plan -> merge upon success.
 4. **`get_session_status`**: Queries real-time session status from Google Jules Cloud REST API.
 5. **`setup_workspace`**: Initializes workspace `.jules/` directory and staging files.
-6. **`list_agents`**: Lists all 53 specialist agents and their metadata from `registry.json`.
+6. **`list_agents`**: Lists all 63 specialist agents and their metadata from `registry.json`.
 7. **`get_agent_info`**: Reads directives and guardrails for a target agent.
 8. **`list_sources`**: Queries linked repository sources registered under the Jules account.
 9. **`run_doctor`**: Runs environment health diagnostics (Node.js, Git, API Key, registry integrity).
