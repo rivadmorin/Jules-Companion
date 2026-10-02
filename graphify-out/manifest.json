@@ -36,14 +36,14 @@
     "semantic_hash": "1678aa5289ca66b4e257141ed2cfcb0d"
   },
   "package.json": {
-    "mtime": 1790906878.4276538,
-    "seen": 1790906915.7604692,
-    "ast_hash": "a9e22938b869230ccef19725a3249649",
+    "mtime": 1790908799.19602,
+    "seen": 1790911088.7960322,
+    "ast_hash": "f26879c9be72dfc3dae4acd29ffbedc9",
     "semantic_hash": ""
   },
   "references/agents/registry.json": {
-    "mtime": 1790908586.130546,
-    "seen": 1790908657.812955,
+    "mtime": 1790911059.6127293,
+    "seen": 1790911088.7960322,
     "ast_hash": "a464435727a94e413c59d9a186152f34",
     "semantic_hash": ""
   },
@@ -456,9 +456,9 @@
     "semantic_hash": "6a823e7ab10b21cf645fc4250b972e45"
   },
   "CHANGELOG.md": {
-    "mtime": 1790906878.4585598,
-    "seen": 1790906915.76152,
-    "ast_hash": "7abee9de0f08e5d0a3ee8a4f7d111318",
+    "mtime": 1790908791.3922317,
+    "seen": 1790911088.7960322,
+    "ast_hash": "f08510f10d3a45c40369e2673b051ae6",
     "semantic_hash": ""
   },
   "FAQ.md": {
@@ -1065,6 +1065,24 @@
     "mtime": 1790908503.988266,
     "seen": 1790908657.812955,
     "ast_hash": "cc545f0e46f2513d53d1c6038de736e5",
+    "semantic_hash": ""
+  },
+  "docs/mcp-tools-catalog.md": {
+    "mtime": 1790910086.9278905,
+    "seen": 1790911088.7960322,
+    "ast_hash": "41d860ebe9523d68285c3a5e2744310c",
+    "semantic_hash": ""
+  },
+  "docs/operational-gotchas.md": {
+    "mtime": 1790910109.9975214,
+    "seen": 1790911088.7960322,
+    "ast_hash": "dc6b95f5285554fb65bb694d1e41505b",
+    "semantic_hash": ""
+  },
+  "docs/specialist-agents-catalog.md": {
+    "mtime": 1790910101.8566267,
+    "seen": 1790911088.7960322,
+    "ast_hash": "807e44db00ef5b346420652f575b7845",
     "semantic_hash": ""
   }
 }
