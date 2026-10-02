@@ -1,17 +1,17 @@
 # Graph Report - Jules-Companion  (2026-10-02)
 
 ## Corpus Check
-- 181 files · ~154,225 words
+- 181 files · ~154,280 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 9 file(s) not represented in the graph (top: (none) 6, .example 1, .toml 1)
 
 ## Summary
-- 984 nodes · 1890 edges · 93 communities (79 shown, 14 thin omitted)
-- Extraction: 84% EXTRACTED · 16% INFERRED · 0% AMBIGUOUS · INFERRED: 311 edges (avg confidence: 0.88)
+- 984 nodes · 1883 edges · 95 communities (78 shown, 17 thin omitted)
+- Extraction: 83% EXTRACTED · 17% INFERRED · 0% AMBIGUOUS · INFERRED: 311 edges (avg confidence: 0.88)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `e5e80ca4`
+- Built from commit: `6260a098`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -92,9 +92,9 @@
 - standardizer.md
 - Jules Companion - Comprehensive Application Guide & Architecture Overview
 - run_tests.js
-- 00 - Master Architecture & System Design
-- jules.apiKey
-- runGit
+- utils.test.ts
+- JournalsTreeDataProvider
+- workspace_provider.ts
 - install_hooks.js
 - jules-deploy.md
 - jules-inspect.md
@@ -104,33 +104,35 @@
 - jules-doctor.md
 - jules-status.md
 - doc_coverage.test.ts
-- 🛠️ Step-by-Step Developer Playbooks
-- 🛠️ Contributor & AI Agent Tooling (Ponytail, Sentrux & Graphify)
-- 💻 Development Environment Setup
+- 🛡️ Panduan Keberlanjutan Kode, Quality Assurance & Roadmap Jules-Companion
+- 1. Quick 1-Click Installation
+- 3. Editor Extension Details (Antigravity IDE & VS Code)
+- dependencies
+- engines
 
 ## God Nodes (most connected - your core abstractions)
 1. `activate()` - 56 edges
 2. `Jules Companion - Codebase Master Documentation Index` - 40 edges
 3. `Jules Companion - Codebase Architecture Map & Governance Guide` - 35 edges
-4. `loadSessions()` - 30 edges
+4. `loadSessions()` - 29 edges
 5. `00 - Master Architecture & System Design` - 24 edges
 6. `getApiKey()` - 23 edges
-7. `runGit()` - 23 edges
-8. `saveSessions()` - 23 edges
-9. `scripts` - 21 edges
-10. `request()` - 21 edges
+7. `runGit()` - 22 edges
+8. `saveSessions()` - 22 edges
+9. `request()` - 21 edges
+10. `scripts` - 21 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `2.2 Validation Order Precedence (Offline Test Safety)` --references--> `deploySessionCore()`  [INFERRED]
   NOTE.md → scripts/deploy_session.ts
-- `1. Adding a New VS Code Command` --references--> `activate()`  [INFERRED]
-  CONTRIBUTING.md → scripts/extension.ts
 - `5.1 CLI Argument Parser Multi-Mapping (`parseArgs`)` --references--> `parseArgs()`  [INFERRED]
   NOTE.md → scripts/utils.ts
+- `1. Adding a New VS Code Command` --references--> `activate()`  [INFERRED]
+  CONTRIBUTING.md → scripts/extension.ts
 - `4.2 Auto-Modification of `registry.json` during Test Runs` --references--> `createCustomAgentScaffold()`  [INFERRED]
   NOTE.md → scripts/utils.ts
-- `C. Sentrux Layering Governance` --references--> `deploySessionCore()`  [INFERRED]
-  docs/application-overview.md → scripts/deploy_session.ts
+- `C. Sentrux Layering Governance` --references--> `mergeSessionCore()`  [INFERRED]
+  docs/application-overview.md → scripts/merge_session.ts
 
 ## Import Cycles
 - None detected.
@@ -149,7 +151,7 @@
 - **UI Presentation and Cross-Platform Execution Framework** — references_agents_builder_builder_agent, references_agents_chameleon_chameleon_agent, references_agents_adapter_adapter_agent [INFERRED 0.85]
 - **Google Jules API & CLI Protocol Documentation** — references_jules_api_document, references_jules_cli_document, references_prompt_templates_document [INFERRED 0.85]
 
-## Communities (93 total, 14 thin omitted)
+## Communities (95 total, 17 thin omitted)
 
 ### Community 0 - "visual_diff.ts"
 Cohesion: 0.09
@@ -160,12 +162,12 @@ Cohesion: 0.14
 Nodes (13): 10. `OFFLINE_TEST_RESILIENCE`, 11. `STORAGE_ATOMICITY`, 1. `POWERSHELL_OPERATOR_TRAP`, 2. `POWERSHELL_SUBEXPRESSION_TRAP`, 3. `POWERSHELL_PATH_WITH_SPACES`, 4. `POWERSHELL_CD_PROHIBITION`, 5. `GIT_INDEX_LOCK_TRAP`, 6. `INLINE_DOC_DENSITY_STANDARD` (+5 more)
 
 ### Community 2 - "merge_session.ts"
-Cohesion: 0.20
-Nodes (13): approveMerge(), checkoutSessionBranch(), generateDiffSummary(), generateMarkdownReport(), inspectSession(), mergeSession(), mergeSessionCore(), MergeSessionOptions (+5 more)
+Cohesion: 0.27
+Nodes (10): approveMerge(), checkoutSessionBranch(), generateDiffSummary(), generateMarkdownReport(), inspectSession(), mergeSession(), mergeSessionCore(), MergeSessionOptions (+2 more)
 
 ### Community 3 - "registry.ts"
-Cohesion: 0.13
-Nodes (17): Catalog of the 20 Native MCP Tools (06-mcp-server-subsystem), 06 - Model Context Protocol (MCP) Server Subsystem, Dynamic Tool Registry (mcp/registry.ts) (06-mcp-server-subsystem), MCP Client Configuration Example (06-mcp-server-subsystem), MCP Server Architecture (06-mcp-server-subsystem), ref_os, McpToolDefinition, allTools (+9 more)
+Cohesion: 0.12
+Nodes (19): Catalog of the 20 Native MCP Tools (06-mcp-server-subsystem), 06 - Model Context Protocol (MCP) Server Subsystem, Dynamic Tool Registry (mcp/registry.ts) (06-mcp-server-subsystem), MCP Client Configuration Example (06-mcp-server-subsystem), MCP Server Architecture (06-mcp-server-subsystem), ref_os, McpToolDefinition, allTools (+11 more)
 
 ### Community 4 - "Materialist (Specialized Agent)"
 Cohesion: 0.05
@@ -184,8 +186,8 @@ Cohesion: 0.21
 Nodes (10): GitExecutionResult, createGitHubPullRequest(), getGhCliToken(), getGitHubPullRequestForBranch(), getGitHubUserInfo(), GitHubPRCreateOptions, GitHubPRResult, GitHubUserInfo (+2 more)
 
 ### Community 8 - "package.json"
-Cohesion: 0.09
-Nodes (22): activationEvents, author, categories, dependencies, @modelcontextprotocol/sdk, description, displayName, engines (+14 more)
+Cohesion: 0.11
+Nodes (18): activationEvents, author, categories, description, displayName, icon, keywords, license (+10 more)
 
 ### Community 9 - "scripts"
 Cohesion: 0.10
@@ -204,15 +206,15 @@ Cohesion: 0.10
 Nodes (25): Agent Template Specification (references/agents/.md) (07-agents-and-customization), Behavioral Guardrails (07-agents-and-customization), Catalog of the 30 Specialist Agents (07-agents-and-customization), Core Principles & Directives (07-agents-and-customization), 07 - Agent System & Customization Reference, Specialist Agent Architecture (07-agents-and-customization), Central Utilities Hub (utils.ts) (08-utilities-and-cli), CLI Tooling Scripts (08-utilities-and-cli) (+17 more)
 
 ### Community 13 - "jules_api.ts"
-Cohesion: 0.32
-Nodes (15): Inviolable Invariants:, directoryApiKeyCache, getApiKey(), request(), resetApiKeyCache(), approvePlanApi(), cancelSessionApi(), getActivitiesApi() (+7 more)
+Cohesion: 0.24
+Nodes (19): Inviolable Invariants:, 02 - API Client Subsystem Reference, Google Jules REST API Mapping (jules_api.ts) (02-api-client-subsystem), Jules CLI Subprocess Wrapper (jules_client.ts) (02-api-client-subsystem), Native HTTP Client Architecture (http.ts) (02-api-client-subsystem), directoryApiKeyCache, getApiKey(), request() (+11 more)
 
 ### Community 15 - "compilerOptions"
 Cohesion: 0.18
 Nodes (10): compilerOptions, esModuleInterop, forceConsistentCasingInFileNames, module, moduleResolution, outDir, skipLibCheck, strict (+2 more)
 
 ### Community 16 - "Jules Companion README"
-Cohesion: 0.21
+Cohesion: 0.22
 Nodes (10): Release VSIX Extension Workflow, Jules Companion README, Four Execution Modes (Direct, Plan-Review, Supervised, Autonomous), Dokumentasi Jules Companion (Bahasa Indonesia), Fitur Utama Jules Companion (ID), Integrasi Server MCP Jules Companion (ID), MCP Server Setup & JSON Configuration, Mission Control Webview User Interface (+2 more)
 
 ### Community 17 - "Palette (Specialized Agent)"
@@ -224,32 +226,32 @@ Cohesion: 0.25
 Nodes (7): esbuild, entryPoints, esbuild, fs, getTsFiles(), path, scriptsDir
 
 ### Community 19 - "Contributing to Jules Companion 🐙"
-Cohesion: 0.15
-Nodes (13): 1. Branch Naming, 2. Commit Message Convention, 🏛️ Architecture Invariants & Governance, 📝 Coding Standards & Style Guide, Contributing to Jules Companion 🐙, ⚡ Core Development Philosophy, 🔀 Git Workflow & Commit Standards, 📦 Packaging & Local Installation (+5 more)
+Cohesion: 0.08
+Nodes (25): 1. Adding a New VS Code Command, 1. Branch Naming, 1. Ponytail — The Pragmatic Senior Developer Engine, 1. Prerequisites, 2. Commit Message Convention, 2. Implementing a New MCP Tool, 2. Initial Setup, 2. Sentrux — AI Architectural Linter & Quality Sensor (+17 more)
 
 ### Community 20 - "types.ts"
-Cohesion: 0.14
-Nodes (16): 01 - Core Subsystem Reference, Domain Types & Contracts (types.ts) (01-core-subsystem), Git CLI Subsystem (git.ts) (01-core-subsystem), Storage Subsystem (storage.ts) (01-core-subsystem), Task Scheduler Engine (scheduler.ts) (01-core-subsystem), 🛡️ Panduan Keberlanjutan Kode, Quality Assurance & Roadmap Jules-Companion, Peta Jalan Pengembangan Berkelanjutan (Development Roadmap) (development-and-contribution-guide), Piramida Pengujian & Standar Quality Assurance (53 Tests) (development-and-contribution-guide) (+8 more)
+Cohesion: 0.20
+Nodes (11): Data Flow & Subsystem Interactions (00-master-architecture), 00 - Master Architecture & System Design, High-Level Layered Architecture (00-master-architecture), Overview & Architectural Goals (00-master-architecture), Security & Isolation Policies (00-master-architecture), State Machine & Status Reconciliation (00-master-architecture), projectDirsCache, ProjectDirs (+3 more)
 
 ### Community 21 - "contributes"
-Cohesion: 0.17
-Nodes (12): Activity Bar Icon Design Specification, Jules Robot Avatar Concept, Jules Activity Bar SVG Icon, contributes, commands, menus, views, viewsContainers (+4 more)
+Cohesion: 0.11
+Nodes (19): Activity Bar Icon Design Specification, Jules Robot Avatar Concept, Jules Activity Bar SVG Icon, properties, title, contributes, commands, configuration (+11 more)
 
 ### Community 22 - "devDependencies"
 Cohesion: 0.29
 Nodes (7): devDependencies, esbuild, tsx, @types/node, @types/vscode, typescript, @vscode/vsce
 
 ### Community 23 - "auto_process.ts"
-Cohesion: 0.18
-Nodes (12): Autonomous Process Loop (auto_process.ts) (03-session-lifecycle), Deploy Session Engine (deploy_session.ts) (03-session-lifecycle), 03 - Session Lifecycle & Execution Modes Reference, Merge Engine & Safety Gate (merge_session.ts) (03-session-lifecycle), The Four Google Jules Execution Modes (03-session-lifecycle), autoProcess(), autoProcessCore(), AutoProcessOptions (+4 more)
+Cohesion: 0.21
+Nodes (11): Autonomous Process Loop (auto_process.ts) (03-session-lifecycle), Deploy Session Engine (deploy_session.ts) (03-session-lifecycle), 03 - Session Lifecycle & Execution Modes Reference, Merge Engine & Safety Gate (merge_session.ts) (03-session-lifecycle), The Four Google Jules Execution Modes (03-session-lifecycle), autoProcess(), autoProcessCore(), AutoProcessOptions (+3 more)
 
 ### Community 24 - "deploy_session.ts"
-Cohesion: 0.26
-Nodes (12): deploySession(), deploySessionCore(), DeploySessionOptions, DeploySessionResult, getCurrentBranch(), getDefaultRemoteBranch(), getGitRemoteRepo(), isBranchOnRemote() (+4 more)
+Cohesion: 0.30
+Nodes (12): runGit(), deploySession(), deploySessionCore(), DeploySessionOptions, DeploySessionResult, getCurrentBranch(), getDefaultRemoteBranch(), getGitRemoteRepo() (+4 more)
 
 ### Community 25 - "Jules Companion — Installation & Setup Guide"
-Cohesion: 0.10
-Nodes (21): 1. Quick 1-Click Installation, 1. Run Doctor Check, 2. Run Test Suite, 2. What Gets Installed Automatically, 3. Check IDE Status Bar, 3. Editor Extension Details (Antigravity IDE & VS Code), 4. Antigravity AI Skills Discovery, 5. Model Context Protocol (MCP) Setup (+13 more)
+Cohesion: 0.15
+Nodes (12): 1. Run Doctor Check, 2. Run Test Suite, 2. What Gets Installed Automatically, 3. Check IDE Status Bar, 4. Antigravity AI Skills Discovery, 5. Model Context Protocol (MCP) Setup, 6. Verification & Health Check, Configuration Path (+4 more)
 
 ### Community 26 - "Evals Grading Report"
 Cohesion: 0.33
@@ -308,12 +310,12 @@ Cohesion: 0.08
 Nodes (13): Agent, Core Concepts, Domain Glossary, Launch Mode, Operational Mode, Safety Gate, Scheduled Task, Session (+5 more)
 
 ### Community 46 - "ref_path"
-Cohesion: 0.12
-Nodes (18): ref_child_process, ref_fs, ref_node_assert, ref_node_test, ref_path, scripts_utils_getprojectdirs, scripts_utils_rungit, TEST_DIR (+10 more)
+Cohesion: 0.13
+Nodes (17): ref_child_process, ref_fs, ref_node_assert, ref_node_test, ref_path, scripts_utils_getprojectdirs, scripts_utils_savesessions, TEST_DIR (+9 more)
 
 ### Community 47 - "extension.ts"
-Cohesion: 0.08
-Nodes (61): 02-10-2026 - [Term Collision: Launch Mode vs Operational Mode], 3.1 Atomic JSON File Persistence, deleteSessionApi(), checkPatchConflict(), PatchCheckResult, addScheduledTask(), cancelScheduledTask(), deleteScheduledTask() (+53 more)
+Cohesion: 0.10
+Nodes (53): 02-10-2026 - [Term Collision: Launch Mode vs Operational Mode], 3.1 Atomic JSON File Persistence, deleteSessionApi(), checkPatchConflict(), PatchCheckResult, addScheduledTask(), cancelScheduledTask(), deleteScheduledTask() (+45 more)
 
 ### Community 48 - "gitsmith.md"
 Cohesion: 0.40
@@ -333,7 +335,7 @@ Nodes (4): Boundaries, Core Directives & Chain of Thought, Error Handling & Ambi
 
 ### Community 52 - "Jules Companion - Codebase Master Documentation Index"
 Cohesion: 0.09
-Nodes (25): 02 - API Client Subsystem Reference, Google Jules REST API Mapping (jules_api.ts) (02-api-client-subsystem), Jules CLI Subprocess Wrapper (jules_client.ts) (02-api-client-subsystem), Native HTTP Client Architecture (http.ts) (02-api-client-subsystem), Differentiated Dynamic Banners (05-mission-control-webview), 05 - Mission Control Webview Subsystem Reference, Overview & Purpose (05-mission-control-webview), Security & Content Security Policy (CSP) (05-mission-control-webview) (+17 more)
+Nodes (26): 01 - Core Subsystem Reference, Domain Types & Contracts (types.ts) (01-core-subsystem), Git CLI Subsystem (git.ts) (01-core-subsystem), Storage Subsystem (storage.ts) (01-core-subsystem), Task Scheduler Engine (scheduler.ts) (01-core-subsystem), Differentiated Dynamic Banners (05-mission-control-webview), 05 - Mission Control Webview Subsystem Reference, Overview & Purpose (05-mission-control-webview) (+18 more)
 
 ### Community 53 - "Cartographer Agent (Codebase Structures & ASCII Layout Mapping agent who analyze codebase directory structures, map out component dependencies, and design flowcharts in Mermaid and ASCII layouts.)"
 Cohesion: 0.32
@@ -435,17 +437,13 @@ Nodes (39): 10. Troubleshooting & Diagnostics, 11. Related Technical Documentati
 Cohesion: 0.25
 Nodes (6): fs, path, result, { spawnSync }, testDir, testFiles
 
-### Community 78 - "00 - Master Architecture & System Design"
-Cohesion: 0.33
-Nodes (6): Data Flow & Subsystem Interactions (00-master-architecture), 00 - Master Architecture & System Design, High-Level Layered Architecture (00-master-architecture), Overview & Architectural Goals (00-master-architecture), Security & Isolation Policies (00-master-architecture), State Machine & Status Reconciliation (00-master-architecture)
-
-### Community 79 - "jules.apiKey"
-Cohesion: 0.29
-Nodes (7): properties, title, configuration, default, description, type, jules.apiKey
-
-### Community 80 - "runGit"
+### Community 78 - "utils.test.ts"
 Cohesion: 0.17
-Nodes (10): getCurrentBranch(), patchCheckCache, runGit(), getWorkspaceContextInfo(), GitOriginInfo, parseGitOrigin(), WorkspaceContextInfo, WorkspaceItemCategory (+2 more)
+Nodes (10): rollbackSession(), scripts_utils_checkpatchconflict, scripts_utils_cleansessionscratch, getReviewReports(), scripts_utils_loadsessions, scripts_utils_rungit, scripts_utils_sessionrecord, TEST_DIR (+2 more)
+
+### Community 80 - "workspace_provider.ts"
+Cohesion: 0.17
+Nodes (9): getCurrentBranch(), patchCheckCache, getWorkspaceContextInfo(), GitOriginInfo, parseGitOrigin(), WorkspaceContextInfo, WorkspaceItemCategory, WorkspaceTreeDataProvider (+1 more)
 
 ### Community 81 - "install_hooks.js"
 Cohesion: 0.33
@@ -455,31 +453,31 @@ Nodes (5): { execSync }, fs, hookDir, hookFile, path
 Cohesion: 0.40
 Nodes (4): AGENTS_DIR, getAllScriptFiles(), getTsFilesRecursive(), SCRIPTS_DIR
 
-### Community 90 - "🛠️ Step-by-Step Developer Playbooks"
-Cohesion: 0.50
-Nodes (4): 1. Adding a New VS Code Command, 2. Implementing a New MCP Tool, 3. Authoring a New Specialist Agent, 🛠️ Step-by-Step Developer Playbooks
+### Community 90 - "🛡️ Panduan Keberlanjutan Kode, Quality Assurance & Roadmap Jules-Companion"
+Cohesion: 0.33
+Nodes (6): 🛡️ Panduan Keberlanjutan Kode, Quality Assurance & Roadmap Jules-Companion, Peta Jalan Pengembangan Berkelanjutan (Development Roadmap) (development-and-contribution-guide), Piramida Pengujian & Standar Quality Assurance (53 Tests) (development-and-contribution-guide), Pola Arsitektur: Programmatic Core Pattern (development-and-contribution-guide), Prinsip Inti Keberlanjutan Arsitektur (Core Principles) (development-and-contribution-guide), Protokol Ekstensi Fitur (Feature Extension Protocols) (development-and-contribution-guide)
 
-### Community 91 - "🛠️ Contributor & AI Agent Tooling (Ponytail, Sentrux & Graphify)"
-Cohesion: 0.50
-Nodes (4): 1. Ponytail — The Pragmatic Senior Developer Engine, 2. Sentrux — AI Architectural Linter & Quality Sensor, 3. Graphify — Codebase Knowledge Graph & Architecture Navigation, 🛠️ Contributor & AI Agent Tooling (Ponytail, Sentrux & Graphify)
+### Community 91 - "1. Quick 1-Click Installation"
+Cohesion: 0.40
+Nodes (5): 1. Quick 1-Click Installation, Direct Node.js CLI, macOS / Linux, Windows (Command Prompt / Double Click), Windows (PowerShell)
 
-### Community 92 - "💻 Development Environment Setup"
+### Community 92 - "3. Editor Extension Details (Antigravity IDE & VS Code)"
 Cohesion: 0.50
-Nodes (4): 1. Prerequisites, 2. Initial Setup, 3. Running & Debugging in VS Code, 💻 Development Environment Setup
+Nodes (4): 3. Editor Extension Details (Antigravity IDE & VS Code), Activity Bar Visibility, Auto-Detection, Manual VSIX Installation (Fallback)
 
 ## Knowledge Gaps
-- **432 isolated node(s):** `install.sh script`, `name`, `version`, `description`, `displayName` (+427 more)
+- **432 isolated node(s):** `patchCheckCache`, `TEST_DIR`, `AgentEntry`, `ParsedDiffFile`, `AgentMetadata` (+427 more)
   These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 509 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **14 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **17 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `Jules Companion - Codebase Master Documentation Index` connect `Jules Companion - Codebase Master Documentation Index` to `visual_diff.ts`, `merge_session.ts`, `registry.ts`, `setup.ts`, `jules_api.ts`, `00 - Master Architecture & System Design`, `extension.ts`, `runGit`, `ref_path`, `Jules Companion README`, `types.ts`, `auto_process.ts`, `Jules Companion Project Changelog`, `deploy_session.ts`?**
+- **Why does `Jules Companion - Codebase Master Documentation Index` connect `Jules Companion - Codebase Master Documentation Index` to `visual_diff.ts`, `merge_session.ts`, `registry.ts`, `setup.ts`, `jules_api.ts`, `ref_path`, `extension.ts`, `workspace_provider.ts`, `Jules Companion README`, `types.ts`, `auto_process.ts`, `Jules Companion Project Changelog`, `deploy_session.ts`?**
   _High betweenness centrality (0.113) - this node is a cross-community bridge._
 - **Why does `@modelcontextprotocol/sdk` connect `package.json` to `registry.ts`?**
-  _High betweenness centrality (0.063) - this node is a cross-community bridge._
-- **Why does `Jules Companion - Codebase Architecture Map & Governance Guide` connect `Jules Companion - Codebase Master Documentation Index` to `visual_diff.ts`, `merge_session.ts`, `registry.ts`, `Jules Companion - Comprehensive Application Guide & Architecture Overview`, `setup.ts`, `00 - Master Architecture & System Design`, `jules_api.ts`, `runGit`, `extension.ts`, `types.ts`, `auto_process.ts`, `deploy_session.ts`?**
+  _High betweenness centrality (0.062) - this node is a cross-community bridge._
+- **Why does `Jules Companion - Codebase Architecture Map & Governance Guide` connect `Jules Companion - Codebase Master Documentation Index` to `visual_diff.ts`, `merge_session.ts`, `registry.ts`, `Jules Companion - Comprehensive Application Guide & Architecture Overview`, `jules_api.ts`, `setup.ts`, `extension.ts`, `workspace_provider.ts`, `types.ts`, `auto_process.ts`, `deploy_session.ts`?**
   _High betweenness centrality (0.056) - this node is a cross-community bridge._
 - **Are the 6 inferred relationships involving `activate()` (e.g. with `1. Adding a New VS Code Command` and `getWorkspaceRoot()`) actually correct?**
   _`activate()` has 6 INFERRED edges - model-reasoned connections that need verification._
@@ -487,5 +485,5 @@ _Questions this graph is uniquely positioned to answer:_
   _`Jules Companion - Codebase Master Documentation Index` has 26 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 23 inferred relationships involving `Jules Companion - Codebase Architecture Map & Governance Guide` (e.g. with `Architectural Governance (.sentrux/rules.toml) (codebase-architecture-map)` and `Architectural Layering Hierarchy (codebase-architecture-map)`) actually correct?**
   _`Jules Companion - Codebase Architecture Map & Governance Guide` has 23 INFERRED edges - model-reasoned connections that need verification._
-- **What connects `install.sh script`, `name`, `version` to the rest of the system?**
+- **What connects `patchCheckCache`, `TEST_DIR`, `AgentEntry` to the rest of the system?**
   _432 weakly-connected nodes found - possible documentation gaps or missing edges._
