@@ -24,26 +24,26 @@
     "semantic_hash": "f6e7c4b01286840411d0509646149dde"
   },
   "install.ps1": {
-    "mtime": 1789965051.5822723,
-    "seen": 1790674108.7382,
-    "ast_hash": "76e173163f29f536c88f692ec5cfaf7f",
-    "semantic_hash": "76e173163f29f536c88f692ec5cfaf7f"
+    "mtime": 1790915857.5539494,
+    "seen": 1790915931.330813,
+    "ast_hash": "8a5ee1305a2705467b3e2191291cb18d",
+    "semantic_hash": ""
   },
   "install.sh": {
-    "mtime": 1790626590.2622032,
-    "seen": 1790674108.7382,
-    "ast_hash": "1678aa5289ca66b4e257141ed2cfcb0d",
-    "semantic_hash": "1678aa5289ca66b4e257141ed2cfcb0d"
+    "mtime": 1790917253.4107342,
+    "seen": 1790917332.0932956,
+    "ast_hash": "0f0e1d00b437c5afadb5c2754e85955b",
+    "semantic_hash": ""
   },
   "package.json": {
-    "mtime": 1790908799.19602,
-    "seen": 1790911088.7960322,
-    "ast_hash": "f26879c9be72dfc3dae4acd29ffbedc9",
+    "mtime": 1790915989.6704788,
+    "seen": 1790916011.5817142,
+    "ast_hash": "8b39267a34e5ddd2f9acd27ffbc8cd74",
     "semantic_hash": ""
   },
   "references/agents/registry.json": {
-    "mtime": 1790911059.6127293,
-    "seen": 1790911088.7960322,
+    "mtime": 1790917049.8870018,
+    "seen": 1790917332.0932956,
     "ast_hash": "a464435727a94e413c59d9a186152f34",
     "semantic_hash": ""
   },
@@ -120,9 +120,9 @@
     "semantic_hash": ""
   },
   "scripts/installer.js": {
-    "mtime": 1790793311.2069776,
-    "seen": 1790793592.02873,
-    "ast_hash": "c78b22fce312ffd5130d2c3cf2286c47",
+    "mtime": 1790917013.0707767,
+    "seen": 1790917332.0932956,
+    "ast_hash": "e4721b5827965582992c8941c3f6b417",
     "semantic_hash": ""
   },
   "scripts/jules_client.ts": {
@@ -192,9 +192,9 @@
     "semantic_hash": "6677ad595aa7ccb4f0cf302ea39247dd"
   },
   "scripts/sync_global.ts": {
-    "mtime": 1790676579.1197944,
-    "seen": 1790676621.3296602,
-    "ast_hash": "7e24e11bd42d65d18aea9690798e489e",
+    "mtime": 1790916993.3730137,
+    "seen": 1790917332.0932956,
+    "ast_hash": "95158c541a91f8e86e8596b4f15c56c5",
     "semantic_hash": ""
   },
   "scripts/ui/agents_provider.ts": {
@@ -468,15 +468,15 @@
     "semantic_hash": ""
   },
   "README.id.md": {
-    "mtime": 1790790292.5639408,
-    "seen": 1790790700.0283496,
-    "ast_hash": "eee1e60960a2b9c0209184f379a4ce6a",
+    "mtime": 1790917283.9337437,
+    "seen": 1790917332.0932956,
+    "ast_hash": "c4897a2299a456283dba85eb200730dc",
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1790790273.6062734,
-    "seen": 1790790700.0283496,
-    "ast_hash": "d8102c7bd89a09af0f9908aa59e82fd9",
+    "mtime": 1790917275.1634612,
+    "seen": 1790917332.0932956,
+    "ast_hash": "e435be29ea85e11c385a9d2ad686b393",
     "semantic_hash": ""
   },
   "SKILL.md": {
@@ -568,12 +568,6 @@
     "seen": 1790674108.7382,
     "ast_hash": "12388685c97dfaf21fdec335347d58a7",
     "semantic_hash": "12388685c97dfaf21fdec335347d58a7"
-  },
-  "docs/penjelasan-aplikasi.md": {
-    "mtime": 1790620179.2475462,
-    "seen": 1790674108.7382,
-    "ast_hash": "7f800cf0a55e8cdfba8f8caefd7f7e8d",
-    "semantic_hash": "7f800cf0a55e8cdfba8f8caefd7f7e8d"
   },
   "docs/ponytail-audit-plan.md": {
     "mtime": 1789964062.0920005,
@@ -1083,6 +1077,72 @@
     "mtime": 1790910101.8566267,
     "seen": 1790911088.7960322,
     "ast_hash": "807e44db00ef5b346420652f575b7845",
+    "semantic_hash": ""
+  },
+  ".jules/lexicon.md": {
+    "mtime": 1790912894.4549992,
+    "seen": 1790913186.0614214,
+    "ast_hash": "6e81804289cf35e06da334d1fe38b37e",
+    "semantic_hash": ""
+  },
+  "docs/GLOSSARY.md": {
+    "mtime": 1790912878.1405873,
+    "seen": 1790913186.0614214,
+    "ast_hash": "22ba8c5e36650c4ecb5c89ef74a19a69",
+    "semantic_hash": ""
+  },
+  "docs/application-overview.md": {
+    "mtime": 1790915918.6626325,
+    "seen": 1790915931.330813,
+    "ast_hash": "a21ee3549b8b15176dfeee3f3bfe1af3",
+    "semantic_hash": ""
+  },
+  "commands/jules-auto.md": {
+    "mtime": 1790914167.707738,
+    "seen": 1790914258.8859334,
+    "ast_hash": "50c574a81bcd71351f061c4c90cb8a24",
+    "semantic_hash": ""
+  },
+  "commands/jules-deploy.md": {
+    "mtime": 1790914157.6405046,
+    "seen": 1790914258.8859334,
+    "ast_hash": "0f642cdf1c04bce2070d8232f104e8b3",
+    "semantic_hash": ""
+  },
+  "commands/jules-doctor.md": {
+    "mtime": 1790914183.1746516,
+    "seen": 1790914258.8859334,
+    "ast_hash": "83b3afbec4abc840d42035186689d85c",
+    "semantic_hash": ""
+  },
+  "commands/jules-inspect.md": {
+    "mtime": 1790914172.2849932,
+    "seen": 1790914258.8859334,
+    "ast_hash": "7eed5d5d22b5eabc337f60de2cd446c6",
+    "semantic_hash": ""
+  },
+  "commands/jules-merge.md": {
+    "mtime": 1790914176.3574717,
+    "seen": 1790914258.8859334,
+    "ast_hash": "2b6cab051614013435074a1bc988816b",
+    "semantic_hash": ""
+  },
+  "commands/jules-review.md": {
+    "mtime": 1790914160.8963642,
+    "seen": 1790914258.8859334,
+    "ast_hash": "9fd910457a6de0ad3f35532d90a209e8",
+    "semantic_hash": ""
+  },
+  "commands/jules-status.md": {
+    "mtime": 1790914179.4883492,
+    "seen": 1790914258.8859334,
+    "ast_hash": "97d9448a55494e5b5a960fc9251ef693",
+    "semantic_hash": ""
+  },
+  "docs/installation-guide.md": {
+    "mtime": 1790917263.5342226,
+    "seen": 1790917332.0932956,
+    "ast_hash": "f1cbafbc002728f2fc73edd9e42d5b1c",
     "semantic_hash": ""
   }
 }

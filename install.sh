@@ -12,7 +12,18 @@ if ! command -v node &> /dev/null; then
     exit 1
 fi
 
-echo "[OK] Node.js detected. Running installer..."
-echo ""
+echo "[OK] Node.js detected. Checking project dependencies..."
+if [ ! -d "node_modules" ]; then
+    echo "[1/2] Installing dependencies with npm..."
+    npm install
+fi
 
+if [ ! -d "dist" ]; then
+    echo "[2/2] Building TypeScript entrypoints..."
+    npm run build
+fi
+
+echo ""
+echo "Launching Universal Multi-Agent & IDE Installer..."
+echo ""
 node scripts/installer.js

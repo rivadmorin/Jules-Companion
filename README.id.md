@@ -44,28 +44,32 @@ Aplikasi ini berfungsi sebagai ko-pilot pintar untuk mengintegrasikan alur kerja
 * **Sidebar Activity Bar**:
   * **Sessions View**: Daftar real-time sesi aktif, grup tugas terjadwal (`⏰ Scheduled Tasks (N pending)`), dan grup arsip (`📦 Archived Sessions`).
   * **Workspace View**: Menampilkan branch Git aktif, remote URL, status working tree, dan status health checks.
-  * **Agent Roster**: Direktori 53 agen spesialis beserta deskripsi peran dan batasannya.
+  * **Agent Roster**: Direktori 63 agen spesialis beserta deskripsi peran dan batasannya dalam 11 klaster.
   * **Journals View**: Akses cepat ke catatan jurnal pembelajaran agen (`*.journal.md`).
 * **Session Action Center**: Pop-up interaktif instan berbasis QuickPick untuk kendali penuh atas sesi, rencana eksekusi, dan branch Git tanpa beban webview.
 * **Activity Stream OutputChannel**: Saluran streaming log real-time langsung di panel Output bawaan IDE.
 * **Native Diff Integration**: Membuka perubahan kode berdampingan (*side-by-side*) menggunakan diff editor bawaan IDE via `vscode.diff`.
 
-### 📦 Cara Instalasi Mudah (Untuk Siapa Saja)
+### 📦 Cara Instalasi Universal (1-Klik)
 
-#### 🚀 Opsi 1: Paling Mudah (1-Klik Tanpa Perlu Buka Terminal)
-* **Windows**: Cukup **dobel-klik file `install.bat`**.
-* **macOS / Linux**: Jalankan `./install.sh` di terminal.
-* Script ini otomatis memasang ekstensi ke VS Code / Cursor, mendaftarkan 20 Tools MCP Server, dan memeriksa Google API Key Anda.
+Installer otomatis mendeteksi **Antigravity IDE** maupun **Visual Studio Code**, memasang ekstensi VSIX terbaru, mendaftarkan **10 Skill Antigravity**, menyetel konfigurasi **20 MCP Tools**, dan memvalidasi `JULES_API_KEY`:
 
-#### 🛠️ Opsi 2: Instalasi Manual / Developer
-1. Pasang ekstensi VS Code langsung dari paket `.vsix`:
-   ```bash
-   code --install-extension jules-companion-1.1.0.vsix
-   ```
-2. Atau jalankan wizard installer via npm:
-   ```bash
-   npm run installer
-   ```
+#### 🚀 Pilihan Instalasi:
+* **Windows (PowerShell)**: Jalankan `./install.ps1`
+* **Windows (File Explorer)**: Cukup **dobel-klik file `install.bat`**
+* **macOS / Linux**: Jalankan `chmod +x install.sh && ./install.sh`
+* **Node.js CLI**: Jalankan `node scripts/installer.js`
+
+> 📖 **Panduan Instalasi Lengkap**: Baca [`docs/installation-guide.md`](docs/installation-guide.md) untuk petunjuk mendalam, aktivasi bilah Activity Bar, dan pemecahan masalah.
+
+#### 🛠️ Instalasi Manual Ekstensi:
+```bash
+# Antigravity IDE
+antigravity-ide --install-extension jules-companion-1.5.0.vsix
+
+# Visual Studio Code
+code --install-extension jules-companion-1.5.0.vsix
+```
 
 ---
 

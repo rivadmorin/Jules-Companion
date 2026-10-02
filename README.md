@@ -45,21 +45,39 @@ It acts as an intelligent co-pilot to orchestrate local developer workflows (Git
 * Node.js v18+ & Git installed.
 * Google Jules API Key ([Get API Key](https://jules.google)).
 
-### Install VSIX in VS Code or Antigravity IDE
-```bash
-# Option A: 1-Click Auto Installer (Recommended for non-technical users)
-# On Windows: Double-click install.bat
-# On macOS/Linux: ./install.sh
+### 1-Click Universal Auto-Installer (Recommended)
+Automatically deploys the Editor Extension (Antigravity IDE & VS Code), 10 AI Agent Skills, 20 MCP Tools, and Slash Commands in one step:
 
-# Option B: Manual Installation
-code --install-extension jules-companion-1.1.0.vsix
+```bash
+# Windows PowerShell
+./install.ps1
+
+# Windows Command Prompt / Double-Click in Explorer
+install.bat
+
+# macOS / Linux
+chmod +x install.sh && ./install.sh
+
+# Universal Node.js Runner
+node scripts/installer.js
+```
+
+> 📖 **Full Installation Guide**: See [`docs/installation-guide.md`](docs/installation-guide.md) for detailed platform-specific steps and troubleshooting.
+
+### Manual Extension Installation
+```bash
+# Antigravity IDE
+antigravity-ide --install-extension jules-companion-1.5.0.vsix
+
+# Visual Studio Code
+code --install-extension jules-companion-1.5.0.vsix
 ```
 
 ### Configure API Key
 In VS Code or Antigravity IDE:
 1. Press `Ctrl+Shift+P` (or `Cmd+Shift+P` on macOS).
 2. Type `Jules: Set API Key` and paste your Google Jules API key.
-3. Or set the environment variable `JULES_API_KEY=your_key_here`.
+3. Or set the environment variable `JULES_API_KEY=your_key_here` in `.env`.
 
 ---
 

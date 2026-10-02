@@ -1,0 +1,4 @@
+## 02-10-2026 - [Term Collision: Launch Mode vs Operational Mode]
+**Discovery:** The term `review` is overloaded in the domain model. It represents both a `LaunchMode` (where Jules waits for plan approval) and an `OperationalMode` (where Jules performs a code review). These are separate concepts defined in `scripts/core/types.ts` (`LaunchMode` vs `mode: 'code' | 'review'`).
+**Analysis:** This homonym collision can cause severe ambiguity when communicating system state or designing MCP tool schemas, as it requires implicit context to determine if a developer means "wait for approval" or "perform an audit".
+**Action:** Documented the collision explicitly in `docs/GLOSSARY.md`. In future refactoring, recommend disambiguating Operational Mode to `taskType: 'implementation' | 'audit'` to prevent confusion with Launch Mode's `review` state.

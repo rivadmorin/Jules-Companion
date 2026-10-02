@@ -16,9 +16,20 @@ if %ERRORLEVEL% neq 0 (
     exit /b 1
 )
 
-echo [OK] Node.js detected. Starting installation process...
-echo.
+echo [OK] Node.js detected. Checking project dependencies...
+if not exist node_modules (
+    echo [1/2] Installing dependencies with npm...
+    call npm install
+)
 
+if not exist dist (
+    echo [2/2] Building TypeScript entrypoints...
+    call npm run build
+)
+
+echo.
+echo Launching Universal Multi-Agent & IDE Installer...
+echo.
 node scripts/installer.js
 
 echo.

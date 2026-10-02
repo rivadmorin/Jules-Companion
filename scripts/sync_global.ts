@@ -3,7 +3,9 @@
  * @module sync_global
  * @description Automatically synchronizes local workspace build artifacts, scripts,
  * references, and MCP tool JSON schemas into the global IDE skill directory
- * (~/.gemini/config/skills/jules-companion) and MCP schema repository (~/.gemini/antigravity-ide/mcp/jules-companion).
+ * (~/.gemini/skills/jules-companion and ~/.gemini/config/skills/jules-companion),
+ * the workspace skill directory (.agents/skills/jules-companion),
+ * and the MCP schema repository (~/.gemini/antigravity-ide/mcp/jules-companion).
  * This ensures that local developments immediately reflect across the entire IDE without version drift.
  */
 
@@ -35,56 +37,104 @@ export function syncGlobalInstallation(targetWorkspaceDir: string = process.cwd(
 
   let syncedFilesCount = 0;
 
-  if (!fs.existsSync(globalSkillDir)) {
-    fs.mkdirSync(globalSkillDir, { recursive: true });
-  }
+  // 1. Target skill directories for multi-path Antigravity discovery
+  const targetSkillDirs = [
+    globalSkillDir,
+    path.join(homeDir, '.gemini', 'skills', 'jules-companion'),
+    path.join(targetWorkspaceDir, '.agents', 'skills', 'jules-companion')
+  ];
 
-  const isSelf = path.resolve(targetWorkspaceDir).toLowerCase() === path.resolve(globalSkillDir).toLowerCase();
-
-  if (!isSelf) {
-    // 1. Sync dist directory
-    const localDist = path.join(targetWorkspaceDir, 'dist');
-    const globalDist = path.join(globalSkillDir, 'dist');
-    if (fs.existsSync(localDist)) {
-      fs.cpSync(localDist, globalDist, { recursive: true });
-      syncedFilesCount += fs.readdirSync(localDist).length;
+  for (const skillDir of targetSkillDirs) {
+    if (!fs.existsSync(skillDir)) {
+      fs.mkdirSync(skillDir, { recursive: true });
     }
 
-    // 2. Sync scripts directory
-    const localScripts = path.join(targetWorkspaceDir, 'scripts');
-    const globalScripts = path.join(globalSkillDir, 'scripts');
-    if (fs.existsSync(localScripts)) {
-      fs.cpSync(localScripts, globalScripts, { recursive: true });
-      syncedFilesCount += fs.readdirSync(localScripts).length;
-    }
+    const isSelf = path.resolve(targetWorkspaceDir).toLowerCase() === path.resolve(skillDir).toLowerCase();
+    if (!isSelf) {
+      // Sync dist directory
+      const localDist = path.join(targetWorkspaceDir, 'dist');
+      const destDist = path.join(skillDir, 'dist');
+      if (fs.existsSync(localDist)) {
+        fs.cpSync(localDist, destDist, { recursive: true });
+        syncedFilesCount += fs.readdirSync(localDist).length;
+      }
 
-    // 3. Sync references directory
-    const localRef = path.join(targetWorkspaceDir, 'references');
-    const globalRef = path.join(globalSkillDir, 'references');
-    if (fs.existsSync(localRef)) {
-      fs.cpSync(localRef, globalRef, { recursive: true });
-    }
+      // Sync scripts directory
+      const localScripts = path.join(targetWorkspaceDir, 'scripts');
+      const destScripts = path.join(skillDir, 'scripts');
+      if (fs.existsSync(localScripts)) {
+        fs.cpSync(localScripts, destScripts, { recursive: true });
+        syncedFilesCount += fs.readdirSync(localScripts).length;
+      }
 
-    // 4. Sync key root configuration & documentation files
-    const rootFiles = ['SKILL.md', 'README.md', 'README.id.md', 'package.json', 'AGENT.md', 'NOTE.md'];
-    for (const rf of rootFiles) {
-      const src = path.join(targetWorkspaceDir, rf);
-      if (fs.existsSync(src)) {
-        fs.copyFileSync(src, path.join(globalSkillDir, rf));
-        syncedFilesCount++;
+      // Sync references directory
+      const localRef = path.join(targetWorkspaceDir, 'references');
+      const destRef = path.join(skillDir, 'references');
+      if (fs.existsSync(localRef)) {
+        fs.cpSync(localRef, destRef, { recursive: true });
+      }
+
+      // Sync key root configuration & documentation files
+      const rootFiles = ['SKILL.md', 'README.md', 'README.id.md', 'package.json', 'AGENT.md', 'NOTE.md'];
+      for (const rf of rootFiles) {
+        const src = path.join(targetWorkspaceDir, rf);
+        if (fs.existsSync(src)) {
+          fs.copyFileSync(src, path.join(skillDir, rf));
+          syncedFilesCount++;
+        }
+      }
+
+      // Purge obsolete residue if present
+      const obsoleteResidues = ['.ignore'];
+      for (const ob of obsoleteResidues) {
+        const obPath = path.join(skillDir, ob);
+        if (fs.existsSync(obPath)) {
+          try { fs.unlinkSync(obPath); } catch (_) {}
+        }
       }
     }
-    // Purge obsolete residue if present
-    const obsoleteResidues = ['.ignore'];
-    for (const ob of obsoleteResidues) {
-      const obPath = path.join(globalSkillDir, ob);
-      if (fs.existsSync(obPath)) {
-        try { fs.unlinkSync(obPath); } catch (_) {}
+  }
+
+  // 2. Sync all specialized jules-* skills from workspace .agents/skills to global skills
+  const workspaceSkillsDir = path.join(targetWorkspaceDir, '.agents', 'skills');
+  if (fs.existsSync(workspaceSkillsDir)) {
+    const skillEntries = fs.readdirSync(workspaceSkillsDir, { withFileTypes: true });
+    for (const entry of skillEntries) {
+      if (entry.isDirectory() && entry.name.startsWith('jules-')) {
+        const srcDir = path.join(workspaceSkillsDir, entry.name);
+        const destConfig = path.join(homeDir, '.gemini', 'config', 'skills', entry.name);
+        const destUser = path.join(homeDir, '.gemini', 'skills', entry.name);
+        for (const dest of [destConfig, destUser]) {
+          if (!fs.existsSync(dest)) {
+            fs.mkdirSync(dest, { recursive: true });
+          }
+          fs.cpSync(srcDir, dest, { recursive: true });
+        }
       }
     }
   }
 
-  // 5. Export 20 MCP Tool JSON Schemas to IDE directory
+  // 3. Sync slash commands to Antigravity global commands directories
+  const localCommands = path.join(targetWorkspaceDir, 'commands');
+  if (fs.existsSync(localCommands)) {
+    const geminiCmdDirs = [
+      path.join(homeDir, '.gemini', 'commands'),
+      path.join(homeDir, '.gemini', 'config', 'commands')
+    ];
+    for (const cmdDir of geminiCmdDirs) {
+      if (!fs.existsSync(cmdDir)) {
+        fs.mkdirSync(cmdDir, { recursive: true });
+      }
+      for (const file of fs.readdirSync(localCommands)) {
+        if (file.endsWith('.md')) {
+          fs.copyFileSync(path.join(localCommands, file), path.join(cmdDir, file));
+          syncedFilesCount++;
+        }
+      }
+    }
+  }
+
+  // 4. Export 20 MCP Tool JSON Schemas to IDE directory
   if (!fs.existsSync(globalMcpDir)) {
     fs.mkdirSync(globalMcpDir, { recursive: true });
   }
