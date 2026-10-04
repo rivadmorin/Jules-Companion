@@ -7,7 +7,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
 import { WorkspaceTreeDataProvider } from './ui/workspace_provider';
-import { SessionsTreeDataProvider, SessionTreeItem, cleanAgentName } from './ui/sessions_provider';
+import { SessionsTreeDataProvider, cleanAgentName } from './ui/sessions_provider';
 import { AgentsTreeDataProvider, AgentTreeItem } from './ui/agents_provider';
 import { JournalsTreeDataProvider } from './ui/journals_provider';
 import { deploySessionCore } from './deploy_session';
@@ -37,7 +37,7 @@ import {
   addScheduledTask,
   cancelScheduledTask,
   deleteScheduledTask,
-  executeDueTasks,
+
   runScheduledTaskNow,
   setTaskExecutor
 } from './utils';

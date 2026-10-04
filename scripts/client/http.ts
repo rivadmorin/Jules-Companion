@@ -5,6 +5,8 @@
 
 import * as path from 'path';
 import * as fs from 'fs';
+import * as https from 'https';
+import * as http from 'http';
 
 let globalCachedApiKey: string | null = null;
 const directoryApiKeyCache = new Map<string, string | null>();
@@ -82,7 +84,12 @@ export function resetApiKeyCache(): void {
 }
 
 /**
- * High-performance promise-based HTTP request client utilizing native globalThis.fetch().
+ * Shared keep-alive HTTPS agent to prevent repetitive TLS handshake overhead on batch CLI operations.
+ */
+const sharedHttpsAgent = new https.Agent({ keepAlive: true });
+
+/**
+ * High-performance promise-based HTTP request client utilizing native https/http with keepAlive.
  *
  * @param url - The full URL for the request.
  * @param options - Request options configuring method and headers.
@@ -94,55 +101,75 @@ export async function request<T = any>(
   options: { method?: string; headers?: Record<string, string>; timeoutMs?: number } = {},
   body: any = null
 ): Promise<T> {
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-    'User-Agent': 'Jules-Companion-TS/1.0',
-    ...options.headers
-  };
+  return new Promise<T>((resolve, reject) => {
+    const payload = body ? (typeof body === 'string' ? body : JSON.stringify(body)) : null;
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      'User-Agent': 'Jules-Companion-TS/1.0',
+      ...options.headers
+    };
+    if (payload) {
+      headers['Content-Length'] = Buffer.byteLength(payload).toString();
+    }
 
-  const timeoutMs = options.timeoutMs ?? 15000;
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), timeoutMs);
+    const timeoutMs = options.timeoutMs ?? 15000;
+    
+    // Determine the correct transport and agent based on the protocol
+    const isHttps = url.startsWith('https:');
+    const transport = isHttps ? https : http;
+    const agent = isHttps ? sharedHttpsAgent : undefined;
+    
+    const reqOptions: http.RequestOptions | https.RequestOptions = {
+      method: options.method || 'GET',
+      headers,
+      agent,
+      timeout: timeoutMs
+    };
 
-  const init: RequestInit = {
-    method: options.method || 'GET',
-    headers,
-    signal: controller.signal
-  };
+    const req = transport.request(url, reqOptions, (res) => {
+      res.setEncoding('utf8');
+      let text = '';
+      res.on('data', chunk => text += chunk);
+      res.on('error', (err) => reject(new Error(`Response stream error: ${err.message}`)));
+      res.on('end', () => {
+        if (res.statusCode && res.statusCode >= 200 && res.statusCode < 300) {
+          try {
+            resolve(JSON.parse(text) as T);
+          } catch (_e) {
+            resolve(text as unknown as T);
+          }
+        } else {
+          let errMsg = `HTTP ${res.statusCode}: ${res.statusMessage}`;
+          try {
+            const errObj = JSON.parse(text);
+            if (errObj.error && errObj.error.message) {
+              errMsg = `HTTP ${res.statusCode} (${errObj.error.status || 'ERROR'}): ${errObj.error.message}`;
+            }
+          } catch (_) {
+            if (text) errMsg += ` - ${text.slice(0, 200)}`;
+          }
+          reject(new Error(errMsg));
+        }
+      });
+    });
 
-  if (body) {
-    init.body = typeof body === 'string' ? body : JSON.stringify(body);
-  }
+    req.on('timeout', () => {
+      req.destroy();
+      reject(new Error(`Request timed out after ${timeoutMs}ms connecting to Google Jules API (${url})`));
+    });
 
-  try {
-    const res = await fetch(url, init);
-    const text = await res.text();
-
-    if (res.ok) {
-      try {
-        return JSON.parse(text) as T;
-      } catch (_e) {
-        return text as unknown as T;
+    req.on('error', (e: any) => {
+      if (e.message?.startsWith('HTTP ')) {
+        reject(e);
+      } else {
+        reject(new Error(`Network error connecting to Google Jules API: ${e.message}`));
       }
-    }
+    });
 
-    let errMsg = `HTTP ${res.status}: ${res.statusText}`;
-    try {
-      const errObj = JSON.parse(text);
-      if (errObj.error && errObj.error.message) {
-        errMsg = `HTTP ${res.status} (${errObj.error.status || 'ERROR'}): ${errObj.error.message}`;
-      }
-    } catch (_) {
-      if (text) errMsg += ` - ${text.slice(0, 200)}`;
+    if (payload) {
+      req.write(payload);
     }
-    throw new Error(errMsg);
-  } catch (e: any) {
-    if (e.name === 'AbortError' || e.message?.includes('aborted')) {
-      throw new Error(`Request timed out after ${timeoutMs}ms connecting to Google Jules API (${url})`);
-    }
-    if (e.message?.startsWith('HTTP ')) throw e;
-    throw new Error(`Network error connecting to Google Jules API: ${e.message}`);
-  } finally {
-    clearTimeout(timer);
-  }
+    
+    req.end();
+  });
 }

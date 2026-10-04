@@ -556,7 +556,7 @@ export async function checkoutSessionBranch(
  * @returns {Promise<string>} A promise resolving to a status report of the rollback action.
  */
 export async function rollbackSession(
-  sessionId?: string,
+  _sessionId?: string,
   targetDir: string = process.cwd()
 ): Promise<string> {
   // Check if there is an active stash to restore

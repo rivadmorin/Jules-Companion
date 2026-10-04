@@ -5,7 +5,7 @@
  */
 
 import * as vscode from 'vscode';
-import { loadSessions, getProjectDirs } from '../core/storage';
+import { loadSessions } from '../core/storage';
 import { SessionRecord } from '../core/types';
 import {
   isSessionActive,

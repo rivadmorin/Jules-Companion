@@ -5,6 +5,7 @@
 
 import { request, getApiKey } from './client/http';
 import { parseArgs, loadSessions, saveSessions, SessionRecord, isSessionAwaitingApproval, isSessionAwaitingInput } from './utils';
+import { Logger, defaultLogger } from './core/logger';
 
 /**
  * Processes a single Jules session by checking its status against the cloud API and taking automatic
@@ -21,10 +22,13 @@ async function processSingleSession(
   headers: Record<string, string>,
   customReply?: string
 ): Promise<boolean> {
+  const correlationId = crypto.randomUUID();
+  const logger = new Logger(correlationId, { headers });
+
   // Extract the unique identifier for the target session from the provided record
   const sessionId = sessionRecord.id;
   // Log the initiation of the status check, including agent context and execution mode for debugging
-  console.log(`\nChecking status for session ${sessionId} (${sessionRecord.agent} - ${sessionRecord.mode.toUpperCase()})...`);
+  logger.info(`Checking status for session ${sessionId} (${sessionRecord.agent} - ${sessionRecord.mode.toUpperCase()})...`);
 
   try {
     // Fetch the current session state directly from the Google Jules API using the authenticated request utility
@@ -32,21 +36,21 @@ async function processSingleSession(
     // Default to UNKNOWN if state is missing from the response payload to ensure safe downstream comparisons
     const state = sessionData.state || 'UNKNOWN';
     // Log the retrieved session state to provide visibility into the agent's current progress
-    console.log(`Current state: ${state}`);
+    logger.info(`Current state: ${state}`);
 
     // Evaluate the retrieved state to determine if autonomous intervention is required
     // Handle state machine transitions automatically to unblock stalled autonomous agents
     if (isSessionAwaitingApproval(state)) {
       // The cloud agent has proposed an execution plan and halted, awaiting human approval.
       // We automatically send the 'approvePlan' API request to unblock the agent immediately.
-      console.log(`⚡ Session ${sessionId} is awaiting plan approval. Sending auto-approval request...`);
+      logger.info(`⚡ Session ${sessionId} is awaiting plan approval. Sending auto-approval request...`);
       // Execute the POST request to the custom :approvePlan method endpoint
       await request(`https://jules.googleapis.com/v1alpha/sessions/${sessionId}:approvePlan`, {
         method: 'POST',
         headers
       }, {}); // An empty object is passed as the body payload since no additional parameters are required
       // Confirm the successful dispatch of the approval request
-      console.log(`✅ Plan approved automatically for session ${sessionId}!`);
+      logger.info(`✅ Plan approved automatically for session ${sessionId}!`);
 
       // Update local state so subsequent processes know this phase is complete and don't re-trigger
       sessionRecord.status = 'plan_approved';
@@ -59,14 +63,14 @@ async function processSingleSession(
       // Determine the payload message: fallback to the default directive if no custom reply was supplied via CLI
       const message = customReply || 'Proceed with task execution and implementation.';
       // Log the intended auto-reply message to console for user visibility
-      console.log(`⚡ Session ${sessionId} is awaiting user input. Sending auto-reply: "${message}"...`);
+      logger.info(`⚡ Session ${sessionId} is awaiting user input. Sending auto-reply: "${message}"...`);
       // Execute the POST request to the custom :sendMessage method endpoint with the prompt payload
       await request(`https://jules.googleapis.com/v1alpha/sessions/${sessionId}:sendMessage`, {
         method: 'POST',
         headers
       }, { prompt: message });
       // Confirm the successful dispatch of the message payload
-      console.log(`✅ Message sent successfully to session ${sessionId}!`);
+      logger.info(`✅ Message sent successfully to session ${sessionId}!`);
 
       // Mark state as replied so we track our interactions locally and prevent duplicate messaging
       sessionRecord.status = 'replied';
@@ -76,7 +80,7 @@ async function processSingleSession(
     } else if (state === 'COMPLETED') {
       // The agent has successfully completed all tasks and is ready for the patch review and merge phase.
       // Inform the user that the session has reached its terminal success state
-      console.log(`✓ Session ${sessionId} is COMPLETED. Ready for patch merge.`);
+      logger.info(`✓ Session ${sessionId} is COMPLETED. Ready for patch merge.`);
       // Update the local tracker to mirror the completed cloud state
       sessionRecord.status = 'completed';
       // Return true so the orchestrator knows this session's status was actively updated during this poll
@@ -84,13 +88,13 @@ async function processSingleSession(
     } else {
       // Handle transitional states like IN_PROGRESS or terminal states like ERROR where no autonomous input action is possible currently
       // Inform the user that the engine is skipping this session for now
-      console.log(`Session ${sessionId} is in state: ${state}. No immediate action required.`);
+      logger.info(`Session ${sessionId} is in state: ${state}. No immediate action required.`);
       // Return false to indicate no mutations or completions occurred for this session
       return false;
     }
   } catch (err: any) {
     // Graceful error logging to ensure one failing session network call doesn't crash the entire auto-process concurrent batch
-    console.error(`❌ Failed to auto-process session ${sessionId}: ${err.message}`);
+    logger.error(`❌ Failed to auto-process session ${sessionId}: ${err.message}`, err);
     // Return false so the orchestrator is aware this specific session check failed
     return false;
   }
@@ -213,7 +217,7 @@ export async function autoProcess(): Promise<void> {
   const targetDir = params.target ? String(params.target) : process.cwd();
 
   if (!isAll && !targetId) {
-    console.log(`
+    defaultLogger.info(`
 Jules Session Auto-Approval & Auto-Reply Engine (TypeScript)
 
 Usage:
@@ -236,10 +240,10 @@ Options:
   });
 
   if (res.output) {
-    console.log(res.output);
+    defaultLogger.info(res.output);
   }
   if (!res.success) {
-    console.error(`Error: ${res.error}`);
+    defaultLogger.error(`Error: ${res.error}`);
     process.exit(1);
   }
 }

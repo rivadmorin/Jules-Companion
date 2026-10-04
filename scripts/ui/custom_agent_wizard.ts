@@ -15,7 +15,7 @@ import { createCustomAgentScaffold } from '../utils';
  * @returns A promise resolving when wizard execution completes.
  */
 export async function runCustomAgentWizard(
-  extensionPath: string,
+  _extensionPath: string,
   targetDir: string,
   onCreated?: () => void
 ): Promise<void> {

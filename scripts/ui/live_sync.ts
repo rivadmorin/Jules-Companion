@@ -17,6 +17,7 @@ export class LiveSyncManager {
   private timer: NodeJS.Timeout | null = null;
   private running = false;
   private previousStatuses = new Map<string, string>();
+  private _isPolling = false;
 
   /**
    * Initializes a new LiveSyncManager instance.
@@ -91,51 +92,67 @@ export class LiveSyncManager {
    * @returns A promise resolving when poll iteration completes.
    */
   async pollOnce(): Promise<void> {
-    const root = this.getWorkspaceRoot();
-    if (!root) return;
-
+    if (this._isPolling) return;
+    this._isPolling = true;
     try {
-      const sessions = await listSessionsApi(root);
-      if (!sessions || sessions.length === 0) return;
+      const root = this.getWorkspaceRoot();
+      if (!root) return;
 
-      for (const s of sessions) {
-        const id = s.id;
-        const currentStatus = (s.status || '').toUpperCase();
-        const prevStatus = this.previousStatuses.get(id);
+      try {
+        const sessions = await listSessionsApi(root);
+        if (!sessions || sessions.length === 0) return;
 
-        if (prevStatus && prevStatus !== currentStatus) {
-          this.handleStateTransition(s, prevStatus, currentStatus, root);
+        const currentSessionIds = new Set<string>();
+
+        for (const s of sessions) {
+          const id = s.id;
+          currentSessionIds.add(id);
+          const currentStatus = (s.status || '').toUpperCase();
+          const prevStatus = this.previousStatuses.get(id);
+
+          if (prevStatus && prevStatus !== currentStatus) {
+            this.handleStateTransition(s, prevStatus, currentStatus, root);
+          }
+
+          this.previousStatuses.set(id, currentStatus);
         }
 
-        this.previousStatuses.set(id, currentStatus);
-      }
-
-      this.onUpdate();
-      JulesStatusBar.getInstance().update(sessions);
-    } catch {
-      // Ignore background transient network hiccups
-    }
-
-    try {
-      const executed = await executeDueTasks(root, (task) => {
-        const idShort = task.sessionId ? `#${task.sessionId.slice(0, 8)}` : '';
-        JulesActivityChannel.getInstance().appendLine(
-          `[${new Date().toLocaleTimeString()}] [SCHEDULED] Task executed for ${task.agent} ${idShort}: "${task.task.slice(0, 40)}"`
-        );
-        vscode.window.showInformationMessage(
-          `⏰ Scheduled Jules task "${task.task.slice(0, 30)}" executed for ${task.agent} ${idShort}!`,
-          '🚀 Action Center'
-        ).then(action => {
-          if (action === '🚀 Action Center' && task.sessionId) {
-            vscode.commands.executeCommand('jules.openSessionActionCenter', { session: { id: task.sessionId } });
+        // Prune deleted/archived sessions from previousStatuses map to prevent memory leak
+        for (const id of this.previousStatuses.keys()) {
+          if (!currentSessionIds.has(id)) {
+            this.previousStatuses.delete(id);
           }
-        });
-      });
-      if (executed > 0) {
+        }
+
         this.onUpdate();
+        JulesStatusBar.getInstance().update(sessions);
+      } catch {
+        // Ignore background transient network hiccups
       }
-    } catch {
-      // Ignore background transient scheduler hiccups
+
+      try {
+        const executed = await executeDueTasks(root, (task) => {
+          const idShort = task.sessionId ? `#${task.sessionId.slice(0, 8)}` : '';
+          JulesActivityChannel.getInstance().appendLine(
+            `[${new Date().toLocaleTimeString()}] [SCHEDULED] Task executed for ${task.agent} ${idShort}: "${task.task.slice(0, 40)}"`
+          );
+          vscode.window.showInformationMessage(
+            `⏰ Scheduled Jules task "${task.task.slice(0, 30)}" executed for ${task.agent} ${idShort}!`,
+            '🚀 Action Center'
+          ).then(action => {
+            if (action === '🚀 Action Center' && task.sessionId) {
+              vscode.commands.executeCommand('jules.openSessionActionCenter', { session: { id: task.sessionId } });
+            }
+          });
+        });
+        if (executed > 0) {
+          this.onUpdate();
+        }
+      } catch {
+        // Ignore background transient scheduler hiccups
+      }
+    } finally {
+      this._isPolling = false;
     }
   }
 

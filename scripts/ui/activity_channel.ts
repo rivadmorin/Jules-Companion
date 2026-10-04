@@ -118,7 +118,7 @@ export class JulesActivityChannel {
    * @param sessionId - Session identifier.
    * @param activity - Activity record.
    */
-  public appendActivity(sessionId: string, activity: any): void {
+  public appendActivity(_sessionId: string, activity: any): void {
     const formatted = this.formatActivity(activity);
     this.channel.appendLine(formatted);
   }

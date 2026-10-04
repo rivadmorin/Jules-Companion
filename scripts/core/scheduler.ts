@@ -170,12 +170,12 @@ export function executeDueTasks(
   const runner = executor || activeTaskExecutor;
   if (!runner) return Promise.resolve(0);
 
-  const tasks = loadScheduledTasks(targetDir);
+  let tasks = loadScheduledTasks(targetDir);
   let executedCount = 0;
 
   return (async () => {
     for (const d of due) {
-      const taskRecord = tasks.find(t => t.id === d.id);
+      let taskRecord = tasks.find(t => t.id === d.id);
       if (!taskRecord || taskRecord.status !== 'pending') continue;
 
       taskRecord.status = 'running';
@@ -190,6 +190,11 @@ export function executeDueTasks(
           branch: d.branch,
           targetDir
         });
+
+        // Reload tasks after long running operation to avoid overwriting user edits
+        tasks = loadScheduledTasks(targetDir);
+        taskRecord = tasks.find(t => t.id === d.id);
+        if (!taskRecord) continue;
 
         // Step 1: Update task status and session ID based on execution result
         if (deployRes.success) {
@@ -211,13 +216,18 @@ export function executeDueTasks(
           taskRecord.error = deployRes.error || 'Execution failed';
         }
         executedCount++;
+        saveScheduledTasks(tasks, targetDir); // Save immediately after each run
         if (onExecute) onExecute(taskRecord, deployRes);
       } catch (err: any) {
-        taskRecord.status = 'failed';
-        taskRecord.error = err?.message || 'Unexpected execution error';
+        tasks = loadScheduledTasks(targetDir);
+        taskRecord = tasks.find(t => t.id === d.id);
+        if (taskRecord) {
+          taskRecord.status = 'failed';
+          taskRecord.error = err?.message || 'Unexpected execution error';
+          saveScheduledTasks(tasks, targetDir);
+        }
       }
     }
-    saveScheduledTasks(tasks, targetDir);
     return executedCount;
   })();
 }
@@ -240,8 +250,8 @@ export async function runScheduledTaskNow(
     return { success: false, error: 'No task executor registered' };
   }
 
-  const tasks = loadScheduledTasks(targetDir);
-  const taskRecord = tasks.find(t => t.id === taskId);
+  let tasks = loadScheduledTasks(targetDir);
+  let taskRecord = tasks.find(t => t.id === taskId);
   if (!taskRecord) {
     return { success: false, error: 'Task not found' };
   }
@@ -257,6 +267,12 @@ export async function runScheduledTaskNow(
       branch: taskRecord.branch,
       targetDir
     });
+
+    tasks = loadScheduledTasks(targetDir);
+    taskRecord = tasks.find(t => t.id === taskId);
+    if (!taskRecord) {
+        return { success: deployRes.success, error: deployRes.error };
+    }
 
     taskRecord.status = deployRes.success ? 'completed' : 'failed';
     if (!deployRes.success && deployRes.error) {
@@ -277,9 +293,13 @@ export async function runScheduledTaskNow(
     saveScheduledTasks(tasks, targetDir);
     return { success: deployRes.success, sessionId, error: deployRes.error };
   } catch (err: any) {
-    taskRecord.status = 'failed';
-    taskRecord.error = err?.message || String(err);
-    saveScheduledTasks(tasks, targetDir);
+    tasks = loadScheduledTasks(targetDir);
+    taskRecord = tasks.find(t => t.id === taskId);
+    if (taskRecord) {
+        taskRecord.status = 'failed';
+        taskRecord.error = err?.message || String(err);
+        saveScheduledTasks(tasks, targetDir);
+    }
     return { success: false, error: err.message || String(err) };
   }
 }

@@ -1,0 +1,4 @@
+## 02-10-2026 - [HTTPS Agent keepAlive Optimization]
+**Discovery:** Native global `fetch()` in Node.js cannot easily utilize a shared connection pool (`https.Agent`) without adding `undici` as a dependency. When creating a generic request function, using strictly `https.request` breaks if a standard `http://` URL is ever provided.
+**Analysis:** For batch CLI operations making concurrent network requests, establishing new TLS connections for every request adds significant handshake overhead. Replacing `fetch` with protocol-aware `https.request` / `http.request` and injecting a shared `new https.Agent({ keepAlive: true })` for HTTPS drastically reduces this latency while preserving compatibility.
+**Action:** Use native `https.request` / `http.request` with an explicitly configured keepAlive `https.Agent` conditionally applied for HTTPS, rather than native `fetch()` for performance-critical batch API communications.
